@@ -12,7 +12,7 @@ The ciderpress VSCode extension lets you preview your documentation site directl
 Search for **ciderpress** in the VS Code extensions marketplace, or install from the command line:
 
 ```bash
-code --install-extension joggr.ciderpress
+code --install-extension bytefarm.ciderpress
 ```
 
 ## Live Preview

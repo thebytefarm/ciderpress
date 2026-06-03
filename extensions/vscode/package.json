@@ -17,7 +17,7 @@
     "url": "https://github.com/thebytefarm/ciderpress.git",
     "directory": "extensions/vscode"
   },
-  "publisher": "joggr",
+  "publisher": "bytefarm",
   "main": "./dist/extension.js",
   "scripts": {
     "vscode:prepublish": "node esbuild.mjs",

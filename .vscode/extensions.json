@@ -1,6 +1,6 @@
 {
   "recommendations": [
-    "joggr.ciderpress-vscode",
+    "bytefarm.ciderpress-vscode",
     "johnpapa.vscode-peacock",
     "connor4312.esbuild-problem-matchers",
     "oxc-project.oxc-vscode"

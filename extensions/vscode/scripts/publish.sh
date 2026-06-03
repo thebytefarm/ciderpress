@@ -19,7 +19,7 @@ if [ -z "${VSCE_PAT:-}" ]; then
   echo "No VSCE_PAT found in environment."
   echo ""
   echo "Create a Personal Access Token at:"
-  echo "  https://dev.azure.com/joggr/_usersSettings/tokens"
+  echo "  https://dev.azure.com/bytefarm/_usersSettings/tokens"
   echo "  Scope: Marketplace > Manage"
   echo ""
   read -rsp "Paste your PAT: " VSCE_PAT
