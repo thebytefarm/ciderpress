@@ -1,10 +1,11 @@
 import type { SiteEditConfig, SiteReportConfig } from '@ciderpress/config'
-import { useFrontmatter } from '@rspress/core/runtime'
+import { useFrontmatter, useSite } from '@rspress/core/runtime'
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
+import { useNavItems } from '../../hooks/use-nav-items'
 import { AnnouncementBar } from '../announcement/announcement-bar'
 import { ContentFooterPortal } from '../content-footer/content-footer-portal'
 import { Feedback } from '../content-footer/feedback'
@@ -13,31 +14,35 @@ import { MetaActions } from '../content-footer/meta-actions'
 import { SiteFooter } from '../footer/site-footer'
 import { SidebarLinks } from '../sidebar/sidebar-links'
 import { SidebarPromo } from '../sidebar/sidebar-promo'
-import { SidebarToggle } from '../sidebar/sidebar-toggle'
+import { CiderpressHeader } from './ciderpress-header'
+import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
+import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
 import { FloatingBranchIndicator } from './floating-branch-indicator'
-import { MobileNavCTA } from './mobile-nav-cta'
-import { NavDivider } from './nav-divider'
-import { TopbarCTA } from './topbar-cta'
-import { VscodeTag } from './vscode-tag'
-
-declare const __CIDERPRESS_VSCODE__: boolean
 
 /**
  * Custom Layout override for ciderpress.
  *
- * Wires the chrome described by `config.site`:
- * - AnnouncementBar via the `top` slot (when `site.announcement` is set)
- * - SidebarToggle + VersionChip + BranchTag (+ VscodeTag) on the topbar left
- * - Topbar CTA on the topbar right (when `site.topbarCta` is set)
- * - SidebarLinks (above/below) from config
- * - SidebarPromo at the bottom of the sidebar (when `site.sidebarPromo` is set)
- * - SiteFooter via the `bottom` slot (docs only — home renders it inside PageRail)
- * - MetaActions edit/report links (when `site.edit` / `site.report` are set)
+ * Renders `<CiderpressHeader />` as the entire site header chrome
+ * (Rspress's `.rp-nav` is hidden via CSS in `ciderpress-header.css`).
+ * `<OriginalLayout />` is kept around purely to render Rspress's
+ * sidebar + article body + footer; every nav-related slot is fed
+ * `null` so Rspress doesn't render its own chrome.
+ *
+ * Slots still in use:
+ * - `beforeSidebar`: SidebarLinks (above) and the `.cp-sidebar-top` band
+ * - `afterSidebar`: SidebarLinks (below) plus SidebarPromo
+ * - `afterDoc`: Feedback + MetaActions portalled into the doc footer
+ * - `bottom`: SiteFooter on doc pages
  *
  * @returns React element with the custom layout
  */
 export function Layout(): React.ReactElement {
   const { sidebarAbove, sidebarBelow, site } = useCiderpress()
+  const { site: rspressSite } = useSite()
+  const configNavItems = readNavItems(rspressSite)
+  const scrapedNavItems = useNavItems()
+  const navItems = configNavItems.length > 0 ? configNavItems : scrapedNavItems
+  const socialLinks = readSocialLinks(rspressSite)
   const { announcement, topbarCta, sidebarPromo: sidebarPromoConfig, edit, report } = site ?? {}
   const { frontmatter } = useFrontmatter()
   const fmRecord = frontmatter as Record<string, unknown>
@@ -55,43 +60,6 @@ export function Layout(): React.ReactElement {
         {a.message}
       </AnnouncementBar>
     ))
-
-  // Sidebar toggle goes at the far left of the topbar — same slot the
-  // mockup uses for its hamburger. Doc pages only.
-  const sidebarToggle = match(isHome)
-    .with(true, () => null)
-    .otherwise(() => <SidebarToggle />)
-
-  const navSlot = match(__CIDERPRESS_VSCODE__)
-    .with(true, () => (
-      <div className="cp-nav-slot-left">
-        <NavDivider />
-        {sidebarToggle}
-        <VscodeTag />
-      </div>
-    ))
-    .otherwise(() => (
-      <div className="cp-nav-slot-left">
-        <NavDivider />
-        {sidebarToggle}
-      </div>
-    ))
-
-  const ctaButtons = match(topbarCta)
-    .with(undefined, () => null)
-    .otherwise((cta) => (
-      <>
-        <TopbarCTA text={cta.text} href={cta.href} />
-        <MobileNavCTA text={cta.text} href={cta.href} />
-      </>
-    ))
-
-  const afterNavSlot = (
-    <div className="cp-nav-slot-right">
-      <NavDivider />
-      {ctaButtons}
-    </div>
-  )
 
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
@@ -114,10 +82,6 @@ export function Layout(): React.ReactElement {
     .with(true, () => <SidebarLinks items={belowItems} position="below" />)
     .otherwise(() => null)
 
-  // Wrap below-links + promo in a single sticky bottom region so they hug
-  // the viewport bottom while the nav tree scrolls between them and the
-  // sticky top region. Only render the wrapper when there's something to
-  // pin — otherwise the sidebar scrolls cleanly with no empty band.
   const afterSidebar = match(belowLinks === null && sidebarPromo === null)
     .with(true, () => null)
     .otherwise(() => (
@@ -127,22 +91,11 @@ export function Layout(): React.ReactElement {
       </div>
     ))
 
-  // Home pages render SiteFooter inside their PageRail; blank pages are
-  // chromeless by design (no nav, no footer); doc pages render the footer
-  // here via the bottom slot so it's full-width below the gutter rail.
   const bottomSlot = match(isHome || isBlank)
     .with(true, () => null)
     .otherwise(() => <SiteFooter />)
 
-  // Content footer: feedback widget + meta-actions. Portals into Rspress's
-  // built-in `.rp-doc-footer` so it lives inside the doc rail at the reading
-  // width. Rspress renders its own `.rp-prev-next-page` pager below — we
-  // style it via CSS rather than duplicating it here.
-  const metaActions = collectMetaActions({
-    edit,
-    report,
-    pagePath,
-  })
+  const metaActions = collectMetaActions({ edit, report, pagePath })
 
   const afterDocSlot = (
     <ContentFooterPortal>
@@ -153,10 +106,17 @@ export function Layout(): React.ReactElement {
 
   return (
     <>
+      <CiderpressHeader
+        announcement={announcementSlot}
+        navItems={navItems}
+        socialLinks={socialLinks}
+        topbarCta={topbarCta}
+        isHome={isHome}
+      />
       <OriginalLayout
-        top={announcementSlot}
-        beforeNavMenu={navSlot}
-        afterNavMenu={afterNavSlot}
+        top={null}
+        beforeNavMenu={null}
+        afterNavMenu={null}
         beforeSidebar={beforeSidebar}
         afterSidebar={afterSidebar}
         afterDoc={afterDocSlot}
@@ -172,13 +132,60 @@ export function Layout(): React.ReactElement {
 // ---------------------------------------------------------------------------
 
 /**
- * Build the list of `MetaAction`s to render under each doc page, derived
- * from `site.edit` and `site.report`. Returns an empty array when neither
- * is configured — `MetaActions` then renders nothing.
+ * Pull the primary nav menu items off Rspress's `site` shape. The
+ * Rspress `SiteData` type doesn't expose `nav` at compile time, so we
+ * read through an indexed access and validate the shape at runtime.
+ *
+ * @private
+ * @param site - Rspress site data
+ * @returns Array of nav items (empty array when not configured)
+ */
+function readNavItems(site: unknown): readonly CiderpressNavMenuItem[] {
+  const candidate = (site as { readonly nav?: unknown }).nav
+  if (!Array.isArray(candidate)) {
+    return []
+  }
+  return candidate.filter(
+    (item): item is CiderpressNavMenuItem =>
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as { text?: unknown }).text === 'string' &&
+      typeof (item as { link?: unknown }).link === 'string'
+  )
+}
+
+/**
+ * Pull social-link entries (GitHub, npm, etc) from Rspress's `site`
+ * shape. Lives on `site.themeConfig.socialLinks` after Rspress
+ * normalisation but isn't surfaced on the public typings.
+ *
+ * @private
+ * @param site - Rspress site data
+ * @returns Array of social-link entries (empty array when not configured)
+ */
+function readSocialLinks(site: unknown): readonly CiderpressSocialLink[] {
+  const themeConfig = (site as { readonly themeConfig?: unknown }).themeConfig
+  const candidate = (themeConfig as { readonly socialLinks?: unknown } | undefined)?.socialLinks
+  if (!Array.isArray(candidate)) {
+    return []
+  }
+  return candidate.filter(
+    (item): item is CiderpressSocialLink =>
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as { icon?: unknown }).icon === 'string' &&
+      typeof (item as { content?: unknown }).content === 'string'
+  )
+}
+
+/**
+ * Build the list of `MetaAction`s to render under each doc page,
+ * derived from `site.edit` and `site.report`. Returns an empty array
+ * when neither is configured.
  *
  * @private
  * @param params - Site edit/report config plus current page path
- * @returns Ordered list of meta actions (edit first, report second)
+ * @returns Ordered list of meta actions
  */
 function collectMetaActions(params: {
   readonly edit: SiteEditConfig | undefined
@@ -208,13 +215,7 @@ function collectMetaActions(params: {
 }
 
 /**
- * Compose the "edit this page" URL from `SiteEditConfig` and the current
- * page path.
- *
  * @private
- * @param edit - Resolved edit config
- * @param pagePath - Relative path of the current page (may be empty)
- * @returns Fully qualified GitHub edit URL
  */
 function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
   if (edit.repo.startsWith('http')) {
@@ -229,11 +230,7 @@ function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
 }
 
 /**
- * Compose the "report an issue" URL from `SiteReportConfig`.
- *
  * @private
- * @param report - Resolved report config
- * @returns Fully qualified GitHub issues URL
  */
 function buildReportUrl(report: SiteReportConfig): string {
   if (report.repo.startsWith('http')) {
@@ -243,10 +240,7 @@ function buildReportUrl(report: SiteReportConfig): string {
 }
 
 /**
- * Pencil icon for the Edit-on-GitHub action.
- *
  * @private
- * @returns SVG element.
  */
 function EditIcon(): React.ReactElement {
   return (
@@ -265,10 +259,7 @@ function EditIcon(): React.ReactElement {
 }
 
 /**
- * Alert icon for the Report-an-issue action.
- *
  * @private
- * @returns SVG element.
  */
 function AlertIcon(): React.ReactElement {
   return (

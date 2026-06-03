@@ -1,0 +1,73 @@
+import type React from 'react'
+
+import { Icon } from '../shared/icon.tsx'
+
+import './ciderpress-nav-social-links.css'
+
+/**
+ * Single social-link entry — matches the shape of `socialLinks` in
+ * `ciderpress.config.ts`.
+ */
+export interface CiderpressSocialLink {
+  readonly icon: string
+  readonly mode: string
+  readonly content: string
+  readonly label?: string
+}
+
+export interface CiderpressNavSocialLinksProps {
+  readonly links: readonly CiderpressSocialLink[]
+}
+
+/**
+ * Maps Rspress's social-link `icon` slugs to pixelarticons icon ids.
+ * Fallback for unmapped slugs is the generic `link` glyph.
+ */
+const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
+  github: 'pixelarticons:github',
+  npm: 'pixelarticons:package',
+  twitter: 'pixelarticons:twitter',
+  x: 'pixelarticons:twitter',
+  discord: 'pixelarticons:chat',
+  youtube: 'pixelarticons:play',
+  bluesky: 'pixelarticons:bluesky',
+  mastodon: 'pixelarticons:user',
+})
+
+/**
+ * Renders the configured social links as a cluster of icon buttons in
+ * the topbar. Returns `null` when no links are configured.
+ *
+ * @param props - List of social links from `site.socialLinks`
+ * @returns Cluster of icon links, or `null`
+ */
+export function CiderpressNavSocialLinks(
+  props: CiderpressNavSocialLinksProps
+): React.ReactElement | null {
+  if (props.links.length === 0) {
+    return null
+  }
+
+  return (
+    <div className="cp-nav-social">
+      {props.links.map((link) => (
+        <a
+          key={link.content}
+          href={link.content}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cp-nav-social__item"
+          aria-label={link.label ?? link.icon}
+        >
+          <Icon
+            icon={ICON_MAP[link.icon.toLowerCase()] ?? 'pixelarticons:link'}
+            width={20}
+            height={20}
+          />
+        </a>
+      ))}
+    </div>
+  )
+}
+
+export { CiderpressNavSocialLinks as default }

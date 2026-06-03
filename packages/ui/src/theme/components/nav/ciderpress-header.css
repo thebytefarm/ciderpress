@@ -1,0 +1,112 @@
+/**
+ * CiderpressHeader — sticky site header that fully replaces Rspress's
+ * built-in `.rp-nav` chrome. All visual properties are themable via
+ * `--cp-*` custom properties.
+ *
+ * Theme-author API:
+ *   --cp-header-bg          background colour
+ *   --cp-header-border      bottom border colour
+ *   --cp-header-height      total row height (default 56px)
+ *   --cp-header-pad-x       inline padding (default 16px)
+ *   --cp-header-max-width   inner content max width (default 1280px)
+ *   --cp-header-gap         flex gap between header items (default 8px)
+ *   --cp-header-z           stacking index (default 50)
+ */
+.cp-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--cp-header-z, 50);
+  width: 100%;
+  background: var(--cp-header-bg, var(--cp-c-bg));
+  border-bottom: 1px solid var(--cp-header-border, var(--cp-c-border));
+  backdrop-filter: blur(8px);
+}
+
+.cp-header-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--cp-header-gap, 8px);
+  height: var(--cp-header-height, 56px);
+  padding: 0 var(--cp-header-pad-x, 16px);
+  margin: 0 auto;
+  /* Allow `.cp-nav-menu__overflow-popover` to escape vertically; the
+     CiderpressNavMenu owns horizontal overflow via its own measure +
+     collapse logic. */
+  overflow: visible;
+}
+
+/* Landing / home pages: match the constrained max-width of the rest of
+   the home content so the header sits inside the same container shell. */
+.cp-header--landing .cp-header-inner {
+  max-width: var(--cp-header-max-width, 1280px);
+}
+
+/* Doc pages: span the full viewport, matching Rspress's sidebar + main
+   layout which already stretches edge-to-edge. */
+.cp-header--docs .cp-header-inner {
+  max-width: none;
+}
+
+.cp-header-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cp-header-logo > svg {
+  height: var(--cp-header-logo-height, 28px);
+  width: auto;
+}
+
+/* Wrapper that grows to claim every pixel between the search button
+   and the right-aligned icon cluster. `CiderpressNavMenu` inside reads
+   `wrapper.clientWidth` and decides how many items can fit. */
+.cp-header-menu-wrap {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  margin: 0 16px;
+}
+
+/* ── Mobile collapse ───────────────────────────────────────────────
+   At <=768px the desktop chrome (inline menu, theme switcher, socials,
+   CTA, dividers) collapses into the slide-out drawer surfaced by
+   `<CiderpressNavHamburger />`. Each of the hidden elements is still
+   in the React tree — the drawer renders its own copies so nothing is
+   actually lost from the mobile UX. */
+@media (max-width: 768px) {
+  .cp-header-inner > .cp-nav-divider,
+  .cp-header-inner > .cp-header-menu-wrap,
+  .cp-header-inner > .cp-nav-social,
+  .cp-header-inner > .cp-topbar-cta,
+  .cp-header-inner > .rp-switch-appearance,
+  .cp-header-inner > .cp-theme-switcher {
+    display: none;
+  }
+}
+
+/* Hide Rspress's built-in nav entirely. Its DOM stays mounted (so the
+   keyboard-driven search modal still wires up) but it claims zero
+   visual space and zero interaction surface. */
+html .rp-nav {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+}
+
+/* Rspress's main scroll container reserves padding-top for its sticky
+   nav. With our custom header we'd double up; reset its offset and let
+   our `.cp-header` claim the space. */
+html .rspress-doc-container,
+html .rp-doc-container {
+  --rp-nav-height: 0px;
+}

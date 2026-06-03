@@ -1,0 +1,71 @@
+/**
+ * CiderpressNavSearch — pill-shaped trigger that opens Rspress's
+ * search modal via a synthetic Cmd+K event.
+ *
+ * Theme-author API:
+ *   --cp-nav-search-bg              background colour
+ *   --cp-nav-search-border          border colour (idle)
+ *   --cp-nav-search-border-hover    border colour on hover
+ *   --cp-nav-search-color           text colour
+ *   --cp-nav-search-width           total button width (default 200px)
+ *   --cp-nav-search-radius          pill radius (default 999px)
+ *   --cp-nav-search-padding         horizontal padding (default 12px)
+ */
+.cp-nav-search {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: var(--cp-nav-search-width, 200px);
+  height: 32px;
+  padding: 0 var(--cp-nav-search-padding, 12px);
+  background: var(--cp-nav-search-bg, var(--cp-c-bg-soft));
+  border: 1px solid var(--cp-nav-search-border, var(--cp-c-border));
+  border-radius: var(--cp-nav-search-radius, 8px);
+  color: var(--cp-nav-search-color, var(--cp-c-text-3));
+  font-family: var(--cp-font-family-base);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.cp-nav-search:hover {
+  border-color: var(--cp-nav-search-border-hover, var(--cp-c-brand-1));
+  color: var(--cp-c-text-1);
+}
+
+.cp-nav-search__icon {
+  flex-shrink: 0;
+  color: var(--cp-c-text-3);
+}
+
+.cp-nav-search__label {
+  flex: 1 1 auto;
+  text-align: left;
+}
+
+.cp-nav-search__hotkey {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+  padding: 1px 5px;
+  background: var(--cp-c-bg-elv, rgba(255, 255, 255, 0.08));
+  border: 1px solid var(--cp-c-border);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 11px;
+  line-height: 1.2;
+  color: var(--cp-c-text-3);
+}
+
+@media (max-width: 640px) {
+  .cp-nav-search__label,
+  .cp-nav-search__hotkey {
+    display: none;
+  }
+  .cp-nav-search {
+    width: auto;
+    padding: 0 10px;
+  }
+}
