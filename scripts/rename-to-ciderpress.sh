@@ -38,8 +38,10 @@ run() {
 # --zp-             -> --cp-            (CSS custom properties)
 # zp-               -> cp-              (CSS class prefixes)
 
-# Pattern used to grep target files.
-TARGETS='@zpress/|Zpress|ZPRESS_|joggrdocs/|--zp-|zp-'
+# Pattern used to grep target files. Includes bare lowercase `zpress`
+# (case-sensitive) to catch files like .gitignore that mention .zpress/
+# without any other token.
+TARGETS='zpress|Zpress|ZPRESS_|joggrdocs/|--zp-|zp-'
 
 # ----------------------------------------------------------------------
 # 1. Build the file list — tracked files, text-relevant types.
@@ -50,10 +52,13 @@ ALL_TRACKED=$(mktemp)
 TARGET_FILES=$(mktemp)
 trap "rm -f $ALL_TRACKED $TARGET_FILES" EXIT
 
-# All tracked files except binaries and lockfile.
+# All tracked files except binaries, lockfile, and this script itself
+# (it contains the patterns it greps for; running sed on itself destroys
+# the transforms).
 git ls-files \
   | grep -vE '\.(png|jpg|jpeg|gif|webp|ico|woff|woff2|ttf|otf|eot|vsix|tgz|zip|mp4|mov|webm|pdf)$' \
   | grep -vE '^pnpm-lock\.yaml$' \
+  | grep -vE '^scripts/rename-to-ciderpress\.sh$' \
   > "$ALL_TRACKED"
 
 # Filter to files actually containing a target token.
@@ -178,6 +183,7 @@ log "Verifying tracked files for residual references..."
 
 RESIDUAL=$(git ls-files \
   | grep -vE '^pnpm-lock\.yaml$' \
+  | grep -vE '^scripts/rename-to-ciderpress\.sh$' \
   | xargs rg -l "$TARGETS" --no-messages 2>/dev/null || true)
 REMAINING=$(printf '%s' "$RESIDUAL" | grep -c . || true)
 
