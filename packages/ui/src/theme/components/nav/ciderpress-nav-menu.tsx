@@ -2,6 +2,7 @@ import { useLocation } from '@rspress/core/runtime'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { Icon } from '../shared/icon.tsx'
 
 import './ciderpress-nav-menu.css'
@@ -210,7 +211,7 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
 
       <nav ref={containerRef} className="cp-nav-menu" aria-label="Primary">
         {visible.map((item) => (
-          <a
+          <RouteLink
             key={item.link}
             href={item.link}
             className={
@@ -220,7 +221,7 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
             }
           >
             {item.text}
-          </a>
+          </RouteLink>
         ))}
         {hasOverflow ? (
           <div ref={overflowRef} className="cp-nav-menu__overflow">
@@ -238,7 +239,7 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
               <ul className="cp-nav-menu__overflow-popover" role="menu">
                 {overflow.map((item) => (
                   <li key={item.link} role="none">
-                    <a
+                    <RouteLink
                       href={item.link}
                       role="menuitem"
                       className={
@@ -249,7 +250,7 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
                       onClick={() => setOverflowOpen(false)}
                     >
                       {item.text}
-                    </a>
+                    </RouteLink>
                   </li>
                 ))}
               </ul>

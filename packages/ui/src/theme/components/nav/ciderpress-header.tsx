@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { CiderpressLogo } from '../shared/ciderpress-logo'
 import { SidebarToggle } from '../sidebar/sidebar-toggle'
 import { CiderpressNavHamburger } from './ciderpress-nav-hamburger'
@@ -71,9 +72,9 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
           socialLinks={props.socialLinks}
           topbarCta={props.topbarCta}
         />
-        <a href="/" className="cp-header-logo" aria-label="Home">
+        <RouteLink href="/" className="cp-header-logo" aria-label="Home">
           <CiderpressLogo />
-        </a>
+        </RouteLink>
         {props.isHome ? null : <SidebarToggle />}
 
         {/* Right cluster wrapper. Grows from a zero basis so its width

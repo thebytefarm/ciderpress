@@ -4,6 +4,8 @@ import { match, P } from 'massaman/match'
 import { useEffect, useLayoutEffect } from 'react'
 import type React from 'react'
 
+import { syncThemeFavicon } from '../lib/theme-favicon.ts'
+
 declare const __CIDERPRESS_THEME_NAME__: string
 declare const __CIDERPRESS_DEFAULT_VARIANT__: string
 declare const __CIDERPRESS_THEME_COLORS__: string
@@ -200,6 +202,13 @@ export function ThemeProvider(): React.ReactElement | null {
       applyColorOverrides(html, darkColors)
     }
 
+    // 5b. Sync the document favicon with the active theme's brand colour.
+    //     Browsers cache static icon assets and ignore CSS, so the only
+    //     way to keep the tab mark in lockstep with the chosen theme is
+    //     to swap `<link rel="icon">` to a data-URI SVG carrying the
+    //     resolved `--cp-c-brand-1`.
+    syncThemeFavicon(html)
+
     // 6. Observe `.rp-dark` class changes so Rspress's built-in dark
     //    toggle stays the single source of truth for variant flips. The
     //    new variant must be present in the active theme's supported
@@ -245,6 +254,10 @@ export function ThemeProvider(): React.ReactElement | null {
       if (nextVariant === 'dark' && hasDarkColors) {
         applyColorOverrides(html, darkColors)
       }
+      // Re-sync the favicon — brand colour is constant across variants for
+      // built-in themes, but surface overrides on the dark variant can
+      // affect the chip background colour we bake into the SVG.
+      syncThemeFavicon(html)
     })
     observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 

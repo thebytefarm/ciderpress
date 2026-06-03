@@ -1,3 +1,5 @@
+import { countBy } from 'massaman/array'
+import { identity } from 'massaman/function'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 import { useMemo } from 'react'
@@ -76,20 +78,15 @@ export function OpenAPIOverview({ spec, markdown }: OpenAPIOverviewProps): React
 function collectTags(spec: Record<string, unknown>): readonly TagInfo[] {
   const paths = (spec['paths'] ?? {}) as Record<string, Record<string, unknown>>
 
-  const tagMap = Object.entries(paths).reduce<Record<string, number>>(
-    (pathAcc, [_pathStr, pathItem]) =>
-      HTTP_METHODS.filter((method) => pathItem[method] !== undefined).reduce<
-        Record<string, number>
-      >((methodAcc, method) => {
-        const operation = pathItem[method] as Record<string, unknown>
-        const tags = (operation['tags'] ?? ['default']) as readonly string[]
-        return tags.reduce<Record<string, number>>(
-          (tagAcc, tag) => Object.assign(tagAcc, { [tag]: (tagAcc[tag] ?? 0) + 1 }),
-          methodAcc
-        )
-      }, pathAcc),
-    {}
+  const allTags = Object.values(paths).flatMap((pathItem) =>
+    HTTP_METHODS.filter((method) => pathItem[method] !== undefined).flatMap((method) => {
+      const operation = pathItem[method] as Record<string, unknown>
+      const tags = (operation['tags'] ?? ['default']) as readonly string[]
+      return tags
+    })
   )
+
+  const tagMap = countBy(allTags, identity)
 
   const specTags = (spec['tags'] ?? []) as readonly Record<string, unknown>[]
   const specTagMap = Object.fromEntries(

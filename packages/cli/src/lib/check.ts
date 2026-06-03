@@ -13,6 +13,8 @@ import { configError } from '@ciderpress/config'
 import type { ConfigError, ConfigWarning, CiderpressConfig } from '@ciderpress/config'
 import type { Log } from '@kidd-cli/core'
 import { toError } from 'massaman/conversion'
+import { sumBy } from 'massaman/math'
+import { isString } from 'massaman/predicate'
 
 import type { Paths } from './paths.ts'
 import { buildSiteForCheck } from './rspress.ts'
@@ -167,7 +169,7 @@ export function presentResults(params: PresentResultsParams): boolean {
   } else if (buildResult.status === 'error') {
     logger.error(`Build failed: ${buildResult.message}`)
   } else {
-    const totalLinks = buildResult.deadlinks.reduce((sum, info) => sum + info.links.length, 0)
+    const totalLinks = sumBy(buildResult.deadlinks, (info) => info.links.length)
     logger.error(`Found ${totalLinks} broken link(s):`)
     const block = buildResult.deadlinks.map(formatDeadlinkGroup).join('\n')
     logger.message(block)
@@ -216,7 +218,7 @@ function stripAnsi(text: string): string {
  * @returns UTF-8 string representation
  */
 function chunkToString(chunk: Uint8Array | string): string {
-  if (typeof chunk === 'string') {
+  if (isString(chunk)) {
     return chunk
   }
   return Buffer.from(chunk).toString('utf8')

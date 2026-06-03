@@ -5,6 +5,7 @@ import type { Section, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
+import { isNotNil } from 'massaman/predicate'
 
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
@@ -375,7 +376,7 @@ function resolveSectionLink(
   subPrefix: string,
   entryFile: string
 ): string | undefined {
-  if (entryFilePath !== null && entryFilePath !== undefined) {
+  if (isNotNil(entryFilePath)) {
     return `${subPrefix}/${entryFile}`
   }
   return undefined

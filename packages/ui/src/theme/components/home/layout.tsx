@@ -142,7 +142,7 @@ function ConfigPreview(): React.ReactElement {
       {' },\n'}
       {'  ],\n'}
       {'  theme: { name: '}
-      <span className="tok-str">'midnight'</span>
+      <span className="tok-str">'honeycrisp'</span>
       {' },\n'}
       {'})'}
     </pre>

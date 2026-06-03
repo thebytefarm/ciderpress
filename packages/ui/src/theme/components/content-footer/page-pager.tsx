@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './page-pager.css'
@@ -49,13 +50,13 @@ export function PagePager(props: PagePagerProps): React.ReactElement | null {
               return <span className="cp-pager__placeholder" />
             }
             return (
-              <a className="cp-pager__link cp-pager__link--prev" href={href}>
+              <RouteLink className="cp-pager__link cp-pager__link--prev" href={href}>
                 <span className="cp-pager__label">
                   <Chev direction="left" />
                   Previous
                 </span>
                 <span className="cp-pager__title">{p.title}</span>
-              </a>
+              </RouteLink>
             )
           })}
         {match(next)
@@ -66,13 +67,13 @@ export function PagePager(props: PagePagerProps): React.ReactElement | null {
               return <span className="cp-pager__placeholder" />
             }
             return (
-              <a className="cp-pager__link cp-pager__link--next" href={href}>
+              <RouteLink className="cp-pager__link cp-pager__link--next" href={href}>
                 <span className="cp-pager__label">
                   Next
                   <Chev direction="right" />
                 </span>
                 <span className="cp-pager__title">{n.title}</span>
-              </a>
+              </RouteLink>
             )
           })}
       </nav>

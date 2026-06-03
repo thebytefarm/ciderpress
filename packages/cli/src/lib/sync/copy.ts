@@ -5,6 +5,7 @@ import path from 'node:path'
 import type { Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match } from 'massaman/match'
+import { isEmpty, isNil, isNotNil } from 'massaman/predicate'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
 import { rewriteImages } from './images.ts'
@@ -62,20 +63,20 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
 
   // Store source as repo-relative path (not machine-local absolute path)
   const relativeSource = (() => {
-    if (page.source !== null && page.source !== undefined) {
+    if (isNotNil(page.source)) {
       return path.relative(ctx.repoRoot, page.source)
     }
   })()
 
   // Incremental: skip write if content unchanged
   const prev = (() => {
-    if (ctx.previousManifest !== null && ctx.previousManifest !== undefined) {
+    if (isNotNil(ctx.previousManifest)) {
       return ctx.previousManifest.files[page.outputPath]
     }
   })()
 
   async function resolveSourceMtime(): Promise<number | undefined> {
-    if (page.source !== null && page.source !== undefined) {
+    if (isNotNil(page.source)) {
       const stat = await fs.stat(page.source)
       return stat.mtimeMs
     }
@@ -137,17 +138,17 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
   if (ctx.skipMtimeOptimization === true) {
     return null
   }
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return null
   }
-  if (ctx.previousManifest === null || ctx.previousManifest === undefined) {
+  if (isNil(ctx.previousManifest)) {
     return null
   }
   const prev = ctx.previousManifest.files[page.outputPath]
-  if (prev === null || prev === undefined) {
+  if (isNil(prev)) {
     return null
   }
-  if (prev.sourceMtime === null || prev.sourceMtime === undefined) {
+  if (isNil(prev.sourceMtime)) {
     return null
   }
   const stat = await fs.stat(page.source).catch(() => null)
@@ -158,7 +159,7 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
     return null
   }
   const fmHash = hashFrontmatter(page.frontmatter)
-  if (prev.frontmatterHash === null || prev.frontmatterHash === undefined) {
+  if (isNil(prev.frontmatterHash)) {
     return null
   }
   if (fmHash !== prev.frontmatterHash) {
@@ -178,10 +179,10 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
  * @returns Content with rewritten links, or original content if no source map
  */
 function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): string {
-  if (ctx.sourceMap === null || ctx.sourceMap === undefined) {
+  if (isNil(ctx.sourceMap)) {
     return raw
   }
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return raw
   }
   const sourcePath = path.relative(ctx.repoRoot, page.source)
@@ -204,7 +205,7 @@ function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): stri
  * @returns Content with rewritten image paths
  */
 function rewriteSourceImages(content: string, page: PageData, ctx: SyncContext): Promise<string> {
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return Promise.resolve(content)
   }
   const sourcePath = path.relative(ctx.repoRoot, page.source)
@@ -288,7 +289,7 @@ function warnMdxExports(content: string, outputPath: string): void {
  * @returns Markdown string with merged frontmatter
  */
 function injectFrontmatter(raw: string, fm: Frontmatter): string {
-  if (Object.keys(fm).length === 0) {
+  if (isEmpty(fm)) {
     return raw
   }
 

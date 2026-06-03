@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { safeUrl } from '../../lib/safe-url.ts'
 import { Icon } from '../shared/icon.tsx'
 
 import './ciderpress-nav-social-links.css'
@@ -48,12 +49,25 @@ export function CiderpressNavSocialLinks(
     return null
   }
 
+  const safeLinks = props.links
+    .map((link) => ({ link, href: safeUrl(link.content) }))
+    .filter((entry): entry is { readonly link: CiderpressSocialLink; readonly href: string } => {
+      if (entry.href === null) {
+        return false
+      }
+      return entry.href.length > 0
+    })
+
+  if (safeLinks.length === 0) {
+    return null
+  }
+
   return (
     <div className="cp-nav-social">
-      {props.links.map((link) => (
+      {safeLinks.map(({ link, href }) => (
         <a
           key={link.content}
-          href={link.content}
+          href={href}
           target="_blank"
           rel="noopener noreferrer"
           className="cp-nav-social__item"

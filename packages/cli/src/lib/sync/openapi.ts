@@ -13,6 +13,7 @@ import SwaggerParser from '@apidevtools/swagger-parser'
 import type { OpenAPIConfig, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 import { capitalize } from 'massaman/string'
 
 import { renderOperationMarkdown, renderOverviewMarkdown } from './openapi-markdown.ts'
@@ -191,7 +192,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     | Record<string, Record<string, unknown>>
     | undefined
 
-  if (paths === null || paths === undefined) {
+  if (isNil(paths)) {
     return { sidebar: [], pages: [], specMtimes }
   }
 
@@ -259,10 +260,7 @@ function collectWorkspaceConfigs(config: CiderpressConfig): readonly ConfigEntry
   const allWorkspaces = collectAllWorkspaceItems(config)
 
   return allWorkspaces
-    .filter(
-      (ws): ws is Workspace & { readonly openapi: OpenAPIConfig } =>
-        ws.openapi !== null && ws.openapi !== undefined
-    )
+    .filter((ws): ws is Workspace & { readonly openapi: OpenAPIConfig } => isNotNil(ws.openapi))
     .map((ws) => ({ config: ws.openapi, rootLevel: false }))
 }
 
@@ -277,21 +275,19 @@ function extractOperations(
   paths: Record<string, Record<string, unknown>>
 ): readonly OperationInfo[] {
   return Object.entries(paths).flatMap(([pathStr, methods]) =>
-    HTTP_METHODS.filter((method) => methods[method] !== null && methods[method] !== undefined).map(
-      (method) => {
-        const op = methods[method] as Record<string, unknown>
-        const summary = match(op.summary)
-          .with(P.string, (s) => s)
-          .otherwise(() => `${method.toUpperCase()} ${pathStr}`)
-        const operationId = match(op.operationId)
-          .with(P.string, (id) => id)
-          .otherwise(() => `${method}-${slugify(pathStr)}`)
-        const tags = match(op.tags)
-          .with(P.array(P.string), (t) => t)
-          .otherwise(() => ['default'])
-        return { method, path: pathStr, operationId, summary, tags }
-      }
-    )
+    HTTP_METHODS.filter((method) => isNotNil(methods[method])).map((method) => {
+      const op = methods[method] as Record<string, unknown>
+      const summary = match(op.summary)
+        .with(P.string, (s) => s)
+        .otherwise(() => `${method.toUpperCase()} ${pathStr}`)
+      const operationId = match(op.operationId)
+        .with(P.string, (id) => id)
+        .otherwise(() => `${method}-${slugify(pathStr)}`)
+      const tags = match(op.tags)
+        .with(P.array(P.string), (t) => t)
+        .otherwise(() => ['default'])
+      return { method, path: pathStr, operationId, summary, tags }
+    })
   )
 }
 

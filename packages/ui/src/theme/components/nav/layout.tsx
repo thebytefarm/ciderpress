@@ -3,6 +3,7 @@ import { useFrontmatter, useSite } from '@rspress/core/runtime'
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
 import { match, P } from 'massaman/match'
 import type React from 'react'
+import { useEffect } from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { useNavItems } from '../../hooks/use-nav-items'
@@ -37,6 +38,18 @@ import { FloatingBranchIndicator } from './floating-branch-indicator'
  * @returns React element with the custom layout
  */
 export function Layout(): React.ReactElement {
+  // Rspress's `.rp-nav` is visually hidden via `ciderpress-header.css`
+  // but stays in the a11y tree, producing duplicate `banner` landmarks
+  // alongside our `<CiderpressHeader>`. Mark it aria-hidden after mount
+  // so screen readers ignore it. The element lives for the layout's
+  // lifetime, so no cleanup is required.
+  useEffect(() => {
+    const rpNav = document.querySelector('.rp-nav')
+    if (rpNav !== null) {
+      rpNav.setAttribute('aria-hidden', 'true')
+    }
+  }, [])
+
   const { sidebarAbove, sidebarBelow, site } = useCiderpress()
   const { site: rspressSite } = useSite()
   const configNavItems = readNavItems(rspressSite)

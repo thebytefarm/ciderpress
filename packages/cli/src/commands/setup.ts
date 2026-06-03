@@ -85,6 +85,11 @@ function extractGitRepoName(cwd: string): string | null {
   if (!match) {
     return null
   }
+  // Trailing-slash remotes (e.g. `https://github.com/org/`) produce an
+  // empty capture; treat that as a miss so we fall back to the directory name.
+  if (!match[1]) {
+    return null
+  }
 
   return match[1]
 }

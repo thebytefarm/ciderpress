@@ -10,7 +10,10 @@ import type { CiderpressSocialLink } from '../components/nav/ciderpress-nav-soci
  */
 export function readSocialLinks(site: unknown): readonly CiderpressSocialLink[] {
   const themeConfig = (site as { readonly themeConfig?: unknown }).themeConfig
-  const candidate = (themeConfig as { readonly socialLinks?: unknown } | undefined)?.socialLinks
+  if (themeConfig === undefined || themeConfig === null) {
+    return []
+  }
+  const candidate = (themeConfig as { readonly socialLinks?: unknown }).socialLinks
   if (!Array.isArray(candidate)) {
     return []
   }

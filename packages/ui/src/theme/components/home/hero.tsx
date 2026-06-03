@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './hero.css'
@@ -107,8 +108,8 @@ function renderAction(action: HeroAction, index: number): React.ReactElement | n
     .otherwise(() => 'cp-hero__btn')
 
   return (
-    <a key={`${href}:${index}`} href={href} className={className}>
+    <RouteLink key={`${href}:${index}`} href={href} className={className}>
       {action.text}
-    </a>
+    </RouteLink>
   )
 }

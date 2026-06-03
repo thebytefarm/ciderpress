@@ -118,8 +118,13 @@ export function createWatcher(params: {
           const shouldReload = pendingReloadConfig
           pendingReloadConfig = null
           // Intentionally not awaited — queues the next sync cycle without
-          // blocking the finally block. Errors are caught by triggerSync's own try/catch.
-          triggerSync(shouldReload)
+          // blocking the finally block. Errors are caught by triggerSync's
+          // own try/catch; the extra .catch here defends against rejections
+          // that escape (e.g. synchronous throws before the inner try).
+          // oxlint-disable-next-line promise/prefer-await-to-callbacks -- awaiting would block the finally
+          triggerSync(shouldReload).catch((error: unknown) => {
+            callbacks.onError(`Sync error: ${toError(error).message}`)
+          })
         }
       }
     }

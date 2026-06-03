@@ -11,6 +11,7 @@ import { join } from 'node:path'
 
 import { Liquid } from 'liquidjs'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 import {
   extractBodyExample,
@@ -216,7 +217,7 @@ function flattenRequestBody(requestBody: Record<string, unknown> | undefined):
   const description = requestBody['description'] as string | undefined
   const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
 
-  if (content === null || content === undefined) {
+  if (isNil(content)) {
     return { description, contentType: 'application/json', schema: null, example: null }
   }
 
@@ -493,7 +494,7 @@ function extractParamType(param: Record<string, unknown>): string {
 function extractResponseSchema(response: Record<string, unknown>): Record<string, unknown> | null {
   // OpenAPI 3.x: response.content[mediaType].schema
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
-  if (content !== null && content !== undefined) {
+  if (isNotNil(content)) {
     const entries = Object.entries(content)
     if (entries.length > 0) {
       const [[, mediaType]] = entries

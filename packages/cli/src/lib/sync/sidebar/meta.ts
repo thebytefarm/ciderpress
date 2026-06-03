@@ -15,6 +15,8 @@
 
 import { basename, dirname, extname } from 'node:path'
 
+import { isNotNil, isString } from 'massaman/predicate'
+
 import type { ResolvedEntry } from '../types.ts'
 
 /**
@@ -437,7 +439,7 @@ function resolveSubDirPath(dirPath: string, name: string): string {
  * @returns Name string, or null for non-deduplicable items
  */
 function extractItemName(item: MetaItem): string | null {
-  if (typeof item === 'string') {
+  if (isString(item)) {
     return item
   }
   if ('name' in item) {
@@ -454,7 +456,7 @@ function extractItemName(item: MetaItem): string | null {
  * @returns True when the entry has a non-empty items array
  */
 function hasChildren(entry: ResolvedEntry): boolean {
-  return entry.items !== undefined && entry.items !== null && entry.items.length > 0
+  return isNotNil(entry.items) && entry.items.length > 0
 }
 
 /**

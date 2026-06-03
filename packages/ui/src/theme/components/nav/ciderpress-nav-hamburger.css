@@ -39,26 +39,32 @@
 }
 
 /* ── Drawer ─────────────────────────────────────────────────────── */
+/*
+ * `.cp-nav-drawer-root` is the react-aria-components <ModalOverlay>
+ * (acts as the backdrop). `.cp-nav-drawer-modal` is the <Modal> wrapper.
+ * `.cp-nav-drawer` is the <Dialog> — the focus-trapped panel.
+ */
 .cp-nav-drawer-root {
   position: fixed;
   inset: 0;
   z-index: 100;
-}
-
-.cp-nav-drawer-backdrop {
-  position: absolute;
-  inset: 0;
   background: var(--cp-nav-drawer-backdrop, rgba(0, 0, 0, 0.55));
   backdrop-filter: blur(4px);
   animation: cp-nav-drawer-fade-in 0.18s ease-out forwards;
 }
 
-.cp-nav-drawer {
+.cp-nav-drawer-modal {
   position: absolute;
   top: 0;
   left: 0;
   height: 100vh;
   width: min(var(--cp-nav-drawer-width, 320px), 100vw);
+}
+
+.cp-nav-drawer {
+  outline: none;
+  height: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   background: var(--cp-nav-drawer-bg, var(--cp-c-bg));

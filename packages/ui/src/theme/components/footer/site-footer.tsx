@@ -4,9 +4,11 @@ import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { readSocialLinks } from '../../lib/read-social-links'
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 import { CiderpressNavSocialLinks } from '../nav/ciderpress-nav-social-links'
 import { ThemeSwitcher } from '../nav/theme-switcher'
+import { CiderpressMark } from '../shared/ciderpress-mark'
 
 import './site-footer.css'
 
@@ -54,7 +56,7 @@ export function SiteFooter(): React.ReactElement | null {
             <div className="cp-site-footer__brand-mark">
               {match(brandMark)
                 .with(undefined, () => (
-                  <img src="/icon.svg" alt="" className="cp-site-footer__brand-icon" />
+                  <CiderpressMark className="cp-site-footer__brand-icon" title="" />
                 ))
                 .otherwise((mark) => mark)}
             </div>
@@ -82,7 +84,7 @@ export function SiteFooter(): React.ReactElement | null {
                   }
                   return [
                     <li key={link.text}>
-                      <a href={href}>{link.text}</a>
+                      <RouteLink href={href}>{link.text}</RouteLink>
                     </li>,
                   ]
                 })}

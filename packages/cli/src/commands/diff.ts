@@ -8,6 +8,7 @@ import { uniq } from 'massaman/array'
 import { match } from 'massaman/match'
 import { z } from 'zod'
 
+import { logConfigErrors } from '../lib/log-config-errors.ts'
 import { createPaths } from '../lib/paths.ts'
 
 const CONFIG_GLOBS = [
@@ -68,11 +69,7 @@ export default command({
         ctx.log.intro('ciderpress diff')
         ctx.log.error(configErr.message)
         if (configErr.errors && configErr.errors.length > 0) {
-          // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
-          configErr.errors.forEach((err) => {
-            const p = err.path.join('.')
-            ctx.log.error(`  ${p}: ${err.message}`)
-          })
+          logConfigErrors(ctx.log, configErr.errors)
         }
       }
       process.exit(1)

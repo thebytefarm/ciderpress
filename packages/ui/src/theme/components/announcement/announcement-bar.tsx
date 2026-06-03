@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import React, { useCallback, useEffect, useState } from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './announcement-bar.css'
@@ -71,9 +72,9 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
                 return null
               }
               return (
-                <a className="cp-announce__cta" href={href}>
+                <RouteLink className="cp-announce__cta" href={href}>
                   {c.label} →
-                </a>
+                </RouteLink>
               )
             })}
         </span>

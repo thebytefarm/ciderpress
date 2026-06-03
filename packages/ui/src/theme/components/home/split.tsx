@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './split.css'
@@ -93,9 +94,9 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
                 return null
               }
               return (
-                <a className={btnClass(a.theme)} href={href}>
+                <RouteLink className={btnClass(a.theme)} href={href}>
                   {a.text}
-                </a>
+                </RouteLink>
               )
             })}
         </div>

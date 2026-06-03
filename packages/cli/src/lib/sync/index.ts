@@ -6,6 +6,7 @@ import type { Section, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 import { generateAssets } from '../banner/index.ts'
 import type { AssetConfig } from '../banner/types.ts'
@@ -82,9 +83,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Skip asset generation entirely when config hasn't changed
   const assetConfigChanged =
-    previousManifest === null ||
-    previousManifest === undefined ||
-    previousManifest.assetConfigHash !== assetConfigHash
+    isNil(previousManifest) || previousManifest.assetConfigHash !== assetConfigHash
   if (assetConfigChanged) {
     await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
   }
@@ -120,11 +119,12 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   // 1.25 Enrich sections with workspace card metadata from workspaces config
-  const resolved = enrichWorkspaceCards(rawResolved, config)
+  const enriched = enrichWorkspaceCards(rawResolved, config)
 
-  // 1.5 Inject auto-generated landing pages for sections with path but no page
+  // 1.5 Inject auto-generated landing pages for sections with path but no page.
+  // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  injectLandingPages(resolved, allSections, workspaces)
+  const resolved = injectLandingPages(enriched, allSections, workspaces)
 
   // 2. Collect all pages from the tree
   const sectionPages = collectPages(resolved)
@@ -175,9 +175,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Detect structural changes — skip mtime optimization when page count changes
   const skipMtimeOptimization =
-    previousManifest !== null &&
-    previousManifest !== undefined &&
-    allPages.length !== previousManifest.resolvedCount
+    isNotNil(previousManifest) && allPages.length !== previousManifest.resolvedCount
 
   // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
@@ -215,10 +213,22 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     { written: 0, skipped: 0 }
   )
 
-  // 5. Clean stale files
-  const removed = await match(previousManifest)
+  // 5. Clean stale files. `cleanStaleFiles` returns `{ attempted, removed, failed }`
+  // so we can surface per-path failures to the user without aborting the sync.
+  const cleanResult = await match(previousManifest)
     .with(P.nonNullable, async (m) => await cleanStaleFiles(outDir, m, ctx.manifest))
-    .otherwise(() => Promise.resolve(0))
+    .otherwise(() => Promise.resolve({ attempted: 0, removed: 0, failed: [] as const }))
+  const { removed, attempted: cleanAttempted, failed: cleanFailed } = cleanResult
+  if (!quiet && cleanFailed.length > 0) {
+    log.warn(
+      `Failed to remove ${cleanFailed.length} stale file(s); ` +
+        `${removed}/${cleanAttempted} succeeded`
+    )
+    // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect log per failure
+    cleanFailed.forEach((f) => {
+      log.warn(`  ${f.path}: ${f.reason}`)
+    })
+  }
 
   // 6. Generate nav + write Rspress-native _meta.json / _nav.json
   const nav = generateNav(config, resolved)
@@ -355,7 +365,7 @@ async function copyAll(src: string, dest: string): Promise<void> {
  * @returns Resolved boolean value
  */
 function resolveQuiet(quiet: boolean | undefined | null): boolean {
-  if (quiet !== undefined && quiet !== null) {
+  if (isNotNil(quiet)) {
     return quiet
   }
   return false

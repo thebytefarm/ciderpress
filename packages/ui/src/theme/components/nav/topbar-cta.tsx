@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './topbar-cta.css'
@@ -31,8 +32,8 @@ export function TopbarCTA(props: TopbarCTAProps): React.ReactElement | null {
     return null
   }
   return (
-    <a className="cp-topbar-cta" href={href}>
+    <RouteLink className="cp-topbar-cta" href={href}>
       {props.text}
-    </a>
+    </RouteLink>
   )
 }

@@ -293,7 +293,7 @@ export function slugify(text: string): string {
  * @returns Array of warnings (empty if no issues)
  */
 function checkItemInclude(item: Workspace): readonly ConfigWarning[] {
-  if (item.include === null || item.include === undefined) {
+  if (isNil(item.include)) {
     return []
   }
   const basePath = item.path.replace(/^\//, '')

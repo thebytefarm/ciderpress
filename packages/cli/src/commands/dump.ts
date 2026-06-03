@@ -1,6 +1,7 @@
 import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
 
+import { logConfigErrors } from '../lib/log-config-errors.ts'
 import { createPaths } from '../lib/paths.ts'
 import { loadManifest } from '../lib/sync/manifest.ts'
 import { resolveEntries } from '../lib/sync/resolve/index.ts'
@@ -32,10 +33,7 @@ export default command({
     if (configErr) {
       ctx.log.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
-        configErr.errors.map((err) => {
-          const path = err.path.join('.')
-          return ctx.log.error(`  ${path}: ${err.message}`)
-        })
+        logConfigErrors(ctx.log, configErr.errors)
       }
       process.exit(1)
     }

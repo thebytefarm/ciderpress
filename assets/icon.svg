@@ -2,20 +2,22 @@
   <defs>
     <style>
       .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .brand { fill: #f59e0b; }
+      .brand { fill: #dc2626; }
     </style>
   </defs>
 
-  <!-- Rounded square background (terminal color) -->
-  <rect width="512" height="512" rx="32" ry="32" fill="#1e1e2e" />
+  <!-- Rounded square background (terminal canvas) -->
+  <rect width="512" height="512" rx="32" ry="32" fill="#0a0a0a" />
 
-  <!-- C from the ciderpress ASCII art logo, centered -->
+  <!-- "C" from the ciderpress ASCII art logo, centred.
+       The six rows span y=-160..160 (320px tall, midpoint at 0), so the
+       block sits exactly on the (256, 256) translation. -->
   <g transform="translate(256, 256)" text-anchor="middle">
-    <text class="text brand" font-size="52" y="-100" xml:space="preserve"> ██████╗</text>
-    <text class="text brand" font-size="52" y="-36" xml:space="preserve">██╔════╝</text>
-    <text class="text brand" font-size="52" y="28" xml:space="preserve">██║     </text>
-    <text class="text brand" font-size="52" y="92" xml:space="preserve">██║     </text>
-    <text class="text brand" font-size="52" y="156" xml:space="preserve">╚██████╗</text>
-    <text class="text brand" font-size="52" y="220" xml:space="preserve"> ╚═════╝</text>
+    <text class="text brand" font-size="52" y="-140" xml:space="preserve"> ██████╗</text>
+    <text class="text brand" font-size="52" y="-76" xml:space="preserve">██╔════╝</text>
+    <text class="text brand" font-size="52" y="-12" xml:space="preserve">██║     </text>
+    <text class="text brand" font-size="52" y="52" xml:space="preserve">██║     </text>
+    <text class="text brand" font-size="52" y="116" xml:space="preserve">╚██████╗</text>
+    <text class="text brand" font-size="52" y="180" xml:space="preserve"> ╚═════╝</text>
   </g>
 </svg>

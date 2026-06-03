@@ -6,6 +6,7 @@ import type { Section, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil, isString } from 'massaman/predicate'
 
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
@@ -76,7 +77,7 @@ function resolveSection(
   }
 
   // Virtual page (inline/generated content)
-  if (section.content !== undefined && section.content !== null && section.path) {
+  if (isNotNil(section.content) && section.path) {
     return Promise.resolve(resolveVirtualPage(section, mergedFm))
   }
 
@@ -99,7 +100,7 @@ function resolveFilePage(
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
   const { include } = section
-  if (include === null || include === undefined || typeof include !== 'string') {
+  if (isNil(include) || !isString(include)) {
     return [
       syncError('missing_from', 'resolveFilePage called without single-file section.include'),
       null,
@@ -111,7 +112,7 @@ function resolveFilePage(
     return [syncError('file_not_found', `Source file not found: ${include}`), null]
   }
 
-  if (section.path === null || section.path === undefined) {
+  if (isNil(section.path)) {
     return [
       syncError('missing_link', `resolveFilePage called without section.path for: ${include}`),
       null,
@@ -149,7 +150,7 @@ function resolveVirtualPage(
   section: Section,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  if (section.path === undefined || section.path === null) {
+  if (isNil(section.path)) {
     return [syncError('missing_link', 'resolveVirtualPage called without section.path'), null]
   }
 
@@ -316,7 +317,7 @@ async function resolveGlob(
 ): Promise<ResolvedEntry[]> {
   const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
 
-  if (section.include === null || section.include === undefined) {
+  if (isNil(section.include)) {
     log.error('[ciderpress] resolveGlob called without section.include')
     return []
   }
@@ -433,7 +434,7 @@ function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
   const { result } = entries.reduce<{ seen: Map<string, number>; result: ResolvedEntry[] }>(
     (acc, entry) => {
       // Only dedup by link — entries without links are always unique
-      if (entry.link === null || entry.link === undefined) {
+      if (isNil(entry.link)) {
         return {
           seen: acc.seen,
           result: [...acc.result, entry],

@@ -2,6 +2,7 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 import { Button, OverlayArrow, Tooltip as AriaTooltip, TooltipTrigger } from 'react-aria-components'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 export interface TooltipProps {
@@ -49,9 +50,9 @@ export function Tooltip({ tip, headline, cta, href, children }: TooltipProps): R
         return null
       }
       return (
-        <a className="cp-tooltip__cta" href={safeHref}>
+        <RouteLink className="cp-tooltip__cta" href={safeHref}>
           {label}
-        </a>
+        </RouteLink>
       )
     })
     .otherwise(() => null)

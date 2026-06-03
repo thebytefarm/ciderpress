@@ -4,6 +4,7 @@ import path from 'node:path'
 import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
 import type { Feature, Section, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
+import { isNotNil, isString } from 'massaman/predicate'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
@@ -415,7 +416,7 @@ function findFirstChildLink(section: Section): string | undefined {
  */
 async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
   // Single-file source — read frontmatter description
-  if (typeof section.include === 'string' && !hasGlobChars(section.include)) {
+  if (isString(section.include) && !hasGlobChars(section.include)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.include))
     if (description) {
       return description
@@ -423,11 +424,7 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
   }
 
   // Config-level frontmatter description
-  if (
-    section.frontmatter !== null &&
-    section.frontmatter !== undefined &&
-    section.frontmatter.description
-  ) {
+  if (isNotNil(section.frontmatter) && section.frontmatter.description) {
     return String(section.frontmatter.description)
   }
 

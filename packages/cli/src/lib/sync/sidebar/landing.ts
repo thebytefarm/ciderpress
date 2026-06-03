@@ -3,6 +3,7 @@ import fs from 'node:fs/promises'
 import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
 import type { IconColor } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
+import { isNotNil, isString } from 'massaman/predicate'
 
 import { parse as parseFrontmatter } from '../frontmatter.ts'
 import type { ResolvedEntry } from '../types.ts'
@@ -138,7 +139,7 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
     description,
     tags: card.tags,
     badge: card.badge,
-    hasChildren: entry.items !== null && entry.items !== undefined && entry.items.length > 0,
+    hasChildren: isNotNil(entry.items) && entry.items.length > 0,
   })
 }
 
@@ -183,7 +184,7 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
  */
 async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
   // 1. Source file frontmatter is the primary source of truth
-  if (entry.page !== null && entry.page !== undefined && entry.page.source) {
+  if (isNotNil(entry.page) && entry.page.source) {
     try {
       const desc = await extractDescription(entry.page.source)
       if (desc) {
@@ -294,7 +295,7 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
 function serializeIconProp(
   icon: string | { readonly id: string; readonly color: string }
 ): readonly string[] {
-  if (typeof icon === 'string') {
+  if (isString(icon)) {
     return [`icon="${icon}"`]
   }
   return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
