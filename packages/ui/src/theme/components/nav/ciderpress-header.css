@@ -35,10 +35,21 @@
   overflow: visible;
 }
 
-/* Landing / home pages: match the constrained max-width of the rest of
-   the home content so the header sits inside the same container shell. */
+/* Landing / home pages: align edge-for-edge with `.cp-page-rail` so
+   the header sits inside the same outer frame as the hero. We mirror
+   page-rail's positioning rules (margin gutter under 1248px, centered
+   margin auto above) and use the same `--cp-landing-max-width` token
+   so both move together when a theme overrides the width. */
 .cp-header--landing .cp-header-inner {
-  max-width: var(--cp-header-max-width, 1280px);
+  max-width: var(--cp-landing-max-width, 1200px);
+  margin: 0 var(--cp-frame-gutter);
+  padding: 0;
+}
+
+@media (min-width: 1248px) {
+  .cp-header--landing .cp-header-inner {
+    margin: 0 auto;
+  }
 }
 
 /* Doc pages: span the full viewport, matching Rspress's sidebar + main

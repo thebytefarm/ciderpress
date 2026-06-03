@@ -96,12 +96,11 @@
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
-@media (max-width: 640px) {
+/* Mobile: hide the floating branch indicator entirely. The hamburger
+   drawer surfaces the same chrome, and a corner-anchored chip
+   competes with the on-screen keyboard / browser UI on small viewports. */
+@media (max-width: 768px) {
   .cp-floating-branch {
-    bottom: 12px;
-    right: 12px;
-    height: 32px;
-    width: 32px;
-    border-radius: 16px;
+    display: none;
   }
 }
