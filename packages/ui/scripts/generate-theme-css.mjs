@@ -138,7 +138,9 @@ const runCheck = async () => {
   )
   const stale = results.filter((r) => !r.fresh)
   if (stale.length === 0) {
-    process.stdout.write(`[ciderpress] theme CSS is up to date (${targets.length} file(s) checked)\n`)
+    process.stdout.write(
+      `[ciderpress] theme CSS is up to date (${targets.length} file(s) checked)\n`
+    )
     return
   }
   process.stderr.write(

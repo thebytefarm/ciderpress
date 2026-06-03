@@ -3,10 +3,10 @@
   "version": "1.0.0-rc.0",
   "description": "Configuration loading and validation for ciderpress",
   "keywords": [
+    "ciderpress",
     "config",
     "schema",
-    "validation",
-    "ciderpress"
+    "validation"
   ],
   "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/config#readme",
   "bugs": "https://github.com/thebytefarm/ciderpress/issues",

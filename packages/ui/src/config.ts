@@ -4,7 +4,6 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import type { UserConfig } from '@rspress/core'
 import type {
   BuiltInThemeName,
   HomeConfig,
@@ -22,6 +21,7 @@ import {
   themeToCss,
 } from '@ciderpress/theme'
 import type { ThemeVariant, CiderpressTheme } from '@ciderpress/theme'
+import type { UserConfig } from '@rspress/core'
 import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
@@ -225,7 +225,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           // resolve context. Point the alias at the kit's main entry directly.
           // Uses `import.meta.resolve` (not CJS `require.resolve`) so the
           // package's `"import"` export condition is honored.
-          'ciderpress': fileURLToPath(import.meta.resolve('ciderpress')),
+          ciderpress: fileURLToPath(import.meta.resolve('ciderpress')),
           // `ciderpress/dist/index.mjs` re-exports `CiderpressLogo` from bare
           // `@ciderpress/ui`, and user MDX may also import components directly
           // from `@ciderpress/ui`. Both paths hit the same CJS/ESM exports gap

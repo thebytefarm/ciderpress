@@ -302,7 +302,10 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
         return
       }
       const target = e.target as HTMLElement
-      if (target.closest('.ciderpress-mermaid-controls') || target.closest('.ciderpress-mermaid-footer')) {
+      if (
+        target.closest('.ciderpress-mermaid-controls') ||
+        target.closest('.ciderpress-mermaid-footer')
+      ) {
         return
       }
 
@@ -437,7 +440,12 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
           <button type="button" className="ciderpress-mermaid-btn" onClick={zoomIn} title="Zoom in">
             +
           </button>
-          <button type="button" className="ciderpress-mermaid-btn" onClick={zoomOut} title="Zoom out">
+          <button
+            type="button"
+            className="ciderpress-mermaid-btn"
+            onClick={zoomOut}
+            title="Zoom out"
+          >
             −
           </button>
           <button

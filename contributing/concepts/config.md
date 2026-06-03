@@ -8,8 +8,8 @@ The config file (`ciderpress.config.ts`) defines the information architecture --
 
 ## Supported Formats
 
-| Format     | Files                                           |
-| ---------- | ----------------------------------------------- |
+| Format     | Files                                               |
+| ---------- | --------------------------------------------------- |
 | TypeScript | `ciderpress.config.ts`, `.mts`, `.cts`              |
 | JavaScript | `ciderpress.config.js`, `.mjs`, `.cjs`              |
 | Data       | `ciderpress.config.json`, `.jsonc`, `.yml`, `.yaml` |

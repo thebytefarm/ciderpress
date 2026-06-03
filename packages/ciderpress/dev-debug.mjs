@@ -1,8 +1,8 @@
 import { resolve } from 'node:path'
 
-import { dev } from '@rspress/core'
 import { loadConfig } from '@ciderpress/config/loader'
 import { createRspressConfig } from '@ciderpress/ui/node'
+import { dev } from '@rspress/core'
 
 const cwd = resolve(import.meta.dirname, '..', '..')
 const [configErr, config] = await loadConfig(cwd)

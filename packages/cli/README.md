@@ -26,7 +26,7 @@ npm install @ciderpress/cli
 | `sync`     | Sync config to documentation output |
 | `clean`    | Remove generated output             |
 | `dump`     | Dump resolved config for debugging  |
-| `setup`    | Scaffold a new ciderpress project       |
+| `setup`    | Scaffold a new ciderpress project   |
 | `generate` | Generate assets (banners, icons)    |
 
 ## Usage

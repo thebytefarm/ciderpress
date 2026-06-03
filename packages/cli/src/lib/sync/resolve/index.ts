@@ -1,9 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
-import { log } from '@clack/prompts'
 import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@ciderpress/config'
 import type { Section, Frontmatter } from '@ciderpress/config'
+import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 

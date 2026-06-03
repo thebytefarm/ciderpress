@@ -74,10 +74,10 @@ This copies and processes your source markdown into the `.ciderpress/content/` b
 
 ## Commands
 
-| Command           | Purpose                                           |
-| ----------------- | ------------------------------------------------- |
+| Command               | Purpose                                           |
+| --------------------- | ------------------------------------------------- |
 | `ciderpress setup`    | Create a starter config and generate SVG assets   |
-| `ciderpress sync`     | Sync source files into `.ciderpress/content/`         |
+| `ciderpress sync`     | Sync source files into `.ciderpress/content/`     |
 | `ciderpress dev`      | Start the dev server with live reload             |
 | `ciderpress build`    | Build the static site for production              |
 | `ciderpress serve`    | Preview the production build locally              |

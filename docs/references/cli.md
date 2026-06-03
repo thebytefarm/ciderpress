@@ -93,8 +93,8 @@ ciderpress clean
 
 Deletes the following directories:
 
-| Directory          | Contents     |
-| ------------------ | ------------ |
+| Directory              | Contents     |
+| ---------------------- | ------------ |
 | `.ciderpress/cache/`   | Build cache  |
 | `.ciderpress/content/` | Synced pages |
 | `.ciderpress/dist/`    | Build output |

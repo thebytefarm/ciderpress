@@ -71,7 +71,12 @@ interface Sidebar extends Disposable {
 /**
  * Fixed view IDs matching the 4 views registered in package.json.
  */
-const VIEW_IDS = ['ciderpress.pages', 'ciderpress.apps', 'ciderpress.packages', 'ciderpress.workspaces'] as const
+const VIEW_IDS = [
+  'ciderpress.pages',
+  'ciderpress.apps',
+  'ciderpress.packages',
+  'ciderpress.workspaces',
+] as const
 
 /**
  * The sidebar.json keys that map to the 3 fixed sections.

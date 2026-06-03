@@ -349,7 +349,8 @@ const ciderpressButtonBrandColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardButtonBrandColors: z.ZodType<CiderpressButtonBrandColors> = ciderpressButtonBrandColorsSchema
+const _guardButtonBrandColors: z.ZodType<CiderpressButtonBrandColors> =
+  ciderpressButtonBrandColorsSchema
 
 const ciderpressButtonColorsSchema = z
   .object({
@@ -731,7 +732,8 @@ export const tokensSchema = z
   .strict()
 
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTokens: z.ZodType<CiderpressTokens> = tokensSchema as unknown as z.ZodType<CiderpressTokens>
+const _guardTokens: z.ZodType<CiderpressTokens> =
+  tokensSchema as unknown as z.ZodType<CiderpressTokens>
 
 // ---------------------------------------------------------------------------
 // Private

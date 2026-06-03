@@ -983,7 +983,9 @@ function pickInputDefaultVariant(
 function filterPresentVariants(
   variants: Record<ThemeVariant, CiderpressTokens | undefined>
 ): ThemeVariantTokens {
-  const entries = (Object.entries(variants) as readonly [ThemeVariant, CiderpressTokens | undefined][])
+  const entries = (
+    Object.entries(variants) as readonly [ThemeVariant, CiderpressTokens | undefined][]
+  )
     .filter(([, t]) => t !== undefined)
     .map(([k, t]) => [k, t as CiderpressTokens] as const)
   return Object.freeze(Object.fromEntries(entries)) as ThemeVariantTokens

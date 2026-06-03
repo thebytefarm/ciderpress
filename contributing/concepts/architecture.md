@@ -21,15 +21,15 @@ packages/
 └── ciderpress/          # ciderpress — public wrapper (re-exports core + ui + cli)
 ```
 
-| Package             | Purpose                                                                 |
-| ------------------- | ----------------------------------------------------------------------- |
+| Package                 | Purpose                                                                 |
+| ----------------------- | ----------------------------------------------------------------------- |
 | `@ciderpress/core`      | Config loading, entry resolution, sync engine, sidebar/nav gen          |
 | `@ciderpress/cli`       | CLI commands: dev, build, serve, check, diff, draft, clean, setup, dump |
 | `@ciderpress/ui`        | Rspress plugin, React theme components, CSS overrides                   |
 | `@ciderpress/config`    | Config schema (Zod), type definitions, c12-based loading                |
 | `@ciderpress/templates` | Liquid template registry for the `draft` command                        |
 | `@ciderpress/theme`     | Theme definitions and schema                                            |
-| `ciderpress`       | Public package: `.` and `./config` entry points + `ciderpress` CLI bin      |
+| `ciderpress`            | Public package: `.` and `./config` entry points + `ciderpress` CLI bin  |
 
 ### `ciderpress` (wrapper)
 
@@ -133,7 +133,7 @@ The sync engine and config system. See [Engine](./engine/overview.md) for pipeli
 | ---------------------------- | --------------------------------------------------------- |
 | `config.ts`                  | Config file discovery and loading via c12                 |
 | `define-config.ts`           | Config validation at the boundary                         |
-| `paths.ts`                   | Path constants for `.ciderpress/` output structure            |
+| `paths.ts`                   | Path constants for `.ciderpress/` output structure        |
 | `sync/index.ts`              | Main sync pipeline orchestrator                           |
 | `sync/errors.ts`             | SyncError and ConfigError definitions                     |
 | `sync/types.ts`              | Sync-specific type definitions                            |

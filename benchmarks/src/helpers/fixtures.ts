@@ -141,7 +141,7 @@ ${sectionConfigs}
         name: 'bench-fixture',
         private: true,
         type: 'module',
-        dependencies: { 'ciderpress': 'workspace:*' },
+        dependencies: { ciderpress: 'workspace:*' },
       },
       null,
       2

@@ -71,13 +71,13 @@ The watcher (`packages/cli/src/lib/watcher.ts`) uses Node.js native `fs.watch` w
 
 ### Trigger Table
 
-| Event                                     | Trigger        | What happens                                                                  |
-| ----------------------------------------- | -------------- | ----------------------------------------------------------------------------- |
-| `.md`/`.mdx` change                       | 150ms debounce | Incremental `sync()` -- unchanged pages skipped via mtime + content hash      |
+| Event                                         | Trigger        | What happens                                                                  |
+| --------------------------------------------- | -------------- | ----------------------------------------------------------------------------- |
+| `.md`/`.mdx` change                           | 150ms debounce | Incremental `sync()` -- unchanged pages skipped via mtime + content hash      |
 | `ciderpress.config.*` change (repo root only) | 150ms debounce | Reload config, full `sync()`, restart Rspress dev server (clears build cache) |
-| OpenAPI spec change (`.yaml`/`.json`)     | --             | Not watched -- restart `dev` or trigger a config change to re-parse           |
-| Non-markdown file change                  | --             | Ignored                                                                       |
-| Files in ignored dirs                     | --             | Dropped silently                                                              |
+| OpenAPI spec change (`.yaml`/`.json`)         | --             | Not watched -- restart `dev` or trigger a config change to re-parse           |
+| Non-markdown file change                      | --             | Ignored                                                                       |
+| Files in ignored dirs                         | --             | Dropped silently                                                              |
 
 ## Concurrency
 

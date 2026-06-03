@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { command } from '@kidd-cli/core'
 import { createRegistry, render, toSlug } from '@ciderpress/templates'
 import type { Template } from '@ciderpress/templates'
+import { command } from '@kidd-cli/core'
 import { match, P } from 'massaman/match'
 import { z } from 'zod'
 

@@ -3,9 +3,9 @@
   "version": "1.0.0-rc.0",
   "description": "Theme types and definitions for ciderpress",
   "keywords": [
+    "ciderpress",
     "theme",
-    "types",
-    "ciderpress"
+    "types"
   ],
   "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/theme#readme",
   "bugs": "https://github.com/thebytefarm/ciderpress/issues",

@@ -11,7 +11,7 @@ Detailed technical descriptions of every ciderpress API surface.
 
 | Page                                            | Description                                                           |
 | ----------------------------------------------- | --------------------------------------------------------------------- |
-| [Configuration](/reference/configuration)       | All config options for `ciderpress.config.ts`                             |
+| [Configuration](/reference/configuration)       | All config options for `ciderpress.config.ts`                         |
 | [CLI Commands](/reference/cli)                  | Available CLI commands and flags                                      |
 | [Frontmatter Fields](/reference/frontmatter)    | Supported frontmatter keys for markdown files                         |
 | [OpenAPI](/reference/openapi)                   | Generate interactive API reference pages from an OpenAPI spec         |

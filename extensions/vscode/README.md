@@ -47,8 +47,8 @@ This extension brings your ciderpress docs into VS Code so you can browse them w
 
 ## Configuration
 
-| Setting                   | Type      | Default | Description                                                    |
-| ------------------------- | --------- | ------- | -------------------------------------------------------------- |
+| Setting                       | Type      | Default | Description                                                    |
+| ----------------------------- | --------- | ------- | -------------------------------------------------------------- |
 | `ciderpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the sidebar is opened. |
 | `ciderpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                       |
 | `ciderpress.theme`            | `string`  | —       | Override the theme (`base`, `midnight`, or `arcade`).          |

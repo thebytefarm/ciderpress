@@ -1,9 +1,9 @@
 import { execFileSync } from 'node:child_process'
 
-import { command } from '@kidd-cli/core'
 import { hasGlobChars, normalizeInclude } from '@ciderpress/config'
 import type { Section, CiderpressConfig, Result } from '@ciderpress/config'
 import { loadConfig } from '@ciderpress/config/loader'
+import { command } from '@kidd-cli/core'
 import { uniq } from 'massaman/array'
 import { match } from 'massaman/match'
 import { z } from 'zod'

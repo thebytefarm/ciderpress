@@ -1,5 +1,5 @@
-import { command } from '@kidd-cli/core'
 import { loadConfig } from '@ciderpress/config/loader'
+import { command } from '@kidd-cli/core'
 
 import { createPaths } from '../lib/paths.ts'
 import { loadManifest } from '../lib/sync/manifest.ts'

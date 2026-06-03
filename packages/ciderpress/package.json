@@ -3,10 +3,10 @@
   "version": "1.0.0-rc.0",
   "description": "Documentation framework powered by Rspress with a config-driven information architecture",
   "keywords": [
+    "ciderpress",
     "docs",
     "documentation",
-    "rspress",
-    "ciderpress"
+    "rspress"
   ],
   "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/ciderpress#readme",
   "bugs": "https://github.com/thebytefarm/ciderpress/issues",

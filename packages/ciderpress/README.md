@@ -68,8 +68,8 @@ npx ciderpress serve     # preview production build
 
 ## Packages
 
-| Package                                                                | Description                          |
-| ---------------------------------------------------------------------- | ------------------------------------ |
+| Package                                                                        | Description                          |
+| ------------------------------------------------------------------------------ | ------------------------------------ |
 | [`@ciderpress/core`](https://www.npmjs.com/package/@ciderpress/core)           | Config loading, sync engine, assets  |
 | [`@ciderpress/cli`](https://www.npmjs.com/package/@ciderpress/cli)             | CLI commands and file watcher        |
 | [`@ciderpress/ui`](https://www.npmjs.com/package/@ciderpress/ui)               | Rspress plugin, theme, and styles    |

@@ -1,5 +1,5 @@
-import { useSite } from '@rspress/core/runtime'
 import type { FooterConfig, HomeConfig, SiteConfig } from '@ciderpress/config'
+import { useSite } from '@rspress/core/runtime'
 
 export interface CiderpressSidebarItem {
   readonly text?: string

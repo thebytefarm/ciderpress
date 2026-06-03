@@ -9,9 +9,9 @@
 
 import path from 'node:path'
 
-import type { Log } from '@kidd-cli/core'
 import { configError } from '@ciderpress/config'
 import type { ConfigError, ConfigWarning, CiderpressConfig } from '@ciderpress/config'
+import type { Log } from '@kidd-cli/core'
 import { toError } from 'massaman/conversion'
 
 import type { Paths } from './paths.ts'

@@ -369,7 +369,11 @@ export default defineConfig({
       subtitle: 'One CLI. Three minutes. Production-ready.',
       actions: [
         { theme: 'brand', text: 'Get started', link: '/getting-started/quick-start' },
-        { theme: 'alt', text: 'Star on GitHub →', link: 'https://github.com/thebytefarm/ciderpress' },
+        {
+          theme: 'alt',
+          text: 'Star on GitHub →',
+          link: 'https://github.com/thebytefarm/ciderpress',
+        },
       ],
     },
   },
@@ -427,7 +431,11 @@ export default defineConfig({
       tags: ['typescript', 'node'],
       path: '/packages/ciderpress',
       items: [
-        { title: 'Overview', path: '/packages/ciderpress', include: 'packages/ciderpress/README.md' },
+        {
+          title: 'Overview',
+          path: '/packages/ciderpress',
+          include: 'packages/ciderpress/README.md',
+        },
         {
           title: 'Changelog',
           path: '/packages/ciderpress/changelog',
@@ -913,7 +921,11 @@ export default defineConfig({
           title: 'ciderpress',
           path: '/packages/ciderpress',
           items: [
-            { title: 'Overview', path: '/packages/ciderpress', include: 'packages/ciderpress/README.md' },
+            {
+              title: 'Overview',
+              path: '/packages/ciderpress',
+              include: 'packages/ciderpress/README.md',
+            },
             {
               title: 'Changelog',
               path: '/packages/ciderpress/changelog',

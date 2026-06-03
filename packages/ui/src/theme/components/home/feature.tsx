@@ -1,5 +1,5 @@
-import { useFrontmatter } from '@rspress/core/runtime'
 import type { HomeGridConfig } from '@ciderpress/config'
+import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 

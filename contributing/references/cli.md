@@ -8,17 +8,17 @@ ciderpress uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) f
 
 ## Commands
 
-| Command | Description                                         |
-| ------- | --------------------------------------------------- |
-| `setup` | Create a starter `ciderpress.config.ts`                 |
-| `dev`   | Sync + Rspress dev server + file watcher            |
-| `build` | Sync + Rspress static build                         |
-| `serve` | Preview a built site from `.ciderpress/dist/`           |
-| `check` | Validate config and check for broken links          |
-| `diff`  | Show changed files in configured source directories |
-| `draft` | Scaffold a new documentation file from a template   |
-| `clean` | Remove `.ciderpress/cache/`, `content/`, and `dist/`    |
-| `dump`  | Resolve the full entry tree and print as JSON       |
+| Command | Description                                          |
+| ------- | ---------------------------------------------------- |
+| `setup` | Create a starter `ciderpress.config.ts`              |
+| `dev`   | Sync + Rspress dev server + file watcher             |
+| `build` | Sync + Rspress static build                          |
+| `serve` | Preview a built site from `.ciderpress/dist/`        |
+| `check` | Validate config and check for broken links           |
+| `diff`  | Show changed files in configured source directories  |
+| `draft` | Scaffold a new documentation file from a template    |
+| `clean` | Remove `.ciderpress/cache/`, `content/`, and `dist/` |
+| `dump`  | Resolve the full entry tree and print as JSON        |
 
 ### `setup`
 
@@ -105,13 +105,13 @@ Resolves the full entry tree from the config and prints it as JSON. Useful for d
 
 The CLI communicates with Rspress through `packages/cli/src/lib/rspress.ts`:
 
-| Function              | Purpose                                      |
-| --------------------- | -------------------------------------------- |
-| `startDevServer()`    | Launch Rspress dev server on port 6174       |
+| Function              | Purpose                                          |
+| --------------------- | ------------------------------------------------ |
+| `startDevServer()`    | Launch Rspress dev server on port 6174           |
 | `buildSite()`         | Run Rspress static build to `.ciderpress/dist/`  |
-| `buildSiteForCheck()` | Build with deadlink detection enabled        |
+| `buildSiteForCheck()` | Build with deadlink detection enabled            |
 | `serveSite()`         | Start static file server for `.ciderpress/dist/` |
-| `openBrowser()`       | Cross-platform browser launcher              |
+| `openBrowser()`       | Cross-platform browser launcher                  |
 
 All functions receive a Rspress config object built by `createRspressConfig()` from `@ciderpress/ui`. This config loads the generated JSON files (sidebar, nav, workspaces) from `.ciderpress/content/.generated/` and wires up the ciderpress theme.
 

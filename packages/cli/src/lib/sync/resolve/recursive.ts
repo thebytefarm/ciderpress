@@ -1,8 +1,8 @@
 import path from 'node:path'
 
-import { log } from '@clack/prompts'
 import { normalizeInclude } from '@ciderpress/config'
 import type { Section, Frontmatter } from '@ciderpress/config'
+import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 

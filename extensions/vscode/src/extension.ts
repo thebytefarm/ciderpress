@@ -251,7 +251,9 @@ export function activate(context: ExtensionContext): void {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
       refreshSectionViews()
-      const autoOpen = workspace.getConfiguration('ciderpress.server').get<boolean>('autoOpen', true)
+      const autoOpen = workspace
+        .getConfiguration('ciderpress.server')
+        .get<boolean>('autoOpen', true)
       if (autoOpen) {
         previewPanel.open(baseUrl)
       }
@@ -335,7 +337,9 @@ export function activate(context: ExtensionContext): void {
     serverTreeView,
     serverEmitter,
     loadingView.onDidChangeVisibility((e) => {
-      const autoStart = workspace.getConfiguration('ciderpress.server').get<boolean>('autoStart', true)
+      const autoStart = workspace
+        .getConfiguration('ciderpress.server')
+        .get<boolean>('autoStart', true)
       if (e.visible && autoStart && !server.isRunning()) {
         server.start()
       }

@@ -2,9 +2,9 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { log } from '@clack/prompts'
 import type { Section, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
+import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
 
 import { generateAssets } from '../banner/index.ts'

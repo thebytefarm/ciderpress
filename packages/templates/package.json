@@ -3,11 +3,11 @@
   "version": "1.0.0-rc.0",
   "description": "Documentation templates SDK for ciderpress — use built-in templates, extend them, or register custom ones",
   "keywords": [
+    "ciderpress",
     "docs",
     "documentation",
     "scaffold",
-    "templates",
-    "ciderpress"
+    "templates"
   ],
   "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/templates#readme",
   "bugs": "https://github.com/thebytefarm/ciderpress/issues",

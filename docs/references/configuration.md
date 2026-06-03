@@ -21,26 +21,26 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 
 ## Top-level fields
 
-| Field         | Type                  | Default    | Description                                                                                    |
-| ------------- | --------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `title`       | `string`              | —          | Site title shown in browser tab and home page                                                  |
-| `description` | `string`              | —          | Meta description and home page hero headline                                                   |
-| `tagline`     | `string`              | —          | Hero tagline below the headline on the home page                                               |
-| `sections`    | `Section[]`           | (required) | Information architecture tree                                                                  |
-| `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                                                             |
-| `theme`       | `ThemeConfig`         | —          | Theme configuration (name, color mode, color overrides)                                        |
-| `themes`      | `CiderpressThemeInput[]`  | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes) |
-| `site`        | `SiteConfig`          | —          | Site chrome — version chip, edit/report links, sidebar promo, topbar CTA, announcement, footer |
-| `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen)                                           |
-| `actions`     | `HeroAction[]`        | —          | Home page hero call-to-action buttons                                                          |
-| `sidebar`     | `SidebarConfig`       | —          | Persistent links above/below the sidebar nav tree                                              |
-| `workspaces`  | `WorkspaceCategory[]` | —          | Named groups of workspace items for home/landing pages                                         |
-| `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs                                              |
-| `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources                                             |
-| `home`        | `HomeConfig`          | —          | Home page layout (eyebrow, trust strip, CTA band, grid columns)                                |
-| `socialLinks` | `SocialLink[]`        | —          | Social media links displayed in the navigation bar                                             |
-| `footer`      | `FooterConfig`        | —          | Footer message, copyright text, and social link visibility                                     |
-| `icon`        | `string`              | —          | Path to a custom favicon served from `.ciderpress/public/`. Defaults to auto-generated `/icon.svg` |
+| Field         | Type                     | Default    | Description                                                                                        |
+| ------------- | ------------------------ | ---------- | -------------------------------------------------------------------------------------------------- |
+| `title`       | `string`                 | —          | Site title shown in browser tab and home page                                                      |
+| `description` | `string`                 | —          | Meta description and home page hero headline                                                       |
+| `tagline`     | `string`                 | —          | Hero tagline below the headline on the home page                                                   |
+| `sections`    | `Section[]`              | (required) | Information architecture tree                                                                      |
+| `nav`         | `'auto' \| NavItem[]`    | `'auto'`   | Top navigation bar                                                                                 |
+| `theme`       | `ThemeConfig`            | —          | Theme configuration (name, color mode, color overrides)                                            |
+| `themes`      | `CiderpressThemeInput[]` | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes)     |
+| `site`        | `SiteConfig`             | —          | Site chrome — version chip, edit/report links, sidebar promo, topbar CTA, announcement, footer     |
+| `features`    | `Feature[]`              | —          | Explicit home page feature cards (replaces auto-gen)                                               |
+| `actions`     | `HeroAction[]`           | —          | Home page hero call-to-action buttons                                                              |
+| `sidebar`     | `SidebarConfig`          | —          | Persistent links above/below the sidebar nav tree                                                  |
+| `workspaces`  | `WorkspaceCategory[]`    | —          | Named groups of workspace items for home/landing pages                                             |
+| `openapi`     | `OpenAPIConfig`          | —          | OpenAPI spec integration for interactive API docs                                                  |
+| `exclude`     | `string[]`               | —          | Glob patterns excluded globally across all sources                                                 |
+| `home`        | `HomeConfig`             | —          | Home page layout (eyebrow, trust strip, CTA band, grid columns)                                    |
+| `socialLinks` | `SocialLink[]`           | —          | Social media links displayed in the navigation bar                                                 |
+| `footer`      | `FooterConfig`           | —          | Footer message, copyright text, and social link visibility                                         |
+| `icon`        | `string`                 | —          | Path to a custom favicon served from `.ciderpress/public/`. Defaults to auto-generated `/icon.svg` |
 
 ## Entry
 

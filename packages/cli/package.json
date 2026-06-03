@@ -3,10 +3,10 @@
   "version": "1.0.0-rc.0",
   "description": "CLI for building and serving ciderpress documentation sites",
   "keywords": [
+    "ciderpress",
     "cli",
     "docs",
-    "rspress",
-    "ciderpress"
+    "rspress"
   ],
   "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/cli#readme",
   "bugs": "https://github.com/thebytefarm/ciderpress/issues",
@@ -43,13 +43,13 @@
   },
   "dependencies": {
     "@apidevtools/swagger-parser": "^12.1.0",
-    "@clack/prompts": "^1.4.0",
-    "@kidd-cli/core": "^0.24.0",
-    "@rspress/core": "catalog:",
     "@ciderpress/config": "workspace:*",
     "@ciderpress/templates": "workspace:*",
     "@ciderpress/theme": "workspace:*",
     "@ciderpress/ui": "workspace:*",
+    "@clack/prompts": "^1.4.0",
+    "@kidd-cli/core": "^0.24.0",
+    "@rspress/core": "catalog:",
     "fast-glob": "^3.3.3",
     "get-port": "^7.2.0",
     "gray-matter": "^4.0.3",

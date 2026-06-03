@@ -5,7 +5,13 @@ import {
   resolveOptionalIcon,
   serializeIcon,
 } from '@ciderpress/config'
-import type { ConfigWarning, Section, TitleConfig, Workspace, CiderpressConfig } from '@ciderpress/config'
+import type {
+  ConfigWarning,
+  Section,
+  TitleConfig,
+  Workspace,
+  CiderpressConfig,
+} from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { omitBy } from 'massaman/object'
 import { isNil, isString, isUndefined } from 'massaman/predicate'
