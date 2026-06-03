@@ -80,7 +80,7 @@
   <text x="114" y="146" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#cdd6f4">ciderpress.config.ts</text>
 
   <!-- Sidebar: project section -->
-  <text x="88" y="186" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#a6adc8" letter-spacing="0.5">ZPRESS</text>
+  <text x="88" y="186" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="600" fill="#a6adc8" letter-spacing="0.5">CIDERPRESS</text>
 
   <!-- Folder: docs (expanded) -->
   <g transform="translate(88, 200)">

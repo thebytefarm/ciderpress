@@ -39,13 +39,13 @@
     <text class="text dim" font-size="15" x="16" y="0">$</text>
     <text class="text command" font-size="15" x="36" y="0">ciderpress build</text>
 
-    <!-- ZPRESS ASCII art -->
-    <text class="text brand" font-size="13" y="40" xml:space="preserve">███████╗██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="56" xml:space="preserve">╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text class="text brand" font-size="13" y="72" xml:space="preserve">  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="88" xml:space="preserve"> ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text class="text brand" font-size="13" y="104" xml:space="preserve">███████╗██║     ██║  ██║███████╗███████║███████║</text>
-    <text class="text brand" font-size="13" y="120" xml:space="preserve">╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+    <!-- CIDERPRESS ASCII art -->
+    <text class="text brand" font-size="13" y="40" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
+    <text class="text brand" font-size="13" y="56" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
+    <text class="text brand" font-size="13" y="72" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
+    <text class="text brand" font-size="13" y="88" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
+    <text class="text brand" font-size="13" y="104" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
+    <text class="text brand" font-size="13" y="120" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
 
     <!-- Version and description -->
     <text class="text white" font-size="15" y="156">  ciderpress <tspan class="dim">v0.1.0</tspan></text>

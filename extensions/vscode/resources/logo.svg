@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 130">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 130">
   <defs>
     <style>
       .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
@@ -6,13 +6,13 @@
     </style>
   </defs>
 
-  <!-- ZPRESS ASCII Art -->
+  <!-- CIDERPRESS ASCII Art -->
   <g transform="translate(24, 24)">
-    <text class="text brand" font-size="13" y="0" xml:space="preserve">███████╗██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="16" xml:space="preserve">╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text class="text brand" font-size="13" y="32" xml:space="preserve">  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="48" xml:space="preserve"> ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text class="text brand" font-size="13" y="64" xml:space="preserve">███████╗██║     ██║  ██║███████╗███████║███████║</text>
-    <text class="text brand" font-size="13" y="80" xml:space="preserve">╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+    <text class="text brand" font-size="13" y="0" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
+    <text class="text brand" font-size="13" y="16" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
+    <text class="text brand" font-size="13" y="32" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
+    <text class="text brand" font-size="13" y="48" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
+    <text class="text brand" font-size="13" y="64" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
+    <text class="text brand" font-size="13" y="80" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
   </g>
 </svg>

@@ -1,7 +1,7 @@
 import type React from 'react'
 
 const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
-const LOGO_VIEWBOX = '0 0 430 130'
+const LOGO_VIEWBOX = '0 0 620 130'
 const LOGO_FALLBACK_COLOR = '#60a5fa'
 const FONT_SIZE = 13
 const LINE_HEIGHT = 16
@@ -9,12 +9,12 @@ const X_OFFSET = 24
 const Y_OFFSET = 24
 
 const CIDERPRESS_ART: readonly string[] = Object.freeze([
-  '███████╗██████╗ ██████╗ ███████╗███████╗███████╗',
-  '╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
-  '  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
-  ' ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
-  '███████╗██║     ██║  ██║███████╗███████║███████║',
-  '╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
+  ' ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗',
+  '██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
+  '██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗',
+  '██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║',
+  '╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║',
+  ' ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
 ])
 
 export interface CiderpressLogoProps {
@@ -40,9 +40,9 @@ export interface CiderpressLogoProps {
 }
 
 /**
- * Inline `<svg>` ZPRESS wordmark logo that auto-themes to the active theme.
+ * Inline `<svg>` ciderpress wordmark logo that auto-themes to the active theme.
  *
- * Renders the FIGlet "ZPRESS" wordmark using `fill="currentColor"` so the
+ * Renders the FIGlet "ciderpress" wordmark using `fill="currentColor"` so the
  * glyphs inherit color from the wrapping `<svg>`. The wrapper sets `color`
  * to `var(--rp-c-brand)` — the canonical brand variable maintained by
  * `ThemeProvider` — so the logo tints to whichever theme (and variant) is
