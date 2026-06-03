@@ -16,6 +16,7 @@ import { SidebarPromo } from '../sidebar/sidebar-promo'
 import { SidebarToggle } from '../sidebar/sidebar-toggle'
 import { FloatingBranchIndicator } from './floating-branch-indicator'
 import { MobileNavCTA } from './mobile-nav-cta'
+import { NavDivider } from './nav-divider'
 import { TopbarCTA } from './topbar-cta'
 import { VscodeTag } from './vscode-tag'
 
@@ -37,13 +38,7 @@ declare const __CIDERPRESS_VSCODE__: boolean
  */
 export function Layout(): React.ReactElement {
   const { sidebarAbove, sidebarBelow, site } = useCiderpress()
-  const {
-    announcement,
-    topbarCta,
-    sidebarPromo: sidebarPromoConfig,
-    edit,
-    report,
-  } = site ?? {}
+  const { announcement, topbarCta, sidebarPromo: sidebarPromoConfig, edit, report } = site ?? {}
   const { frontmatter } = useFrontmatter()
   const fmRecord = frontmatter as Record<string, unknown>
   const isHome = fmRecord.pageType === 'home'
@@ -69,13 +64,17 @@ export function Layout(): React.ReactElement {
 
   const navSlot = match(__CIDERPRESS_VSCODE__)
     .with(true, () => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+      <div className="cp-nav-slot-left">
+        <NavDivider />
         {sidebarToggle}
         <VscodeTag />
       </div>
     ))
     .otherwise(() => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{sidebarToggle}</div>
+      <div className="cp-nav-slot-left">
+        <NavDivider />
+        {sidebarToggle}
+      </div>
     ))
 
   const ctaButtons = match(topbarCta)
@@ -88,7 +87,10 @@ export function Layout(): React.ReactElement {
     ))
 
   const afterNavSlot = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{ctaButtons}</div>
+    <div className="cp-nav-slot-right">
+      <NavDivider />
+      {ctaButtons}
+    </div>
   )
 
   const aboveItems = sidebarAbove ?? []

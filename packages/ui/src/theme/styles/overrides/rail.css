@@ -207,12 +207,12 @@ html .rp-nav__right {
 }
 
 html .rp-nav__left {
-  order: -10;
+  order: -30;
   flex-shrink: 0;
 }
 
 html .rp-nav__right > .rp-search-button {
-  order: -9;
+  order: -10;
   flex-shrink: 0;
   margin-right: auto;
 }
@@ -223,27 +223,36 @@ html .rp-nav__right > .rp-search-button {
   }
 }
 
-/* Strip all visual dividers in the topbar so adjacent elements read as
-   a single continuous strip. Three sources:
-   1. `.rp-nav-menu__divider` — Rspress's built-in 1px line between the
-      nav menu and the `.rp-nav__others` cluster.
-   2. `.rp-search-button` ships with left + right borders that look like
-      a separator next to the logo.
-   3. `.cp-topbar-cta` ships with a full 1px brand border; its left edge
-      reads as a divider against the adjacent icon cluster. The button is
-      still visually defined by its brand-coloured background. */
-html .rp-nav .rp-nav-menu__divider,
-html .rp-nav .rp-nav-screen-divider {
-  display: none;
+/* Position the slot wrappers inside the topbar.
+
+   With `.rp-nav__right` set to `display: contents`, the slot wrappers
+   (rendered by ciderpress's `Layout` into Rspress's `beforeNavMenu` /
+   `afterNavMenu` props) become direct flex children of `.rp-nav`. We
+   give the `before` wrapper a negative flex order so it sits between
+   the logo (order: -10) and the search button (order: -9). The `after`
+   wrapper stays at the default order: 0 so it lands at the right end
+   of the strip, after the Rspress nav menu and the icons cluster. */
+html .rp-nav .cp-nav-slot-left,
+html .rp-nav .cp-nav-slot-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-html .rp-nav .rp-search-button {
-  border-left: none;
-  border-right: none;
+html .rp-nav__right > .cp-nav-slot-left {
+  order: -20;
 }
 
-html .rp-nav .cp-topbar-cta {
-  border: none;
+/* Restyle Rspress's built-in `.rp-nav-menu__divider` (between the nav
+   menu and the `.rp-nav__others` icon cluster) to match our custom
+   `.cp-nav-divider` so all three topbar dividers read as one design
+   system controlled by `--cp-c-divider`. */
+html .rp-nav .rp-nav-menu__divider {
+  width: var(--cp-nav-divider-width, 1px);
+  height: var(--cp-nav-divider-height, 18px);
+  background: var(--cp-c-divider);
+  flex-shrink: 0;
 }
 
 /* Tighten nav typography to match the mockup */

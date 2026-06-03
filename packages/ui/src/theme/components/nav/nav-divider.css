@@ -1,0 +1,15 @@
+/**
+ * Vertical nav divider — used inline between groups of topbar elements.
+ *
+ * Theme-customisable via:
+ *   --cp-c-divider   colour (defaults via the active theme's --cp-c-divider)
+ *   --cp-nav-divider-height   height of the line (default 18px)
+ *   --cp-nav-divider-width    width of the line (default 1px)
+ */
+.cp-nav-divider {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--cp-nav-divider-width, 1px);
+  height: var(--cp-nav-divider-height, 18px);
+  background: var(--cp-c-divider);
+}
