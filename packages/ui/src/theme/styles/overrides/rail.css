@@ -189,6 +189,40 @@ html .rp-nav {
   backdrop-filter: blur(8px);
 }
 
+/* Reorder topbar children so the search button sits immediately after the
+   logo on the left, and everything else (nav menu, icons, CTA) hugs the
+   right edge. Flatten `.rp-nav__right` with `display: contents` so its
+   children participate directly in `.rp-nav`'s flex layout, then use
+   negative flex order on the logo + search so they come first. The
+   remaining children (nav menu, others, CTAs) stay at the default
+   order: 0 and `margin-right: auto` on the search pushes them right. */
+html .rp-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+html .rp-nav__right {
+  display: contents;
+}
+
+html .rp-nav__left {
+  order: -10;
+  flex-shrink: 0;
+}
+
+html .rp-nav__right > .rp-search-button {
+  order: -9;
+  flex-shrink: 0;
+  margin-right: auto;
+}
+
+@media (max-width: 768px) {
+  html .rp-nav__right > .rp-search-button {
+    margin-right: 0;
+  }
+}
+
 /* Tighten nav typography to match the mockup */
 html .rp-nav-menu__item,
 html .rp-nav-menu a,

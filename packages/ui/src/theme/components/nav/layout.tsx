@@ -77,15 +77,11 @@ export function Layout(): React.ReactElement {
     .with(true, () => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {sidebarToggle}
-        {versionChip}
         <VscodeTag />
       </div>
     ))
     .otherwise(() => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {sidebarToggle}
-        {versionChip}
-      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{sidebarToggle}</div>
     ))
 
   const ctaButtons = match(topbarCta)
@@ -104,10 +100,11 @@ export function Layout(): React.ReactElement {
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
 
-  const beforeSidebar = match(aboveItems.length > 0)
+  const beforeSidebar = match(aboveItems.length > 0 || versionChip !== null)
     .with(true, () => (
       <div className="cp-sidebar-top">
         <SidebarLinks items={aboveItems} position="above" />
+        {versionChip}
       </div>
     ))
     .otherwise(() => null)
