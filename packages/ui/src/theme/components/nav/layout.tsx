@@ -17,7 +17,6 @@ import { SidebarToggle } from '../sidebar/sidebar-toggle'
 import { FloatingBranchIndicator } from './floating-branch-indicator'
 import { MobileNavCTA } from './mobile-nav-cta'
 import { TopbarCTA } from './topbar-cta'
-import { VersionChip } from './version-chip'
 import { VscodeTag } from './vscode-tag'
 
 declare const __CIDERPRESS_VSCODE__: boolean
@@ -40,7 +39,6 @@ export function Layout(): React.ReactElement {
   const { sidebarAbove, sidebarBelow, site } = useCiderpress()
   const {
     announcement,
-    version,
     topbarCta,
     sidebarPromo: sidebarPromoConfig,
     edit,
@@ -69,10 +67,6 @@ export function Layout(): React.ReactElement {
     .with(true, () => null)
     .otherwise(() => <SidebarToggle />)
 
-  const versionChip = match(version)
-    .with(undefined, () => null)
-    .otherwise((v) => <VersionChip version={v} />)
-
   const navSlot = match(__CIDERPRESS_VSCODE__)
     .with(true, () => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -100,11 +94,10 @@ export function Layout(): React.ReactElement {
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
 
-  const beforeSidebar = match(aboveItems.length > 0 || versionChip !== null)
+  const beforeSidebar = match(aboveItems.length > 0)
     .with(true, () => (
       <div className="cp-sidebar-top">
         <SidebarLinks items={aboveItems} position="above" />
-        {versionChip}
       </div>
     ))
     .otherwise(() => null)

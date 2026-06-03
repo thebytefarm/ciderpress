@@ -223,6 +223,29 @@ html .rp-nav__right > .rp-search-button {
   }
 }
 
+/* Strip all visual dividers in the topbar so adjacent elements read as
+   a single continuous strip. Three sources:
+   1. `.rp-nav-menu__divider` — Rspress's built-in 1px line between the
+      nav menu and the `.rp-nav__others` cluster.
+   2. `.rp-search-button` ships with left + right borders that look like
+      a separator next to the logo.
+   3. `.cp-topbar-cta` ships with a full 1px brand border; its left edge
+      reads as a divider against the adjacent icon cluster. The button is
+      still visually defined by its brand-coloured background. */
+html .rp-nav .rp-nav-menu__divider,
+html .rp-nav .rp-nav-screen-divider {
+  display: none;
+}
+
+html .rp-nav .rp-search-button {
+  border-left: none;
+  border-right: none;
+}
+
+html .rp-nav .cp-topbar-cta {
+  border: none;
+}
+
 /* Tighten nav typography to match the mockup */
 html .rp-nav-menu__item,
 html .rp-nav-menu a,
