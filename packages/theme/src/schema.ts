@@ -18,6 +18,7 @@
 
 import { z } from 'zod'
 
+import { DEFAULT_THEME_NAME } from './constants.ts'
 import type {
   CiderpressBadgeColor,
   CiderpressBadgeColors,
@@ -688,11 +689,29 @@ export const themeColorsSchema = z
  */
 export const themeConfigSchema = z
   .object({
-    name: z.string().default('honeycrisp'),
-    variant: themeVariantSchema.optional(),
-    switcher: z.boolean().optional(),
-    colors: themeColorsSchema.optional(),
-    darkColors: themeColorsSchema.optional(),
+    name: z
+      .string()
+      .default(DEFAULT_THEME_NAME)
+      .describe(
+        'Theme identifier. Built-in: "honeycrisp" (red, default), "grannysmith" (green), "midnight" (deep blue), "arcade" (neon green). Legacy alias "default" resolves to "honeycrisp". Custom themes registered via `themes: [defineTheme(...)]` are also accepted.'
+      ),
+    variant: themeVariantSchema
+      .optional()
+      .describe(
+        'Initial render variant. "dark" or "light". Falls back to the theme\'s own `defaultVariant` when omitted. A persisted localStorage value overrides this on subsequent visits when it points at a still-registered variant.'
+      ),
+    switcher: z
+      .boolean()
+      .optional()
+      .describe('Show the theme switcher dropdown in the nav bar. Defaults to `false`.'),
+    colors: themeColorsSchema
+      .optional()
+      .describe(
+        "Partial color overrides applied to the active theme's **light** variant. Each key maps to one or more `--cp-c-*` / `--rp-c-*` CSS custom properties."
+      ),
+    darkColors: themeColorsSchema
+      .optional()
+      .describe("Partial color overrides applied to the active theme's **dark** variant."),
   })
   .strict()
 

@@ -1,5 +1,8 @@
+import { pickBy } from 'massaman/object'
+import { isNotNil } from 'massaman/predicate'
 import { z } from 'zod'
 
+import { DEFAULT_THEME_NAME, RESERVED_THEME_NAMES } from './constants.ts'
 import { themeNameSchema, tokensSchema } from './schema.ts'
 import type { TokenPath, CiderpressTokens } from './tokens.ts'
 import { TOKEN_TO_CSS_VAR } from './tokens.ts'
@@ -23,18 +26,66 @@ const DEFAULT_VARIANT_ORDER: readonly ThemeVariant[] = ['dark', 'light'] as cons
  * fallback in `packages/ui/src/config.ts`. The legacy `'default'` slug
  * aliases to `'honeycrisp'` via `THEME_ALIASES` in `definitions.ts`.
  */
-const FOUC_ROOT_THEME_NAME = 'honeycrisp' as const
+const FOUC_ROOT_THEME_NAME: typeof DEFAULT_THEME_NAME = DEFAULT_THEME_NAME
 
 /**
- * Envelope schema for `defineTheme` input. Validates the *shape* — name,
- * variant keys, and `defaultVariant` cross-reference — without parsing
- * the token trees themselves (those go through `tokensSchema` per
- * variant). Same invariants enforced by `ciderpressThemeInputSchema` in
- * `@ciderpress/config`; duplicated here because the config package depends
- * on theme, not the other way around. Errors surface with stable paths
- * (`variants`, `defaultVariant`) so consumers can pinpoint the problem.
+ * Refine guard used by `themeInputEnvelopeSchema` to reject
+ * `defineTheme({ name: ... })` calls whose name collides with a reserved
+ * built-in slug or the legacy `'default'` alias.
+ *
+ * @private
+ * @param name - Theme name from the validated envelope
+ * @returns `true` when the name is free to register, `false` otherwise
  */
-const themeInputEnvelopeSchema = z
+function isFreeThemeName(name: string): boolean {
+  if (name === 'default') {
+    return false
+  }
+  return !RESERVED_THEME_NAMES.includes(name)
+}
+
+/**
+ * Human-readable error message emitted when {@link isFreeThemeName} rejects.
+ *
+ * @private
+ * @param name - Reserved theme name the caller tried to register
+ * @returns Error message for the Zod refine
+ */
+function reservedThemeNameMessage(name: string): string {
+  return `theme name "${name}" is reserved by a built-in`
+}
+
+/**
+ * Best-effort recovery of the offending theme name from a Zod refine issue
+ * input. The envelope's outer `.refine` receives the full parsed object, so
+ * the name should always be a string; the fallback only fires if Zod's
+ * internal issue shape ever drifts.
+ *
+ * @private
+ * @param input - Raw `issue.input` from the refine error callback
+ * @returns The reserved name when reachable, `'<reserved>'` otherwise
+ */
+function extractReservedName(input: unknown): string {
+  if (input === null || typeof input !== 'object') {
+    return '<reserved>'
+  }
+  const { name } = input as { readonly name?: unknown }
+  if (typeof name !== 'string') {
+    return '<reserved>'
+  }
+  return name
+}
+
+/**
+ * Base envelope schema — shape, variant keys, and `defaultVariant`
+ * cross-reference. Used internally by {@link BUILT_IN_THEMES} (which legitimately
+ * registers the reserved built-in names) so it must NOT include the
+ * reserved-name refine. The public {@link themeInputEnvelopeSchema} extends
+ * this with the additional reservation guard for user-facing factories.
+ *
+ * @private
+ */
+const baseThemeInputEnvelopeSchema = z
   .object({
     name: z.string(),
     variants: z
@@ -61,6 +112,24 @@ const themeInputEnvelopeSchema = z
       path: ['defaultVariant'],
     }
   )
+
+/**
+ * Envelope schema for `defineTheme` input. Validates the *shape* — name,
+ * variant keys, `defaultVariant` cross-reference — AND rejects names that
+ * collide with a reserved built-in slug or the legacy `'default'` alias.
+ *
+ * Re-used by `@ciderpress/config`'s schema (imported via `@ciderpress/theme`)
+ * so both packages enforce identical invariants from a single source.
+ * Errors surface with stable paths (`variants`, `defaultVariant`, `name`)
+ * so consumers can pinpoint the problem.
+ */
+export const themeInputEnvelopeSchema = baseThemeInputEnvelopeSchema.refine(
+  (theme) => isFreeThemeName(theme.name),
+  {
+    error: (issue) => reservedThemeNameMessage(extractReservedName(issue.input)),
+    path: ['name'],
+  }
+)
 
 /**
  * Shape of the raw brand-palette entries below. Mirrors the public
@@ -353,6 +422,26 @@ const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
  * Declared-order list of `--rp-*` keys for deterministic emission ordering.
  */
 const RSPRESS_COMPAT_VAR_NAMES: readonly string[] = Object.freeze(Object.keys(RSPRESS_COMPAT_MAP))
+
+/**
+ * Precomputed `[cssVar, segments]` pairs for every Rspress compatibility
+ * variable in `RSPRESS_COMPAT_MAP`.
+ *
+ * Mirrors `TOKEN_RENDER_PLAN` for the `--rp-*` side: splitting each token
+ * path on `.` once at module load avoids re-splitting per declaration per
+ * theme per build.
+ */
+const RSPRESS_RENDER_PLAN: readonly {
+  readonly cssVar: string
+  readonly segments: readonly string[]
+}[] = Object.freeze(
+  RSPRESS_COMPAT_VAR_NAMES.map((cssVar) =>
+    Object.freeze({
+      cssVar,
+      segments: Object.freeze((RSPRESS_COMPAT_MAP[cssVar] as string).split('.')),
+    })
+  )
+)
 
 /**
  * Shared OpenAPI / OAS badge palette — semantic colors shared across
@@ -742,27 +831,12 @@ export interface CiderpressThemeInput {
  * })
  */
 export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
-  // Envelope validation first — name shape, at-least-one variant, and
-  // `defaultVariant` cross-reference. Failures surface as `ZodError`s
-  // with stable paths (`variants`, `defaultVariant`, etc.).
+  // Public entrypoint — runs full envelope validation including the
+  // reserved-name guard before delegating to the internal builder. Failures
+  // surface as `ZodError`s with stable paths (`variants`, `defaultVariant`,
+  // `name`).
   const envelope = themeInputEnvelopeSchema.parse(input)
-  const validatedName: string = themeNameSchema.parse(envelope.name)
-  const variants: Record<ThemeVariant, CiderpressTokens | undefined> = {
-    dark: validateVariant(envelope.variants.dark),
-    light: validateVariant(envelope.variants.light),
-  }
-  const presentVariants: readonly ThemeVariant[] = DEFAULT_VARIANT_ORDER.filter(
-    (v) => variants[v] !== undefined
-  )
-  const defaultVariant: ThemeVariant = pickInputDefaultVariant(
-    envelope.defaultVariant,
-    presentVariants
-  )
-  return freezeTheme({
-    name: validatedName,
-    variants: filterPresentVariants(variants),
-    defaultVariant,
-  })
+  return buildTheme(envelope)
 }
 
 /**
@@ -804,7 +878,7 @@ export function themeToCss(theme: CiderpressTheme): string {
  * the single source of truth.
  */
 export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>> = Object.freeze({
-  honeycrisp: defineTheme({
+  honeycrisp: defineBuiltInTheme({
     name: 'honeycrisp',
     variants: {
       dark: buildHoneycrispDarkTokens(),
@@ -812,7 +886,7 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>
     },
     defaultVariant: 'dark',
   }),
-  grannysmith: defineTheme({
+  grannysmith: defineBuiltInTheme({
     name: 'grannysmith',
     variants: {
       dark: buildGrannysmithDarkTokens(),
@@ -820,12 +894,12 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>
     },
     defaultVariant: 'dark',
   }),
-  midnight: defineTheme({
+  midnight: defineBuiltInTheme({
     name: 'midnight',
     variants: { dark: buildMidnightTokens() },
     defaultVariant: 'dark',
   }),
-  arcade: defineTheme({
+  arcade: defineBuiltInTheme({
     name: 'arcade',
     variants: { dark: buildArcadeTokens() },
     defaultVariant: 'dark',
@@ -882,22 +956,28 @@ function renderDeclaration(
 }
 
 /**
- * Render a single `  --rp-*: value;` line for a Rspress compatibility var.
+ * Render a single `  --rp-*: value;` line for a precomputed Rspress
+ * compatibility var entry.
  *
  * @private
- * @param cssVar - The `--rp-*` custom property name
+ * @param entry - Precomputed render plan entry (cssVar + segments)
  * @param tokens - Token tree containing the source value
  * @returns CSS declaration line (no trailing newline)
  */
-function renderRpDeclaration(cssVar: string, tokens: CiderpressTokens): string {
-  const path = RSPRESS_COMPAT_MAP[cssVar] as TokenPath
-  const value = resolveBySegments((path as string).split('.'), tokens)
-  return `  ${cssVar}: ${value};`
+function renderRpDeclaration(
+  entry: { readonly cssVar: string; readonly segments: readonly string[] },
+  tokens: CiderpressTokens
+): string {
+  const value = resolveBySegments(entry.segments, tokens)
+  return `  ${entry.cssVar}: ${value};`
 }
 
 /**
  * Render the full declaration body — all `--cp-*` tokens in registry order
  * followed by every `--rp-*` compatibility var in `RSPRESS_COMPAT_MAP` order.
+ *
+ * Both halves consume precomputed `[cssVar, segments]` plans so dotted token
+ * paths are split exactly once at module load — never per declaration.
  *
  * @private
  * @param tokens - Token tree to render
@@ -905,7 +985,7 @@ function renderRpDeclaration(cssVar: string, tokens: CiderpressTokens): string {
  */
 function renderDeclarationBody(tokens: CiderpressTokens): string {
   const cpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
-  const rpLines = RSPRESS_COMPAT_VAR_NAMES.map((name) => renderRpDeclaration(name, tokens))
+  const rpLines = RSPRESS_RENDER_PLAN.map((entry) => renderRpDeclaration(entry, tokens))
   return [...cpLines, ...rpLines].join('\n')
 }
 
@@ -970,6 +1050,67 @@ function validateVariant(raw: unknown): CiderpressTokens | undefined {
 }
 
 /**
+ * Shared shape returned by both envelope schemas after `.parse(...)`. The
+ * `name` is a `string` (validated), the variants are still `unknown` (each
+ * gets parsed against `tokensSchema` per-variant in `buildTheme`), and
+ * `defaultVariant` is the optional initial-variant hint.
+ *
+ * @private
+ */
+interface ParsedEnvelope {
+  readonly name: string
+  readonly variants: { readonly dark?: unknown; readonly light?: unknown }
+  readonly defaultVariant?: ThemeVariant
+}
+
+/**
+ * Internal factory used by `defineTheme` (public) and `defineBuiltInTheme`
+ * (private) — both feed it an already-validated envelope. Runs the
+ * `themeNameSchema` slug check, parses each present variant through
+ * `tokensSchema`, picks the default variant, and freezes the result.
+ *
+ * @private
+ * @param envelope - Envelope already validated by one of the two refines
+ * @returns A frozen, fully-typed `CiderpressTheme`
+ */
+function buildTheme(envelope: ParsedEnvelope): CiderpressTheme {
+  const validatedName: string = themeNameSchema.parse(envelope.name)
+  const variants: Record<ThemeVariant, CiderpressTokens | undefined> = {
+    dark: validateVariant(envelope.variants.dark),
+    light: validateVariant(envelope.variants.light),
+  }
+  const presentVariants: readonly ThemeVariant[] = DEFAULT_VARIANT_ORDER.filter(
+    (v) => variants[v] !== undefined
+  )
+  const defaultVariant: ThemeVariant = pickInputDefaultVariant(
+    envelope.defaultVariant,
+    presentVariants
+  )
+  return freezeTheme({
+    name: validatedName,
+    variants: filterPresentVariants(variants),
+    defaultVariant,
+  })
+}
+
+/**
+ * Internal builder used to register the first-party themes in
+ * {@link BUILT_IN_THEMES}. Bypasses the reserved-name refine on
+ * `themeInputEnvelopeSchema` (which would reject `'honeycrisp'`,
+ * `'grannysmith'`, `'midnight'`, and `'arcade'`) and goes through the
+ * base envelope instead. Not exported — user code reaches the public
+ * factory via `defineTheme`.
+ *
+ * @private
+ * @param input - Theme definition (name + variant token trees)
+ * @returns A frozen, fully-typed `CiderpressTheme`
+ */
+function defineBuiltInTheme(input: CiderpressThemeInput): CiderpressTheme {
+  const envelope = baseThemeInputEnvelopeSchema.parse(input)
+  return buildTheme(envelope)
+}
+
+/**
  * Choose the default variant for `defineTheme` input, falling back to
  * the first declared variant in `DEFAULT_VARIANT_ORDER` when the caller
  * omitted `defaultVariant`. Cross-reference of `defaultVariant` against
@@ -1005,12 +1146,7 @@ function pickInputDefaultVariant(
 function filterPresentVariants(
   variants: Record<ThemeVariant, CiderpressTokens | undefined>
 ): ThemeVariantTokens {
-  const entries = (
-    Object.entries(variants) as readonly [ThemeVariant, CiderpressTokens | undefined][]
-  )
-    .filter(([, t]) => t !== undefined)
-    .map(([k, t]) => [k, t as CiderpressTokens] as const)
-  return Object.freeze(Object.fromEntries(entries)) as ThemeVariantTokens
+  return Object.freeze(pickBy(variants, isNotNil)) as ThemeVariantTokens
 }
 
 /**

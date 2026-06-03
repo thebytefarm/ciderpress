@@ -1,3 +1,4 @@
+import { DEFAULT_THEME_NAME } from './constants.ts'
 import { BUILT_IN_THEMES } from './theme-registry.ts'
 import type { BuiltInIconColor, BuiltInThemeName, ThemeVariant } from './types.ts'
 
@@ -95,7 +96,7 @@ export function resolveThemeModes(theme: BuiltInThemeName): readonly ThemeVarian
  * palette without churn.
  */
 export const THEME_ALIASES: Readonly<Record<string, BuiltInThemeName>> = Object.freeze({
-  default: 'honeycrisp',
+  default: DEFAULT_THEME_NAME,
 })
 
 /**

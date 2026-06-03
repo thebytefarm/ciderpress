@@ -1,4 +1,6 @@
 import { loadConfig as c12LoadConfig } from 'c12'
+import { attemptAsync } from 'massaman/control'
+import { isString } from 'massaman/predicate'
 
 import { configError } from './errors.ts'
 import type { ConfigResult } from './errors.ts'
@@ -53,9 +55,10 @@ async function loadAndValidateConfig(
   options: LoadConfigOptions
 ): Promise<ConfigResult<CiderpressConfig>> {
   const { cwd, configFile } = options
+  const searchedCwd = cwd ?? process.cwd()
 
-  try {
-    const result = await c12LoadConfig<CiderpressConfig>({
+  const loadResult = await attemptAsync(() =>
+    c12LoadConfig<CiderpressConfig>({
       cwd,
       configFile,
       name: 'ciderpress',
@@ -66,30 +69,40 @@ async function loadAndValidateConfig(
       globalRc: false,
       dotenv: false,
     })
+  )
 
-    const { config } = result
-
-    if (!config) {
-      return [
-        configError('not_found', 'Failed to load ciderpress.config — no config file found'),
-        null,
-      ]
-    }
-
-    if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {
-      return [
-        configError('empty_sections', 'Failed to load ciderpress.config — no sections found'),
-        null,
-      ]
-    }
-
-    return validateConfig(config)
-  } catch (error) {
+  if (!loadResult.ok) {
     return [
-      configError('parse_error', `Failed to parse config file: ${getErrorMessage(error)}`),
+      configError('parse_error', `Failed to parse config file: ${loadResult.error.message}`, {
+        cause: loadResult.error,
+      }),
       null,
     ]
   }
+
+  const result = loadResult.value
+  const { config, configFile: resolvedFile } = result
+
+  // c12 returns `{ config: {} }` when no file is found — `config` itself is
+  // never `null`, so we detect "not found" via the resolved `configFile`.
+  if (resolvedFile === undefined) {
+    return [
+      configError(
+        'not_found',
+        `Failed to load ciderpress.config — no config file found in ${searchedCwd}`
+      ),
+      null,
+    ]
+  }
+
+  if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {
+    return [
+      configError('empty_sections', 'Failed to load ciderpress.config — no sections found'),
+      null,
+    ]
+  }
+
+  return validateConfig(config)
 }
 
 /**
@@ -100,23 +113,8 @@ async function loadAndValidateConfig(
  * @returns Normalized LoadConfigOptions
  */
 function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOptions {
-  if (typeof dirOrOptions === 'string') {
+  if (isString(dirOrOptions)) {
     return { cwd: dirOrOptions }
   }
   return dirOrOptions
-}
-
-/**
- * Extract error message from unknown error value.
- *
- * @private
- * @param error - Unknown error to extract message from
- * @returns Error message string
- */
-// See https://github.com/thebytefarm/ciderpress/issues/73 — replace with shared toError util
-function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) {
-    return error.message
-  }
-  return String(error)
 }

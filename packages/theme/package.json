@@ -36,6 +36,7 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
+    "massaman": "^0.2.0",
     "ts-pattern": "catalog:",
     "type-fest": "catalog:",
     "zod": "catalog:"

@@ -328,6 +328,9 @@ importers:
 
   packages/theme:
     dependencies:
+      massaman:
+        specifier: ^0.2.0
+        version: 0.2.0
       ts-pattern:
         specifier: 'catalog:'
         version: 5.9.0

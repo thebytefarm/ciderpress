@@ -25,6 +25,13 @@ export interface ConfigError {
     readonly path: readonly (string | number)[]
     readonly message: string
   }[]
+  /**
+   * Original error preserved for downstream tooling and debug logs.
+   * Populated by `loader.ts` when c12 itself rejects so consumers can
+   * surface the underlying parse failure (file path, stack trace, etc.)
+   * without losing the typed `ConfigError` envelope.
+   */
+  readonly cause?: unknown
 }
 
 export type ConfigResult<T> = Result<T, ConfigError>
@@ -41,17 +48,40 @@ export interface ConfigWarning {
 }
 
 /**
+ * Optional fields accepted by {@link configError}.
+ */
+export interface ConfigErrorOptions {
+  /**
+   * Original error preserved on the resulting `ConfigError.cause` field.
+   */
+  readonly cause?: unknown
+}
+
+/**
  * Create a ConfigError with the given type and message.
  *
  * @param type - The error type discriminant
  * @param message - Human-readable error message
+ * @param options - Optional fields (e.g. `cause` for preserving the original error)
  * @returns A ConfigError object
  */
-export function configError(type: ConfigErrorType, message: string): ConfigError {
+export function configError(
+  type: ConfigErrorType,
+  message: string,
+  options?: ConfigErrorOptions
+): ConfigError {
+  if (options === undefined || options.cause === undefined) {
+    return {
+      _tag: 'ConfigError',
+      type,
+      message,
+    }
+  }
   return {
     _tag: 'ConfigError',
     type,
     message,
+    cause: options.cause,
   }
 }
 

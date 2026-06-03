@@ -48,7 +48,13 @@ export type {
   CiderpressThemeInputVariants,
   ThemeVariantTokens,
 } from './theme-registry.ts'
-export { BUILT_IN_THEMES, defineTheme, themeToCss } from './theme-registry.ts'
+export { DEFAULT_THEME_NAME, RESERVED_THEME_NAMES } from './constants.ts'
+export {
+  BUILT_IN_THEMES,
+  defineTheme,
+  themeInputEnvelopeSchema,
+  themeToCss,
+} from './theme-registry.ts'
 
 // Public token surface — kept narrow. `CiderpressTokens` is the only shape
 // downstream code should depend on; fine-grained sub-shapes are internal

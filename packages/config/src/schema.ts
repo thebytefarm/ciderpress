@@ -17,7 +17,7 @@
  * lossy (...args: unknown[]) => unknown inference, preserving exact call signatures.
  */
 
-import { themeColorsSchema, themeConfigSchema, themeVariantSchema } from '@ciderpress/theme'
+import { themeColorsSchema, themeConfigSchema, themeInputEnvelopeSchema } from '@ciderpress/theme'
 import { z } from 'zod'
 
 import type {
@@ -40,6 +40,7 @@ import type {
   SiteReportConfig,
   SiteSidebarPromoConfig,
 } from './types.ts'
+import { SOCIAL_LINK_ICONS, SOCIAL_LINK_MODES } from './types.ts'
 
 // z.function() infers to (...args: unknown[]) => unknown, which loses
 // parameter and return types. z.custom<T> preserves exact signatures
@@ -251,7 +252,7 @@ const ctaConfigSchema = z
   .object({
     title: z.string().optional(),
     subtitle: z.string().optional(),
-    actions: z.array(heroActionSchema).optional(),
+    actions: z.array(heroActionSchema).max(2).optional(),
   })
   .strict()
 
@@ -296,8 +297,8 @@ const siteSidebarPromoConfigSchema = z
 
 const siteCtaConfigSchema = z
   .object({
-    text: z.string(),
-    href: z.string(),
+    text: z.string().describe('Visible label on the topbar CTA button.'),
+    href: z.string().describe('Destination URL — relative path or absolute URL.'),
   })
   .strict()
 
@@ -337,31 +338,8 @@ const siteConfigSchema = z
 
 const socialLinkSchema = z
   .object({
-    icon: z.union([
-      z.enum([
-        'lark',
-        'discord',
-        'facebook',
-        'github',
-        'instagram',
-        'linkedin',
-        'slack',
-        'x',
-        'youtube',
-        'wechat',
-        'qq',
-        'juejin',
-        'zhihu',
-        'bilibili',
-        'weibo',
-        'gitlab',
-        'X',
-        'bluesky',
-        'npm',
-      ]),
-      z.object({ svg: z.string() }).strict(),
-    ]),
-    mode: z.enum(['link', 'text', 'img', 'dom']),
+    icon: z.union([z.enum(SOCIAL_LINK_ICONS), z.object({ svg: z.string() }).strict()]),
+    mode: z.enum(SOCIAL_LINK_MODES),
     content: z.string(),
   })
   .strict()
@@ -376,43 +354,15 @@ const footerConfigSchema = z
 
 // Each variant's tokens are `unknown` because `defineTheme` validates the
 // token tree against `tokensSchema` at factory time — duplicating that
-// validation here would produce two diverging error surfaces. Config-time
-// validation only ensures the envelope (`name`, `variants`, `defaultVariant`)
-// is structurally correct AND that the envelope rules `defineTheme` enforces
-// at factory time also hold at config-load time:
-//   1. `name` is a valid slug
+// validation here would produce two diverging error surfaces.
+//
+// The envelope schema lives in `@ciderpress/theme` so both `defineTheme`
+// (factory-time) and `ciderpressConfigSchema` (config-load-time) enforce
+// identical invariants from a single source:
+//   1. `name` is a valid slug AND not a reserved built-in / `'default'`
 //   2. at least one of `variants.dark` / `variants.light` is present
 //   3. `defaultVariant`, when provided, points at a declared variant
-const ciderpressThemeInputSchema = z
-  .object({
-    name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, {
-      message:
-        'Theme name must be a lowercase slug (a-z, 0-9, hyphen) starting with an alphanumeric character',
-    }),
-    variants: z
-      .object({
-        dark: z.unknown().optional(),
-        light: z.unknown().optional(),
-      })
-      .strict()
-      .refine((v) => v.dark !== undefined || v.light !== undefined, {
-        message: 'Theme variants must declare at least one of `dark` or `light`',
-      }),
-    defaultVariant: themeVariantSchema.optional(),
-  })
-  .strict()
-  .refine(
-    (theme) => {
-      if (theme.defaultVariant === undefined) {
-        return true
-      }
-      return theme.variants[theme.defaultVariant] !== undefined
-    },
-    {
-      message: '`defaultVariant` must point at a variant declared in `variants`',
-      path: ['defaultVariant'],
-    }
-  )
+const ciderpressThemeInputSchema = themeInputEnvelopeSchema
 
 export const ciderpressConfigSchema = z
   .object({
@@ -427,7 +377,7 @@ export const ciderpressConfigSchema = z
     packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
-    actions: z.array(heroActionSchema).optional(),
+    actions: z.array(heroActionSchema).max(2).optional(),
     sidebar: sidebarConfigSchema.optional(),
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),

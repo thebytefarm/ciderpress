@@ -17,7 +17,10 @@
  * `BRAND_COLORS` / `resolveBrandPalette` names for back-compat.
  */
 
+import { mapValues } from 'massaman/object'
+
 import { BUILT_IN_THEMES } from './theme-registry.ts'
+import type { CiderpressTheme } from './theme-registry.ts'
 import type { BuiltInThemeName } from './types.ts'
 
 /**
@@ -48,20 +51,7 @@ export interface BrandPalette {
  * unchanged.
  */
 export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Object.freeze(
-  Object.fromEntries(
-    (Object.keys(BUILT_IN_THEMES) as BuiltInThemeName[]).map(
-      (name): readonly [BuiltInThemeName, BrandPalette] => {
-        const theme = BUILT_IN_THEMES[name]
-        const defaultTokens = theme.variants[theme.defaultVariant]
-        if (defaultTokens === undefined) {
-          // Unreachable — `defineTheme` guarantees `defaultVariant` is present.
-          return [name, Object.freeze({ primary: '', hover: '', active: '', fg: '', soft: '' })]
-        }
-        const { primary, hover, active, fg, soft } = defaultTokens.colors.brand
-        return [name, Object.freeze({ primary, hover, active, fg, soft })]
-      }
-    )
-  ) as Record<BuiltInThemeName, BrandPalette>
+  mapValues(BUILT_IN_THEMES, extractBrandPalette)
 )
 
 /**
@@ -96,4 +86,27 @@ export function resolveBrandPalette(theme: BuiltInThemeName): BrandPalette {
  */
 export function resolveBrandGradient(theme: BuiltInThemeName): readonly string[] {
   return BRAND_GRADIENT[theme]
+}
+
+// ---------------------------------------------------------------------------
+// Private
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract a `BrandPalette` from a built-in theme's default variant token tree.
+ * Used by `mapValues(BUILT_IN_THEMES, extractBrandPalette)` to derive
+ * `BRAND_COLORS` without the legacy `Object.entries → map → fromEntries` shape.
+ *
+ * @private
+ * @param theme - Built-in theme from `BUILT_IN_THEMES`
+ * @returns Frozen `BrandPalette` for the theme's default variant
+ */
+function extractBrandPalette(theme: CiderpressTheme): BrandPalette {
+  const defaultTokens = theme.variants[theme.defaultVariant]
+  if (defaultTokens === undefined) {
+    // Unreachable — `defineTheme` guarantees `defaultVariant` is present.
+    return Object.freeze({ primary: '', hover: '', active: '', fg: '', soft: '' })
+  }
+  const { primary, hover, active, fg, soft } = defaultTokens.colors.brand
+  return Object.freeze({ primary, hover, active, fg, soft })
 }

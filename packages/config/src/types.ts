@@ -871,30 +871,52 @@ export interface HomeConfig {
 }
 
 /**
+ * Built-in social link icon identifiers.
+ *
+ * Rspress supports these icons out of the box via `virtual-social-links`.
+ * Frozen at module load so the schema (`socialLinkSchema`) can derive its
+ * `z.enum(...)` from the same array — single source of truth for the
+ * enum and the {@link SocialLinkIcon} union below.
+ */
+export const SOCIAL_LINK_ICONS = Object.freeze([
+  'lark',
+  'discord',
+  'facebook',
+  'github',
+  'instagram',
+  'linkedin',
+  'slack',
+  'x',
+  'youtube',
+  'wechat',
+  'qq',
+  'juejin',
+  'zhihu',
+  'bilibili',
+  'weibo',
+  'gitlab',
+  'X',
+  'bluesky',
+  'npm',
+] as const)
+
+/**
  * Built-in social link icon identifier.
  *
  * Rspress supports these icons out of the box via `virtual-social-links`.
  */
-export type SocialLinkIcon =
-  | 'lark'
-  | 'discord'
-  | 'facebook'
-  | 'github'
-  | 'instagram'
-  | 'linkedin'
-  | 'slack'
-  | 'x'
-  | 'youtube'
-  | 'wechat'
-  | 'qq'
-  | 'juejin'
-  | 'zhihu'
-  | 'bilibili'
-  | 'weibo'
-  | 'gitlab'
-  | 'X'
-  | 'bluesky'
-  | 'npm'
+export type SocialLinkIcon = (typeof SOCIAL_LINK_ICONS)[number]
+
+/**
+ * Supported `mode` discriminants on `SocialLink`. See {@link SocialLink} for
+ * the per-mode semantics of the `content` field.
+ */
+export const SOCIAL_LINK_MODES = Object.freeze(['link', 'text', 'img', 'dom'] as const)
+
+/**
+ * Render mode for a social link entry.
+ */
+export type SocialLinkMode = (typeof SOCIAL_LINK_MODES)[number]
 
 /**
  * A social link shown in the navigation bar.
@@ -922,7 +944,7 @@ export interface SocialLink {
    * - `'img'` — `content` is the URL of an image to render
    * - `'dom'` — `content` is a raw HTML fragment to render
    */
-  readonly mode: 'link' | 'text' | 'img' | 'dom'
+  readonly mode: SocialLinkMode
   /**
    * The link href, label, image URL, or HTML — meaning depends on `mode`.
    */
