@@ -88,13 +88,13 @@ interface RawBrandPalette {
  */
 const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Object.freeze({
   default: {
-    primary: '#7c3aed',
-    hover: '#6d28d9',
-    active: '#5b21b6',
+    primary: '#d97706',
+    hover: '#b45309',
+    active: '#92400e',
     fg: '#ffffff',
-    soft: 'rgba(124, 58, 237, 0.14)',
-    light: '#8b5cf6',
-    lighter: '#a78bfa',
+    soft: 'rgba(217, 119, 6, 0.14)',
+    light: '#f59e0b',
+    lighter: '#fbbf24',
   },
   midnight: {
     primary: '#60a5fa',
@@ -1105,9 +1105,9 @@ function buildDefaultLightTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#6d28d9',
-          hoverBg: '#7c3aed',
-          activeBg: '#5b21b6',
+          bg: '#b45309',
+          hoverBg: '#d97706',
+          activeBg: '#92400e',
           text: '#ffffff',
         },
       },
@@ -1190,9 +1190,9 @@ function buildDefaultDarkTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#7c3aed',
-          hoverBg: '#8b5cf6',
-          activeBg: '#6d28d9',
+          bg: '#d97706',
+          hoverBg: '#f59e0b',
+          activeBg: '#b45309',
           text: '#ffffff',
         },
       },

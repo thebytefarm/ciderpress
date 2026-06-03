@@ -27,8 +27,8 @@ const COLOR_VARS = Object.freeze({
  * `getComputedStyle` is unavailable or returns empty strings.
  */
 const FALLBACK_COLORS = Object.freeze({
-  brand: '#7c3aed',
-  brandHover: '#6d28d9',
+  brand: '#d97706',
+  brandHover: '#b45309',
   brandSoft: '#ede9fe',
   bg: '#ffffff',
   text: '#1f2937',

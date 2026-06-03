@@ -72,7 +72,7 @@ export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Ob
  * `BUILT_IN_THEMES`.
  */
 export const BRAND_GRADIENT: Readonly<Record<BuiltInThemeName, readonly string[]>> = Object.freeze({
-  default: ['#a78bfa', '#8b5cf6', '#5b21b6'],
+  default: ['#fbbf24', '#f59e0b', '#92400e'],
   midnight: ['#3b82f6', '#1d4ed8', '#1e3a8a'],
   arcade: ['#86efac', '#00ff88', '#00994f'],
 })

@@ -2,7 +2,7 @@ import type React from 'react'
 
 const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
 const LOGO_VIEWBOX = '0 0 620 130'
-const LOGO_FALLBACK_COLOR = '#60a5fa'
+const LOGO_FALLBACK_COLOR = '#f59e0b'
 const FONT_SIZE = 13
 const LINE_HEIGHT = 16
 const X_OFFSET = 24
