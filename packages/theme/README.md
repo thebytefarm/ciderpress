@@ -1,6 +1,6 @@
 # @ciderpress/theme
 
-Theme types and built-in theme definitions for ciderpress.
+Theme types, tokens, and built-in themes (`base`, `midnight`, `arcade`). Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 

@@ -1,21 +1,54 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <style>
-      .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .brand { fill: #60a5fa; }
-    </style>
+    <radialGradient id="icon-glow" cx="0.5" cy="0.55" r="0.55">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.36" />
+      <stop offset="60%" stop-color="#7c3aed" stop-opacity="0.10" />
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="icon-mark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="icon-droplet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c084fc" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
   </defs>
 
-  <!-- Rounded square background (terminal color) -->
-  <rect width="512" height="512" rx="32" ry="32" fill="#1e1e2e" />
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="96" ry="96" fill="#0a0a0a" />
 
-  <!-- Z from the ASCII art logo, centered -->
-  <g transform="translate(256, 256)" text-anchor="middle">
-    <text class="text brand" font-size="52" y="-100" xml:space="preserve">███████╗</text>
-    <text class="text brand" font-size="52" y="-36" xml:space="preserve">╚══███╔╝</text>
-    <text class="text brand" font-size="52" y="28" xml:space="preserve">  ███╔╝ </text>
-    <text class="text brand" font-size="52" y="92" xml:space="preserve"> ███╔╝  </text>
-    <text class="text brand" font-size="52" y="156" xml:space="preserve">███████╗</text>
-    <text class="text brand" font-size="52" y="220" xml:space="preserve">╚══════╝</text>
-  </g>
+  <!-- Brand glow -->
+  <ellipse cx="256" cy="280" rx="220" ry="200" fill="url(#icon-glow)" />
+
+  <!-- Inner border highlight -->
+  <rect x="1" y="1" width="510" height="510" rx="95" ry="95" fill="none" stroke="#2a2a2a" stroke-width="2" />
+
+  <!-- ============================================================ -->
+  <!-- BOLD APPLE-PRESS MARK — legible at 16×16                      -->
+  <!-- Strategy: solid filled shapes (not strokes) — strokes collapse -->
+  <!-- to 0.5px at 16×16 and disappear. Filled silhouettes survive.  -->
+  <!-- ============================================================ -->
+
+  <!-- Top crossbar — a single fat horizontal bar -->
+  <rect x="120" y="120" width="272" height="40" rx="12" fill="url(#icon-mark)" />
+
+  <!-- Vertical screw / column descending from crossbar to plate -->
+  <rect x="240" y="148" width="32" height="92" rx="6" fill="url(#icon-mark)" />
+
+  <!-- Plunger plate — wider bar that "presses" the chamber -->
+  <rect x="148" y="232" width="216" height="40" rx="10" fill="url(#icon-mark)" />
+
+  <!-- Pressing chamber — solid filled block (the basket) -->
+  <rect x="132" y="284" width="248" height="124" rx="20" fill="url(#icon-mark)" />
+
+  <!-- Negative-space hoop band across the chamber (reads as a press detail) -->
+  <rect x="132" y="338" width="248" height="16" fill="#0a0a0a" />
+
+  <!-- Catch tray / base — trapezoid -->
+  <path d="M 96 416 L 416 416 L 392 456 L 120 456 Z" fill="url(#icon-mark)" />
+
+  <!-- Droplet beneath the press — small but high-contrast -->
+  <path d="M 256 472 C 256 466, 248 462, 248 454 C 248 462, 240 466, 240 472 C 240 484, 248 492, 248 492 C 248 492, 256 484, 256 472 Z"
+        fill="url(#icon-droplet)" />
 </svg>

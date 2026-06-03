@@ -1,6 +1,6 @@
 # @ciderpress/ui
 
-Rspress plugin, theme components, and styles for ciderpress.
+Rspress plugin, theme components, and styles. Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 

@@ -1,18 +1,67 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 130">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 430 130" width="430" height="130">
   <defs>
-    <style>
-      .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .brand { fill: #60a5fa; }
-    </style>
+    <linearGradient id="logo-wordmark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="55%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+    <linearGradient id="logo-droplet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
   </defs>
 
-  <!-- ZPRESS ASCII Art -->
-  <g transform="translate(24, 24)">
-    <text class="text brand" font-size="13" y="0" xml:space="preserve">███████╗██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="16" xml:space="preserve">╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text class="text brand" font-size="13" y="32" xml:space="preserve">  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="48" xml:space="preserve"> ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text class="text brand" font-size="13" y="64" xml:space="preserve">███████╗██║     ██║  ██║███████╗███████║███████║</text>
-    <text class="text brand" font-size="13" y="80" xml:space="preserve">╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+  <!-- ============================================================ -->
+  <!-- Apple-press glyph (left, ~96×104, centered vertically)        -->
+  <!-- Box: x=8..104, y=13..117 (centered in 130 height)             -->
+  <!-- ============================================================ -->
+  <g transform="translate(8, 13)" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+
+    <!-- Apple above the press -->
+    <g transform="translate(40, 0)" stroke="#c084fc" stroke-width="1.6">
+      <path d="M 8 6 C 4 6, 1 9, 1 13 C 1 18, 5 23, 8 23 C 11 23, 15 18, 15 13 C 15 9, 12 6, 8 6 Z" fill="none" />
+      <path d="M 8 6 L 8 3" />
+      <path d="M 8 4 C 10 2, 12 2, 12 4 C 12 6, 10 6, 8 5" fill="none" stroke-width="1.2" />
+    </g>
+
+    <!-- Top frame crossbar -->
+    <line x1="14" y1="30" x2="82" y2="30" />
+    <line x1="14" y1="30" x2="14" y2="40" />
+    <line x1="82" y1="30" x2="82" y2="40" />
+
+    <!-- Vertical screw -->
+    <line x1="48" y1="30" x2="48" y2="58" />
+    <line x1="44" y1="36" x2="52" y2="36" opacity="0.7" />
+    <line x1="44" y1="44" x2="52" y2="44" opacity="0.7" />
+    <line x1="44" y1="52" x2="52" y2="52" opacity="0.7" />
+
+    <!-- Plunger plate -->
+    <rect x="24" y="58" width="48" height="6" rx="1" fill="#161616" />
+
+    <!-- Pressing chamber -->
+    <rect x="20" y="70" width="56" height="34" rx="2" fill="#0f0f0f" />
+    <line x1="34" y1="72" x2="34" y2="102" opacity="0.55" />
+    <line x1="48" y1="72" x2="48" y2="102" opacity="0.55" />
+    <line x1="62" y1="72" x2="62" y2="102" opacity="0.55" />
+    <line x1="20" y1="86" x2="76" y2="86" opacity="0.7" />
+
+    <!-- Base / catch tray -->
+    <path d="M 10 106 L 86 106 L 80 114 L 16 114 Z" fill="#161616" />
+
+    <!-- Spout -->
+    <path d="M 76 110 L 90 110 L 88 117 L 76 115 Z" fill="#161616" />
+
+    <!-- Droplet -->
+    <path d="M 87 120 C 87 118, 85 117, 85 115 C 85 117, 83 118, 83 120 C 83 123, 85 124, 85 124 C 85 124, 87 123, 87 120 Z" fill="url(#logo-droplet)" stroke="none" />
   </g>
+
+  <!-- ============================================================ -->
+  <!-- Wordmark "ciderpress" — vertically centered                   -->
+  <!-- ============================================================ -->
+  <text x="124" y="82"
+        font-family="'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif"
+        font-size="56"
+        font-weight="700"
+        letter-spacing="-1.8"
+        fill="url(#logo-wordmark)">ciderpress</text>
 </svg>

@@ -1,6 +1,6 @@
 # @ciderpress/config
 
-Configuration loading, validation, and schema generation for ciderpress.
+Config loading, Zod validation, and JSON schema generation. Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 

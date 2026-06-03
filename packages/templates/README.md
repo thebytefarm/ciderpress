@@ -1,6 +1,6 @@
 # @ciderpress/templates
 
-Liquid template registry for ciderpress.
+Liquid template registry for scaffolding docs. Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 

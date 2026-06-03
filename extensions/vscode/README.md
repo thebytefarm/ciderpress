@@ -14,11 +14,11 @@
 
 ## What is ciderpress?
 
-[ciderpress](https://ciderpress.dev) is a config-driven documentation framework for monorepos — it turns your markdown files and OpenAPI specs into a full documentation site with sidebar navigation, search, theming, and interactive API references.
+[ciderpress](https://ciderpress.dev) is a documentation framework for monorepos. It turns markdown files and OpenAPI specs into a full docs site — sidebar, search, theming, and API reference, from one config.
 
 ## What does this extension do?
 
-This extension brings your ciderpress docs into VS Code so you can browse them without leaving your editor.
+Brings your ciderpress docs into VS Code so you can browse them without leaving the editor.
 
 <div align="center">
 <img src="https://raw.githubusercontent.com/thebytefarm/ciderpress/main/extensions/vscode/resources/screenshot-base.png" alt="ciderpress in VS Code" width="100%" />

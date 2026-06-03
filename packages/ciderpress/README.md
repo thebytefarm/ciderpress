@@ -1,6 +1,6 @@
 # ciderpress
 
-An opinionated documentation framework for monorepos. Just point it at your code.
+Press your docs. A documentation framework for monorepos, built on Rspress.
 
 <span class="cp-badge">
 
@@ -70,17 +70,11 @@ npx ciderpress serve     # preview production build
 
 | Package                                                                        | Description                          |
 | ------------------------------------------------------------------------------ | ------------------------------------ |
-| [`@ciderpress/core`](https://www.npmjs.com/package/@ciderpress/core)           | Config loading, sync engine, assets  |
-| [`@ciderpress/cli`](https://www.npmjs.com/package/@ciderpress/cli)             | CLI commands and file watcher        |
+| [`@ciderpress/cli`](https://www.npmjs.com/package/@ciderpress/cli)             | CLI commands, watcher, dev TUI       |
+| [`@ciderpress/config`](https://www.npmjs.com/package/@ciderpress/config)       | Config loading + Zod schemas         |
 | [`@ciderpress/ui`](https://www.npmjs.com/package/@ciderpress/ui)               | Rspress plugin, theme, and styles    |
 | [`@ciderpress/theme`](https://www.npmjs.com/package/@ciderpress/theme)         | Theme factory, tokens, and built-ins |
-| [`@ciderpress/config`](https://www.npmjs.com/package/@ciderpress/config)       | Config loading + Zod schemas         |
 | [`@ciderpress/templates`](https://www.npmjs.com/package/@ciderpress/templates) | Liquid template registry             |
-
-## Why `ciderpress`?
-
-> [!NOTE]
-> Published as `ciderpress` because npm's overly aggressive moniker rules block the `ciderpress` name.
 
 ## License
 

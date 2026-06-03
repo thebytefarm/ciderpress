@@ -1,6 +1,6 @@
 # @ciderpress/cli
 
-CLI for building and serving ciderpress documentation sites.
+The `ciderpress` CLI — sync, dev, build, and serve commands. Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 
@@ -18,16 +18,18 @@ npm install @ciderpress/cli
 
 ## Commands
 
-| Command    | Description                         |
-| ---------- | ----------------------------------- |
-| `dev`      | Start dev server with hot reload    |
-| `build`    | Build for production                |
-| `serve`    | Preview production build            |
-| `sync`     | Sync config to documentation output |
-| `clean`    | Remove generated output             |
-| `dump`     | Dump resolved config for debugging  |
-| `setup`    | Scaffold a new ciderpress project   |
-| `generate` | Generate assets (banners, icons)    |
+| Command | Description                                           |
+| ------- | ----------------------------------------------------- |
+| `dev`   | Run sync + watcher and start the Rspress dev server   |
+| `build` | Sync content, generate assets, and build the site     |
+| `serve` | Preview the built site                                |
+| `sync`  | Sync documentation content without building           |
+| `clean` | Remove build artifacts, synced content, and cache     |
+| `check` | Validate config and check for broken links            |
+| `diff`  | Show changed files in watched source directories      |
+| `dump`  | Resolve and print the full entry tree as JSON         |
+| `draft` | Scaffold a new documentation file from a template     |
+| `setup` | Initialize a ciderpress config in the current project |
 
 ## Usage
 

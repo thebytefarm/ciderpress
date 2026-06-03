@@ -1,6 +1,7 @@
 <div align="center">
   <img src="assets/banner.svg" alt="ciderpress" width="90%" />
-  <p><strong>Zero-effort, turnkey documentation sites for monorepos — just point it at your existing docs.</strong></p>
+  <p><strong>Press your docs.</strong></p>
+  <p>A documentation framework for monorepos. Point it at your existing markdown — get a full site.</p>
 
 <a href="https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml"><img src="https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
 <a href="https://www.npmjs.com/package/ciderpress"><img src="https://img.shields.io/npm/v/ciderpress" alt="npm version" /></a>
@@ -63,10 +64,6 @@ npx ciderpress dev       # start dev server with hot reload
 npx ciderpress build     # build for production
 npx ciderpress serve     # preview production build
 ```
-
-## Why `ciderpress` and not `ciderpress`?
-
-The package is published as `ciderpress` because npm's moniker rules are overly aggressive and ban names that are similar in any way to existing packages. We will fix once we get npm to allow us to push to that namespace. If you work at `npm` please feel free to help out :)
 
 ## License
 

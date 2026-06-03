@@ -1,9 +1,9 @@
 {
   "name": "ciderpress-vscode",
-  "displayName": "ciderpress",
+  "displayName": "Ciderpress",
   "version": "0.2.2",
   "private": true,
-  "description": "Run ciderpress dev server and preview documentation from VS Code",
+  "description": "Run the Ciderpress dev server and preview documentation from VS Code",
   "categories": [
     "Other"
   ],

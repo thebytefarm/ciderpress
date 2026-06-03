@@ -1,135 +1,149 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 878 430">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 400" width="1280" height="400">
   <defs>
-    <style>
-      .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .code { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; font-size: 12px; }
-      .ln { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; font-size: 11px; fill: #45475a; text-anchor: end; }
-      .tab { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; font-size: 11px; fill: #cdd6f4; }
-      .brand { fill: #60a5fa; }
-      .dim { fill: #6c7086; }
-      .kw { fill: #cba6f7; }
-      .fn { fill: #89b4fa; }
-      .st { fill: #a6e3a1; }
-      .pr { fill: #94e2d5; }
-      .vr { fill: #fab387; }
-      .tx { fill: #cdd6f4; }
-      .op { fill: #9399b2; }
-      .prompt { fill: #89b4fa; }
-    </style>
+    <!-- Subtle purple glow behind the press -->
+    <radialGradient id="press-glow" cx="0.5" cy="0.55" r="0.55">
+      <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.28" />
+      <stop offset="55%" stop-color="#7c3aed" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#7c3aed" stop-opacity="0" />
+    </radialGradient>
+
+    <!-- Wordmark gradient — brand purple to lighter purple -->
+    <linearGradient id="wordmark-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="55%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+
+    <!-- Faint grid lines pattern -->
+    <pattern id="grid" x="0" y="0" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M 64 0 L 0 0 0 64" fill="none" stroke="#1e1e1e" stroke-width="1" />
+    </pattern>
+
+    <!-- Cider droplet gradient -->
+    <linearGradient id="droplet-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#a78bfa" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
   </defs>
 
   <!-- Background -->
-  <rect width="878" height="430" rx="10" ry="10" fill="#1e1e2e" />
+  <rect width="1280" height="400" fill="#0a0a0a" />
+  <rect width="1280" height="400" fill="url(#grid)" opacity="0.55" />
 
-  <!-- Title bar -->
-  <rect width="878" height="36" rx="10" ry="10" fill="#181825" />
-  <rect y="26" width="878" height="10" fill="#181825" />
+  <!-- Soft brand glow centered behind the press glyph -->
+  <ellipse cx="320" cy="220" rx="320" ry="200" fill="url(#press-glow)" />
 
-  <!-- Traffic lights -->
-  <circle cx="40" cy="18" r="6" fill="#f38ba8" />
-  <circle cx="60" cy="18" r="6" fill="#f9e2af" />
-  <circle cx="80" cy="18" r="6" fill="#a6e3a1" />
+  <!-- Top + bottom hairline accents -->
+  <line x1="0" y1="0.5" x2="1280" y2="0.5" stroke="#2a2a2a" stroke-width="1" />
+  <line x1="0" y1="399.5" x2="1280" y2="399.5" stroke="#2a2a2a" stroke-width="1" />
 
-  <!-- Title bar text -->
-  <text class="text dim" font-size="12" x="439" y="22" text-anchor="middle">ciderpress</text>
+  <!-- ============================================================ -->
+  <!-- APPLE-PRESS GLYPH (left side, ~256x256 box centered at 320,200) -->
+  <!-- ============================================================ -->
+  <g transform="translate(192, 72)" fill="none" stroke="#a78bfa" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
 
-  <!-- ZPRESS ASCII art logo (centered) -->
-  <g transform="translate(248, 0)">
-    <text class="text brand" font-size="13" y="68" xml:space="preserve">███████╗██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="84" xml:space="preserve">╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text class="text brand" font-size="13" y="100" xml:space="preserve">  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="116" xml:space="preserve"> ███╔╝  ██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text class="text brand" font-size="13" y="132" xml:space="preserve">███████╗██║     ██║  ██║███████╗███████║███████║</text>
-    <text class="text brand" font-size="13" y="148" xml:space="preserve">╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+    <!-- Top frame crossbar (where the screw mounts) -->
+    <line x1="20" y1="24" x2="236" y2="24" />
+    <line x1="20" y1="24" x2="20" y2="48" />
+    <line x1="236" y1="24" x2="236" y2="48" />
+
+    <!-- Vertical screw / threaded rod -->
+    <line x1="128" y1="24" x2="128" y2="92" />
+    <!-- Screw threads — tick marks -->
+    <line x1="120" y1="36" x2="136" y2="36" opacity="0.7" />
+    <line x1="120" y1="48" x2="136" y2="48" opacity="0.7" />
+    <line x1="120" y1="60" x2="136" y2="60" opacity="0.7" />
+    <line x1="120" y1="72" x2="136" y2="72" opacity="0.7" />
+    <line x1="120" y1="84" x2="136" y2="84" opacity="0.7" />
+
+    <!-- Plunger / press plate (the part that descends) -->
+    <rect x="64" y="92" width="128" height="14" rx="2" fill="#161616" />
+
+    <!-- Pressing chamber (the wooden basket) — open-top cylinder seen from front -->
+    <rect x="56" y="120" width="144" height="96" rx="4" fill="#0f0f0f" />
+    <!-- Chamber slats (vertical lines suggesting wooden staves) -->
+    <line x1="84" y1="124" x2="84" y2="212" opacity="0.55" />
+    <line x1="112" y1="124" x2="112" y2="212" opacity="0.55" />
+    <line x1="140" y1="124" x2="140" y2="212" opacity="0.55" />
+    <line x1="168" y1="124" x2="168" y2="212" opacity="0.55" />
+    <!-- Hoops -->
+    <line x1="56" y1="148" x2="200" y2="148" opacity="0.7" />
+    <line x1="56" y1="188" x2="200" y2="188" opacity="0.7" />
+
+    <!-- Base / catch tray -->
+    <path d="M 36 220 L 220 220 L 208 240 L 48 240 Z" fill="#161616" />
+
+    <!-- Spout -->
+    <path d="M 196 232 L 224 232 L 220 244 L 196 240 Z" fill="#161616" />
+
+    <!-- Cider droplet falling from the spout -->
+    <path d="M 218 256 C 218 252, 213 250, 213 246 C 213 250, 208 252, 208 256 C 208 262, 213 266, 213 266 C 213 266, 218 262, 218 256 Z" fill="url(#droplet-grad)" stroke="none" />
   </g>
 
+  <!-- Small apple glyph above the press (about to be dropped in) -->
+  <g transform="translate(304, 24)" fill="none" stroke="#c084fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Apple body -->
+    <path d="M 16 12 C 8 12, 2 18, 2 26 C 2 36, 10 46, 16 46 C 22 46, 30 36, 30 26 C 30 18, 24 12, 16 12 Z" fill="#0f0f0f" />
+    <!-- Stem -->
+    <path d="M 16 12 L 16 6" />
+    <!-- Leaf -->
+    <path d="M 16 8 C 20 4, 24 4, 24 8 C 24 12, 20 12, 16 10" fill="#0f0f0f" stroke-width="1.5" />
+  </g>
+
+  <!-- ============================================================ -->
+  <!-- RIGHT: wordmark + tagline                                    -->
+  <!-- ============================================================ -->
+
+  <!-- Eyebrow label -->
+  <text x="612" y="142"
+        font-family="ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, monospace"
+        font-size="13"
+        font-weight="500"
+        letter-spacing="2.4"
+        fill="#888888">DOCS FRAMEWORK · BUILT ON RSPRESS</text>
+
+  <!-- Wordmark: ciderpress -->
+  <text x="610" y="226"
+        font-family="'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif"
+        font-size="92"
+        font-weight="700"
+        letter-spacing="-3"
+        fill="url(#wordmark-grad)">ciderpress</text>
+
   <!-- Tagline -->
-  <text class="text dim" font-size="12" x="439" y="172" text-anchor="middle">making "I vibe-coded it and it works on my machine" look professional</text>
+  <text x="612" y="268"
+        font-family="'Geist', ui-sans-serif, system-ui, -apple-system, sans-serif"
+        font-size="20"
+        font-weight="400"
+        fill="#f5f5f5"
+        opacity="0.72">press your notes into polished docs.</text>
 
-  <!-- Separator -->
-  <line x1="36" y1="188" x2="842" y2="188" stroke="#313244" stroke-width="1" />
+  <!-- Sub-tagline / install command -->
+  <g transform="translate(612, 304)">
+    <rect x="0" y="0" width="296" height="40" rx="8" fill="#0f0f0f" stroke="#2a2a2a" stroke-width="1" />
+    <text x="16" y="26"
+          font-family="'Geist Mono', ui-monospace, 'SF Mono', monospace"
+          font-size="14"
+          fill="#888888">$</text>
+    <text x="32" y="26"
+          font-family="'Geist Mono', ui-monospace, 'SF Mono', monospace"
+          font-size="14"
+          fill="#d4d4d4">pnpm add -D ciderpress</text>
+    <!-- Caret -->
+    <rect x="200" y="14" width="2" height="16" fill="#a78bfa">
+      <animate attributeName="opacity" values="1;0;1" dur="1.2s" repeatCount="indefinite" />
+    </rect>
+  </g>
 
-  <!-- Split pane divider -->
-  <line x1="439" y1="188" x2="439" y2="424" stroke="#313244" stroke-width="1" />
-
-  <!-- ================================================ -->
-  <!-- LEFT PANE: terminal                              -->
-  <!-- ================================================ -->
-  <rect x="24" y="192" width="80" height="24" rx="4" ry="4" fill="#181825" />
-  <text class="tab" x="38" y="208">terminal</text>
-
-  <text class="code" x="38" y="236"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">ciderpress dev</tspan></text>
-
-  <!-- Starting -->
-  <text class="code" x="38" y="264"><tspan class="dim">Starting </tspan><tspan class="brand">ciderpress</tspan><tspan class="dim">...</tspan></text>
-
-  <!-- Output -->
-  <text class="code" x="38" y="288" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Loaded config</tspan></text>
-  <text class="code" x="38" y="304" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Synced 12 documents</tspan></text>
-  <text class="code" x="38" y="320" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Generated sidebar</tspan></text>
-  <text class="code" x="38" y="336" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Watching for changes</tspan></text>
-
-  <!-- Summary -->
-  <text class="code" x="38" y="364"><tspan class="dim">Ready — dev server on :5173</tspan></text>
-
-  <!-- New prompt with cursor -->
-  <text class="code" x="38" y="396"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">&#x2588;</tspan></text>
-
-  <!-- ================================================ -->
-  <!-- RIGHT PANE: config definition                    -->
-  <!-- ================================================ -->
-  <rect x="443" y="192" width="100" height="24" rx="4" ry="4" fill="#181825" />
-  <text class="tab" x="457" y="208">config.ts</text>
-
-  <line x1="477" y1="220" x2="477" y2="424" stroke="#313244" stroke-width="1" />
-
-  <!-- Line numbers -->
-  <text class="ln" x="469" y="236">1</text>
-  <text class="ln" x="469" y="252">2</text>
-  <text class="ln" x="469" y="268">3</text>
-  <text class="ln" x="469" y="284">4</text>
-  <text class="ln" x="469" y="300">5</text>
-  <text class="ln" x="469" y="316">6</text>
-  <text class="ln" x="469" y="332">7</text>
-  <text class="ln" x="469" y="348">8</text>
-  <text class="ln" x="469" y="364">9</text>
-  <text class="ln" x="469" y="380">10</text>
-  <text class="ln" x="469" y="396">11</text>
-  <text class="ln" x="469" y="412">12</text>
-
-  <!-- Line 1: import { defineConfig } from 'ciderpress' -->
-  <text class="code" x="487" y="236"><tspan class="kw">import</tspan><tspan class="op"> { </tspan><tspan class="fn">defineConfig</tspan><tspan class="op"> } </tspan><tspan class="kw">from</tspan><tspan class="st"> 'ciderpress'</tspan></text>
-
-  <!-- Line 2: (empty) -->
-
-  <!-- Line 3: export default defineConfig({ -->
-  <text class="code" x="487" y="268"><tspan class="kw">export default </tspan><tspan class="fn">defineConfig</tspan><tspan class="op">({</tspan></text>
-
-  <!-- Line 4:   title: 'My Docs', -->
-  <text class="code" x="487" y="284" xml:space="preserve"><tspan class="op">  </tspan><tspan class="pr">title</tspan><tspan class="op">: </tspan><tspan class="st">'My Docs'</tspan><tspan class="op">,</tspan></text>
-
-  <!-- Line 5:   description: 'Project docs', -->
-  <text class="code" x="487" y="300" xml:space="preserve"><tspan class="op">  </tspan><tspan class="pr">description</tspan><tspan class="op">: </tspan><tspan class="st">'Project docs'</tspan><tspan class="op">,</tspan></text>
-
-  <!-- Line 6:   sidebar: { -->
-  <text class="code" x="487" y="316" xml:space="preserve"><tspan class="op">  </tspan><tspan class="pr">sidebar</tspan><tspan class="op">: {</tspan></text>
-
-  <!-- Line 7:     guide: { -->
-  <text class="code" x="487" y="332" xml:space="preserve"><tspan class="op">    </tspan><tspan class="pr">guide</tspan><tspan class="op">: {</tspan></text>
-
-  <!-- Line 8:       label: 'Guide', -->
-  <text class="code" x="487" y="348" xml:space="preserve"><tspan class="op">      </tspan><tspan class="pr">label</tspan><tspan class="op">: </tspan><tspan class="st">'Guide'</tspan><tspan class="op">,</tspan></text>
-
-  <!-- Line 9:       items: ['intro', 'setup'], -->
-  <text class="code" x="487" y="364" xml:space="preserve"><tspan class="op">      </tspan><tspan class="pr">items</tspan><tspan class="op">: [</tspan><tspan class="st">'intro'</tspan><tspan class="op">, </tspan><tspan class="st">'setup'</tspan><tspan class="op">],</tspan></text>
-
-  <!-- Line 10:     }, -->
-  <text class="code" x="487" y="380" xml:space="preserve"><tspan class="op">    },</tspan></text>
-
-  <!-- Line 11:   }, -->
-  <text class="code" x="487" y="396" xml:space="preserve"><tspan class="op">  },</tspan></text>
-
-  <!-- Line 12: }) -->
-  <text class="code" x="487" y="412"><tspan class="op">})</tspan></text>
-
+  <!-- Decorative corner ticks (lower right) — subtle technical accent -->
+  <g stroke="#2a2a2a" stroke-width="1" fill="none">
+    <line x1="1232" y1="368" x2="1248" y2="368" />
+    <line x1="1248" y1="368" x2="1248" y2="352" />
+    <line x1="1232" y1="32" x2="1248" y2="32" />
+    <line x1="1248" y1="32" x2="1248" y2="48" />
+    <line x1="32" y1="368" x2="48" y2="368" />
+    <line x1="32" y1="368" x2="32" y2="352" />
+    <line x1="32" y1="32" x2="48" y2="32" />
+    <line x1="32" y1="32" x2="32" y2="48" />
+  </g>
 </svg>
