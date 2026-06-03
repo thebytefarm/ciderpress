@@ -9,7 +9,7 @@ How the top nav bar and auto-generated landing pages work together to help users
 
 ## Overview
 
-Navigation in zpress has two layers: the **top navigation bar** that provides quick access to major documentation areas, and **landing pages** that are auto-generated for sections with children. The nav bar controls top-level wayfinding. Landing pages provide section-level entry points with card grids.
+Navigation in ciderpress has two layers: the **top navigation bar** that provides quick access to major documentation areas, and **landing pages** that are auto-generated for sections with children. The nav bar controls top-level wayfinding. Landing pages provide section-level entry points with card grids.
 
 ```mermaid
 flowchart TD

@@ -1,4 +1,4 @@
-.zp-sidebar-toggle {
+.cp-sidebar-toggle {
   /* Pinned to the far-left of the nav, matching the mockup hamburger
      position. The nav itself is set to position: relative below. */
   position: absolute;
@@ -12,14 +12,14 @@
   place-items: center;
   border: 0;
   background: transparent;
-  border-radius: var(--zp-radius-card);
-  color: var(--zp-c-text-2);
+  border-radius: var(--cp-radius-card);
+  color: var(--cp-c-text-2);
   cursor: pointer;
   transition: all 0.15s ease;
   padding: 0;
 }
 
-/* Hide Rspress's mobile hamburger always — our `.zp-sidebar-toggle`
+/* Hide Rspress's mobile hamburger always — our `.cp-sidebar-toggle`
    owns the role of "menu trigger" across all widths. On mobile our
    toggle programmatically forwards the click to Rspress's hamburger
    (its handler is preserved, only the visual is hidden) so the
@@ -48,9 +48,9 @@ html .rp-sidebar-menu__left::before {
     no-repeat center / contain;
 }
 
-.zp-sidebar-toggle:hover {
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-1);
+.cp-sidebar-toggle:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
 }
 
 /* Pin the nav to the top of the viewport AND make it the positioning
@@ -72,8 +72,8 @@ html .rspress-nav__left {
    into the freed space automatically because Rspress sidebar uses sticky
    positioning + flex layout. (`.rp-doc-layout__menu` is hidden globally
    above so it doesn't need to be repeated here.) */
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__sidebar,
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__sidebar-placeholder {
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__sidebar,
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__sidebar-placeholder {
   display: none !important;
 }
 
@@ -100,19 +100,19 @@ html .rp-nav-screen-divider:last-child {
     height: 100vh !important;
     height: 100dvh !important;
     z-index: 100 !important;
-    background: var(--zp-c-bg-elv);
+    background: var(--cp-c-bg-elv);
   }
 }
 
 /* When collapsed: cap the doc reading width and center it within the
    available space (rail width minus outline). Prevents the prose from
    stretching edge-to-edge and makes the layout feel intentional. */
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__doc {
-  max-width: var(--zp-content-collapsed-max, 1000px) !important;
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__doc {
+  max-width: var(--cp-content-collapsed-max, 1000px) !important;
   margin: 0 auto !important;
 }
 
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__doc-container {
-  max-width: var(--zp-content-collapsed-max, 1000px);
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__doc-container {
+  max-width: var(--cp-content-collapsed-max, 1000px);
   margin: 0 auto;
 }

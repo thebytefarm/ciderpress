@@ -50,10 +50,10 @@ Scopes identify what part of the codebase changed. Use directory-style paths for
 
 | Scope             | Description                       |
 | ----------------- | --------------------------------- |
-| `packages/core`   | The core zpress package           |
+| `packages/core`   | The core ciderpress package           |
 | `packages/cli`    | The CLI companion package         |
 | `packages/ui`     | The UI plugin and theme package   |
-| `packages/zpress` | The public-facing wrapper package |
+| `packages/ciderpress` | The public-facing wrapper package |
 | `deps`            | Dependency updates                |
 | `ci`              | CI/CD workflow changes            |
 | `repo`            | Workspace/monorepo config         |

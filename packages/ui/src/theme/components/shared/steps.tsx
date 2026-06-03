@@ -35,7 +35,7 @@ export function Steps({ titleSize = 'h3', children }: StepsProps): React.ReactEl
       .otherwise(() => child)
   )
 
-  return <div className="zp-steps">{mapped}</div>
+  return <div className="cp-steps">{mapped}</div>
 }
 
 // ---------------------------------------------------------------------------
@@ -81,27 +81,27 @@ export function Step({
 }: StepProps): React.ReactElement {
   const indicator = match(icon)
     .with(P.nonNullable, (i) => (
-      <span className="zp-step__indicator">
+      <span className="cp-step__indicator">
         <Icon icon={i} />
       </span>
     ))
-    .otherwise(() => <span className="zp-step__indicator">{stepNumber}</span>)
+    .otherwise(() => <span className="cp-step__indicator">{stepNumber}</span>)
 
   const titleEl = match(titleSize)
-    .with('h2', () => <h2 className="zp-step__title">{title}</h2>)
-    .with('h3', () => <h3 className="zp-step__title">{title}</h3>)
-    .with('p', () => <p className="zp-step__title">{title}</p>)
+    .with('h2', () => <h2 className="cp-step__title">{title}</h2>)
+    .with('h3', () => <h3 className="cp-step__title">{title}</h3>)
+    .with('p', () => <p className="cp-step__title">{title}</p>)
     .exhaustive()
 
   return (
-    <div className="zp-step">
-      <div className="zp-step__rail">
+    <div className="cp-step">
+      <div className="cp-step__rail">
         {indicator}
-        <div className="zp-step__connector" />
+        <div className="cp-step__connector" />
       </div>
-      <div className="zp-step__body">
+      <div className="cp-step__body">
         {titleEl}
-        <div className="zp-step__content">{children}</div>
+        <div className="cp-step__content">{children}</div>
       </div>
     </div>
   )

@@ -27,7 +27,7 @@ const iconWrapperStyle: React.CSSProperties = {
   justifyContent: 'center',
   width: 36,
   height: 36,
-  background: 'var(--zp-c-bg-icon)',
+  background: 'var(--cp-c-bg-icon)',
 }
 
 /**

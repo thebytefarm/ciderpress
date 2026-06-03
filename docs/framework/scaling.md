@@ -270,4 +270,4 @@ The fix is almost always the same: split a section into two, or promote a nested
 
 - [Recommended](/framework/recommended) — the full recommended layout
 - [Types](/framework/types) — the seven doc types
-- [Content](/concepts/content) — zpress section configuration, auto-discovery, and glob patterns
+- [Content](/concepts/content) — ciderpress section configuration, auto-discovery, and glob patterns

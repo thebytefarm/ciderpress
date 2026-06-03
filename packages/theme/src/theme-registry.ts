@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 import { themeNameSchema, tokensSchema } from './schema.ts'
-import type { TokenPath, ZpressTokens } from './tokens.ts'
+import type { TokenPath, CiderpressTokens } from './tokens.ts'
 import { TOKEN_TO_CSS_VAR } from './tokens.ts'
 import type { BuiltInThemeName, ThemeVariant } from './types.ts'
 
@@ -28,8 +28,8 @@ const FOUC_ROOT_THEME_NAME = 'default' as const
  * Envelope schema for `defineTheme` input. Validates the *shape* — name,
  * variant keys, and `defaultVariant` cross-reference — without parsing
  * the token trees themselves (those go through `tokensSchema` per
- * variant). Same invariants enforced by `zpressThemeInputSchema` in
- * `@zpress/config`; duplicated here because the config package depends
+ * variant). Same invariants enforced by `ciderpressThemeInputSchema` in
+ * `@ciderpress/config`; duplicated here because the config package depends
  * on theme, not the other way around. Errors surface with stable paths
  * (`variants`, `defaultVariant`) so consumers can pinpoint the problem.
  */
@@ -241,11 +241,11 @@ const SHARED_GRADIENT_COLORS = {
 } as const
 
 /**
- * Full mapping of Rspress (`--rp-*`) CSS variables to the zpress token path
+ * Full mapping of Rspress (`--rp-*`) CSS variables to the ciderpress token path
  * that supplies each value. Emitted by `themeToCss` after the canonical
- * `--zp-*` declaration block so every Rspress internal component reads
- * from the zpress design system — Rspress is an implementation detail,
- * zpress tokens are the canonical surface.
+ * `--cp-*` declaration block so every Rspress internal component reads
+ * from the ciderpress design system — Rspress is an implementation detail,
+ * ciderpress tokens are the canonical surface.
  *
  * Grouped by category for readability. New rspress vars should be added
  * here when they appear; rspress vars that map to a missing concept can
@@ -253,8 +253,8 @@ const SHARED_GRADIENT_COLORS = {
  *
  * Surfaces — every page surface flattens to the single `bg` token so the
  * doc layout, sidebar drawer, and home page share one base color.
- * Elevated surfaces (cards, hero panels) keep using `--zp-c-bg-elv` /
- * `--zp-c-bg-soft` directly inside our own component CSS.
+ * Elevated surfaces (cards, hero panels) keep using `--cp-c-bg-elv` /
+ * `--cp-c-bg-soft` directly inside our own component CSS.
  *
  *   --rp-c-bg                 surface.bg
  *   --rp-c-bg-alt             surface.bgAlt        (subtle stripe surfaces)
@@ -303,12 +303,12 @@ const SHARED_GRADIENT_COLORS = {
  * Intentionally unmapped (rspress defaults remain in force):
  *  - `--rp-c-brand-rgb`: needs `r, g, b` tuple, no equivalent token
  *  - `--rp-c-gray*`: rspress internal neutrals, low surface area
- *  - `--rp-container-*` (admonitions): styled by zpress's own MDX overrides
+ *  - `--rp-container-*` (admonitions): styled by ciderpress's own MDX overrides
  *  - `--rp-c-overview-group-*`: superseded by our SectionCard component
  *  - `--rp-code-block-border|color|shadow`, `--rp-code-title-*`,
  *    `--rp-code-line-highlight-color`: rspress's shiki defaults are fine
  *  - `--rp-banner-background`: we don't use rspress's banner
- *  - Layout/size/z-index vars: zpress sets these via `--zp-*` directly on
+ *  - Layout/size/z-index vars: ciderpress sets these via `--cp-*` directly on
  *    its own components; rspress's layout chrome uses its own defaults
  */
 const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
@@ -355,7 +355,7 @@ const SHARED_OAS_COLORS_BASE = {
   put: '#d97706',
   patch: '#d97706',
   delete: '#dc2626',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#dc2626',
 } as const
 
@@ -368,7 +368,7 @@ const MIDNIGHT_OAS_COLORS = {
   put: '#fbbf24',
   patch: '#fbbf24',
   delete: '#f87171',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#f87171',
 } as const
 
@@ -381,7 +381,7 @@ const ARCADE_OAS_COLORS = {
   put: '#ffaa00',
   patch: '#ffaa00',
   delete: '#ff4466',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#ff4466',
 } as const
 
@@ -506,11 +506,11 @@ const SHARED_FONTS = {
  * Shared shadow recipes — mirrors `tokens.css` lines L159–L173.
  */
 const SHARED_SHADOWS = {
-  cardHover: '0 2px 12px var(--zp-c-tint-purple-glow)',
+  cardHover: '0 2px 12px var(--cp-c-tint-purple-glow)',
   menu: '0 8px 24px rgba(0, 0, 0, 0.12)',
   tooltip: '0 4px 12px rgba(0, 0, 0, 0.08)',
   heroDemo:
-    '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--zp-c-brand-soft)',
+    '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--cp-c-brand-soft)',
   askAi: '0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(0, 0, 0, 0.5)',
 } as const
 
@@ -627,11 +627,11 @@ const SHARED_BLURS = {
  * Shared gradient recipes — mirrors `tokens.css` lines L253–L263.
  */
 const SHARED_GRADIENTS = {
-  brand: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-3))',
+  brand: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-3))',
   // Hero title — kept in-hue. The previous multi-stop brand → cyan → purple
   // gradient read as a generic AI landing-page accent; restraining to the
   // brand family makes the hero feel like a real product, not a template.
-  heroTitle: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-light))',
+  heroTitle: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-light))',
 } as const
 
 // ---------------------------------------------------------------------------
@@ -639,9 +639,9 @@ const SHARED_GRADIENTS = {
 // ---------------------------------------------------------------------------
 
 /**
- * Legacy alias for {@link ThemeVariant}. Retained inside `@zpress/theme`
- * for one-version migration safety. Removed from `@zpress/core`,
- * `@zpress/config`, and `@zpress/kit` public exports in v1 — new code
+ * Legacy alias for {@link ThemeVariant}. Retained inside `@ciderpress/theme`
+ * for one-version migration safety. Removed from `@ciderpress/core`,
+ * `@ciderpress/config`, and `ciderpress` public exports in v1 — new code
  * should import `ThemeVariant` directly.
  *
  * @deprecated Use {@link ThemeVariant}.
@@ -653,21 +653,21 @@ export type ThemeMode = ThemeVariant
  * keys; a dark-only theme declares only `dark`.
  */
 export interface ThemeVariantTokens {
-  readonly dark?: ZpressTokens
-  readonly light?: ZpressTokens
+  readonly dark?: CiderpressTokens
+  readonly light?: CiderpressTokens
 }
 
 /**
  * Fully resolved theme definition produced by `defineTheme`.
  *
- * A `ZpressTheme` represents one brand identity with one or more variant
+ * A `CiderpressTheme` represents one brand identity with one or more variant
  * token trees. The CSS emitter renders a separate
- * `html[data-zp-theme='{name}'][data-zp-variant='{variant}']` block per
+ * `html[data-cp-theme='{name}'][data-cp-variant='{variant}']` block per
  * variant present in `variants`.
  */
-export interface ZpressTheme {
+export interface CiderpressTheme {
   /**
-   * Identifier — used in the `html[data-zp-theme='{name}']` selector.
+   * Identifier — used in the `html[data-cp-theme='{name}']` selector.
    * Must be a lowercase slug (validated by `themeNameSchema`).
    */
   readonly name: string
@@ -689,14 +689,14 @@ export interface ZpressTheme {
  * may pass raw JSON or a partially-typed object and let Zod produce a
  * clear error.
  */
-export interface ZpressThemeInputVariants {
+export interface CiderpressThemeInputVariants {
   readonly dark?: unknown
   readonly light?: unknown
 }
 
-export interface ZpressThemeInput {
+export interface CiderpressThemeInput {
   /**
-   * Identifier — must match `html[data-zp-theme='{name}']`.
+   * Identifier — must match `html[data-cp-theme='{name}']`.
    */
   readonly name: string
   /**
@@ -704,7 +704,7 @@ export interface ZpressThemeInput {
    * `variants.light` must be present; both are validated against
    * `tokensSchema` at factory time.
    */
-  readonly variants: ZpressThemeInputVariants
+  readonly variants: CiderpressThemeInputVariants
   /**
    * Variant to render initially. Falls back to `'dark'` when both
    * variants are declared, otherwise to the only declared variant.
@@ -714,14 +714,14 @@ export interface ZpressThemeInput {
 
 /**
  * Validate a theme definition through `tokensSchema` and return a deeply
- * frozen `ZpressTheme`.
+ * frozen `CiderpressTheme`.
  *
  * Validation failures surface as `ZodError`s from `tokensSchema.parse` and
  * `themeNameSchema.parse` — that's the documented contract callers need
  * to handle. Successful calls return a frozen object tree.
  *
  * @param input - Theme definition (name + variant token trees)
- * @returns A frozen, fully-typed `ZpressTheme`
+ * @returns A frozen, fully-typed `CiderpressTheme`
  *
  * @example
  * const myTheme = defineTheme({
@@ -731,13 +731,13 @@ export interface ZpressThemeInput {
  *   },
  * })
  */
-export function defineTheme(input: ZpressThemeInput): ZpressTheme {
+export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
   // Envelope validation first — name shape, at-least-one variant, and
   // `defaultVariant` cross-reference. Failures surface as `ZodError`s
   // with stable paths (`variants`, `defaultVariant`, etc.).
   const envelope = themeInputEnvelopeSchema.parse(input)
   const validatedName: string = themeNameSchema.parse(envelope.name)
-  const variants: Record<ThemeVariant, ZpressTokens | undefined> = {
+  const variants: Record<ThemeVariant, CiderpressTokens | undefined> = {
     dark: validateVariant(envelope.variants.dark),
     light: validateVariant(envelope.variants.light),
   }
@@ -756,27 +756,27 @@ export function defineTheme(input: ZpressThemeInput): ZpressTheme {
 }
 
 /**
- * Render a `ZpressTheme` to a deterministic CSS source covering every
+ * Render a `CiderpressTheme` to a deterministic CSS source covering every
  * variant the theme declares.
  *
  * For each variant V in `theme.variants` the emitter writes one
- * `html[data-zp-theme='{name}'][data-zp-variant='{V}']` block. Iteration
+ * `html[data-cp-theme='{name}'][data-cp-variant='{V}']` block. Iteration
  * order is fixed by `TOKEN_TO_CSS_VAR` (then `RSPRESS_COMPAT_MAP`) so the
  * output is byte-deterministic given the same input.
  *
  * The default theme additionally emits a `:root { ... }` FOUC block that
  * mirrors its default variant — the browser applies it before JS hydrates
- * the `data-zp-*` attributes on `<html>`.
+ * the `data-cp-*` attributes on `<html>`.
  *
  * @param theme - Theme to render
  * @returns CSS source containing one block per variant
  */
-export function themeToCss(theme: ZpressTheme): string {
+export function themeToCss(theme: CiderpressTheme): string {
   return renderThemeCss(theme)
 }
 
 /**
- * The three first-party themes shipped with zpress.
+ * The three first-party themes shipped with ciderpress.
  *
  *  - `default` is the brand-purple theme and ships both `dark` and
  *    `light` variants. The sun/moon toggle swaps between them.
@@ -789,7 +789,7 @@ export function themeToCss(theme: ZpressTheme): string {
  * the single source of truth from this point forward — generated CSS is
  * produced by `packages/ui/scripts/generate-theme-css.mjs`.
  */
-export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, ZpressTheme>> = Object.freeze({
+export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>> = Object.freeze({
   default: defineTheme({
     name: 'default',
     variants: {
@@ -815,7 +815,7 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, ZpressTheme>> = 
 // ---------------------------------------------------------------------------
 
 /**
- * Schema-inferred output type — bridges `ZpressTokens` (the strict surface
+ * Schema-inferred output type — bridges `CiderpressTokens` (the strict surface
  * used at compile time) with whatever `tokensSchema.parse` resolves to
  * internally. Kept type-only.
  *
@@ -824,7 +824,7 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, ZpressTheme>> = 
 type ParsedTokens = z.infer<typeof tokensSchema>
 
 /**
- * Resolve a precomputed segment array against a `ZpressTokens` tree.
+ * Resolve a precomputed segment array against a `CiderpressTokens` tree.
  *
  * Walks the segments with `.reduce`, never mutates intermediate state, and
  * trusts the `TokenPath` literal union — if a path resolves to `undefined`,
@@ -835,7 +835,7 @@ type ParsedTokens = z.infer<typeof tokensSchema>
  * @param tokens - Token tree to walk
  * @returns The leaf value (string or number) at the resolved path
  */
-function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): string | number {
+function resolveBySegments(segments: readonly string[], tokens: CiderpressTokens): string | number {
   const value = segments.reduce<unknown>(
     (node, segment) => (node as Record<string, unknown>)[segment],
     tokens
@@ -844,7 +844,7 @@ function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): s
 }
 
 /**
- * Render a single `  --zp-*: value;` line for one precomputed token entry.
+ * Render a single `  --cp-*: value;` line for one precomputed token entry.
  *
  * @private
  * @param entry - Precomputed render plan entry (cssVar + segments)
@@ -853,7 +853,7 @@ function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): s
  */
 function renderDeclaration(
   entry: { readonly cssVar: string; readonly segments: readonly string[] },
-  tokens: ZpressTokens
+  tokens: CiderpressTokens
 ): string {
   const value = resolveBySegments(entry.segments, tokens)
   return `  ${entry.cssVar}: ${value};`
@@ -867,21 +867,21 @@ function renderDeclaration(
  * @param tokens - Token tree containing the source value
  * @returns CSS declaration line (no trailing newline)
  */
-function renderRpDeclaration(cssVar: string, tokens: ZpressTokens): string {
+function renderRpDeclaration(cssVar: string, tokens: CiderpressTokens): string {
   const path = RSPRESS_COMPAT_MAP[cssVar] as TokenPath
   const value = resolveBySegments((path as string).split('.'), tokens)
   return `  ${cssVar}: ${value};`
 }
 
 /**
- * Render the full declaration body — all `--zp-*` tokens in registry order
+ * Render the full declaration body — all `--cp-*` tokens in registry order
  * followed by every `--rp-*` compatibility var in `RSPRESS_COMPAT_MAP` order.
  *
  * @private
  * @param tokens - Token tree to render
  * @returns Multi-line CSS body (no surrounding braces)
  */
-function renderDeclarationBody(tokens: ZpressTokens): string {
+function renderDeclarationBody(tokens: CiderpressTokens): string {
   const zpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
   const rpLines = RSPRESS_COMPAT_VAR_NAMES.map((name) => renderRpDeclaration(name, tokens))
   return [...zpLines, ...rpLines].join('\n')
@@ -889,7 +889,7 @@ function renderDeclarationBody(tokens: ZpressTokens): string {
 
 /**
  * Render the complete CSS for a theme. Emits one
- * `html[data-zp-theme='{name}'][data-zp-variant='{V}']` block per
+ * `html[data-cp-theme='{name}'][data-cp-variant='{V}']` block per
  * variant present on the theme. The framework's default theme
  * (`FOUC_ROOT_THEME_NAME`) additionally emits a `:root { ... }` FOUC
  * fallback block for its default variant.
@@ -898,7 +898,7 @@ function renderDeclarationBody(tokens: ZpressTokens): string {
  * @param theme - Theme to render
  * @returns CSS source containing one block per variant (plus optional FOUC root)
  */
-function renderThemeCss(theme: ZpressTheme): string {
+function renderThemeCss(theme: CiderpressTheme): string {
   const variantBlocks = DEFAULT_VARIANT_ORDER.flatMap((variant) =>
     renderVariantBlock(theme, variant)
   )
@@ -923,13 +923,13 @@ function renderThemeCss(theme: ZpressTheme): string {
  * @param variant - Variant to render (`'dark'` or `'light'`)
  * @returns Single-element array on hit, empty array on miss
  */
-function renderVariantBlock(theme: ZpressTheme, variant: ThemeVariant): readonly string[] {
+function renderVariantBlock(theme: CiderpressTheme, variant: ThemeVariant): readonly string[] {
   const tokens = theme.variants[variant]
   if (tokens === undefined) {
     return []
   }
   const body = renderDeclarationBody(tokens)
-  return [`html[data-zp-theme='${theme.name}'][data-zp-variant='${variant}'] {\n${body}\n}\n`]
+  return [`html[data-cp-theme='${theme.name}'][data-cp-variant='${variant}'] {\n${body}\n}\n`]
 }
 
 /**
@@ -940,11 +940,11 @@ function renderVariantBlock(theme: ZpressTheme, variant: ThemeVariant): readonly
  * @param raw - Raw token tree from `defineTheme` input
  * @returns Validated frozen tokens, or `undefined` when no input was given
  */
-function validateVariant(raw: unknown): ZpressTokens | undefined {
+function validateVariant(raw: unknown): CiderpressTokens | undefined {
   if (raw === undefined) {
     return undefined
   }
-  return tokensSchema.parse(raw) as ZpressTokens
+  return tokensSchema.parse(raw) as CiderpressTokens
 }
 
 /**
@@ -981,16 +981,16 @@ function pickInputDefaultVariant(
  * @returns Frozen variant map containing only declared variants
  */
 function filterPresentVariants(
-  variants: Record<ThemeVariant, ZpressTokens | undefined>
+  variants: Record<ThemeVariant, CiderpressTokens | undefined>
 ): ThemeVariantTokens {
-  const entries = (Object.entries(variants) as readonly [ThemeVariant, ZpressTokens | undefined][])
+  const entries = (Object.entries(variants) as readonly [ThemeVariant, CiderpressTokens | undefined][])
     .filter(([, t]) => t !== undefined)
-    .map(([k, t]) => [k, t as ZpressTokens] as const)
+    .map(([k, t]) => [k, t as CiderpressTokens] as const)
   return Object.freeze(Object.fromEntries(entries)) as ThemeVariantTokens
 }
 
 /**
- * Freeze the outer `ZpressTheme` shell plus each variant's nested token
+ * Freeze the outer `CiderpressTheme` shell plus each variant's nested token
  * tree. Returns the same references rather than cloning — inputs come
  * from literal object expressions that are not aliased anywhere else.
  *
@@ -998,9 +998,9 @@ function filterPresentVariants(
  * @param theme - Theme to freeze
  * @returns Same theme, deeply frozen
  */
-function freezeTheme(theme: ZpressTheme): ZpressTheme {
+function freezeTheme(theme: CiderpressTheme): CiderpressTheme {
   const frozenVariants = Object.fromEntries(
-    Object.entries(theme.variants).map(([k, tokens]) => [k, deepFreeze(tokens as ZpressTokens)])
+    Object.entries(theme.variants).map(([k, tokens]) => [k, deepFreeze(tokens as CiderpressTokens)])
   ) as ThemeVariantTokens
   return Object.freeze({
     name: theme.name,
@@ -1136,7 +1136,7 @@ function buildDefaultLightTokens(): ParsedTokens {
 /**
  * Build the `dark` variant of the `default` theme — same brand-purple
  * palette as the light variant, paired with dark surfaces and inverted
- * text. This is the variant zpress renders by default (the framework
+ * text. This is the variant ciderpress renders by default (the framework
  * treats dark as its baseline aesthetic).
  *
  * @private

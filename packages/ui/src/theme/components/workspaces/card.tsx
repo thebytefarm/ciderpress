@@ -77,14 +77,14 @@ export function WorkspaceCard({
   const scopeEl = match(scope)
     .with(
       P.when((s): s is string => s !== undefined && s.length > 0),
-      (s) => <span className="zp-workspace-card__scope">{s}</span>
+      (s) => <span className="cp-workspace-card__scope">{s}</span>
     )
     .otherwise(() => null)
 
   const badgeEl = match(badge)
     .with(P.nonNullable, (b) => (
-      <span className="zp-workspace-card__badge" title={`Deployed on ${b.alt}`}>
-        <img src={b.src} alt={b.alt} className="zp-workspace-card__badge-logo" />
+      <span className="cp-workspace-card__badge" title={`Deployed on ${b.alt}`}>
+        <img src={b.src} alt={b.alt} className="cp-workspace-card__badge-logo" />
       </span>
     ))
     .otherwise(() => null)
@@ -92,7 +92,7 @@ export function WorkspaceCard({
   const descEl = match(description)
     .with(P.nonNullable, (d) => (
       <span
-        className={clampClass('zp-workspace-card__desc', descriptionLines)}
+        className={clampClass('cp-workspace-card__desc', descriptionLines)}
         style={clampStyle(descriptionLines)}
       >
         {d}
@@ -104,7 +104,7 @@ export function WorkspaceCard({
     .with(
       P.when((t): t is readonly string[] => t !== undefined && t.length > 0),
       (t) => (
-        <div className="zp-workspace-card__tags">
+        <div className="cp-workspace-card__tags">
           {t.map((tag) => (
             <TechTag key={tag} name={tag} />
           ))}
@@ -114,14 +114,14 @@ export function WorkspaceCard({
     .otherwise(() => null)
 
   return (
-    <Card href={href} className="zp-workspace-card">
-      <div className="zp-workspace-card__header">
-        <div className="zp-workspace-card__identity">
-          <span className={`zp-card__icon zp-card__icon--${iconColor}`}>{iconEl}</span>
-          <div className="zp-workspace-card__title">
+    <Card href={href} className="cp-workspace-card">
+      <div className="cp-workspace-card__header">
+        <div className="cp-workspace-card__identity">
+          <span className={`cp-card__icon cp-card__icon--${iconColor}`}>{iconEl}</span>
+          <div className="cp-workspace-card__title">
             {scopeEl}
             <span
-              className={clampClass('zp-workspace-card__name', titleLines)}
+              className={clampClass('cp-workspace-card__name', titleLines)}
               style={clampStyle(titleLines)}
             >
               {name}
@@ -141,16 +141,16 @@ export function WorkspaceCard({
 // ---------------------------------------------------------------------------
 
 /**
- * Build a className string with optional `zp-clamp` suffix.
+ * Build a className string with optional `cp-clamp` suffix.
  *
  * @private
  * @param base - Base CSS class name
  * @param lines - Optional line clamp value
- * @returns Class string with or without zp-clamp
+ * @returns Class string with or without cp-clamp
  */
 function clampClass(base: string, lines: number | undefined): string {
   if (lines) {
-    return `${base} zp-clamp`
+    return `${base} cp-clamp`
   }
   return base
 }

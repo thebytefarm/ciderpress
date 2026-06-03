@@ -24,9 +24,9 @@ const entries = resolveEntries(config)
 This example is too noisy and the reader is distracted by the boilerplate and obvious code.
 
 ```ts
-import { loadConfig } from '@zpress/core'
-import { resolveEntries } from '@zpress/core'
-import { createPaths } from '@zpress/core'
+import { loadConfig } from '@ciderpress/core'
+import { resolveEntries } from '@ciderpress/core'
+import { createPaths } from '@ciderpress/core'
 import { log } from '@clack/prompts'
 
 async function main() {
@@ -51,7 +51,7 @@ When the reader should copy the entire block, show everything including imports 
 
 ```ts
 // Full file template - reader copies this
-import { defineConfig } from 'zpress/config'
+import { defineConfig } from 'ciderpress/config'
 
 export default defineConfig({
   title: 'My Project',

@@ -1,10 +1,10 @@
 # Architecture
 
-High-level overview of how zpress is structured, its design philosophy, and how data flows through the system.
+High-level overview of how ciderpress is structured, its design philosophy, and how data flows through the system.
 
 ## Overview
 
-zpress is a documentation framework for monorepos. It takes a single config file, syncs markdown content into a structured output directory, and builds a static site via [Rspress](https://rspress.dev). The information architecture -- sections, navigation, sidebar, landing pages -- is derived entirely from the config.
+ciderpress is a documentation framework for monorepos. It takes a single config file, syncs markdown content into a structured output directory, and builds a static site via [Rspress](https://rspress.dev). The information architecture -- sections, navigation, sidebar, landing pages -- is derived entirely from the config.
 
 The codebase follows a functional, immutable, composition-first design. There are no classes, no `let`, no `throw` statements, and no loops. Errors are returned as `Result` tuples. Side effects (process exit, terminal output) are pushed to the outermost edges.
 
@@ -15,23 +15,23 @@ packages/
 ├── core/            # Sync engine, config loading, sidebar/nav generation
 ├── cli/             # CLI commands (dev, build, serve, check, diff, draft, clean, setup, dump)
 ├── ui/              # Rspress plugin, theme components, styles
-├── config/          # @zpress/config — c12-based config loading, Zod validation
-├── templates/       # @zpress/templates — Liquid template registry for draft command
-├── theme/           # @zpress/theme — theme definitions and schema
-└── zpress/          # @zpress/kit — public wrapper (re-exports core + ui + cli)
+├── config/          # @ciderpress/config — c12-based config loading, Zod validation
+├── templates/       # @ciderpress/templates — Liquid template registry for draft command
+├── theme/           # @ciderpress/theme — theme definitions and schema
+└── ciderpress/          # ciderpress — public wrapper (re-exports core + ui + cli)
 ```
 
 | Package             | Purpose                                                                 |
 | ------------------- | ----------------------------------------------------------------------- |
-| `@zpress/core`      | Config loading, entry resolution, sync engine, sidebar/nav gen          |
-| `@zpress/cli`       | CLI commands: dev, build, serve, check, diff, draft, clean, setup, dump |
-| `@zpress/ui`        | Rspress plugin, React theme components, CSS overrides                   |
-| `@zpress/config`    | Config schema (Zod), type definitions, c12-based loading                |
-| `@zpress/templates` | Liquid template registry for the `draft` command                        |
-| `@zpress/theme`     | Theme definitions and schema                                            |
-| `@zpress/kit`       | Public package: `.` and `./config` entry points + `zpress` CLI bin      |
+| `@ciderpress/core`      | Config loading, entry resolution, sync engine, sidebar/nav gen          |
+| `@ciderpress/cli`       | CLI commands: dev, build, serve, check, diff, draft, clean, setup, dump |
+| `@ciderpress/ui`        | Rspress plugin, React theme components, CSS overrides                   |
+| `@ciderpress/config`    | Config schema (Zod), type definitions, c12-based loading                |
+| `@ciderpress/templates` | Liquid template registry for the `draft` command                        |
+| `@ciderpress/theme`     | Theme definitions and schema                                            |
+| `ciderpress`       | Public package: `.` and `./config` entry points + `ciderpress` CLI bin      |
 
-### `@zpress/kit` (wrapper)
+### `ciderpress` (wrapper)
 
 The public-facing package. Two entry points and a CLI bin:
 
@@ -40,7 +40,7 @@ The public-facing package. Two entry points and a CLI bin:
 | `.`        | Full API: core types + sync + UI + plugin |
 | `./config` | Lightweight: just `defineConfig` + types  |
 
-The `zpress` CLI bin is provided by this package and delegates to `@zpress/cli`. Users import `defineConfig` from `@zpress/kit` (or `@zpress/kit/config`) in their config file.
+The `ciderpress` CLI bin is provided by this package and delegates to `@ciderpress/cli`. Users import `defineConfig` from `ciderpress` (or `ciderpress/config`) in their config file.
 
 ## Layers
 
@@ -90,7 +90,7 @@ flowchart TB
         RSPRESS_CFG(["rspress config"])
     end
 
-    subgraph output [".zpress/"]
+    subgraph output [".ciderpress/"]
         CONTENT(["content/"])
         GENERATED([".generated/"])
         DIST(["dist/"])
@@ -119,13 +119,13 @@ flowchart TB
 
 ### CLI Layer
 
-**Package:** `@zpress/cli`
+**Package:** `@ciderpress/cli`
 
 The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. Commands orchestrate the core sync engine and Rspress build APIs. See [CLI Reference](../references/cli.md) for command details.
 
 ### Core Layer
 
-**Package:** `@zpress/core`
+**Package:** `@ciderpress/core`
 
 The sync engine and config system. See [Engine](./engine/overview.md) for pipeline details.
 
@@ -133,7 +133,7 @@ The sync engine and config system. See [Engine](./engine/overview.md) for pipeli
 | ---------------------------- | --------------------------------------------------------- |
 | `config.ts`                  | Config file discovery and loading via c12                 |
 | `define-config.ts`           | Config validation at the boundary                         |
-| `paths.ts`                   | Path constants for `.zpress/` output structure            |
+| `paths.ts`                   | Path constants for `.ciderpress/` output structure            |
 | `sync/index.ts`              | Main sync pipeline orchestrator                           |
 | `sync/errors.ts`             | SyncError and ConfigError definitions                     |
 | `sync/types.ts`              | Sync-specific type definitions                            |
@@ -160,7 +160,7 @@ The sync engine and config system. See [Engine](./engine/overview.md) for pipeli
 
 ### UI Layer
 
-**Package:** `@zpress/ui`
+**Package:** `@ciderpress/ui`
 
 The Rspress theme and plugin:
 
@@ -193,10 +193,10 @@ The Rspress theme and plugin:
   }
 }}%%
 sequenceDiagram
-    participant User as zpress.config.ts
+    participant User as ciderpress.config.ts
     participant CLI as CLI
     participant Sync as Sync Engine
-    participant FS as .zpress/
+    participant FS as .ciderpress/
     participant Rspress as Rspress
 
     rect rgb(49, 50, 68)
@@ -218,14 +218,14 @@ sequenceDiagram
         Note over FS,Rspress: Build
         CLI->>Rspress: build() or dev()
         Rspress->>FS: Read content + sidebar + nav
-        Rspress->>Rspress: Render with zpress theme
+        Rspress->>Rspress: Render with ciderpress theme
         Rspress-->>FS: Write dist/ (static site)
     end
 ```
 
 ## Error Handling
 
-zpress uses the `Result<T, E>` tuple pattern for expected failures:
+ciderpress uses the `Result<T, E>` tuple pattern for expected failures:
 
 | Layer     | Strategy                      | Type                                  |
 | --------- | ----------------------------- | ------------------------------------- |

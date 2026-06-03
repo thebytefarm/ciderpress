@@ -56,7 +56,7 @@ export type ColorMode = ThemeVariant
 /**
  * Optional color overrides keyed to CSS custom properties.
  *
- * Each key maps to one or more `--zp-c-*` / `--rp-c-*` variables.
+ * Each key maps to one or more `--cp-c-*` / `--rp-c-*` variables.
  * Values must be valid CSS color strings (hex or rgba).
  */
 export interface ThemeColors {
@@ -77,7 +77,7 @@ export interface ThemeColors {
 }
 
 /**
- * Top-level theme configuration for `zpress.config.ts`.
+ * Top-level theme configuration for `ciderpress.config.ts`.
  */
 export interface ThemeConfig {
   /**

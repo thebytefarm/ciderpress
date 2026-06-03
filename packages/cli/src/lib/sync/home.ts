@@ -1,8 +1,8 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@zpress/config'
-import type { Feature, Section, Workspace, ZpressConfig } from '@zpress/config'
+import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import type { Feature, Section, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
@@ -76,12 +76,12 @@ const DEFAULT_SECTION_DESCRIPTIONS: Readonly<Record<string, string>> = {
  * `title`/`description` and `features:` array from top-level sections.
  * Workspace data is serialized separately for `.generated/workspaces.json`.
  *
- * @param config - zpress config
+ * @param config - ciderpress config
  * @param repoRoot - Absolute path to repo root (for resolving source files)
  * @returns Home page content and workspace data
  */
 export async function generateDefaultHomePage(
-  config: ZpressConfig,
+  config: CiderpressConfig,
   repoRoot: string
 ): Promise<HomePageResult> {
   const { tagline } = config
@@ -140,10 +140,10 @@ export async function generateDefaultHomePage(
  * Build serializable workspace data from config apps/packages/workspaces.
  * Returns typed group data for the home page.
  *
- * @param config - Zpress config with apps, packages, and workspace groups
+ * @param config - Ciderpress config with apps, packages, and workspace groups
  * @returns Workspace data result containing all groups
  */
-export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
+export function buildWorkspaceData(config: CiderpressConfig): WorkspaceDataResult {
   const apps = config.apps ?? []
   const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []

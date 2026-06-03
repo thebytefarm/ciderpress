@@ -3,7 +3,7 @@
  *
  * CSS `content` animation via @keyframes is not supported in
  * Firefox or Safari. Instead we cycle a data attribute and let
- * CSS read it via `attr(data-zp-loader-text)`.
+ * CSS read it via `attr(data-cp-loader-text)`.
  *
  * Stores the interval ID on window so ThemeProvider can clear it
  * when dismissing the loader.

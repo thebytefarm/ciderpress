@@ -1,5 +1,5 @@
-import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@zpress/config'
-import type { IconColor, Section, Workspace } from '@zpress/config'
+import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import type { IconColor, Section, Workspace } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import { linkToOutputPath } from '../resolve/path.ts'
@@ -107,7 +107,7 @@ function generateWorkspaceLandingPage(
   items: readonly Workspace[],
   scopePrefix: string
 ): string {
-  const imports = "import { WorkspaceCard, WorkspaceGrid } from '@zpress/ui/theme'\n\n"
+  const imports = "import { WorkspaceCard, WorkspaceGrid } from '@ciderpress/ui/theme'\n\n"
 
   const cards = items.map((item) => {
     const tags: readonly string[] | undefined = resolveTags(item.tags)

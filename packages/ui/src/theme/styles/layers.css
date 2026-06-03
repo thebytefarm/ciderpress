@@ -1,21 +1,21 @@
 /**
- * zpress CSS cascade layer order.
+ * ciderpress CSS cascade layer order.
  *
- * Declares the layer precedence for the entire zpress theme. Later layers in
+ * Declares the layer precedence for the entire ciderpress theme. Later layers in
  * this list win against earlier ones in the cascade, regardless of source
  * order or selector specificity.
  *
  * Layers (low → high precedence):
  *
- *   zpress.reset       — normalize / reset styles (reserved; not yet populated)
- *   zpress.tokens      — design tokens (`--zp-*`, `--rp-*`) defined on :root
- *   zpress.theme       — theme palettes (`[data-zp-theme=*]` scoped colors)
- *   zpress.components  — component styles (`.zp-*` classes for theme components)
- *   zpress.overrides   — structural overrides targeting Rspress (`.rp-*`)
+ *   ciderpress.reset       — normalize / reset styles (reserved; not yet populated)
+ *   ciderpress.tokens      — design tokens (`--cp-*`, `--rp-*`) defined on :root
+ *   ciderpress.theme       — theme palettes (`[data-cp-theme=*]` scoped colors)
+ *   ciderpress.components  — component styles (`.cp-*` classes for theme components)
+ *   ciderpress.overrides   — structural overrides targeting Rspress (`.rp-*`)
  *   user               — PUBLIC override slot for downstream consumers
  *
  * The `user` layer is intentionally the highest-precedence named layer. End
- * users can author rules inside `@layer user { ... }` to override any zpress
+ * users can author rules inside `@layer user { ... }` to override any ciderpress
  * style — including component styles — without `!important`.
  *
  * Example (in a downstream project's CSS):
@@ -29,4 +29,4 @@
  * layer continue to work as before.
  */
 
-@layer zpress.reset, zpress.tokens, zpress.theme, zpress.components, zpress.overrides, user;
+@layer ciderpress.reset, ciderpress.tokens, ciderpress.theme, ciderpress.components, ciderpress.overrides, user;

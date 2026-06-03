@@ -1,11 +1,11 @@
 /* oxlint-disable no-ternary -- raw-copied file; relaxed rules per packages/ui/CLAUDE.md */
-import type { LogoContext, LogoFn, LogoImage, ZpressConfig } from '@zpress/config'
+import type { LogoContext, LogoFn, LogoImage, CiderpressConfig } from '@ciderpress/config'
 // oxlint-disable-next-line import/no-unresolved -- alias provided by createRspressConfig's resolve.alias
-import userConfigModule from '@zpress/internal/user-config'
+import userConfigModule from '@ciderpress/internal/user-config'
 import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { ZpressLogo } from '../shared/zpress-logo'
+import { CiderpressLogo } from '../shared/ciderpress-logo'
 
 import './nav-logo.css'
 
@@ -38,8 +38,8 @@ const FALLBACK_COLORS = Object.freeze({
  * `NavLogo` — Rspress-aware logo slot that handles all three logo configs.
  *
  * - Reads `userConfig.logo` from the bundled user config via the
- *   `@zpress/internal/user-config` alias.
- * - Subscribes to `data-zp-theme` / `data-zp-variant` mutations on `<html>`
+ *   `@ciderpress/internal/user-config` alias.
+ * - Subscribes to `data-cp-theme` / `data-cp-variant` mutations on `<html>`
  *   so a function-form `logo` re-runs when the theme switches.
  * - Portals into Rspress's `.rp-nav__title__link` element so the rendered
  *   logo sits inside the same wrapper as Rspress's stock title/logo.
@@ -50,7 +50,7 @@ const FALLBACK_COLORS = Object.freeze({
  * - `logo` is a function → call with the live `LogoContext`. If the return
  *   value is a `LogoImage`-shaped object, spread onto `<img>`. Otherwise
  *   render as a React node.
- * - `logo` is missing → render the default themed `<ZpressLogo />`.
+ * - `logo` is missing → render the default themed `<CiderpressLogo />`.
  *
  * @returns Portaled logo element or null
  */
@@ -99,7 +99,7 @@ export function NavLogo(): React.ReactElement | null {
     })
     observer.observe(html, {
       attributes: true,
-      attributeFilter: ['data-zp-theme', 'data-zp-variant', 'class', 'style'],
+      attributeFilter: ['data-cp-theme', 'data-cp-variant', 'class', 'style'],
       childList: true,
       subtree: true,
     })
@@ -115,7 +115,7 @@ export function NavLogo(): React.ReactElement | null {
   const logoConfig = readLogoConfig(userConfigModule)
 
   // String-form user logos are handled by Rspress's native <img>. NavLogo
-  // takes over for both the default case (theme-aware ZpressLogo SVG) and
+  // takes over for both the default case (theme-aware CiderpressLogo SVG) and
   // function-form logos (user-defined render). The static `/logo.svg` from
   // Rspress's <img> renders immediately on first paint; once NavLogo's
   // portal mounts, CSS hides the static img so only the theme-aware version
@@ -133,10 +133,10 @@ export function NavLogo(): React.ReactElement | null {
     typeof logoConfig === 'function' ? (
       renderLogoFn({ fn: logoConfig, theme: themeContext })
     ) : (
-      <ZpressLogo />
+      <CiderpressLogo />
     )
 
-  return createPortal(<span className="zp-nav-logo">{rendered}</span>, target)
+  return createPortal(<span className="cp-nav-logo">{rendered}</span>, target)
 }
 
 export { NavLogo as default }
@@ -150,7 +150,7 @@ export { NavLogo as default }
  * default-exports, named-exports, and the empty stub fallback.
  *
  * @private
- * @param mod - Module imported from `@zpress/internal/user-config`
+ * @param mod - Module imported from `@ciderpress/internal/user-config`
  * @returns The `logo` value or `undefined` when none is configured
  */
 function readLogoConfig(mod: unknown): string | LogoFn | undefined {
@@ -160,8 +160,8 @@ function readLogoConfig(mod: unknown): string | LogoFn | undefined {
   const asRecord = mod as Record<string, unknown>
   const candidate =
     asRecord.default !== null && asRecord.default !== undefined
-      ? (asRecord.default as Partial<ZpressConfig>)
-      : (mod as Partial<ZpressConfig>)
+      ? (asRecord.default as Partial<CiderpressConfig>)
+      : (mod as Partial<CiderpressConfig>)
   const { logo } = candidate
   if (typeof logo === 'string') {
     return logo

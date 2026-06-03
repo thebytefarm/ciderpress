@@ -1,4 +1,4 @@
-import type { CardConfig, ZpressConfig, Frontmatter } from '@zpress/config'
+import type { CardConfig, CiderpressConfig, Frontmatter } from '@ciderpress/config'
 
 import type { SourceMap } from './rewrite-links.ts'
 
@@ -17,7 +17,7 @@ export interface SyncContext {
   /**
    * Resolved config.
    */
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   /**
    * Previous manifest (for incremental sync).
    */

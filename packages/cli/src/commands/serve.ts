@@ -1,5 +1,5 @@
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
+import { loadConfig } from '@ciderpress/config/loader'
 import { z } from 'zod'
 
 import { createPaths } from '../lib/paths.ts'
@@ -19,7 +19,7 @@ export default command({
     vscode: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
-    ctx.log.intro('zpress serve')
+    ctx.log.intro('ciderpress serve')
     const paths = createPaths(process.cwd())
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {

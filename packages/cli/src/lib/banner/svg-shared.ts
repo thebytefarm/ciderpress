@@ -2,12 +2,12 @@
  * Shared constants for SVG banner and logo generation.
  *
  * Surfaces / chrome use the Catppuccin Mocha palette to match the
- * existing zpress banner aesthetic. The `brand` slot is the active
- * theme's primary, pulled from `@zpress/theme` so static SVGs stay
+ * existing ciderpress banner aesthetic. The `brand` slot is the active
+ * theme's primary, pulled from `@ciderpress/theme` so static SVGs stay
  * in sync with the docs site CSS and the CLI TUI.
  */
 
-import { resolveBrandPalette } from '@zpress/theme'
+import { resolveBrandPalette } from '@ciderpress/theme'
 
 /**
  * Catppuccin Mocha palette colors used across all generated SVGs.
@@ -76,7 +76,7 @@ export const CONTENT_PADDING = 24
  * Comment placed as the first line of generated SVGs to distinguish
  * from user-customized files.
  */
-export const GENERATED_MARKER = '<!-- zpress-generated -->'
+export const GENERATED_MARKER = '<!-- ciderpress-generated -->'
 
 /**
  * Escape special XML characters in text content.

@@ -2,177 +2,177 @@
  * Prompt — AI prompt block with action buttons and dropdown.
  */
 
-.zp-prompt {
+.cp-prompt {
   display: flex;
   flex-direction: column;
-  margin: var(--zp-s-16) 0;
-  border: 1px solid var(--zp-c-border);
+  margin: var(--cp-s-16) 0;
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius);
   overflow: visible;
   position: relative;
 }
 
-.zp-prompt__header {
+.cp-prompt__header {
   display: flex;
   align-items: center;
-  gap: var(--zp-s-10);
-  padding: var(--zp-s-10) var(--zp-s-14);
-  background: var(--zp-c-bg-elv);
+  gap: var(--cp-s-10);
+  padding: var(--cp-s-10) var(--cp-s-14);
+  background: var(--cp-c-bg-elv);
   border-radius: var(--rp-radius);
 }
 
-.zp-prompt__header:has(+ .zp-prompt__code) {
+.cp-prompt__header:has(+ .cp-prompt__code) {
   border-radius: var(--rp-radius) var(--rp-radius) 0 0;
 }
 
-.zp-prompt__icon {
+.cp-prompt__icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: var(--zp-size-prompt-icon);
-  height: var(--zp-size-prompt-icon);
-  color: var(--zp-c-brand-1);
+  width: var(--cp-size-prompt-icon);
+  height: var(--cp-size-prompt-icon);
+  color: var(--cp-c-brand-1);
 }
 
-.zp-prompt__description {
+.cp-prompt__description {
   flex: 1;
   min-width: 0;
-  font-size: var(--zp-fs-prompt-desc);
-  line-height: var(--zp-lh-base);
-  color: var(--zp-c-text-1);
+  font-size: var(--cp-fs-prompt-desc);
+  line-height: var(--cp-lh-base);
+  color: var(--cp-c-text-1);
 }
 
-.zp-prompt__feedback {
-  font-size: var(--zp-fs-prompt-feedback);
+.cp-prompt__feedback {
+  font-size: var(--cp-fs-prompt-feedback);
   font-weight: 500;
-  color: var(--zp-c-brand-1);
+  color: var(--cp-c-brand-1);
   white-space: nowrap;
 }
 
-.zp-prompt__actions {
+.cp-prompt__actions {
   display: inline-flex;
   align-items: center;
-  gap: var(--zp-s-4);
+  gap: var(--cp-s-4);
   flex-shrink: 0;
 }
 
 /* ── Buttons ──────────────────────────────────────────────── */
 
-.zp-prompt__btn {
+.cp-prompt__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--zp-s-6);
+  gap: var(--cp-s-6);
   padding: 0;
-  border: 1px solid var(--zp-c-border);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius);
-  background: var(--zp-c-bg);
-  color: var(--zp-c-text-2);
-  font-family: var(--zp-font-family-base);
-  font-size: var(--zp-fs-prompt-btn);
+  background: var(--cp-c-bg);
+  color: var(--cp-c-text-2);
+  font-family: var(--cp-font-family-base);
+  font-size: var(--cp-fs-prompt-btn);
   font-weight: 500;
   cursor: pointer;
   transition:
-    color var(--zp-duration-fast),
-    border-color var(--zp-duration-fast),
-    background var(--zp-duration-fast);
+    color var(--cp-duration-fast),
+    border-color var(--cp-duration-fast),
+    background var(--cp-duration-fast);
 }
 
-.zp-prompt__btn:hover {
-  color: var(--zp-c-brand-1);
-  border-color: var(--zp-c-brand-1);
+.cp-prompt__btn:hover {
+  color: var(--cp-c-brand-1);
+  border-color: var(--cp-c-brand-1);
 }
 
-.zp-prompt__btn--primary {
-  padding: var(--zp-s-4) var(--zp-s-12);
-  height: var(--zp-size-prompt-btn);
+.cp-prompt__btn--primary {
+  padding: var(--cp-s-4) var(--cp-s-12);
+  height: var(--cp-size-prompt-btn);
 }
 
-.zp-prompt__btn--icon {
-  width: var(--zp-size-prompt-btn);
-  height: var(--zp-size-prompt-btn);
+.cp-prompt__btn--icon {
+  width: var(--cp-size-prompt-btn);
+  height: var(--cp-size-prompt-btn);
 }
 
 /* ── Dropdown ─────────────────────────────────────────────── */
 
-.zp-prompt__dropdown {
+.cp-prompt__dropdown {
   position: relative;
 }
 
-.zp-prompt__menu {
+.cp-prompt__menu {
   position: absolute;
-  top: calc(100% + var(--zp-s-6));
+  top: calc(100% + var(--cp-s-6));
   right: 0;
-  z-index: var(--zp-z-dropdown);
-  min-width: var(--zp-size-menu-min);
-  padding: var(--zp-s-4);
-  background: var(--zp-c-bg);
-  border: 1px solid var(--zp-c-border);
+  z-index: var(--cp-z-dropdown);
+  min-width: var(--cp-size-menu-min);
+  padding: var(--cp-s-4);
+  background: var(--cp-c-bg);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius);
-  box-shadow: var(--zp-shadow-menu);
+  box-shadow: var(--cp-shadow-menu);
 }
 
-.zp-prompt__menu-item {
+.cp-prompt__menu-item {
   display: flex;
   align-items: center;
-  gap: var(--zp-s-10);
+  gap: var(--cp-s-10);
   width: 100%;
-  padding: var(--zp-s-8) var(--zp-s-10);
+  padding: var(--cp-s-8) var(--cp-s-10);
   border: none;
   border-radius: var(--rp-radius-small);
   background: none;
-  color: var(--zp-c-text-1);
-  font-family: var(--zp-font-family-base);
-  font-size: var(--zp-fs-prompt-menu-item);
+  color: var(--cp-c-text-1);
+  font-family: var(--cp-font-family-base);
+  font-size: var(--cp-fs-prompt-menu-item);
   text-align: left;
   cursor: pointer;
-  transition: background var(--zp-duration-fast);
+  transition: background var(--cp-duration-fast);
 }
 
-.zp-prompt__menu-item:hover {
-  background: var(--zp-c-bg-soft);
+.cp-prompt__menu-item:hover {
+  background: var(--cp-c-bg-soft);
 }
 
-.zp-prompt__menu-icon {
+.cp-prompt__menu-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: var(--zp-size-prompt-menu-icon);
-  height: var(--zp-size-prompt-menu-icon);
-  color: var(--zp-c-text-2);
+  width: var(--cp-size-prompt-menu-icon);
+  height: var(--cp-size-prompt-menu-icon);
+  color: var(--cp-c-text-2);
 }
 
-.zp-prompt__menu-text {
+.cp-prompt__menu-text {
   display: flex;
   flex-direction: column;
   gap: 1px;
   min-width: 0;
 }
 
-.zp-prompt__menu-label {
+.cp-prompt__menu-label {
   font-weight: 500;
-  line-height: var(--zp-lh-tighter);
+  line-height: var(--cp-lh-tighter);
 }
 
-.zp-prompt__menu-desc {
-  font-size: var(--zp-fs-prompt-menu-desc);
-  color: var(--zp-c-text-3);
-  line-height: var(--zp-lh-tighter);
+.cp-prompt__menu-desc {
+  font-size: var(--cp-fs-prompt-menu-desc);
+  color: var(--cp-c-text-3);
+  line-height: var(--cp-lh-tighter);
 }
 
 /* ── Hidden raw & Code block ──────────────────────────────── */
 
-.zp-prompt__raw {
+.cp-prompt__raw {
   display: none;
 }
 
-.zp-prompt__code {
-  border-top: 1px solid var(--zp-c-border);
+.cp-prompt__code {
+  border-top: 1px solid var(--cp-c-border);
 }
 
-.zp-prompt__code div[class*='language-'] {
+.cp-prompt__code div[class*='language-'] {
   margin: 0 !important;
   border-radius: 0 0 var(--rp-radius) var(--rp-radius) !important;
 }

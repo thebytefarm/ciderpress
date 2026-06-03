@@ -10,8 +10,8 @@
 import path from 'node:path'
 
 import type { Log } from '@kidd-cli/core'
-import { configError } from '@zpress/config'
-import type { ConfigError, ConfigWarning, ZpressConfig } from '@zpress/config'
+import { configError } from '@ciderpress/config'
+import type { ConfigError, ConfigWarning, CiderpressConfig } from '@ciderpress/config'
 import { toError } from 'massaman/conversion'
 
 import type { Paths } from './paths.ts'
@@ -56,13 +56,13 @@ interface PresentResultsParams {
 }
 
 interface RunBuildCheckParams {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly paths: Paths
   readonly verbose?: boolean
 }
 
 interface RunConfigCheckParams {
-  readonly config: ZpressConfig | null
+  readonly config: CiderpressConfig | null
   readonly loadError: ConfigError | null
 }
 
@@ -374,7 +374,7 @@ function parseDeadlinks(stderr: string): readonly DeadlinkInfo[] {
  *
  * Output resembles linting output:
  * ```
- *   ✖ .zpress/content/getting-started.md
+ *   ✖ .ciderpress/content/getting-started.md
  *       → /this-does-not-exist
  *       → /another/bad-link
  * ```

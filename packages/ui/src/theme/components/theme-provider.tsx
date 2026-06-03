@@ -1,14 +1,14 @@
-import { TOKEN_TO_CSS_VAR } from '@zpress/theme'
-import type { ThemeColors, ThemeVariant, TokenPath } from '@zpress/theme'
+import { TOKEN_TO_CSS_VAR } from '@ciderpress/theme'
+import type { ThemeColors, ThemeVariant, TokenPath } from '@ciderpress/theme'
 import { match, P } from 'massaman/match'
 import { useEffect, useLayoutEffect } from 'react'
 import type React from 'react'
 
-declare const __ZPRESS_THEME_NAME__: string
-declare const __ZPRESS_DEFAULT_VARIANT__: string
-declare const __ZPRESS_THEME_COLORS__: string
-declare const __ZPRESS_THEME_DARK_COLORS__: string
-declare const __ZPRESS_THEME_REGISTRY__: string
+declare const __CIDERPRESS_THEME_NAME__: string
+declare const __CIDERPRESS_DEFAULT_VARIANT__: string
+declare const __CIDERPRESS_THEME_COLORS__: string
+declare const __CIDERPRESS_THEME_DARK_COLORS__: string
+declare const __CIDERPRESS_THEME_REGISTRY__: string
 
 interface RegistryEntry {
   readonly name: string
@@ -25,13 +25,13 @@ type ThemeColorKey = keyof ThemeColors
 /**
  * Parsed theme registry — built-in themes plus any user themes from
  * `config.themes`. Read from the build-time define so the client bundle
- * does not pull `@zpress/theme`'s factory + Zod into the runtime path.
+ * does not pull `@ciderpress/theme`'s factory + Zod into the runtime path.
  */
-const REGISTRY_ENTRIES: readonly RegistryEntry[] = parseRegistry(__ZPRESS_THEME_REGISTRY__)
+const REGISTRY_ENTRIES: readonly RegistryEntry[] = parseRegistry(__CIDERPRESS_THEME_REGISTRY__)
 
 /**
  * Variants supported by each registered theme, keyed by theme name. Used
- * to set `data-zp-variants` on `<html>` so CSS can hide the appearance
+ * to set `data-cp-variants` on `<html>` so CSS can hide the appearance
  * toggle for themes that only declare one variant.
  */
 const VARIANTS_BY_THEME: Readonly<Record<string, string>> = Object.freeze(
@@ -39,7 +39,7 @@ const VARIANTS_BY_THEME: Readonly<Record<string, string>> = Object.freeze(
 )
 
 /**
- * Default variant for each theme — used when no `zpress-variant` is
+ * Default variant for each theme — used when no `ciderpress-variant` is
  * persisted in `localStorage` or when the persisted value is stale.
  */
 const DEFAULT_VARIANT_BY_THEME: Readonly<Record<string, ThemeVariant>> = Object.freeze(
@@ -53,7 +53,7 @@ const DEFAULT_VARIANT_BY_THEME: Readonly<Record<string, ThemeVariant>> = Object.
 const REGISTERED_THEME_NAMES: ReadonlySet<string> = new Set(REGISTRY_ENTRIES.map((e) => e.name))
 
 /**
- * Mapping from each `ThemeColors` field to the canonical `ZpressTokens`
+ * Mapping from each `ThemeColors` field to the canonical `CiderpressTokens`
  * leaf path that backs it. Fields whose only target is a legacy `--rp-*`
  * var have `null` here.
  */
@@ -76,7 +76,7 @@ const THEME_COLOR_TOKEN_PATHS: Readonly<Record<ThemeColorKey, TokenPath | null>>
 
 /**
  * Legacy `--rp-*` CSS variable names still emitted alongside the
- * canonical `--zp-*` vars so Rspress's built-in styles continue to
+ * canonical `--cp-*` vars so Rspress's built-in styles continue to
  * pick up theme color overrides without modification.
  */
 const LEGACY_RP_VARS: Readonly<Record<ThemeColorKey, readonly string[]>> = Object.freeze({
@@ -98,7 +98,7 @@ const LEGACY_RP_VARS: Readonly<Record<ThemeColorKey, readonly string[]>> = Objec
 
 /**
  * Mapping from each `ThemeColors` field name to the ordered list of CSS
- * variables it sets on `<html>`. The canonical `--zp-*` var (resolved
+ * variables it sets on `<html>`. The canonical `--cp-*` var (resolved
  * from `TOKEN_TO_CSS_VAR`) is emitted first, followed by any legacy
  * `--rp-*` vars from `LEGACY_RP_VARS`.
  */
@@ -137,13 +137,13 @@ const useIsomorphicLayoutEffect = getIsomorphicEffect()
  * ThemeProvider — global UI component that configures the active theme
  * and variant.
  *
- * Sets `data-zp-theme`, `data-zp-variant`, and `data-zp-variants` on
+ * Sets `data-cp-theme`, `data-cp-variant`, and `data-cp-variants` on
  * `<html>` so theme CSS resolves correctly. Mirrors variant changes to
  * Rspress's `.rp-dark` class so Rspress's built-in components stay in
  * sync with our variant state, and observes Rspress's class to persist
  * variant changes triggered by Rspress's own dark-mode toggle.
  *
- * Sets `data-zp-ready` on `<html>` to dismiss the loading overlay
+ * Sets `data-cp-ready` on `<html>` to dismiss the loading overlay
  * injected by critical CSS.
  *
  * @returns Null element (side-effect only component)
@@ -151,25 +151,25 @@ const useIsomorphicLayoutEffect = getIsomorphicEffect()
 export function ThemeProvider(): React.ReactElement | null {
   useIsomorphicLayoutEffect(() => {
     const html = document.documentElement
-    const persistedTheme = safeGetItem('zpress-theme')
+    const persistedTheme = safeGetItem('ciderpress-theme')
     const themeName = resolveActiveThemeName(persistedTheme)
     if (persistedTheme !== null && persistedTheme !== themeName) {
-      safeRemoveItem('zpress-theme')
+      safeRemoveItem('ciderpress-theme')
     }
 
-    const persistedVariant = safeGetVariant('zpress-variant')
-    const buildTimeDefault = parseVariant(__ZPRESS_DEFAULT_VARIANT__)
+    const persistedVariant = safeGetVariant('ciderpress-variant')
+    const buildTimeDefault = parseVariant(__CIDERPRESS_DEFAULT_VARIANT__)
     const variant = resolveActiveVariant({
       persisted: persistedVariant,
       buildTimeDefault,
       themeName,
     })
     if (persistedVariant !== null && persistedVariant !== variant) {
-      safeRemoveItem('zpress-variant')
+      safeRemoveItem('ciderpress-variant')
     }
 
-    const colors = parseColors(__ZPRESS_THEME_COLORS__)
-    const darkColors = parseColors(__ZPRESS_THEME_DARK_COLORS__)
+    const colors = parseColors(__CIDERPRESS_THEME_COLORS__)
+    const darkColors = parseColors(__CIDERPRESS_THEME_DARK_COLORS__)
     const hasColors = Object.keys(colors).length > 0
     const hasDarkColors = Object.keys(darkColors).length > 0
 
@@ -185,7 +185,7 @@ export function ThemeProvider(): React.ReactElement | null {
       html.dataset.zpVariants = 'dark'
     }
 
-    // 3. Apply the resolved variant — both as `data-zp-variant` (our
+    // 3. Apply the resolved variant — both as `data-cp-variant` (our
     //    canonical attribute used by emitted theme CSS) and by mirroring
     //    to Rspress's `.rp-dark` class so its components stay aligned.
     applyVariant(html, variant)
@@ -221,7 +221,7 @@ export function ThemeProvider(): React.ReactElement | null {
       }
       if (!supportedSet.has(nextVariant)) {
         // Unsupported variant for the active theme — snap Rspress's
-        // class state back to match the current `data-zp-variant` and
+        // class state back to match the current `data-cp-variant` and
         // do NOT persist the illegal flip.
         //
         // The classList mutation below re-fires this observer. The
@@ -273,14 +273,14 @@ export { ThemeProvider as default }
  * theme; falls back to the build-time default otherwise.
  *
  * @private
- * @param persisted - Value read from `localStorage['zpress-theme']` (or `null`)
+ * @param persisted - Value read from `localStorage['ciderpress-theme']` (or `null`)
  * @returns Resolved theme name
  */
 function resolveActiveThemeName(persisted: string | null): string {
   if (persisted !== null && REGISTERED_THEME_NAMES.has(persisted)) {
     return persisted
   }
-  return __ZPRESS_THEME_NAME__
+  return __CIDERPRESS_THEME_NAME__
 }
 
 /**
@@ -323,7 +323,7 @@ function resolveActiveVariant(params: {
 }
 
 /**
- * Apply the resolved variant to `<html>` — sets `data-zp-variant`,
+ * Apply the resolved variant to `<html>` — sets `data-cp-variant`,
  * toggles Rspress's `.rp-dark` / `.dark` classes, and mirrors the value
  * into Rspress's `localStorage['rspress-theme-appearance']` key so a
  * server-rendered first paint matches.
@@ -356,7 +356,7 @@ function applyVariant(html: HTMLElement, variant: ThemeVariant): void {
  */
 function persistVariant(variant: ThemeVariant): void {
   try {
-    localStorage.setItem('zpress-variant', variant)
+    localStorage.setItem('ciderpress-variant', variant)
   } catch {
     // storage unavailable
   }
@@ -466,7 +466,7 @@ function parseVariant(raw: string | null): ThemeVariant | null {
  * set without crashing.
  *
  * @private
- * @param raw - Raw JSON string from `__ZPRESS_THEME_REGISTRY__`
+ * @param raw - Raw JSON string from `__CIDERPRESS_THEME_REGISTRY__`
  * @returns Resolved registry entries
  */
 function parseRegistry(raw: string): readonly RegistryEntry[] {
@@ -601,8 +601,8 @@ function clearDotsInterval(): void {
 
 /**
  * Dismiss the loading overlay with a two-phase approach:
- *   1. Add `zp-loader-fade` class — CSS transitions opacity to 0
- *   2. After transition completes — set `data-zp-ready` attribute — CSS hard removes (display: none)
+ *   1. Add `cp-loader-fade` class — CSS transitions opacity to 0
+ *   2. After transition completes — set `data-cp-ready` attribute — CSS hard removes (display: none)
  *
  * Also clears the JS-driven dots animation interval set by loader-dots.js.
  *
@@ -614,19 +614,19 @@ function clearDotsInterval(): void {
  */
 function dismissLoader(html: HTMLElement): () => void {
   const fadeTimer = setTimeout(() => {
-    html.classList.add('zp-loader-fade')
+    html.classList.add('cp-loader-fade')
   }, LOADER_MIN_DISPLAY_MS)
 
   const removeTimer = setTimeout(() => {
     html.dataset.zpReady = 'true'
-    html.classList.remove('zp-loader-fade')
+    html.classList.remove('cp-loader-fade')
     clearDotsInterval()
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
 
   return () => {
     clearTimeout(fadeTimer)
     clearTimeout(removeTimer)
-    html.classList.remove('zp-loader-fade')
+    html.classList.remove('cp-loader-fade')
     clearDotsInterval()
   }
 }

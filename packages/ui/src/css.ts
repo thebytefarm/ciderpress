@@ -1,4 +1,4 @@
-import { BUILT_IN_THEMES } from '@zpress/theme'
+import { BUILT_IN_THEMES } from '@ciderpress/theme'
 
 import { readCss } from './head/read.ts'
 

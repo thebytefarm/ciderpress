@@ -4,11 +4,11 @@
  */
 
 /* ── Base card container ─────────────────────────────────────── */
-.zp-card {
+.cp-card {
   padding: 16px 18px;
   border-radius: var(--rp-radius);
-  border: 1px solid var(--zp-c-border);
-  background: var(--zp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+  background: var(--cp-c-bg-soft);
   text-decoration: none !important;
   transition:
     border-color 0.2s,
@@ -16,19 +16,19 @@
     box-shadow 0.2s;
 }
 
-.zp-card:hover {
-  border-color: var(--zp-c-brand-1);
-  background: var(--zp-c-bg-elv);
-  box-shadow: var(--zp-shadow-card-hover);
+.cp-card:hover {
+  border-color: var(--cp-c-brand-1);
+  background: var(--cp-c-bg-elv);
+  box-shadow: var(--cp-shadow-card-hover);
   text-decoration: none !important;
 }
 
-.zp-card--clickable {
+.cp-card--clickable {
   cursor: pointer;
 }
 
 /* ── Shared icon box (36×36, 4px radius, 18px SVG) ───────────── */
-.zp-card__icon {
+.cp-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,95 +38,95 @@
   flex-shrink: 0;
 }
 
-.zp-card__icon svg {
+.cp-card__icon svg {
   width: 18px;
   height: 18px;
 }
 
 /* ── Icon color variants ─────────────────────────────────────── */
-.zp-card__icon--purple {
-  background: var(--zp-c-tint-purple-bg);
-  color: var(--zp-c-tint-purple-fg);
+.cp-card__icon--purple {
+  background: var(--cp-c-tint-purple-bg);
+  color: var(--cp-c-tint-purple-fg);
 }
 
-.zp-card__icon--purple svg {
-  color: var(--zp-c-tint-purple-fg);
+.cp-card__icon--purple svg {
+  color: var(--cp-c-tint-purple-fg);
 }
 
-.zp-card__icon--blue {
-  background: var(--zp-c-tint-blue-bg);
-  color: var(--zp-c-tint-blue-fg);
+.cp-card__icon--blue {
+  background: var(--cp-c-tint-blue-bg);
+  color: var(--cp-c-tint-blue-fg);
 }
 
-.zp-card__icon--blue svg {
-  color: var(--zp-c-tint-blue-fg);
+.cp-card__icon--blue svg {
+  color: var(--cp-c-tint-blue-fg);
 }
 
-.zp-card__icon--green {
-  background: var(--zp-c-tint-green-bg);
-  color: var(--zp-c-tint-green-fg);
+.cp-card__icon--green {
+  background: var(--cp-c-tint-green-bg);
+  color: var(--cp-c-tint-green-fg);
 }
 
-.zp-card__icon--green svg {
-  color: var(--zp-c-tint-green-fg);
+.cp-card__icon--green svg {
+  color: var(--cp-c-tint-green-fg);
 }
 
-.zp-card__icon--amber {
-  background: var(--zp-c-tint-amber-bg);
-  color: var(--zp-c-tint-amber-fg);
+.cp-card__icon--amber {
+  background: var(--cp-c-tint-amber-bg);
+  color: var(--cp-c-tint-amber-fg);
 }
 
-.zp-card__icon--amber svg {
-  color: var(--zp-c-tint-amber-fg);
+.cp-card__icon--amber svg {
+  color: var(--cp-c-tint-amber-fg);
 }
 
-.zp-card__icon--red {
-  background: var(--zp-c-tint-red-bg);
-  color: var(--zp-c-tint-red-fg);
+.cp-card__icon--red {
+  background: var(--cp-c-tint-red-bg);
+  color: var(--cp-c-tint-red-fg);
 }
 
-.zp-card__icon--red svg {
-  color: var(--zp-c-tint-red-fg);
+.cp-card__icon--red svg {
+  color: var(--cp-c-tint-red-fg);
 }
 
-.zp-card__icon--slate {
-  background: var(--zp-c-tint-slate-bg);
-  color: var(--zp-c-tint-slate-fg);
+.cp-card__icon--slate {
+  background: var(--cp-c-tint-slate-bg);
+  color: var(--cp-c-tint-slate-fg);
 }
 
-.zp-card__icon--slate svg {
-  color: var(--zp-c-tint-slate-fg);
+.cp-card__icon--slate svg {
+  color: var(--cp-c-tint-slate-fg);
 }
 
-.zp-card__icon--cyan {
-  background: var(--zp-c-tint-cyan-bg);
-  color: var(--zp-c-tint-cyan-fg);
+.cp-card__icon--cyan {
+  background: var(--cp-c-tint-cyan-bg);
+  color: var(--cp-c-tint-cyan-fg);
 }
 
-.zp-card__icon--cyan svg {
-  color: var(--zp-c-tint-cyan-fg);
+.cp-card__icon--cyan svg {
+  color: var(--cp-c-tint-cyan-fg);
 }
 
-.zp-card__icon--pink {
-  background: var(--zp-c-tint-pink-bg);
-  color: var(--zp-c-tint-pink-fg);
+.cp-card__icon--pink {
+  background: var(--cp-c-tint-pink-bg);
+  color: var(--cp-c-tint-pink-fg);
 }
 
-.zp-card__icon--pink svg {
-  color: var(--zp-c-tint-pink-fg);
+.cp-card__icon--pink svg {
+  color: var(--cp-c-tint-pink-fg);
 }
 
 /* ── Divider between features and workspaces ─────────────────── */
-.zp-divider {
+.cp-divider {
   max-width: 1152px;
   margin: 0 auto 48px;
   padding: 0;
   border: none;
-  border-top: 1px solid var(--zp-c-divider);
+  border-top: 1px solid var(--cp-c-divider);
 }
 
 @media (max-width: 1184px) {
-  .zp-divider {
+  .cp-divider {
     padding-left: 16px;
     padding-right: 16px;
   }

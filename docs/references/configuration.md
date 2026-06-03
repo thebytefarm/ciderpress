@@ -1,14 +1,14 @@
 ---
 title: Configuration
-description: Complete reference for zpress.config.ts fields, entry shapes, and workspace metadata.
+description: Complete reference for ciderpress.config.ts fields, entry shapes, and workspace metadata.
 ---
 
 # Configuration
 
-All configuration lives in `zpress.config.ts` at your repo root. Use `defineConfig` for type safety and autocompletion.
+All configuration lives in `ciderpress.config.ts` at your repo root. Use `defineConfig` for type safety and autocompletion.
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -29,7 +29,7 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 | `sections`    | `Section[]`           | (required) | Information architecture tree                                                                  |
 | `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                                                             |
 | `theme`       | `ThemeConfig`         | —          | Theme configuration (name, color mode, color overrides)                                        |
-| `themes`      | `ZpressThemeInput[]`  | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes) |
+| `themes`      | `CiderpressThemeInput[]`  | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes) |
 | `site`        | `SiteConfig`          | —          | Site chrome — version chip, edit/report links, sidebar promo, topbar CTA, announcement, footer |
 | `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen)                                           |
 | `actions`     | `HeroAction[]`        | —          | Home page hero call-to-action buttons                                                          |
@@ -40,7 +40,7 @@ Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `
 | `home`        | `HomeConfig`          | —          | Home page layout (eyebrow, trust strip, CTA band, grid columns)                                |
 | `socialLinks` | `SocialLink[]`        | —          | Social media links displayed in the navigation bar                                             |
 | `footer`      | `FooterConfig`        | —          | Footer message, copyright text, and social link visibility                                     |
-| `icon`        | `string`              | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
+| `icon`        | `string`              | —          | Path to a custom favicon served from `.ciderpress/public/`. Defaults to auto-generated `/icon.svg` |
 
 ## Entry
 
@@ -215,7 +215,7 @@ Explicit feature card for the home page. Replaces the auto-generated cards deriv
 features: [
   {
     title: 'Getting Started',
-    description: 'Set up zpress and create your first site.',
+    description: 'Set up ciderpress and create your first site.',
     link: '/getting-started',
     icon: 'pixelarticons:speed-fast',
   },
@@ -374,7 +374,7 @@ site: {
       { heading: 'Product', links: [{ text: 'Features', href: '/features' }] },
       { heading: 'Community', links: [{ text: 'GitHub', href: 'https://github.com/acme' }] },
     ],
-    tagline: 'Built with zpress',
+    tagline: 'Built with ciderpress',
   },
 }
 ```
@@ -472,7 +472,7 @@ Footer displayed below all page content.
 
 ```ts
 footer: {
-  message: 'Built with zpress',
+  message: 'Built with ciderpress',
   copyright: 'Copyright © 2025 Acme Inc.',
   socials: true,
 }

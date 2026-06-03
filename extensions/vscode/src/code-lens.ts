@@ -21,7 +21,7 @@ interface CodeLensDeps {
 }
 
 /**
- * Provides a "View in zpress" CodeLens on tracked markdown files.
+ * Provides a "View in ciderpress" CodeLens on tracked markdown files.
  */
 function createCodeLensProvider(deps: CodeLensDeps): CodeLensProvider & Disposable {
   const emitter = new deps.EventEmitter()
@@ -42,8 +42,8 @@ function createCodeLensProvider(deps: CodeLensDeps): CodeLensProvider & Disposab
         {
           range: new deps.Range(0, 0, 0, 0),
           command: {
-            title: '$(globe) View in zpress',
-            command: 'zpress.preview',
+            title: '$(globe) View in ciderpress',
+            command: 'ciderpress.preview',
             arguments: [url],
           },
           isResolved: true,

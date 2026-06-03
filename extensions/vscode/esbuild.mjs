@@ -17,8 +17,8 @@ const config = {
 if (isWatch) {
   const ctx = await context(config)
   await ctx.watch()
-  console.log('[zpress-vscode] watching for changes...')
+  console.log('[ciderpress-vscode] watching for changes...')
 } else {
   await build(config)
-  console.log('[zpress-vscode] build complete')
+  console.log('[ciderpress-vscode] build complete')
 }

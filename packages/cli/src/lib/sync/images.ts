@@ -24,7 +24,7 @@ const CODE_BLOCK_RE = /```[\s\S]*?```/g
 /**
  * Placeholder prefix for protected code blocks.
  */
-const PLACEHOLDER_PREFIX = '<!--ZPRESS_IMG_CB_'
+const PLACEHOLDER_PREFIX = '<!--CIDERPRESS_IMG_CB_'
 
 /**
  * Placeholder suffix for protected code blocks.
@@ -34,7 +34,7 @@ const PLACEHOLDER_SUFFIX = '-->'
 /**
  * Regex to restore code block placeholders.
  */
-const PLACEHOLDER_RE = /<!--ZPRESS_IMG_CB_(\d+)-->/g
+const PLACEHOLDER_RE = /<!--CIDERPRESS_IMG_CB_(\d+)-->/g
 
 /**
  * Regex matching markdown image syntax: `![alt](path)` or `![alt](path "title")`.

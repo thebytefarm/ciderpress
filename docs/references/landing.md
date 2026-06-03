@@ -1,17 +1,17 @@
 ---
 title: Reference
-description: Technical reference for zpress configuration, CLI, frontmatter, and built-in components.
+description: Technical reference for ciderpress configuration, CLI, frontmatter, and built-in components.
 ---
 
 # Reference
 
-Detailed technical descriptions of every zpress API surface.
+Detailed technical descriptions of every ciderpress API surface.
 
 ## Pages
 
 | Page                                            | Description                                                           |
 | ----------------------------------------------- | --------------------------------------------------------------------- |
-| [Configuration](/reference/configuration)       | All config options for `zpress.config.ts`                             |
+| [Configuration](/reference/configuration)       | All config options for `ciderpress.config.ts`                             |
 | [CLI Commands](/reference/cli)                  | Available CLI commands and flags                                      |
 | [Frontmatter Fields](/reference/frontmatter)    | Supported frontmatter keys for markdown files                         |
 | [OpenAPI](/reference/openapi)                   | Generate interactive API reference pages from an OpenAPI spec         |

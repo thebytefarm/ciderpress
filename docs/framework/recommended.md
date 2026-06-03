@@ -1,6 +1,6 @@
 ---
 title: Recommended
-description: The recommended section layout for a zpress documentation site.
+description: The recommended section layout for a ciderpress documentation site.
 ---
 
 # Recommended Layout
@@ -10,7 +10,7 @@ This is the section structure we recommend for most projects. It maps each doc t
 ## The layout
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   sections: [
@@ -188,4 +188,4 @@ Add sections as your docs grow. Removing an empty section is easier than reorgan
 - [Overview](/framework/overview) — why this framework exists
 - [Types](/framework/types) — the seven doc types in detail
 - [Scaling](/framework/scaling) — how the layout evolves over time
-- [Content](/concepts/content) — zpress section configuration
+- [Content](/concepts/content) — ciderpress section configuration

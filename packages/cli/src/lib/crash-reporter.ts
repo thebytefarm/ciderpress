@@ -84,7 +84,7 @@ interface CrashReport {
     readonly node: string
     readonly platform: string
     readonly arch: string
-    readonly zpress: string
+    readonly ciderpress: string
   }
 }
 
@@ -115,7 +115,7 @@ function buildReport(params: {
       node: nodeVersion,
       platform,
       arch,
-      zpress: options.version,
+      ciderpress: options.version,
     },
   }
 }
@@ -123,7 +123,7 @@ function buildReport(params: {
 /**
  * Write a crash report to a JSON file in the OS temp directory.
  *
- * Creates `<tmpdir>/zpress/` if it doesn't exist. Each crash gets a unique
+ * Creates `<tmpdir>/ciderpress/` if it doesn't exist. Each crash gets a unique
  * filename based on the current timestamp and a random suffix.
  *
  * @private
@@ -136,7 +136,7 @@ function writeCrashLog(params: {
 }): CrashResult {
   const { report, message } = params
   try {
-    const dir = join(tmpdir(), 'zpress')
+    const dir = join(tmpdir(), 'ciderpress')
     mkdirSync(dir, { recursive: true, mode: 0o700 })
 
     const timestamp = report.timestamp.replaceAll(/[:.]/g, '-')

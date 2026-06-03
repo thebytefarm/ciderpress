@@ -139,11 +139,11 @@ export function Prompt({
   }, [])
 
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <span className="zp-prompt__description">{d}</span>)
+    .with(P.nonNullable, (d) => <span className="cp-prompt__description">{d}</span>)
     .otherwise(() => null)
 
   const feedbackEl = match(feedback)
-    .with(P.nonNullable, (msg) => <span className="zp-prompt__feedback">{msg}</span>)
+    .with(P.nonNullable, (msg) => <span className="cp-prompt__feedback">{msg}</span>)
     .otherwise(() => null)
 
   // Split first action as primary button, rest go into dropdown
@@ -151,21 +151,21 @@ export function Prompt({
   const dropdownActions = actions.slice(1)
 
   return (
-    <div className="zp-prompt">
-      <div className="zp-prompt__header">
-        <span className="zp-prompt__icon">
+    <div className="cp-prompt">
+      <div className="cp-prompt__header">
+        <span className="cp-prompt__icon">
           <Icon icon={icon} />
         </span>
         {descEl}
         {feedbackEl}
-        <span className="zp-prompt__actions">
+        <span className="cp-prompt__actions">
           <PrimaryButton action={primaryAction} onPress={handleAction} />
           {match(dropdownActions.length > 0)
             .with(true, () => <ActionDropdown actions={dropdownActions} onPress={handleAction} />)
             .otherwise(() => null)}
           <button
             type="button"
-            className="zp-prompt__btn zp-prompt__btn--icon"
+            className="cp-prompt__btn cp-prompt__btn--icon"
             onClick={toggleExpanded}
             title={match(expanded)
               .with(true, () => 'Hide prompt')
@@ -179,12 +179,12 @@ export function Prompt({
           </button>
         </span>
       </div>
-      <div ref={contentRef} className="zp-prompt__raw" hidden>
+      <div ref={contentRef} className="cp-prompt__raw" hidden>
         {children}
       </div>
       {match(expanded)
         .with(true, () => (
-          <div className="zp-prompt__code">
+          <div className="cp-prompt__code">
             <CodeBlockRuntime lang="markdown" code={getRawText()} />
           </div>
         ))
@@ -264,7 +264,7 @@ function PrimaryButton({ action, onPress }: PrimaryButtonProps): React.ReactElem
   }, [action, onPress])
 
   return (
-    <button type="button" className="zp-prompt__btn zp-prompt__btn--primary" onClick={handleClick}>
+    <button type="button" className="cp-prompt__btn cp-prompt__btn--primary" onClick={handleClick}>
       {meta.icon}
       <span>{meta.label}</span>
     </button>
@@ -308,10 +308,10 @@ function ActionDropdown({ actions, onPress }: ActionDropdownProps): React.ReactE
   }, [])
 
   return (
-    <div ref={ref} className="zp-prompt__dropdown">
+    <div ref={ref} className="cp-prompt__dropdown">
       <button
         type="button"
-        className="zp-prompt__btn zp-prompt__btn--icon"
+        className="cp-prompt__btn cp-prompt__btn--icon"
         onClick={handleToggle}
         aria-expanded={open}
         aria-haspopup="menu"
@@ -324,7 +324,7 @@ function ActionDropdown({ actions, onPress }: ActionDropdownProps): React.ReactE
       </button>
       {match(open)
         .with(true, () => (
-          <div className="zp-prompt__menu" role="menu">
+          <div className="cp-prompt__menu" role="menu">
             {actions.map((action) => {
               const meta = actionMeta(action)
               return (
@@ -365,11 +365,11 @@ function DropdownItem({ action, meta, onPress }: DropdownItemProps): React.React
   }, [action, onPress])
 
   return (
-    <button type="button" className="zp-prompt__menu-item" role="menuitem" onClick={handleClick}>
-      <span className="zp-prompt__menu-icon">{meta.icon}</span>
-      <span className="zp-prompt__menu-text">
-        <span className="zp-prompt__menu-label">{meta.label}</span>
-        <span className="zp-prompt__menu-desc">{meta.description}</span>
+    <button type="button" className="cp-prompt__menu-item" role="menuitem" onClick={handleClick}>
+      <span className="cp-prompt__menu-icon">{meta.icon}</span>
+      <span className="cp-prompt__menu-text">
+        <span className="cp-prompt__menu-label">{meta.label}</span>
+        <span className="cp-prompt__menu-desc">{meta.description}</span>
       </span>
     </button>
   )

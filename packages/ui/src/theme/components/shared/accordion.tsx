@@ -43,7 +43,7 @@ export function AccordionGroup({
 
   return (
     <AccordionGroupContext.Provider value={{ exclusive, openId, setOpenId }}>
-      <div className="zp-accordion-group">{children}</div>
+      <div className="cp-accordion-group">{children}</div>
     </AccordionGroupContext.Provider>
   )
 }
@@ -156,14 +156,14 @@ export function Accordion({
 
   const iconEl = match(icon)
     .with(P.nonNullable, (i) => (
-      <span className="zp-accordion__icon">
+      <span className="cp-accordion__icon">
         <Icon icon={i} />
       </span>
     ))
     .otherwise(() => null)
 
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <span className="zp-accordion__description">{d}</span>)
+    .with(P.nonNullable, (d) => <span className="cp-accordion__description">{d}</span>)
     .otherwise(() => null)
 
   return (
@@ -171,19 +171,19 @@ export function Accordion({
       id={anchorId}
       isExpanded={expanded}
       onExpandedChange={handleExpandedChange}
-      className="zp-accordion"
+      className="cp-accordion"
     >
-      <Button slot="trigger" className="zp-accordion__trigger">
+      <Button slot="trigger" className="cp-accordion__trigger">
         {iconEl}
-        <span className="zp-accordion__header">
-          <span className="zp-accordion__title">{title}</span>
+        <span className="cp-accordion__header">
+          <span className="cp-accordion__title">{title}</span>
           {descEl}
         </span>
-        <span className="zp-accordion__chevron">
+        <span className="cp-accordion__chevron">
           <Icon icon="pixelarticons:chevron-right" />
         </span>
       </Button>
-      <DisclosurePanel className="zp-accordion__panel">{children}</DisclosurePanel>
+      <DisclosurePanel className="cp-accordion__panel">{children}</DisclosurePanel>
     </Disclosure>
   )
 }

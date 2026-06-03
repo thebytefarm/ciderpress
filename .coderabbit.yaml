@@ -73,7 +73,7 @@ reviews:
         - Use `ts-pattern` `match` for exhaustive error variant handling.
     - path: '**/*.md'
       instructions: |
-        Documentation in this repo is for external consumers of the zpress documentation framework.
+        Documentation in this repo is for external consumers of the ciderpress documentation framework.
         Ensure clarity, accuracy, and consistency with the existing docs tone.
 
   tools:

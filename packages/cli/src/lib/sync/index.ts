@@ -3,8 +3,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { log } from '@clack/prompts'
-import type { Section, ZpressConfig } from '@zpress/config'
-import { collectAllWorkspaceItems } from '@zpress/config'
+import type { Section, CiderpressConfig } from '@ciderpress/config'
+import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import { generateAssets } from '../banner/index.ts'
@@ -61,11 +61,11 @@ export interface SyncOptions {
  * Resolves sections, copies pages, generates sidebar/nav, syncs OpenAPI specs,
  * and manages the incremental manifest for change tracking.
  *
- * @param config - Validated zpress config
+ * @param config - Validated ciderpress config
  * @param options - Sync options including resolved paths and quiet flag
  * @returns Sync result with counts of pages written, skipped, and removed
  */
-export async function sync(config: ZpressConfig, options: SyncOptions): Promise<SyncResult> {
+export async function sync(config: CiderpressConfig, options: SyncOptions): Promise<SyncResult> {
   const start = performance.now()
   const quiet = resolveQuiet(options.quiet)
 
@@ -90,7 +90,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   }
 
   // Copy public assets into content/public/ so Rspress can resolve them
-  // (Rspress looks for public/ inside the root directory, which is .zpress/content/)
+  // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
 
   const ctx: SyncContext = {
@@ -250,8 +250,8 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   }
   await saveManifest(outDir, manifest)
 
-  // 8. Write bare-bones README in .zpress/ root
-  await writeZpressReadme(options.paths.outputRoot)
+  // 8. Write bare-bones README in .ciderpress/ root
+  await writeCiderpressReadme(options.paths.outputRoot)
 
   const elapsed = performance.now() - start
   if (!quiet) {
@@ -285,17 +285,17 @@ function collectPages(entries: readonly ResolvedEntry[]): PageData[] {
 }
 
 /**
- * Write a bare-bones README.md in the .zpress/ root explaining the directory.
+ * Write a bare-bones README.md in the .ciderpress/ root explaining the directory.
  *
  * @private
- * @param outputRoot - Absolute path to the .zpress/ directory
+ * @param outputRoot - Absolute path to the .ciderpress/ directory
  * @returns Promise that resolves when the file is written
  */
-async function writeZpressReadme(outputRoot: string): Promise<void> {
+async function writeCiderpressReadme(outputRoot: string): Promise<void> {
   const readmePath = path.resolve(outputRoot, 'README.md')
-  const content = `# .zpress
+  const content = `# .ciderpress
 
-This directory is managed by zpress. It contains the
+This directory is managed by ciderpress. It contains the
 materialized documentation site — synced content, build artifacts, and static assets.
 
 | Directory   | Description                                    |
@@ -308,9 +308,9 @@ materialized documentation site — synced content, build artifacts, and static 
 ## Commands
 
 \`\`\`bash
-zpress sync    # Sync docs into content/
-zpress dev     # Start dev server
-zpress build   # Build static site
+ciderpress sync    # Sync docs into content/
+ciderpress dev     # Start dev server
+ciderpress build   # Build static site
 \`\`\`
 
 > **Do not edit files in \`content/\`** — they are regenerated on every sync.
@@ -408,14 +408,14 @@ function collectOpenapiScopePaths(entries: readonly OpenAPISidebarEntry[]): read
 }
 
 /**
- * Extract an `AssetConfig` from the zpress config.
+ * Extract an `AssetConfig` from the ciderpress config.
  * Falls back to 'Documentation' when no title is set.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Asset config with title and optional tagline
  */
-function buildAssetConfig(config: ZpressConfig): AssetConfig {
+function buildAssetConfig(config: CiderpressConfig): AssetConfig {
   return { title: config.title ?? 'Documentation', tagline: config.tagline }
 }
 

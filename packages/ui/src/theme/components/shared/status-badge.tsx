@@ -31,16 +31,16 @@ export interface BadgeProps {
 export function Badge({ variant = 'info', color, children }: BadgeProps): React.ReactElement {
   return match(color)
     .with(P.nonNullable, (c) => (
-      <span className="zp-badge" style={{ color: c, backgroundColor: hexToTint(c) }}>
+      <span className="cp-badge" style={{ color: c, backgroundColor: hexToTint(c) }}>
         {children}
       </span>
     ))
     .otherwise(() => {
       const className = match(variant)
-        .with('info', () => 'zp-badge zp-badge--info')
-        .with('success', () => 'zp-badge zp-badge--success')
-        .with('warning', () => 'zp-badge zp-badge--warning')
-        .with('error', () => 'zp-badge zp-badge--error')
+        .with('info', () => 'cp-badge cp-badge--info')
+        .with('success', () => 'cp-badge cp-badge--success')
+        .with('warning', () => 'cp-badge cp-badge--warning')
+        .with('error', () => 'cp-badge cp-badge--error')
         .exhaustive()
 
       return <span className={className}>{children}</span>

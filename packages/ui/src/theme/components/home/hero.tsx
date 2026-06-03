@@ -26,7 +26,7 @@ export interface HeroProps {
    */
   readonly eyebrow?: React.ReactNode
   /**
-   * Main heading. Wrap a fragment in `<span className="zp-hero__grad">…</span>`
+   * Main heading. Wrap a fragment in `<span className="cp-hero__grad">…</span>`
    * for the gradient phrase.
    */
   readonly title: React.ReactNode
@@ -57,28 +57,28 @@ export function Hero(props: HeroProps): React.ReactElement {
   const list = actions ?? []
 
   return (
-    <section className="zp-hero">
-      <div className="zp-hero__inner">
+    <section className="cp-hero">
+      <div className="cp-hero__inner">
         {match(eyebrow)
           .with(undefined, () => null)
           .otherwise((e) => (
-            <div className="zp-hero__eyebrow">{e}</div>
+            <div className="cp-hero__eyebrow">{e}</div>
           ))}
-        <h1 className="zp-hero__title">{title}</h1>
+        <h1 className="cp-hero__title">{title}</h1>
         {match(tagline)
           .with(undefined, () => null)
           .otherwise((t) => (
-            <p className="zp-hero__tagline">{t}</p>
+            <p className="cp-hero__tagline">{t}</p>
           ))}
         {match(list.length === 0)
           .with(true, () => null)
           .otherwise(() => (
-            <div className="zp-hero__cta">{list.map(renderAction)}</div>
+            <div className="cp-hero__cta">{list.map(renderAction)}</div>
           ))}
         {match(demo)
           .with(undefined, () => null)
           .otherwise((d) => (
-            <div className="zp-hero__demo">{d}</div>
+            <div className="cp-hero__demo">{d}</div>
           ))}
       </div>
     </section>
@@ -103,8 +103,8 @@ function renderAction(action: HeroAction, index: number): React.ReactElement | n
     return null
   }
   const className = match(action.theme ?? 'brand')
-    .with('brand', () => 'zp-hero__btn zp-hero__btn--primary')
-    .otherwise(() => 'zp-hero__btn')
+    .with('brand', () => 'cp-hero__btn cp-hero__btn--primary')
+    .otherwise(() => 'cp-hero__btn')
 
   return (
     <a key={`${href}:${index}`} href={href} className={className}>

@@ -2,7 +2,7 @@ import { loadConfig as c12LoadConfig } from 'c12'
 
 import { configError } from './errors.ts'
 import type { ConfigResult } from './errors.ts'
-import type { ZpressConfig } from './types.ts'
+import type { CiderpressConfig } from './types.ts'
 import { validateConfig } from './validator.ts'
 
 export interface LoadConfigOptions {
@@ -18,20 +18,20 @@ export interface LoadConfigOptions {
 }
 
 /**
- * Load and validate zpress config from filesystem.
+ * Load and validate ciderpress config from filesystem.
  *
  * Supports multiple config formats:
- * - zpress.config.ts (TypeScript)
- * - zpress.config.js/mjs (JavaScript ESM)
- * - zpress.config.json/jsonc (JSON with comments)
- * - zpress.config.yml/yaml (YAML)
+ * - ciderpress.config.ts (TypeScript)
+ * - ciderpress.config.js/mjs (JavaScript ESM)
+ * - ciderpress.config.json/jsonc (JSON with comments)
+ * - ciderpress.config.yml/yaml (YAML)
  *
  * @param dirOrOptions - Directory path (string) or LoadConfigOptions object
  * @returns ConfigResult tuple - [null, config] on success or [error, null] on failure
  */
 export async function loadConfig(
   dirOrOptions: string | LoadConfigOptions = {}
-): Promise<ConfigResult<ZpressConfig>> {
+): Promise<ConfigResult<CiderpressConfig>> {
   const options = resolveOptions(dirOrOptions)
   const { cwd, configFile } = options
 
@@ -51,14 +51,14 @@ export async function loadConfig(
  */
 async function loadAndValidateConfig(
   options: LoadConfigOptions
-): Promise<ConfigResult<ZpressConfig>> {
+): Promise<ConfigResult<CiderpressConfig>> {
   const { cwd, configFile } = options
 
   try {
-    const result = await c12LoadConfig<ZpressConfig>({
+    const result = await c12LoadConfig<CiderpressConfig>({
       cwd,
       configFile,
-      name: 'zpress',
+      name: 'ciderpress',
       // Supported extensions (c12 handles these automatically)
       // .ts, .mts, .js, .mjs, .json, .jsonc, .yml, .yaml
       rcFile: false,
@@ -70,12 +70,12 @@ async function loadAndValidateConfig(
     const { config } = result
 
     if (!config) {
-      return [configError('not_found', 'Failed to load zpress.config — no config file found'), null]
+      return [configError('not_found', 'Failed to load ciderpress.config — no config file found'), null]
     }
 
     if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {
       return [
-        configError('empty_sections', 'Failed to load zpress.config — no sections found'),
+        configError('empty_sections', 'Failed to load ciderpress.config — no sections found'),
         null,
       ]
     }
@@ -110,7 +110,7 @@ function resolveOptions(dirOrOptions: string | LoadConfigOptions): LoadConfigOpt
  * @param error - Unknown error to extract message from
  * @returns Error message string
  */
-// See https://github.com/joggrdocs/zpress/issues/73 — replace with shared toError util
+// See https://github.com/thebytefarm/ciderpress/issues/73 — replace with shared toError util
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message

@@ -11,10 +11,10 @@ You are a strict functional programmer. You write pure, immutable, declarative T
 ```
 .
 ├── packages/
-│   ├── cli/              # @zpress/cli — CLI commands, watcher, Rspress integration
-│   ├── core/             # @zpress/core — config loading, sync engine, sidebar/nav generation
-│   ├── ui/               # @zpress/ui — Rspress plugin, theme components, and styles
-│   └── zpress/           # @zpress/kit — public wrapper package (CLI + config re-exports)
+│   ├── cli/              # @ciderpress/cli — CLI commands, watcher, Rspress integration
+│   ├── core/             # @ciderpress/core — config loading, sync engine, sidebar/nav generation
+│   ├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
+│   └── ciderpress/           # ciderpress — public wrapper package (CLI + config re-exports)
 ```
 
 ## Tech Stack
@@ -111,7 +111,7 @@ Follow [Conventional Commits](https://www.conventionalcommits.org/) format: `typ
 
 #### Scopes
 
-Use directory-style paths for packages: `packages/cli`, `packages/core`, `packages/ui`, `packages/zpress`. Use short labels for cross-cutting: `deps`, `ci`, `repo`.
+Use directory-style paths for packages: `packages/cli`, `packages/core`, `packages/ui`, `packages/ciderpress`. Use short labels for cross-cutting: `deps`, `ci`, `repo`.
 
 #### Format
 

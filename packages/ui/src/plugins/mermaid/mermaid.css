@@ -1,6 +1,6 @@
 /* ── Container ──────────────────────────────────────────────────────── */
 
-.zpress-mermaid {
+.ciderpress-mermaid {
   position: relative;
   overflow: hidden;
   border: 1px solid var(--rp-c-divider);
@@ -14,24 +14,24 @@
   flex-direction: column;
 }
 
-.zpress-mermaid:active {
+.ciderpress-mermaid:active {
   cursor: grabbing;
 }
 
 /* No pan/grab cursor when in code view */
-.zpress-mermaid-no-pan {
+.ciderpress-mermaid-no-pan {
   cursor: default;
   user-select: text;
   -webkit-user-select: text;
 }
 
-.zpress-mermaid-no-pan:active {
+.ciderpress-mermaid-no-pan:active {
   cursor: default;
 }
 
 /* ── Fullscreen ─────────────────────────────────────────────────────── */
 
-.zpress-mermaid-fullscreen {
+.ciderpress-mermaid-fullscreen {
   position: fixed;
   inset: 0;
   z-index: 9999;
@@ -43,7 +43,7 @@
 
 /* ── Diagram area ───────────────────────────────────────────────────── */
 
-.zpress-mermaid-inner {
+.ciderpress-mermaid-inner {
   flex: 1 1 auto;
   transform-origin: 0 0;
   transition: none;
@@ -54,28 +54,28 @@
   min-height: 120px;
 }
 
-.zpress-mermaid-inner svg {
+.ciderpress-mermaid-inner svg {
   max-width: 100%;
   height: auto;
 }
 
 /* ── Code view ──────────────────────────────────────────────────────── */
 
-.zpress-mermaid-code {
+.ciderpress-mermaid-code {
   flex: 1 1 auto;
   overflow: auto;
   padding: 16px 20px;
   min-height: 120px;
 }
 
-.zpress-mermaid-code pre {
+.ciderpress-mermaid-code pre {
   margin: 0;
   background: transparent;
   border: none;
   padding: 0;
 }
 
-.zpress-mermaid-code code {
+.ciderpress-mermaid-code code {
   font-size: 12px;
   line-height: 1.6;
   color: var(--rp-c-text-2);
@@ -105,7 +105,7 @@
 
 /* ── Top controls (zoom, reset, fullscreen) ─────────────────────────── */
 
-.zpress-mermaid-controls {
+.ciderpress-mermaid-controls {
   position: absolute;
   top: 8px;
   right: 8px;
@@ -116,15 +116,15 @@
   transition: opacity 150ms ease;
 }
 
-.zpress-mermaid:hover .zpress-mermaid-controls {
+.ciderpress-mermaid:hover .ciderpress-mermaid-controls {
   opacity: 1;
 }
 
-.zpress-mermaid-fullscreen .zpress-mermaid-controls {
+.ciderpress-mermaid-fullscreen .ciderpress-mermaid-controls {
   opacity: 1;
 }
 
-.zpress-mermaid-btn {
+.ciderpress-mermaid-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -142,14 +142,14 @@
     border-color 150ms ease;
 }
 
-.zpress-mermaid-btn:hover {
+.ciderpress-mermaid-btn:hover {
   color: var(--rp-c-text-1);
   border-color: var(--rp-c-text-3);
 }
 
 /* ── Footer (type label + tab bar) ──────────────────────────────────── */
 
-.zpress-mermaid-footer {
+.ciderpress-mermaid-footer {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
@@ -158,7 +158,7 @@
   padding: 0 0 0 12px;
 }
 
-.zpress-mermaid-type {
+.ciderpress-mermaid-type {
   font-size: 11px;
   font-family: var(--rp-font-family-mono);
   color: var(--rp-c-text-3);
@@ -167,12 +167,12 @@
   white-space: nowrap;
 }
 
-.zpress-mermaid-tabs {
+.ciderpress-mermaid-tabs {
   display: flex;
   gap: 0;
 }
 
-.zpress-mermaid-tab {
+.ciderpress-mermaid-tab {
   padding: 4px 12px;
   border: none;
   border-left: 1px solid var(--rp-c-divider);
@@ -188,12 +188,12 @@
   letter-spacing: 0.04em;
 }
 
-.zpress-mermaid-tab:hover {
+.ciderpress-mermaid-tab:hover {
   color: var(--rp-c-text-2);
   background: var(--rp-c-bg-soft);
 }
 
-.zpress-mermaid-tab-active {
+.ciderpress-mermaid-tab-active {
   color: var(--rp-c-text-1);
   background: var(--rp-c-bg-soft);
 }

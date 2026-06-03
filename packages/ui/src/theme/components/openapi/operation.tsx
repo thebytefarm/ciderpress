@@ -102,8 +102,8 @@ export function OpenAPIOperation({
         .otherwise(() => null)
 
       return (
-        <div className="zp-oas-operation">
-          <div className="zp-oas-operation-spec">
+        <div className="cp-oas-operation">
+          <div className="cp-oas-operation-spec">
             <OperationHeader
               method={method}
               path={path}
@@ -116,7 +116,7 @@ export function OpenAPIOperation({
             {responsesEl}
             {securityEl}
           </div>
-          <div className="zp-oas-operation-examples">
+          <div className="cp-oas-operation-examples">
             <CodeSample
               method={method}
               path={path}
@@ -156,21 +156,21 @@ function OperationHeader({
   readonly deprecated: boolean
 }): React.ReactElement {
   const summaryEl = match(summary)
-    .with(P.nonNullable, (s) => <div className="zp-oas-operation-summary">{s}</div>)
+    .with(P.nonNullable, (s) => <div className="cp-oas-operation-summary">{s}</div>)
     .otherwise(() => null)
 
   const deprecatedEl = match(deprecated)
-    .with(true, () => <span className="zp-oas-operation-deprecated">Deprecated</span>)
+    .with(true, () => <span className="cp-oas-operation-deprecated">Deprecated</span>)
     .otherwise(() => null)
 
   return (
     <div>
-      <div className="zp-oas-operation-header">
+      <div className="cp-oas-operation-header">
         <MethodBadge method={method} />
-        <span className="zp-oas-operation-header__path">{path}</span>
+        <span className="cp-oas-operation-header__path">{path}</span>
         {deprecatedEl}
       </div>
-      <div className="zp-oas-operation-header__id">{operationId}</div>
+      <div className="cp-oas-operation-header__id">{operationId}</div>
       {summaryEl}
     </div>
   )
@@ -191,13 +191,13 @@ function NotFound({
   readonly path: string
 }): React.ReactElement {
   return (
-    <div className="zp-oas-operation">
-      <div className="zp-oas-operation-spec">
-        <div className="zp-oas-operation-header">
+    <div className="cp-oas-operation">
+      <div className="cp-oas-operation-spec">
+        <div className="cp-oas-operation-header">
           <MethodBadge method={method} />
-          <span className="zp-oas-operation-header__path">{path}</span>
+          <span className="cp-oas-operation-header__path">{path}</span>
         </div>
-        <div className="zp-oas-operation-summary">Operation not found in the provided spec.</div>
+        <div className="cp-oas-operation-summary">Operation not found in the provided spec.</div>
       </div>
     </div>
   )

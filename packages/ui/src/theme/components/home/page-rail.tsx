@@ -15,5 +15,5 @@ export interface PageRailProps {
  * @returns React element.
  */
 export function PageRail(props: PageRailProps): React.ReactElement {
-  return <div className="zp-page-rail">{props.children}</div>
+  return <div className="cp-page-rail">{props.children}</div>
 }

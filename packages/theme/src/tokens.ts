@@ -1,33 +1,33 @@
 /**
  * |===========================================================================|
- *   tokens.ts — Canonical design token registry for zpress
+ *   tokens.ts — Canonical design token registry for ciderpress
  *
- *   Defines the full `ZpressTokens` shape and a deterministic mapping from
- *   every leaf token path to a `--zp-*` CSS custom property name.
+ *   Defines the full `CiderpressTokens` shape and a deterministic mapping from
+ *   every leaf token path to a `--cp-*` CSS custom property name.
  *
  *   Source of truth: `.snapshots/baseline/token-audit.txt` (Phase 4 audit of
  *   `packages/ui/src/theme/**\/*.css`). Every raw value identified in that
- *   audit has a corresponding entry in `ZpressTokens` and an entry in
+ *   audit has a corresponding entry in `CiderpressTokens` and an entry in
  *   `TOKEN_TO_CSS_VAR`.
  *
  *   Naming conventions (mirrors the audit):
- *     --zp-c-*           colors
- *     --zp-s-{N}         spacing scale (N = px value, 2-px grid)
- *     --zp-size-*        component sizes that aren't pure spacing
- *     --zp-radius-*      border-radius
- *     --zp-shadow-*      box-shadow
- *     --zp-z-*           z-index
- *     --zp-fs-*          font-size
- *     --zp-fw-*          font-weight
- *     --zp-ff-*          font-family
- *     --zp-lh-*          line-height
- *     --zp-letter-*      letter-spacing
- *     --zp-opacity-*     opacity
- *     --zp-duration-*    transition durations
- *     --zp-ease-*        transition easings
- *     --zp-bp-*          breakpoints
- *     --zp-blur-*        backdrop blur
- *     --zp-gradient-*    gradients
+ *     --cp-c-*           colors
+ *     --cp-s-{N}         spacing scale (N = px value, 2-px grid)
+ *     --cp-size-*        component sizes that aren't pure spacing
+ *     --cp-radius-*      border-radius
+ *     --cp-shadow-*      box-shadow
+ *     --cp-z-*           z-index
+ *     --cp-fs-*          font-size
+ *     --cp-fw-*          font-weight
+ *     --cp-ff-*          font-family
+ *     --cp-lh-*          line-height
+ *     --cp-letter-*      letter-spacing
+ *     --cp-opacity-*     opacity
+ *     --cp-duration-*    transition durations
+ *     --cp-ease-*        transition easings
+ *     --cp-bp-*          breakpoints
+ *     --cp-blur-*        backdrop blur
+ *     --cp-gradient-*    gradients
  * |===========================================================================|
  */
 
@@ -35,7 +35,7 @@
  * Brand color palette — primary / hover / active / on-brand fg / soft tint
  * plus two derived light shades used by the Rspress compat layer.
  */
-export interface ZpressBrandColors {
+export interface CiderpressBrandColors {
   readonly primary: string
   readonly hover: string
   readonly active: string
@@ -49,7 +49,7 @@ export interface ZpressBrandColors {
 /**
  * Semantic state colors used across badges, terminal lines, and prompts.
  */
-export interface ZpressSemanticColors {
+export interface CiderpressSemanticColors {
   readonly success: string
   readonly error: string
   readonly warn: string
@@ -60,7 +60,7 @@ export interface ZpressSemanticColors {
 /**
  * Surface (background) colors.
  */
-export interface ZpressSurfaceColors {
+export interface CiderpressSurfaceColors {
   readonly bg: string
   readonly bgAlt: string
   readonly bgElv: string
@@ -75,7 +75,7 @@ export interface ZpressSurfaceColors {
 /**
  * Text foreground colors.
  */
-export interface ZpressTextColors {
+export interface CiderpressTextColors {
   readonly text1: string
   readonly text2: string
   readonly text3: string
@@ -84,7 +84,7 @@ export interface ZpressTextColors {
 /**
  * Border / divider colors.
  */
-export interface ZpressBorderColors {
+export interface CiderpressBorderColors {
   readonly border: string
   readonly divider: string
   readonly sidebarAltBorderDark: string
@@ -95,7 +95,7 @@ export interface ZpressBorderColors {
  * status-badge, field-badge-deprecated, hero-demo, and split syntax tokens.
  * Each color exposes `bg` (12% alpha) + `fg` (solid).
  */
-export interface ZpressTintColor {
+export interface CiderpressTintColor {
   readonly bg: string
   readonly fg: string
 }
@@ -103,7 +103,7 @@ export interface ZpressTintColor {
 /**
  * Brighter foreground-only tint variants used by syntax highlighting.
  */
-export interface ZpressTintBrightColor {
+export interface CiderpressTintBrightColor {
   readonly fg: string
 }
 
@@ -111,24 +111,24 @@ export interface ZpressTintBrightColor {
  * Full tint palette covering the 8 rotation colors plus the 2 brighter
  * variants and the purple "glow" used by card-hover shadow recipes.
  */
-export interface ZpressTintColors {
-  readonly purple: ZpressTintColor
-  readonly blue: ZpressTintColor
-  readonly green: ZpressTintColor
-  readonly amber: ZpressTintColor
-  readonly red: ZpressTintColor
-  readonly slate: ZpressTintColor
-  readonly cyan: ZpressTintColor
-  readonly pink: ZpressTintColor
-  readonly purpleBright: ZpressTintBrightColor
-  readonly amberBright: ZpressTintBrightColor
+export interface CiderpressTintColors {
+  readonly purple: CiderpressTintColor
+  readonly blue: CiderpressTintColor
+  readonly green: CiderpressTintColor
+  readonly amber: CiderpressTintColor
+  readonly red: CiderpressTintColor
+  readonly slate: CiderpressTintColor
+  readonly cyan: CiderpressTintColor
+  readonly pink: CiderpressTintColor
+  readonly purpleBright: CiderpressTintBrightColor
+  readonly amberBright: CiderpressTintBrightColor
   readonly purpleGlow: string
 }
 
 /**
- * Terminal palette colors used by `.zp-window--terminal` and `.zp-term-text--*`.
+ * Terminal palette colors used by `.cp-window--terminal` and `.cp-term-text--*`.
  */
-export interface ZpressTerminalColors {
+export interface CiderpressTerminalColors {
   readonly bg: string
   readonly titlebarBg: string
   readonly border: string
@@ -156,7 +156,7 @@ export interface ZpressTerminalColors {
 /**
  * Window chrome — traffic-light dots and title fallback color.
  */
-export interface ZpressWindowColors {
+export interface CiderpressWindowColors {
   readonly dotClose: string
   readonly dotMinimize: string
   readonly dotMaximize: string
@@ -166,7 +166,7 @@ export interface ZpressWindowColors {
 /**
  * Status badge color pairs.
  */
-export interface ZpressBadgeColor {
+export interface CiderpressBadgeColor {
   readonly bg: string
   readonly fg: string
 }
@@ -174,17 +174,17 @@ export interface ZpressBadgeColor {
 /**
  * Status badge palette (info / success / warning / error).
  */
-export interface ZpressBadgeColors {
-  readonly info: ZpressBadgeColor
-  readonly success: ZpressBadgeColor
-  readonly warning: ZpressBadgeColor
-  readonly error: ZpressBadgeColor
+export interface CiderpressBadgeColors {
+  readonly info: CiderpressBadgeColor
+  readonly success: CiderpressBadgeColor
+  readonly warning: CiderpressBadgeColor
+  readonly error: CiderpressBadgeColor
 }
 
 /**
  * Scrollbar colors.
  */
-export interface ZpressScrollbarColors {
+export interface CiderpressScrollbarColors {
   readonly thumb: string
   readonly thumbHover: string
 }
@@ -192,7 +192,7 @@ export interface ZpressScrollbarColors {
 /**
  * Syntax highlighting tokens.
  */
-export interface ZpressSyntaxColors {
+export interface CiderpressSyntaxColors {
   readonly kw: string
   readonly str: string
   readonly fn: string
@@ -201,15 +201,15 @@ export interface ZpressSyntaxColors {
 /**
  * Gradient stop colors (the cyan + purple stops used in the hero-title gradient).
  */
-export interface ZpressGradientColors {
+export interface CiderpressGradientColors {
   readonly heroCyan: string
   readonly heroPurple: string
 }
 
 /**
- * OpenAPI / OAS method + state badge colors. Maps to `--zp-oas-*` CSS vars.
+ * OpenAPI / OAS method + state badge colors. Maps to `--cp-oas-*` CSS vars.
  */
-export interface ZpressOasColors {
+export interface CiderpressOasColors {
   readonly get: string
   readonly post: string
   readonly put: string
@@ -222,7 +222,7 @@ export interface ZpressOasColors {
 /**
  * Brand button surface colors — used by primary CTAs across the docs site.
  */
-export interface ZpressButtonBrandColors {
+export interface CiderpressButtonBrandColors {
   readonly bg: string
   readonly hoverBg: string
   readonly activeBg: string
@@ -232,35 +232,35 @@ export interface ZpressButtonBrandColors {
 /**
  * Button color sub-shape — currently exposes the brand button surface.
  */
-export interface ZpressButtonColors {
-  readonly brand: ZpressButtonBrandColors
+export interface CiderpressButtonColors {
+  readonly brand: CiderpressButtonBrandColors
 }
 
 /**
- * Full color sub-shape of `ZpressTokens`.
+ * Full color sub-shape of `CiderpressTokens`.
  */
-export interface ZpressColors {
-  readonly brand: ZpressBrandColors
-  readonly semantic: ZpressSemanticColors
-  readonly surface: ZpressSurfaceColors
-  readonly text: ZpressTextColors
-  readonly border: ZpressBorderColors
-  readonly tint: ZpressTintColors
-  readonly terminal: ZpressTerminalColors
-  readonly window: ZpressWindowColors
-  readonly badge: ZpressBadgeColors
-  readonly scrollbar: ZpressScrollbarColors
-  readonly syntax: ZpressSyntaxColors
-  readonly gradient: ZpressGradientColors
-  readonly oas: ZpressOasColors
-  readonly button: ZpressButtonColors
+export interface CiderpressColors {
+  readonly brand: CiderpressBrandColors
+  readonly semantic: CiderpressSemanticColors
+  readonly surface: CiderpressSurfaceColors
+  readonly text: CiderpressTextColors
+  readonly border: CiderpressBorderColors
+  readonly tint: CiderpressTintColors
+  readonly terminal: CiderpressTerminalColors
+  readonly window: CiderpressWindowColors
+  readonly badge: CiderpressBadgeColors
+  readonly scrollbar: CiderpressScrollbarColors
+  readonly syntax: CiderpressSyntaxColors
+  readonly gradient: CiderpressGradientColors
+  readonly oas: CiderpressOasColors
+  readonly button: CiderpressButtonColors
 }
 
 /**
  * Spacing scale — a 2-px grid covering every padding/margin/gap value seen
  * in the audit.
  */
-export interface ZpressSpacing {
+export interface CiderpressSpacing {
   readonly s1: string
   readonly s2: string
   readonly s3: string
@@ -288,7 +288,7 @@ export interface ZpressSpacing {
 /**
  * Border-radius scale.
  */
-export interface ZpressRadii {
+export interface CiderpressRadii {
   readonly xs: string
   readonly xsSm: string
   readonly sm: string
@@ -302,7 +302,7 @@ export interface ZpressRadii {
 /**
  * Font-family stack.
  */
-export interface ZpressFontFamilies {
+export interface CiderpressFontFamilies {
   readonly sans: string
   readonly mono: string
 }
@@ -310,7 +310,7 @@ export interface ZpressFontFamilies {
 /**
  * Font-weight scale.
  */
-export interface ZpressFontWeights {
+export interface CiderpressFontWeights {
   readonly regular: number
   readonly medium: number
   readonly semibold: number
@@ -321,7 +321,7 @@ export interface ZpressFontWeights {
  * Font-size scale — generic body + named slots for every component-specific
  * font-size flagged in the audit.
  */
-export interface ZpressFontSizes {
+export interface CiderpressFontSizes {
   readonly body: string
   readonly btn: string
   readonly bullet: string
@@ -368,18 +368,18 @@ export interface ZpressFontSizes {
 }
 
 /**
- * Full font sub-shape of `ZpressTokens`.
+ * Full font sub-shape of `CiderpressTokens`.
  */
-export interface ZpressFonts {
-  readonly family: ZpressFontFamilies
-  readonly weight: ZpressFontWeights
-  readonly size: ZpressFontSizes
+export interface CiderpressFonts {
+  readonly family: CiderpressFontFamilies
+  readonly weight: CiderpressFontWeights
+  readonly size: CiderpressFontSizes
 }
 
 /**
  * Box-shadow recipes.
  */
-export interface ZpressShadows {
+export interface CiderpressShadows {
   readonly cardHover: string
   readonly menu: string
   readonly tooltip: string
@@ -390,7 +390,7 @@ export interface ZpressShadows {
 /**
  * Motion durations.
  */
-export interface ZpressMotionDurations {
+export interface CiderpressMotionDurations {
   readonly fast: string
   readonly base: string
 }
@@ -398,22 +398,22 @@ export interface ZpressMotionDurations {
 /**
  * Motion easings.
  */
-export interface ZpressMotionEasings {
+export interface CiderpressMotionEasings {
   readonly base: string
 }
 
 /**
- * Motion sub-shape of `ZpressTokens` (durations + easings).
+ * Motion sub-shape of `CiderpressTokens` (durations + easings).
  */
-export interface ZpressMotion {
-  readonly duration: ZpressMotionDurations
-  readonly easing: ZpressMotionEasings
+export interface CiderpressMotion {
+  readonly duration: CiderpressMotionDurations
+  readonly easing: CiderpressMotionEasings
 }
 
 /**
  * Z-index scale.
  */
-export interface ZpressZIndex {
+export interface CiderpressZIndex {
   readonly dropdown: number
   readonly floating: number
   readonly tooltip: number
@@ -422,7 +422,7 @@ export interface ZpressZIndex {
 /**
  * Line-height scale (display through code).
  */
-export interface ZpressLineHeights {
+export interface CiderpressLineHeights {
   readonly display: string
   readonly tight: string
   readonly tighter: string
@@ -437,7 +437,7 @@ export interface ZpressLineHeights {
 /**
  * Letter-spacing scale.
  */
-export interface ZpressLetterSpacings {
+export interface CiderpressLetterSpacings {
   readonly wide: string
   readonly eyebrow: string
   readonly display: string
@@ -447,7 +447,7 @@ export interface ZpressLetterSpacings {
 /**
  * Opacity tokens.
  */
-export interface ZpressOpacities {
+export interface CiderpressOpacities {
   readonly muted: string
   readonly deprecated: string
   readonly hover: string
@@ -456,7 +456,7 @@ export interface ZpressOpacities {
 /**
  * Component / element sizes that aren't pure spacing.
  */
-export interface ZpressSizes {
+export interface CiderpressSizes {
   readonly titlebar: string
   readonly windowDot: string
   readonly windowTabDot: string
@@ -492,7 +492,7 @@ export interface ZpressSizes {
 /**
  * Breakpoint widths (max-width media queries).
  */
-export interface ZpressBreakpoints {
+export interface CiderpressBreakpoints {
   readonly sm: string
   readonly md: string
   readonly mdLg: string
@@ -502,45 +502,45 @@ export interface ZpressBreakpoints {
 /**
  * Backdrop blur scale.
  */
-export interface ZpressBlurs {
+export interface CiderpressBlurs {
   readonly base: string
 }
 
 /**
  * Pre-composed gradient tokens (brand + hero-title).
  */
-export interface ZpressGradients {
+export interface CiderpressGradients {
   readonly brand: string
   readonly heroTitle: string
 }
 
 /**
- * Top-level token shape — every key here maps to one or more `--zp-*` CSS
+ * Top-level token shape — every key here maps to one or more `--cp-*` CSS
  * custom properties via `TOKEN_TO_CSS_VAR`.
  *
  * @example
  * const css = `padding: ${TOKEN_TO_CSS_VAR['spacing.s16']};`
- * // => `padding: var(--zp-s-16);`
+ * // => `padding: var(--cp-s-16);`
  */
-export interface ZpressTokens {
-  readonly colors: ZpressColors
-  readonly spacing: ZpressSpacing
-  readonly radii: ZpressRadii
-  readonly fonts: ZpressFonts
-  readonly shadows: ZpressShadows
-  readonly motion: ZpressMotion
-  readonly zIndex: ZpressZIndex
-  readonly lineHeights: ZpressLineHeights
-  readonly letterSpacings: ZpressLetterSpacings
-  readonly opacities: ZpressOpacities
-  readonly sizes: ZpressSizes
-  readonly breakpoints: ZpressBreakpoints
-  readonly blurs: ZpressBlurs
-  readonly gradients: ZpressGradients
+export interface CiderpressTokens {
+  readonly colors: CiderpressColors
+  readonly spacing: CiderpressSpacing
+  readonly radii: CiderpressRadii
+  readonly fonts: CiderpressFonts
+  readonly shadows: CiderpressShadows
+  readonly motion: CiderpressMotion
+  readonly zIndex: CiderpressZIndex
+  readonly lineHeights: CiderpressLineHeights
+  readonly letterSpacings: CiderpressLetterSpacings
+  readonly opacities: CiderpressOpacities
+  readonly sizes: CiderpressSizes
+  readonly breakpoints: CiderpressBreakpoints
+  readonly blurs: CiderpressBlurs
+  readonly gradients: CiderpressGradients
 }
 
 /**
- * String literal union of every leaf token path in `ZpressTokens`.
+ * String literal union of every leaf token path in `CiderpressTokens`.
  * Path segments are joined with `.` and ordered from outer to inner key.
  */
 export type TokenPath =
@@ -818,283 +818,283 @@ export type TokenPath =
   | 'gradients.heroTitle'
 
 /**
- * Canonical mapping from every `ZpressTokens` leaf path to its `--zp-*`
- * CSS custom-property name. Every key in `ZpressTokens` MUST appear here
+ * Canonical mapping from every `CiderpressTokens` leaf path to its `--cp-*`
+ * CSS custom-property name. Every key in `CiderpressTokens` MUST appear here
  * exactly once, and every value MUST be unique.
  *
  * Naming follows the conventions documented at the top of this file and
- * matches the `--zp-*` names proposed in `.snapshots/baseline/token-audit.txt`.
+ * matches the `--cp-*` names proposed in `.snapshots/baseline/token-audit.txt`.
  */
 export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.freeze({
   // colors.brand
-  'colors.brand.primary': '--zp-c-brand-1',
-  'colors.brand.hover': '--zp-c-brand-2',
-  'colors.brand.active': '--zp-c-brand-3',
-  'colors.brand.fg': '--zp-c-brand-fg',
-  'colors.brand.soft': '--zp-c-brand-soft',
-  'colors.brand.onBrand': '--zp-c-on-brand',
-  'colors.brand.light': '--zp-c-brand-light',
-  'colors.brand.lighter': '--zp-c-brand-lighter',
+  'colors.brand.primary': '--cp-c-brand-1',
+  'colors.brand.hover': '--cp-c-brand-2',
+  'colors.brand.active': '--cp-c-brand-3',
+  'colors.brand.fg': '--cp-c-brand-fg',
+  'colors.brand.soft': '--cp-c-brand-soft',
+  'colors.brand.onBrand': '--cp-c-on-brand',
+  'colors.brand.light': '--cp-c-brand-light',
+  'colors.brand.lighter': '--cp-c-brand-lighter',
   // colors.semantic
-  'colors.semantic.success': '--zp-c-success',
-  'colors.semantic.error': '--zp-c-error',
-  'colors.semantic.warn': '--zp-c-warn',
-  'colors.semantic.info': '--zp-c-info',
-  'colors.semantic.muted': '--zp-c-muted',
+  'colors.semantic.success': '--cp-c-success',
+  'colors.semantic.error': '--cp-c-error',
+  'colors.semantic.warn': '--cp-c-warn',
+  'colors.semantic.info': '--cp-c-info',
+  'colors.semantic.muted': '--cp-c-muted',
   // colors.surface
-  'colors.surface.bg': '--zp-c-bg',
-  'colors.surface.bgAlt': '--zp-c-bg-alt',
-  'colors.surface.bgElv': '--zp-c-bg-elv',
-  'colors.surface.bgSoft': '--zp-c-bg-soft',
-  'colors.surface.bgIcon': '--zp-c-bg-icon',
-  'colors.surface.homeBg': '--zp-c-home-bg',
-  'colors.surface.overlayFaint': '--zp-c-overlay-faint',
-  'colors.surface.gutter': '--zp-c-gutter',
-  'colors.surface.codeBlockBg': '--zp-code-block-bg',
+  'colors.surface.bg': '--cp-c-bg',
+  'colors.surface.bgAlt': '--cp-c-bg-alt',
+  'colors.surface.bgElv': '--cp-c-bg-elv',
+  'colors.surface.bgSoft': '--cp-c-bg-soft',
+  'colors.surface.bgIcon': '--cp-c-bg-icon',
+  'colors.surface.homeBg': '--cp-c-home-bg',
+  'colors.surface.overlayFaint': '--cp-c-overlay-faint',
+  'colors.surface.gutter': '--cp-c-gutter',
+  'colors.surface.codeBlockBg': '--cp-code-block-bg',
   // colors.text
-  'colors.text.text1': '--zp-c-text-1',
-  'colors.text.text2': '--zp-c-text-2',
-  'colors.text.text3': '--zp-c-text-3',
+  'colors.text.text1': '--cp-c-text-1',
+  'colors.text.text2': '--cp-c-text-2',
+  'colors.text.text3': '--cp-c-text-3',
   // colors.border
-  'colors.border.border': '--zp-c-border',
-  'colors.border.divider': '--zp-c-divider',
-  'colors.border.sidebarAltBorderDark': '--zp-c-sidebar-alt-border-dark',
+  'colors.border.border': '--cp-c-border',
+  'colors.border.divider': '--cp-c-divider',
+  'colors.border.sidebarAltBorderDark': '--cp-c-sidebar-alt-border-dark',
   // colors.tint
-  'colors.tint.purple.bg': '--zp-c-tint-purple-bg',
-  'colors.tint.purple.fg': '--zp-c-tint-purple-fg',
-  'colors.tint.blue.bg': '--zp-c-tint-blue-bg',
-  'colors.tint.blue.fg': '--zp-c-tint-blue-fg',
-  'colors.tint.green.bg': '--zp-c-tint-green-bg',
-  'colors.tint.green.fg': '--zp-c-tint-green-fg',
-  'colors.tint.amber.bg': '--zp-c-tint-amber-bg',
-  'colors.tint.amber.fg': '--zp-c-tint-amber-fg',
-  'colors.tint.red.bg': '--zp-c-tint-red-bg',
-  'colors.tint.red.fg': '--zp-c-tint-red-fg',
-  'colors.tint.slate.bg': '--zp-c-tint-slate-bg',
-  'colors.tint.slate.fg': '--zp-c-tint-slate-fg',
-  'colors.tint.cyan.bg': '--zp-c-tint-cyan-bg',
-  'colors.tint.cyan.fg': '--zp-c-tint-cyan-fg',
-  'colors.tint.pink.bg': '--zp-c-tint-pink-bg',
-  'colors.tint.pink.fg': '--zp-c-tint-pink-fg',
-  'colors.tint.purpleBright.fg': '--zp-c-tint-purple-bright-fg',
-  'colors.tint.amberBright.fg': '--zp-c-tint-amber-bright-fg',
-  'colors.tint.purpleGlow': '--zp-c-tint-purple-glow',
+  'colors.tint.purple.bg': '--cp-c-tint-purple-bg',
+  'colors.tint.purple.fg': '--cp-c-tint-purple-fg',
+  'colors.tint.blue.bg': '--cp-c-tint-blue-bg',
+  'colors.tint.blue.fg': '--cp-c-tint-blue-fg',
+  'colors.tint.green.bg': '--cp-c-tint-green-bg',
+  'colors.tint.green.fg': '--cp-c-tint-green-fg',
+  'colors.tint.amber.bg': '--cp-c-tint-amber-bg',
+  'colors.tint.amber.fg': '--cp-c-tint-amber-fg',
+  'colors.tint.red.bg': '--cp-c-tint-red-bg',
+  'colors.tint.red.fg': '--cp-c-tint-red-fg',
+  'colors.tint.slate.bg': '--cp-c-tint-slate-bg',
+  'colors.tint.slate.fg': '--cp-c-tint-slate-fg',
+  'colors.tint.cyan.bg': '--cp-c-tint-cyan-bg',
+  'colors.tint.cyan.fg': '--cp-c-tint-cyan-fg',
+  'colors.tint.pink.bg': '--cp-c-tint-pink-bg',
+  'colors.tint.pink.fg': '--cp-c-tint-pink-fg',
+  'colors.tint.purpleBright.fg': '--cp-c-tint-purple-bright-fg',
+  'colors.tint.amberBright.fg': '--cp-c-tint-amber-bright-fg',
+  'colors.tint.purpleGlow': '--cp-c-tint-purple-glow',
   // colors.terminal
-  'colors.terminal.bg': '--zp-c-term-bg',
-  'colors.terminal.titlebarBg': '--zp-c-term-titlebar-bg',
-  'colors.terminal.border': '--zp-c-term-border',
-  'colors.terminal.title': '--zp-c-term-title',
-  'colors.terminal.text': '--zp-c-term-text',
-  'colors.terminal.promptPrefix': '--zp-c-term-prompt-prefix',
-  'colors.terminal.output': '--zp-c-term-output',
-  'colors.terminal.red': '--zp-c-term-red',
-  'colors.terminal.green': '--zp-c-term-green',
-  'colors.terminal.blue': '--zp-c-term-blue',
-  'colors.terminal.yellow': '--zp-c-term-yellow',
-  'colors.terminal.cyan': '--zp-c-term-cyan',
-  'colors.terminal.magenta': '--zp-c-term-magenta',
-  'colors.terminal.white': '--zp-c-term-white',
-  'colors.terminal.gray': '--zp-c-term-gray',
-  'colors.terminal.success': '--zp-c-term-success',
-  'colors.terminal.error': '--zp-c-term-error',
-  'colors.terminal.warn': '--zp-c-term-warn',
-  'colors.terminal.info': '--zp-c-term-info',
-  'colors.terminal.muted': '--zp-c-term-muted',
-  'colors.terminal.bar': '--zp-c-term-bar',
-  'colors.terminal.step': '--zp-c-term-step',
+  'colors.terminal.bg': '--cp-c-term-bg',
+  'colors.terminal.titlebarBg': '--cp-c-term-titlebar-bg',
+  'colors.terminal.border': '--cp-c-term-border',
+  'colors.terminal.title': '--cp-c-term-title',
+  'colors.terminal.text': '--cp-c-term-text',
+  'colors.terminal.promptPrefix': '--cp-c-term-prompt-prefix',
+  'colors.terminal.output': '--cp-c-term-output',
+  'colors.terminal.red': '--cp-c-term-red',
+  'colors.terminal.green': '--cp-c-term-green',
+  'colors.terminal.blue': '--cp-c-term-blue',
+  'colors.terminal.yellow': '--cp-c-term-yellow',
+  'colors.terminal.cyan': '--cp-c-term-cyan',
+  'colors.terminal.magenta': '--cp-c-term-magenta',
+  'colors.terminal.white': '--cp-c-term-white',
+  'colors.terminal.gray': '--cp-c-term-gray',
+  'colors.terminal.success': '--cp-c-term-success',
+  'colors.terminal.error': '--cp-c-term-error',
+  'colors.terminal.warn': '--cp-c-term-warn',
+  'colors.terminal.info': '--cp-c-term-info',
+  'colors.terminal.muted': '--cp-c-term-muted',
+  'colors.terminal.bar': '--cp-c-term-bar',
+  'colors.terminal.step': '--cp-c-term-step',
   // colors.window
-  'colors.window.dotClose': '--zp-c-window-dot-close',
-  'colors.window.dotMinimize': '--zp-c-window-dot-minimize',
-  'colors.window.dotMaximize': '--zp-c-window-dot-maximize',
-  'colors.window.titleFallback': '--zp-c-window-title-fallback',
+  'colors.window.dotClose': '--cp-c-window-dot-close',
+  'colors.window.dotMinimize': '--cp-c-window-dot-minimize',
+  'colors.window.dotMaximize': '--cp-c-window-dot-maximize',
+  'colors.window.titleFallback': '--cp-c-window-title-fallback',
   // colors.badge
-  'colors.badge.info.bg': '--zp-c-badge-info-bg',
-  'colors.badge.info.fg': '--zp-c-badge-info-fg',
-  'colors.badge.success.bg': '--zp-c-badge-success-bg',
-  'colors.badge.success.fg': '--zp-c-badge-success-fg',
-  'colors.badge.warning.bg': '--zp-c-badge-warning-bg',
-  'colors.badge.warning.fg': '--zp-c-badge-warning-fg',
-  'colors.badge.error.bg': '--zp-c-badge-error-bg',
-  'colors.badge.error.fg': '--zp-c-badge-error-fg',
+  'colors.badge.info.bg': '--cp-c-badge-info-bg',
+  'colors.badge.info.fg': '--cp-c-badge-info-fg',
+  'colors.badge.success.bg': '--cp-c-badge-success-bg',
+  'colors.badge.success.fg': '--cp-c-badge-success-fg',
+  'colors.badge.warning.bg': '--cp-c-badge-warning-bg',
+  'colors.badge.warning.fg': '--cp-c-badge-warning-fg',
+  'colors.badge.error.bg': '--cp-c-badge-error-bg',
+  'colors.badge.error.fg': '--cp-c-badge-error-fg',
   // colors.scrollbar
-  'colors.scrollbar.thumb': '--zp-c-scrollbar-thumb',
-  'colors.scrollbar.thumbHover': '--zp-c-scrollbar-thumb-hover',
+  'colors.scrollbar.thumb': '--cp-c-scrollbar-thumb',
+  'colors.scrollbar.thumbHover': '--cp-c-scrollbar-thumb-hover',
   // colors.syntax
-  'colors.syntax.kw': '--zp-c-syntax-kw',
-  'colors.syntax.str': '--zp-c-syntax-str',
-  'colors.syntax.fn': '--zp-c-syntax-fn',
+  'colors.syntax.kw': '--cp-c-syntax-kw',
+  'colors.syntax.str': '--cp-c-syntax-str',
+  'colors.syntax.fn': '--cp-c-syntax-fn',
   // colors.gradient
-  'colors.gradient.heroCyan': '--zp-c-gradient-hero-cyan',
-  'colors.gradient.heroPurple': '--zp-c-gradient-hero-purple',
+  'colors.gradient.heroCyan': '--cp-c-gradient-hero-cyan',
+  'colors.gradient.heroPurple': '--cp-c-gradient-hero-purple',
   // colors.oas
-  'colors.oas.get': '--zp-oas-get',
-  'colors.oas.post': '--zp-oas-post',
-  'colors.oas.put': '--zp-oas-put',
-  'colors.oas.patch': '--zp-oas-patch',
-  'colors.oas.delete': '--zp-oas-delete',
-  'colors.oas.deprecated': '--zp-oas-deprecated',
-  'colors.oas.required': '--zp-oas-required',
+  'colors.oas.get': '--cp-oas-get',
+  'colors.oas.post': '--cp-oas-post',
+  'colors.oas.put': '--cp-oas-put',
+  'colors.oas.patch': '--cp-oas-patch',
+  'colors.oas.delete': '--cp-oas-delete',
+  'colors.oas.deprecated': '--cp-oas-deprecated',
+  'colors.oas.required': '--cp-oas-required',
   // colors.button
-  'colors.button.brand.bg': '--zp-button-brand-bg',
-  'colors.button.brand.hoverBg': '--zp-button-brand-hover-bg',
-  'colors.button.brand.activeBg': '--zp-button-brand-active-bg',
-  'colors.button.brand.text': '--zp-button-brand-text',
+  'colors.button.brand.bg': '--cp-button-brand-bg',
+  'colors.button.brand.hoverBg': '--cp-button-brand-hover-bg',
+  'colors.button.brand.activeBg': '--cp-button-brand-active-bg',
+  'colors.button.brand.text': '--cp-button-brand-text',
   // spacing
-  'spacing.s1': '--zp-s-1',
-  'spacing.s2': '--zp-s-2',
-  'spacing.s3': '--zp-s-3',
-  'spacing.s4': '--zp-s-4',
-  'spacing.s5': '--zp-s-5',
-  'spacing.s6': '--zp-s-6',
-  'spacing.s8': '--zp-s-8',
-  'spacing.s10': '--zp-s-10',
-  'spacing.s12': '--zp-s-12',
-  'spacing.s14': '--zp-s-14',
-  'spacing.s16': '--zp-s-16',
-  'spacing.s18': '--zp-s-18',
-  'spacing.s20': '--zp-s-20',
-  'spacing.s24': '--zp-s-24',
-  'spacing.s28': '--zp-s-28',
-  'spacing.s32': '--zp-s-32',
-  'spacing.s40': '--zp-s-40',
-  'spacing.s48': '--zp-s-48',
-  'spacing.s56': '--zp-s-56',
-  'spacing.s64': '--zp-s-64',
-  'spacing.s72': '--zp-s-72',
-  'spacing.s96': '--zp-s-96',
+  'spacing.s1': '--cp-s-1',
+  'spacing.s2': '--cp-s-2',
+  'spacing.s3': '--cp-s-3',
+  'spacing.s4': '--cp-s-4',
+  'spacing.s5': '--cp-s-5',
+  'spacing.s6': '--cp-s-6',
+  'spacing.s8': '--cp-s-8',
+  'spacing.s10': '--cp-s-10',
+  'spacing.s12': '--cp-s-12',
+  'spacing.s14': '--cp-s-14',
+  'spacing.s16': '--cp-s-16',
+  'spacing.s18': '--cp-s-18',
+  'spacing.s20': '--cp-s-20',
+  'spacing.s24': '--cp-s-24',
+  'spacing.s28': '--cp-s-28',
+  'spacing.s32': '--cp-s-32',
+  'spacing.s40': '--cp-s-40',
+  'spacing.s48': '--cp-s-48',
+  'spacing.s56': '--cp-s-56',
+  'spacing.s64': '--cp-s-64',
+  'spacing.s72': '--cp-s-72',
+  'spacing.s96': '--cp-s-96',
   // radii
-  'radii.xs': '--zp-radius-xs',
-  'radii.xsSm': '--zp-radius-xs-sm',
-  'radii.sm': '--zp-radius-sm',
-  'radii.mdSm': '--zp-radius-md-sm',
-  'radii.md': '--zp-radius-md',
-  'radii.lg': '--zp-radius-lg',
-  'radii.mdLg': '--zp-radius-md-lg',
-  'radii.pill': '--zp-radius-pill',
+  'radii.xs': '--cp-radius-xs',
+  'radii.xsSm': '--cp-radius-xs-sm',
+  'radii.sm': '--cp-radius-sm',
+  'radii.mdSm': '--cp-radius-md-sm',
+  'radii.md': '--cp-radius-md',
+  'radii.lg': '--cp-radius-lg',
+  'radii.mdLg': '--cp-radius-md-lg',
+  'radii.pill': '--cp-radius-pill',
   // fonts.family
-  'fonts.family.sans': '--zp-ff-sans',
-  'fonts.family.mono': '--zp-ff-mono',
+  'fonts.family.sans': '--cp-ff-sans',
+  'fonts.family.mono': '--cp-ff-mono',
   // fonts.weight
-  'fonts.weight.regular': '--zp-fw-regular',
-  'fonts.weight.medium': '--zp-fw-medium',
-  'fonts.weight.semibold': '--zp-fw-semibold',
-  'fonts.weight.bold': '--zp-fw-bold',
+  'fonts.weight.regular': '--cp-fw-regular',
+  'fonts.weight.medium': '--cp-fw-medium',
+  'fonts.weight.semibold': '--cp-fw-semibold',
+  'fonts.weight.bold': '--cp-fw-bold',
   // fonts.size
-  'fonts.size.body': '--zp-fs-body',
-  'fonts.size.btn': '--zp-fs-btn',
-  'fonts.size.bullet': '--zp-fs-bullet',
-  'fonts.size.code': '--zp-fs-code',
-  'fonts.size.eyebrow': '--zp-fs-eyebrow',
-  'fonts.size.tagline': '--zp-fs-tagline',
-  'fonts.size.heroTitle': '--zp-fs-hero-title',
-  'fonts.size.splitTitle': '--zp-fs-split-title',
-  'fonts.size.featureTitle': '--zp-fs-feature-title',
-  'fonts.size.featureDesc': '--zp-fs-feature-desc',
-  'fonts.size.featureLink': '--zp-fs-feature-link',
-  'fonts.size.sectionTitle': '--zp-fs-section-title',
-  'fonts.size.sectionDesc': '--zp-fs-section-desc',
-  'fonts.size.badge': '--zp-fs-badge',
-  'fonts.size.tooltip': '--zp-fs-tooltip',
-  'fonts.size.tooltipHeadline': '--zp-fs-tooltip-headline',
-  'fonts.size.tooltipCta': '--zp-fs-tooltip-cta',
-  'fonts.size.check': '--zp-fs-check',
-  'fonts.size.fieldName': '--zp-fs-field-name',
-  'fonts.size.fieldType': '--zp-fs-field-type',
-  'fonts.size.fieldBadge': '--zp-fs-field-badge',
-  'fonts.size.fieldDefault': '--zp-fs-field-default',
-  'fonts.size.fieldDefaultCode': '--zp-fs-field-default-code',
-  'fonts.size.fieldBody': '--zp-fs-field-body',
-  'fonts.size.fieldGroupTitle': '--zp-fs-field-group-title',
-  'fonts.size.fieldTrigger': '--zp-fs-field-trigger',
-  'fonts.size.promptDesc': '--zp-fs-prompt-desc',
-  'fonts.size.promptFeedback': '--zp-fs-prompt-feedback',
-  'fonts.size.promptBtn': '--zp-fs-prompt-btn',
-  'fonts.size.promptMenuItem': '--zp-fs-prompt-menu-item',
-  'fonts.size.promptMenuDesc': '--zp-fs-prompt-menu-desc',
-  'fonts.size.colorName': '--zp-fs-color-name',
-  'fonts.size.colorValue': '--zp-fs-color-value',
-  'fonts.size.windowTitle': '--zp-fs-window-title',
-  'fonts.size.windowTab': '--zp-fs-window-tab',
-  'fonts.size.windowUrl': '--zp-fs-window-url',
-  'fonts.size.termBody': '--zp-fs-term-body',
-  'fonts.size.demoTitle': '--zp-fs-demo-title',
-  'fonts.size.demoBody': '--zp-fs-demo-body',
-  'fonts.size.askAi': '--zp-fs-ask-ai',
-  'fonts.size.askAiMark': '--zp-fs-ask-ai-mark',
-  'fonts.size.askAiShortcut': '--zp-fs-ask-ai-shortcut',
-  'fonts.size.sidebarLink': '--zp-fs-sidebar-link',
+  'fonts.size.body': '--cp-fs-body',
+  'fonts.size.btn': '--cp-fs-btn',
+  'fonts.size.bullet': '--cp-fs-bullet',
+  'fonts.size.code': '--cp-fs-code',
+  'fonts.size.eyebrow': '--cp-fs-eyebrow',
+  'fonts.size.tagline': '--cp-fs-tagline',
+  'fonts.size.heroTitle': '--cp-fs-hero-title',
+  'fonts.size.splitTitle': '--cp-fs-split-title',
+  'fonts.size.featureTitle': '--cp-fs-feature-title',
+  'fonts.size.featureDesc': '--cp-fs-feature-desc',
+  'fonts.size.featureLink': '--cp-fs-feature-link',
+  'fonts.size.sectionTitle': '--cp-fs-section-title',
+  'fonts.size.sectionDesc': '--cp-fs-section-desc',
+  'fonts.size.badge': '--cp-fs-badge',
+  'fonts.size.tooltip': '--cp-fs-tooltip',
+  'fonts.size.tooltipHeadline': '--cp-fs-tooltip-headline',
+  'fonts.size.tooltipCta': '--cp-fs-tooltip-cta',
+  'fonts.size.check': '--cp-fs-check',
+  'fonts.size.fieldName': '--cp-fs-field-name',
+  'fonts.size.fieldType': '--cp-fs-field-type',
+  'fonts.size.fieldBadge': '--cp-fs-field-badge',
+  'fonts.size.fieldDefault': '--cp-fs-field-default',
+  'fonts.size.fieldDefaultCode': '--cp-fs-field-default-code',
+  'fonts.size.fieldBody': '--cp-fs-field-body',
+  'fonts.size.fieldGroupTitle': '--cp-fs-field-group-title',
+  'fonts.size.fieldTrigger': '--cp-fs-field-trigger',
+  'fonts.size.promptDesc': '--cp-fs-prompt-desc',
+  'fonts.size.promptFeedback': '--cp-fs-prompt-feedback',
+  'fonts.size.promptBtn': '--cp-fs-prompt-btn',
+  'fonts.size.promptMenuItem': '--cp-fs-prompt-menu-item',
+  'fonts.size.promptMenuDesc': '--cp-fs-prompt-menu-desc',
+  'fonts.size.colorName': '--cp-fs-color-name',
+  'fonts.size.colorValue': '--cp-fs-color-value',
+  'fonts.size.windowTitle': '--cp-fs-window-title',
+  'fonts.size.windowTab': '--cp-fs-window-tab',
+  'fonts.size.windowUrl': '--cp-fs-window-url',
+  'fonts.size.termBody': '--cp-fs-term-body',
+  'fonts.size.demoTitle': '--cp-fs-demo-title',
+  'fonts.size.demoBody': '--cp-fs-demo-body',
+  'fonts.size.askAi': '--cp-fs-ask-ai',
+  'fonts.size.askAiMark': '--cp-fs-ask-ai-mark',
+  'fonts.size.askAiShortcut': '--cp-fs-ask-ai-shortcut',
+  'fonts.size.sidebarLink': '--cp-fs-sidebar-link',
   // shadows
-  'shadows.cardHover': '--zp-shadow-card-hover',
-  'shadows.menu': '--zp-shadow-menu',
-  'shadows.tooltip': '--zp-shadow-tooltip',
-  'shadows.heroDemo': '--zp-shadow-hero-demo',
-  'shadows.askAi': '--zp-shadow-ask-ai',
+  'shadows.cardHover': '--cp-shadow-card-hover',
+  'shadows.menu': '--cp-shadow-menu',
+  'shadows.tooltip': '--cp-shadow-tooltip',
+  'shadows.heroDemo': '--cp-shadow-hero-demo',
+  'shadows.askAi': '--cp-shadow-ask-ai',
   // motion
-  'motion.duration.fast': '--zp-duration-fast',
-  'motion.duration.base': '--zp-duration-base',
-  'motion.easing.base': '--zp-ease-base',
+  'motion.duration.fast': '--cp-duration-fast',
+  'motion.duration.base': '--cp-duration-base',
+  'motion.easing.base': '--cp-ease-base',
   // zIndex
-  'zIndex.dropdown': '--zp-z-dropdown',
-  'zIndex.floating': '--zp-z-floating',
-  'zIndex.tooltip': '--zp-z-tooltip',
+  'zIndex.dropdown': '--cp-z-dropdown',
+  'zIndex.floating': '--cp-z-floating',
+  'zIndex.tooltip': '--cp-z-tooltip',
   // lineHeights
-  'lineHeights.display': '--zp-lh-display',
-  'lineHeights.tight': '--zp-lh-tight',
-  'lineHeights.tighter': '--zp-lh-tighter',
-  'lineHeights.snug': '--zp-lh-snug',
-  'lineHeights.base': '--zp-lh-base',
-  'lineHeights.relaxed': '--zp-lh-relaxed',
-  'lineHeights.demo': '--zp-lh-demo',
-  'lineHeights.code': '--zp-lh-code',
-  'lineHeights.sidebar': '--zp-lh-sidebar',
+  'lineHeights.display': '--cp-lh-display',
+  'lineHeights.tight': '--cp-lh-tight',
+  'lineHeights.tighter': '--cp-lh-tighter',
+  'lineHeights.snug': '--cp-lh-snug',
+  'lineHeights.base': '--cp-lh-base',
+  'lineHeights.relaxed': '--cp-lh-relaxed',
+  'lineHeights.demo': '--cp-lh-demo',
+  'lineHeights.code': '--cp-lh-code',
+  'lineHeights.sidebar': '--cp-lh-sidebar',
   // letterSpacings
-  'letterSpacings.wide': '--zp-letter-wide',
-  'letterSpacings.eyebrow': '--zp-letter-eyebrow',
-  'letterSpacings.display': '--zp-letter-display',
-  'letterSpacings.hero': '--zp-letter-hero',
+  'letterSpacings.wide': '--cp-letter-wide',
+  'letterSpacings.eyebrow': '--cp-letter-eyebrow',
+  'letterSpacings.display': '--cp-letter-display',
+  'letterSpacings.hero': '--cp-letter-hero',
   // opacities
-  'opacities.muted': '--zp-opacity-muted',
-  'opacities.deprecated': '--zp-opacity-deprecated',
-  'opacities.hover': '--zp-opacity-hover',
+  'opacities.muted': '--cp-opacity-muted',
+  'opacities.deprecated': '--cp-opacity-deprecated',
+  'opacities.hover': '--cp-opacity-hover',
   // sizes
-  'sizes.titlebar': '--zp-size-titlebar',
-  'sizes.windowDot': '--zp-size-window-dot',
-  'sizes.windowTabDot': '--zp-size-window-tab-dot',
-  'sizes.browserTabMax': '--zp-size-browser-tab-max',
-  'sizes.browserIcon': '--zp-size-browser-icon',
-  'sizes.browserUrlbar': '--zp-size-browser-urlbar',
-  'sizes.iconBox': '--zp-size-icon-box',
-  'sizes.iconBoxSm': '--zp-size-icon-box-sm',
-  'sizes.iconSvg': '--zp-size-icon-svg',
-  'sizes.iconSvgSm': '--zp-size-icon-svg-sm',
-  'sizes.iconSm': '--zp-size-icon-sm',
-  'sizes.contentMax': '--zp-size-content-max',
-  'sizes.focusRing': '--zp-size-focus-ring',
-  'sizes.focusRingOffset': '--zp-size-focus-ring-offset',
-  'sizes.tooltipMax': '--zp-size-tooltip-max',
-  'sizes.swatch': '--zp-size-swatch',
-  'sizes.demoMax': '--zp-size-demo-max',
-  'sizes.splitMax': '--zp-size-split-max',
-  'sizes.heroGrid': '--zp-size-hero-grid',
-  'sizes.heroMax': '--zp-size-hero-max',
-  'sizes.taglineMax': '--zp-size-tagline-max',
-  'sizes.promptIcon': '--zp-size-prompt-icon',
-  'sizes.promptBtn': '--zp-size-prompt-btn',
-  'sizes.menuMin': '--zp-size-menu-min',
-  'sizes.promptMenuIcon': '--zp-size-prompt-menu-icon',
-  'sizes.check': '--zp-size-check',
-  'sizes.chevron': '--zp-size-chevron',
-  'sizes.askAiIcon': '--zp-size-ask-ai-icon',
-  'sizes.sidebarCircle': '--zp-size-sidebar-circle',
-  'sizes.scrollbar': '--zp-size-scrollbar',
+  'sizes.titlebar': '--cp-size-titlebar',
+  'sizes.windowDot': '--cp-size-window-dot',
+  'sizes.windowTabDot': '--cp-size-window-tab-dot',
+  'sizes.browserTabMax': '--cp-size-browser-tab-max',
+  'sizes.browserIcon': '--cp-size-browser-icon',
+  'sizes.browserUrlbar': '--cp-size-browser-urlbar',
+  'sizes.iconBox': '--cp-size-icon-box',
+  'sizes.iconBoxSm': '--cp-size-icon-box-sm',
+  'sizes.iconSvg': '--cp-size-icon-svg',
+  'sizes.iconSvgSm': '--cp-size-icon-svg-sm',
+  'sizes.iconSm': '--cp-size-icon-sm',
+  'sizes.contentMax': '--cp-size-content-max',
+  'sizes.focusRing': '--cp-size-focus-ring',
+  'sizes.focusRingOffset': '--cp-size-focus-ring-offset',
+  'sizes.tooltipMax': '--cp-size-tooltip-max',
+  'sizes.swatch': '--cp-size-swatch',
+  'sizes.demoMax': '--cp-size-demo-max',
+  'sizes.splitMax': '--cp-size-split-max',
+  'sizes.heroGrid': '--cp-size-hero-grid',
+  'sizes.heroMax': '--cp-size-hero-max',
+  'sizes.taglineMax': '--cp-size-tagline-max',
+  'sizes.promptIcon': '--cp-size-prompt-icon',
+  'sizes.promptBtn': '--cp-size-prompt-btn',
+  'sizes.menuMin': '--cp-size-menu-min',
+  'sizes.promptMenuIcon': '--cp-size-prompt-menu-icon',
+  'sizes.check': '--cp-size-check',
+  'sizes.chevron': '--cp-size-chevron',
+  'sizes.askAiIcon': '--cp-size-ask-ai-icon',
+  'sizes.sidebarCircle': '--cp-size-sidebar-circle',
+  'sizes.scrollbar': '--cp-size-scrollbar',
   // breakpoints
-  'breakpoints.sm': '--zp-bp-sm',
-  'breakpoints.md': '--zp-bp-md',
-  'breakpoints.mdLg': '--zp-bp-md-lg',
-  'breakpoints.content': '--zp-bp-content',
+  'breakpoints.sm': '--cp-bp-sm',
+  'breakpoints.md': '--cp-bp-md',
+  'breakpoints.mdLg': '--cp-bp-md-lg',
+  'breakpoints.content': '--cp-bp-content',
   // blurs
-  'blurs.base': '--zp-blur-base',
+  'blurs.base': '--cp-blur-base',
   // gradients
-  'gradients.brand': '--zp-gradient-brand',
-  'gradients.heroTitle': '--zp-gradient-hero-title',
+  'gradients.brand': '--cp-gradient-brand',
+  'gradients.heroTitle': '--cp-gradient-hero-title',
 })

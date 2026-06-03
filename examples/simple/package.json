@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "docs:dev": "zpress dev",
-    "docs:build": "zpress build",
-    "docs:serve": "zpress serve"
+    "docs:dev": "ciderpress dev",
+    "docs:build": "ciderpress build",
+    "docs:serve": "ciderpress serve"
   },
   "dependencies": {
-    "@zpress/kit": "workspace:*"
+    "ciderpress": "workspace:*"
   }
 }

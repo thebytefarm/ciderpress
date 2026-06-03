@@ -5,7 +5,7 @@ description: Render diagrams from text using Mermaid fenced code blocks.
 
 # Mermaid Diagrams
 
-zpress bundles `rspress-plugin-mermaid` so any fenced code block with the `mermaid` language renders as a diagram. No configuration required.
+ciderpress bundles `rspress-plugin-mermaid` so any fenced code block with the `mermaid` language renders as a diagram. No configuration required.
 
 ## Flowchart
 

@@ -1,10 +1,10 @@
-import { THEME_NAMES, THEME_VARIANTS } from '@zpress/theme'
+import { THEME_NAMES, THEME_VARIANTS } from '@ciderpress/theme'
 import { match, P } from 'massaman/match'
 
 import { configError, configErrorFromZod } from './errors.ts'
 import type { ConfigError, ConfigResult } from './errors.ts'
 import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
-import { zpressConfigSchema } from './schema.ts'
+import { ciderpressConfigSchema } from './schema.ts'
 import type {
   Feature,
   IconConfig,
@@ -14,28 +14,28 @@ import type {
   ThemeConfig,
   Workspace,
   WorkspaceGroup,
-  ZpressConfig,
+  CiderpressConfig,
 } from './types.ts'
 import { collectAllWorkspaceItems } from './workspace.ts'
 
 /**
- * Validate a zpress config — Zod schema parse followed by semantic checks.
+ * Validate a ciderpress config — Zod schema parse followed by semantic checks.
  *
  * 1. Schema parse via Zod (shape, types, required fields).
  * 2. Cross-field semantic validation (workspace path uniqueness, OpenAPI
  *    nesting, include/path coupling, landing/standalone requirements, icon
  *    identifier format, theme name validity).
  *
- * @param config - Raw config object to validate (typically loaded from `zpress.config.ts`)
+ * @param config - Raw config object to validate (typically loaded from `ciderpress.config.ts`)
  * @returns `ConfigResult` tuple — `[null, config]` on success or `[ConfigError, null]` on failure
  */
-export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
-  const parsed = zpressConfigSchema.safeParse(config)
+export function validateConfig(config: unknown): ConfigResult<CiderpressConfig> {
+  const parsed = ciderpressConfigSchema.safeParse(config)
   if (!parsed.success) {
     return [configErrorFromZod(parsed.error), null]
   }
 
-  const validated = parsed.data as ZpressConfig
+  const validated = parsed.data as CiderpressConfig
   const [semanticErr] = validateSemantics(validated)
   if (semanticErr) {
     return [semanticErr, null]
@@ -55,7 +55,7 @@ export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
  * @param config - Schema-validated config
  * @returns First semantic error encountered, or success
  */
-function validateSemantics(config: ZpressConfig): ConfigResult<true> {
+function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
   if (!config.sections || config.sections.length === 0) {
     return [configError('empty_sections', 'config.sections must have at least one section'), null]
   }
@@ -343,7 +343,7 @@ function validateSection(section: Section): ConfigResult<true> {
  *
  * @private
  */
-function validateFeatures(features: ZpressConfig['features']): ConfigResult<true> {
+function validateFeatures(features: CiderpressConfig['features']): ConfigResult<true> {
   if (features === undefined) {
     return [null, true]
   }

@@ -1,20 +1,20 @@
 {
-  "name": "zpress-vscode",
-  "displayName": "zpress",
+  "name": "ciderpress-vscode",
+  "displayName": "ciderpress",
   "version": "0.2.2",
   "private": true,
-  "description": "Run zpress dev server and preview documentation from VS Code",
+  "description": "Run ciderpress dev server and preview documentation from VS Code",
   "categories": [
     "Other"
   ],
-  "homepage": "https://zpress.dev",
+  "homepage": "https://ciderpress.dev",
   "bugs": {
-    "url": "https://github.com/joggrdocs/zpress/issues"
+    "url": "https://github.com/thebytefarm/ciderpress/issues"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joggrdocs/zpress.git",
+    "url": "https://github.com/thebytefarm/ciderpress.git",
     "directory": "extensions/vscode"
   },
   "publisher": "joggr",
@@ -37,44 +37,44 @@
   "contributes": {
     "commands": [
       {
-        "command": "zpress.start",
-        "title": "zpress: Start Server",
+        "command": "ciderpress.start",
+        "title": "ciderpress: Start Server",
         "icon": "$(debug-start)"
       },
       {
-        "command": "zpress.stop",
-        "title": "zpress: Stop Server",
+        "command": "ciderpress.stop",
+        "title": "ciderpress: Stop Server",
         "icon": "$(debug-stop)"
       },
       {
-        "command": "zpress.toggle",
-        "title": "zpress: Toggle Server"
+        "command": "ciderpress.toggle",
+        "title": "ciderpress: Toggle Server"
       },
       {
-        "command": "zpress.preview",
-        "title": "zpress: Preview Page",
+        "command": "ciderpress.preview",
+        "title": "ciderpress: Preview Page",
         "icon": "$(globe)"
       },
       {
-        "command": "zpress.openPage",
-        "title": "zpress: Open Page"
+        "command": "ciderpress.openPage",
+        "title": "ciderpress: Open Page"
       },
       {
-        "command": "zpress.restart",
-        "title": "zpress: Restart Server"
+        "command": "ciderpress.restart",
+        "title": "ciderpress: Restart Server"
       },
       {
-        "command": "zpress.openInBrowser",
-        "title": "zpress: Open in Browser",
+        "command": "ciderpress.openInBrowser",
+        "title": "ciderpress: Open in Browser",
         "icon": "$(link-external)"
       },
       {
-        "command": "zpress.collapseAll",
+        "command": "ciderpress.collapseAll",
         "title": "Collapse All",
         "icon": "$(collapse-all)"
       },
       {
-        "command": "zpress.editSource",
+        "command": "ciderpress.editSource",
         "title": "Edit Source",
         "icon": "$(edit)"
       }
@@ -82,22 +82,22 @@
     "menus": {
       "editor/title": [
         {
-          "command": "zpress.preview",
-          "when": "resourceLangId == markdown && zpress:isTrackedFile && zpress:serverReady",
+          "command": "ciderpress.preview",
+          "when": "resourceLangId == markdown && ciderpress:isTrackedFile && ciderpress:serverReady",
           "group": "navigation"
         }
       ],
       "view/item/context": [
         {
-          "command": "zpress.editSource",
-          "when": "viewItem == zpressLeaf",
+          "command": "ciderpress.editSource",
+          "when": "viewItem == ciderpressLeaf",
           "group": "inline"
         }
       ],
       "view/title": [
         {
-          "command": "zpress.collapseAll",
-          "when": "view == zpress.server && zpress:serverReady",
+          "command": "ciderpress.collapseAll",
+          "when": "view == ciderpress.server && ciderpress:serverReady",
           "group": "navigation"
         }
       ]
@@ -105,43 +105,43 @@
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "zpress",
-          "title": "zpress",
+          "id": "ciderpress",
+          "title": "ciderpress",
           "icon": "resources/icon.svg"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "zpress.loading",
+        "view": "ciderpress.loading",
         "contents": "$(sync~spin) Building docs site...",
-        "when": "zpress:serverStarting"
+        "when": "ciderpress:serverStarting"
       },
       {
-        "view": "zpress.loading",
-        "contents": "$(book) Preview your docs site right here.\n[Start Server](command:zpress.start)",
-        "when": "zpress:serverStopped"
+        "view": "ciderpress.loading",
+        "contents": "$(book) Preview your docs site right here.\n[Start Server](command:ciderpress.start)",
+        "when": "ciderpress:serverStopped"
       }
     ],
     "configuration": {
-      "title": "zpress",
+      "title": "ciderpress",
       "properties": {
-        "zpress.server.autoOpen": {
+        "ciderpress.server.autoOpen": {
           "type": "boolean",
           "default": true,
           "description": "Automatically open the docs site in the browser when the dev server starts."
         },
-        "zpress.server.autoStart": {
+        "ciderpress.server.autoStart": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically start the dev server when the zpress sidebar is opened."
+          "description": "Automatically start the dev server when the ciderpress sidebar is opened."
         },
-        "zpress.server.port": {
+        "ciderpress.server.port": {
           "type": "number",
           "default": 6174,
           "description": "Port for the dev server."
         },
-        "zpress.theme": {
+        "ciderpress.theme": {
           "type": "string",
           "enum": [
             "base",
@@ -149,9 +149,9 @@
             "arcade"
           ],
           "default": null,
-          "markdownDescription": "Override the theme used for the docs preview. When set, this overrides the `theme.name` in your `zpress.config` without modifying the config file."
+          "markdownDescription": "Override the theme used for the docs preview. When set, this overrides the `theme.name` in your `ciderpress.config` without modifying the config file."
         },
-        "zpress.theme.mode": {
+        "ciderpress.theme.mode": {
           "type": "string",
           "enum": [
             "dark",
@@ -159,56 +159,56 @@
             "toggle"
           ],
           "default": null,
-          "markdownDescription": "Override the color mode for the docs preview. When set, this overrides the `theme.colorMode` in your `zpress.config` without modifying the config file."
+          "markdownDescription": "Override the color mode for the docs preview. When set, this overrides the `theme.colorMode` in your `ciderpress.config` without modifying the config file."
         }
       }
     },
     "views": {
-      "zpress": [
+      "ciderpress": [
         {
-          "id": "zpress.loading",
-          "name": "zpress",
-          "when": "zpress:isProject && !zpress:serverReady"
+          "id": "ciderpress.loading",
+          "name": "ciderpress",
+          "when": "ciderpress:isProject && !ciderpress:serverReady"
         },
         {
-          "id": "zpress.pages",
+          "id": "ciderpress.pages",
           "name": "Pages",
-          "when": "zpress:section.pages && zpress:serverReady",
+          "when": "ciderpress:section.pages && ciderpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.apps",
+          "id": "ciderpress.apps",
           "name": "Apps",
-          "when": "zpress:section.apps && zpress:serverReady",
+          "when": "ciderpress:section.apps && ciderpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.packages",
+          "id": "ciderpress.packages",
           "name": "Packages",
-          "when": "zpress:section.packages && zpress:serverReady",
+          "when": "ciderpress:section.packages && ciderpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.workspaces",
+          "id": "ciderpress.workspaces",
           "name": "Workspaces",
-          "when": "zpress:section.workspaces && zpress:serverReady",
+          "when": "ciderpress:section.workspaces && ciderpress:serverReady",
           "visibility": "visible"
         },
         {
-          "id": "zpress.server",
+          "id": "ciderpress.server",
           "name": "Server",
-          "when": "zpress:isProject && zpress:serverReady",
+          "when": "ciderpress:isProject && ciderpress:serverReady",
           "visibility": "visible"
         }
       ]
     }
   },
   "activationEvents": [
-    "workspaceContains:zpress.config.js",
-    "workspaceContains:zpress.config.json",
-    "workspaceContains:zpress.config.mjs",
-    "workspaceContains:zpress.config.mts",
-    "workspaceContains:zpress.config.ts"
+    "workspaceContains:ciderpress.config.js",
+    "workspaceContains:ciderpress.config.json",
+    "workspaceContains:ciderpress.config.mjs",
+    "workspaceContains:ciderpress.config.mts",
+    "workspaceContains:ciderpress.config.ts"
   ],
   "extensionKind": [
     "workspace"

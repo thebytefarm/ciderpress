@@ -31,10 +31,10 @@ const MAX_STDOUT_BUFFER = 65_536
 function findBinary(
   workspaceRoot: string
 ): { readonly cmd: string; readonly args: readonly string[] } | null {
-  const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'zpress')
+  const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'ciderpress')
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
   if (fs.existsSync(localBin)) {
-    const config = workspace.getConfiguration('zpress')
+    const config = workspace.getConfiguration('ciderpress')
     const baseArgs: string[] = ['dev', '--vscode']
     const port = config.get<number>('server.port')
     if (port !== null && port !== undefined) {
@@ -66,7 +66,7 @@ function parseLocalUrl(text: string): string | null {
 }
 
 /**
- * Creates a managed dev server that spawns and monitors a `zpress dev` child process.
+ * Creates a managed dev server that spawns and monitors a `ciderpress dev` child process.
  */
 function createDevServer(deps: DevServerDeps): DevServer {
   /*
@@ -101,8 +101,8 @@ function createDevServer(deps: DevServerDeps): DevServer {
     const binary = findBinary(deps.workspaceRoot)
     if (!binary) {
       const message =
-        'zpress binary not found in node_modules. Run `npm install` or `pnpm install` first.'
-      deps.outputChannel.appendLine(`[zpress] ${message}`)
+        'ciderpress binary not found in node_modules. Run `npm install` or `pnpm install` first.'
+      deps.outputChannel.appendLine(`[ciderpress] ${message}`)
       deps.outputChannel.show(true)
       deps.showErrorMessage(message)
       return
@@ -111,11 +111,11 @@ function createDevServer(deps: DevServerDeps): DevServer {
     setStatus('starting')
     state.baseUrl = null
     state.stdoutBuffer = ''
-    deps.outputChannel.appendLine('[zpress] Starting dev server...')
+    deps.outputChannel.appendLine('[ciderpress] Starting dev server...')
 
     /*
      * Spread readonly args into a mutable array for spawn().
-     * Full process.env is passed intentionally — zpress dev needs PATH,
+     * Full process.env is passed intentionally — ciderpress dev needs PATH,
      * NODE_PATH, npm/pnpm config vars, proxy settings, etc. to function.
      */
     const child = spawn(binary.cmd, [...binary.args], {
@@ -137,7 +137,7 @@ function createDevServer(deps: DevServerDeps): DevServer {
           state.stdoutBuffer += text
           if (state.stdoutBuffer.length > MAX_STDOUT_BUFFER) {
             deps.outputChannel.appendLine(
-              '[zpress] stdout buffer exceeded 64KB — URL detection stopped'
+              '[ciderpress] stdout buffer exceeded 64KB — URL detection stopped'
             )
             return
           }
@@ -163,7 +163,7 @@ function createDevServer(deps: DevServerDeps): DevServer {
       if (state.process !== child) {
         return
       }
-      deps.outputChannel.appendLine(`[zpress] Dev server exited (code ${String(code)})`)
+      deps.outputChannel.appendLine(`[ciderpress] Dev server exited (code ${String(code)})`)
       state.process = null
       state.baseUrl = null
       state.stdoutBuffer = ''
@@ -179,7 +179,7 @@ function createDevServer(deps: DevServerDeps): DevServer {
       if (state.process !== child) {
         return
       }
-      deps.outputChannel.appendLine(`[zpress] Failed to start: ${err.message}`)
+      deps.outputChannel.appendLine(`[ciderpress] Failed to start: ${err.message}`)
       state.process = null
       state.baseUrl = null
       state.stdoutBuffer = ''
@@ -192,7 +192,7 @@ function createDevServer(deps: DevServerDeps): DevServer {
     if (!state.process) {
       return
     }
-    deps.outputChannel.appendLine('[zpress] Stopping dev server...')
+    deps.outputChannel.appendLine('[ciderpress] Stopping dev server...')
     setStatus('stopping')
     state.process.kill()
     /* Do not null state.process here — the close handler clears it when the child actually exits */

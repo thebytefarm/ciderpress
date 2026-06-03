@@ -1,12 +1,12 @@
-# @zpress/kit
+# ciderpress
 
 An opinionated documentation framework for monorepos. Just point it at your code.
 
-<span class="zp-badge">
+<span class="cp-badge">
 
-[![CI](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@zpress/kit)](https://www.npmjs.com/package/@zpress/kit)
-[![License](https://img.shields.io/github/license/joggrdocs/zpress)](https://github.com/joggrdocs/zpress/blob/main/LICENSE)
+[![CI](https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/ciderpress)](https://www.npmjs.com/package/ciderpress)
+[![License](https://img.shields.io/github/license/thebytefarm/ciderpress)](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE)
 
 </span>
 
@@ -20,7 +20,7 @@ An opinionated documentation framework for monorepos. Just point it at your code
 ## Install
 
 ```bash
-npm install @zpress/kit
+npm install ciderpress
 ```
 
 ## Usage
@@ -28,8 +28,8 @@ npm install @zpress/kit
 ### Define your docs
 
 ```ts
-// zpress.config.ts
-import { defineConfig } from '@zpress/kit'
+// ciderpress.config.ts
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'my-project',
@@ -61,27 +61,27 @@ export default defineConfig({
 ### Run it
 
 ```bash
-npx zpress dev       # start dev server with hot reload
-npx zpress build     # build for production
-npx zpress serve     # preview production build
+npx ciderpress dev       # start dev server with hot reload
+npx ciderpress build     # build for production
+npx ciderpress serve     # preview production build
 ```
 
 ## Packages
 
 | Package                                                                | Description                          |
 | ---------------------------------------------------------------------- | ------------------------------------ |
-| [`@zpress/core`](https://www.npmjs.com/package/@zpress/core)           | Config loading, sync engine, assets  |
-| [`@zpress/cli`](https://www.npmjs.com/package/@zpress/cli)             | CLI commands and file watcher        |
-| [`@zpress/ui`](https://www.npmjs.com/package/@zpress/ui)               | Rspress plugin, theme, and styles    |
-| [`@zpress/theme`](https://www.npmjs.com/package/@zpress/theme)         | Theme factory, tokens, and built-ins |
-| [`@zpress/config`](https://www.npmjs.com/package/@zpress/config)       | Config loading + Zod schemas         |
-| [`@zpress/templates`](https://www.npmjs.com/package/@zpress/templates) | Liquid template registry             |
+| [`@ciderpress/core`](https://www.npmjs.com/package/@ciderpress/core)           | Config loading, sync engine, assets  |
+| [`@ciderpress/cli`](https://www.npmjs.com/package/@ciderpress/cli)             | CLI commands and file watcher        |
+| [`@ciderpress/ui`](https://www.npmjs.com/package/@ciderpress/ui)               | Rspress plugin, theme, and styles    |
+| [`@ciderpress/theme`](https://www.npmjs.com/package/@ciderpress/theme)         | Theme factory, tokens, and built-ins |
+| [`@ciderpress/config`](https://www.npmjs.com/package/@ciderpress/config)       | Config loading + Zod schemas         |
+| [`@ciderpress/templates`](https://www.npmjs.com/package/@ciderpress/templates) | Liquid template registry             |
 
-## Why `@zpress/kit`?
+## Why `ciderpress`?
 
 > [!NOTE]
-> Published as `@zpress/kit` because npm's overly aggressive moniker rules block the `zpress` name.
+> Published as `ciderpress` because npm's overly aggressive moniker rules block the `ciderpress` name.
 
 ## License
 
-[MIT](https://github.com/joggrdocs/zpress/blob/main/LICENSE) - Joggr, Inc.
+[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE) - Joggr, Inc.

@@ -88,7 +88,7 @@ interface GenerateAssetsParams {
  * Generate banner, logo, and icon SVGs, writing them to the public directory.
  *
  * For each asset:
- * 1. If the file is missing or has the zpress-generated marker → write it
+ * 1. If the file is missing or has the ciderpress-generated marker → write it
  * 2. If the file exists without the marker → skip (user-customized)
  *
  * @param params - Config and target directory

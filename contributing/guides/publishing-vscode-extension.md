@@ -1,6 +1,6 @@
 # Publishing the VS Code Extension
 
-Steps to package and publish a new version of the `zpress` VS Code extension.
+Steps to package and publish a new version of the `ciderpress` VS Code extension.
 
 ## Publisher
 
@@ -21,12 +21,12 @@ cd extensions/vscode
 pnpm package
 ```
 
-This outputs `extensions/vscode/zpress-vscode-<version>.vsix`.
+This outputs `extensions/vscode/ciderpress-vscode-<version>.vsix`.
 
 ### 3. Upload to the Marketplace
 
 1. Go to https://marketplace.visualstudio.com/manage/publishers/joggr
-2. Click the `...` menu on the **zpress** extension → **Update**
+2. Click the `...` menu on the **ciderpress** extension → **Update**
 3. Upload the `.vsix` file
 
 ### 4. Commit the version bump

@@ -2,8 +2,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { command } from '@kidd-cli/core'
-import { createRegistry, render, toSlug } from '@zpress/templates'
-import type { Template } from '@zpress/templates'
+import { createRegistry, render, toSlug } from '@ciderpress/templates'
+import type { Template } from '@ciderpress/templates'
 import { match, P } from 'massaman/match'
 import { z } from 'zod'
 
@@ -24,7 +24,7 @@ export default command({
     out: z.string().optional().default('.'),
   }),
   handler: async (ctx) => {
-    ctx.log.intro('zpress draft')
+    ctx.log.intro('ciderpress draft')
 
     const typeArg = ctx.args.type
     const hasValidType = match(typeArg)

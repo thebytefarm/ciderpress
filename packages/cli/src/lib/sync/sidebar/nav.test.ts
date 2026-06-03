@@ -1,4 +1,4 @@
-import type { ZpressConfig } from '@zpress/config'
+import type { CiderpressConfig } from '@ciderpress/config'
 import { describe, expect, it } from 'vitest'
 
 import type { ResolvedEntry } from '../types.ts'
@@ -8,7 +8,7 @@ import { generateNav } from './index.ts'
 // Fixtures
 // ---------------------------------------------------------------------------
 
-const autoConfig = { nav: 'auto' } as ZpressConfig
+const autoConfig = { nav: 'auto' } as CiderpressConfig
 
 // ---------------------------------------------------------------------------
 // generateNav — root sections

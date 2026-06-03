@@ -9,7 +9,7 @@ How monorepo metadata drives the home page, landing page cards, and introduction
 
 ## Overview
 
-Workspaces are metadata entries that describe your monorepo's services and libraries. The `workspaces` array defines titles, icons, descriptions, and tags that zpress uses to generate rich landing page cards and home page content. Workspaces are matched to sections by `path`.
+Workspaces are metadata entries that describe your monorepo's services and libraries. The `workspaces` array defines titles, icons, descriptions, and tags that ciderpress uses to generate rich landing page cards and home page content. Workspaces are matched to sections by `path`.
 
 ## Key Terms
 
@@ -22,7 +22,7 @@ Workspaces are metadata entries that describe your monorepo's services and libra
 ### Defining workspace items
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   workspaces: [

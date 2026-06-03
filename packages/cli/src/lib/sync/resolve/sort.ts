@@ -1,6 +1,6 @@
 import { basename, extname } from 'node:path'
 
-import type { ResolvedPage } from '@zpress/config'
+import type { ResolvedPage } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import type { ResolvedEntry } from '../types.ts'

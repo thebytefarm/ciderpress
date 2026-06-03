@@ -30,14 +30,14 @@
   <circle class="btn-green" cx="76" cy="25" r="7"/>
 
   <!-- Title -->
-  <text x="560" y="25" text-anchor="middle" dominant-baseline="central" class="text dim" font-size="13">zpress</text>
+  <text x="560" y="25" text-anchor="middle" dominant-baseline="central" class="text dim" font-size="13">ciderpress</text>
 
   <!-- Content area -->
   <g transform="translate(32, 88)">
     <!-- Prompt line -->
     <text class="text prompt" font-size="15" y="0">~</text>
     <text class="text dim" font-size="15" x="16" y="0">$</text>
-    <text class="text command" font-size="15" x="36" y="0">zpress build</text>
+    <text class="text command" font-size="15" x="36" y="0">ciderpress build</text>
 
     <!-- ZPRESS ASCII art -->
     <text class="text brand" font-size="13" y="40" xml:space="preserve">███████╗██████╗ ██████╗ ███████╗███████╗███████╗</text>
@@ -48,7 +48,7 @@
     <text class="text brand" font-size="13" y="120" xml:space="preserve">╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
 
     <!-- Version and description -->
-    <text class="text white" font-size="15" y="156">  zpress <tspan class="dim">v0.1.0</tspan></text>
+    <text class="text white" font-size="15" y="156">  ciderpress <tspan class="dim">v0.1.0</tspan></text>
     <text class="text white" font-size="15" y="180">  Making "I vibe-coded it and it works on my machine" look professional.</text>
 
     <!-- Build output -->
@@ -57,7 +57,7 @@
     <text class="text" font-size="15" y="268"><tspan class="green">  &#x2713;</tspan><tspan class="white"> Generated sidebar &amp; nav</tspan></text>
 
     <!-- Done message -->
-    <text class="text" font-size="15" y="304"><tspan class="green">  Done!</tspan><tspan class="white"> Run </tspan><tspan class="brand">zpress --help</tspan><tspan class="white"> to learn more.</tspan></text>
+    <text class="text" font-size="15" y="304"><tspan class="green">  Done!</tspan><tspan class="white"> Run </tspan><tspan class="brand">ciderpress --help</tspan><tspan class="white"> to learn more.</tspan></text>
 
     <!-- New prompt -->
     <text class="text prompt" font-size="15" y="344">~</text>

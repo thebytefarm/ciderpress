@@ -4,18 +4,18 @@
  * Color definitions have moved to theme files (styles/themes/*.css).
  * This file retains only structural overrides: fonts, layout, LLMs UI.
  *
- * Cascade layer: `zpress.overrides` (see styles/layers.css).
+ * Cascade layer: `ciderpress.overrides` (see styles/layers.css).
  *
  * `!important` inventory (task 8.2):
  *   - Before: 0
  *   - After:  0
  *
  * No `!important` declarations are needed here — `html .rp-*` specificity
- * combined with the `zpress.overrides` layer is sufficient against Rspress's
+ * combined with the `ciderpress.overrides` layer is sufficient against Rspress's
  * font and LLMs UI defaults.
  */
 
-@layer zpress.overrides {
+@layer ciderpress.overrides {
   html:root {
     /* Fonts — map Geist into Rspress's font stack */
     --rp-font-family-base: 'Geist', ui-sans-serif, system-ui, sans-serif;
@@ -55,11 +55,11 @@
 
    Intentionally **unlayered**: Rspress ships its appearance toggle styles
    unlayered, and unlayered rules always win over layered ones regardless
-   of specificity. Hoisting this rule out of `@layer zpress.overrides` is
+   of specificity. Hoisting this rule out of `@layer ciderpress.overrides` is
    the only way to win the cascade without `!important`. ────────────── */
-html[data-zp-variants='dark'] .rp-switch-appearance,
-html[data-zp-variants='light'] .rp-switch-appearance,
-html[data-zp-variants='dark'] .rp-nav-screen-appearance,
-html[data-zp-variants='light'] .rp-nav-screen-appearance {
+html[data-cp-variants='dark'] .rp-switch-appearance,
+html[data-cp-variants='light'] .rp-switch-appearance,
+html[data-cp-variants='dark'] .rp-nav-screen-appearance,
+html[data-cp-variants='light'] .rp-nav-screen-appearance {
   display: none;
 }

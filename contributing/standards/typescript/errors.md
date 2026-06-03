@@ -138,8 +138,8 @@ interface ConfigError {
 export type ConfigResult<T> = Result<T, ConfigError>
 
 // implementation
-function loadConfig(path: string): ConfigResult<ZpressConfig> {
-  // returns [ConfigError, null] on failure or [null, ZpressConfig] on success
+function loadConfig(path: string): ConfigResult<CiderpressConfig> {
+  // returns [ConfigError, null] on failure or [null, CiderpressConfig] on success
 }
 ```
 

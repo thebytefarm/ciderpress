@@ -1,5 +1,5 @@
 {
-  "name": "zpress-monorepo",
+  "name": "ciderpress-monorepo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -19,17 +19,17 @@
     "postversion": "oxfmt --write",
     "prerelease": "turbo run build",
     "release": "changeset publish",
-    "docs:dev": "node packages/zpress/dist/cli.mjs dev",
-    "docs:build": "node packages/zpress/dist/cli.mjs build",
-    "docs:serve": "node packages/zpress/dist/cli.mjs serve",
+    "docs:dev": "node packages/ciderpress/dist/cli.mjs dev",
+    "docs:build": "node packages/ciderpress/dist/cli.mjs build",
+    "docs:serve": "node packages/ciderpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
     "dev": "turbo run dev",
-    "stories": "pnpm --filter @zpress/cli stories",
+    "stories": "pnpm --filter @ciderpress/cli stories",
     "bench": "pnpm --filter benchmarks bench",
     "bench:run": "pnpm --filter benchmarks bench:run"
   },
   "dependencies": {
-    "@zpress/kit": "workspace:*"
+    "ciderpress": "workspace:*"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",

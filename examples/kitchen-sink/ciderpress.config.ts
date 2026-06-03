@@ -1,4 +1,4 @@
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'Acme Platform',
@@ -195,7 +195,7 @@ export default defineConfig({
     { icon: 'x', mode: 'link', content: 'https://x.com/acme' },
   ],
   footer: {
-    message: 'Built with zpress',
+    message: 'Built with ciderpress',
     copyright: 'Copyright © 2025 Acme Inc.',
     socials: true,
   },

@@ -33,7 +33,7 @@ export interface DesktopWindowProps {
    */
   readonly tabs?: readonly WindowTab[]
   /**
-   * Optional CSS class name for the window variant (e.g. `zp-window--browser`).
+   * Optional CSS class name for the window variant (e.g. `cp-window--browser`).
    */
   readonly variant?: string
   /**
@@ -61,20 +61,20 @@ export function DesktopWindow({
   }
 
   const className = match(variant)
-    .with(P.nonNullable, (v) => `zp-window ${v}`)
-    .otherwise(() => 'zp-window')
+    .with(P.nonNullable, (v) => `cp-window ${v}`)
+    .otherwise(() => 'cp-window')
 
   const titlebarCenter = match(tabs)
     .with(P.nonNullable, (t) => (
-      <div className="zp-window__tabs">
+      <div className="cp-window__tabs">
         {t.map((tab) => {
           const tabClass = match(tab.active)
-            .with(true, () => 'zp-window__tab zp-window__tab--active')
-            .otherwise(() => 'zp-window__tab')
+            .with(true, () => 'cp-window__tab cp-window__tab--active')
+            .otherwise(() => 'cp-window__tab')
 
           return (
             <span key={tab.name} className={tabClass}>
-              <span className="zp-window__tab-dot" />
+              <span className="cp-window__tab-dot" />
               {tab.name}
             </span>
           )
@@ -83,21 +83,21 @@ export function DesktopWindow({
     ))
     .otherwise(() =>
       match(title)
-        .with(P.nonNullable, (t) => <span className="zp-window__title">{t}</span>)
+        .with(P.nonNullable, (t) => <span className="cp-window__title">{t}</span>)
         .otherwise(() => null)
     )
 
   return (
     <div className={className}>
-      <div className="zp-window__titlebar">
-        <div className="zp-window__dots">
-          <span className="zp-window__dot zp-window__dot--close" />
-          <span className="zp-window__dot zp-window__dot--minimize" />
-          <span className="zp-window__dot zp-window__dot--maximize" />
+      <div className="cp-window__titlebar">
+        <div className="cp-window__dots">
+          <span className="cp-window__dot cp-window__dot--close" />
+          <span className="cp-window__dot cp-window__dot--minimize" />
+          <span className="cp-window__dot cp-window__dot--maximize" />
         </div>
         {titlebarCenter}
       </div>
-      <div className="zp-window__content">{children}</div>
+      <div className="cp-window__content">{children}</div>
     </div>
   )
 }
@@ -177,10 +177,10 @@ export function BrowserWindow({
 
   const body = match({ children, image })
     .with({ children: P.nonNullable }, ({ children: c }) => (
-      <div className="zp-window__content">{c}</div>
+      <div className="cp-window__content">{c}</div>
     ))
     .with({ image: P.nonNullable }, ({ image: src }) => (
-      <div className="zp-window__content">
+      <div className="cp-window__content">
         <img
           src={src}
           alt={match(tab)
@@ -193,15 +193,15 @@ export function BrowserWindow({
 
   const titlebarTabs = match(tabs)
     .with(P.nonNullable, (t) => (
-      <div className="zp-window__tabs">
+      <div className="cp-window__tabs">
         {t.map((windowTab) => {
           const tabClass = match(windowTab.active)
-            .with(true, () => 'zp-window__tab zp-window__tab--active')
-            .otherwise(() => 'zp-window__tab')
+            .with(true, () => 'cp-window__tab cp-window__tab--active')
+            .otherwise(() => 'cp-window__tab')
 
           return (
             <span key={windowTab.name} className={tabClass}>
-              <span className="zp-window__tab-dot" />
+              <span className="cp-window__tab-dot" />
               {windowTab.name}
             </span>
           )
@@ -211,20 +211,20 @@ export function BrowserWindow({
     .otherwise(() => null)
 
   return (
-    <div className="zp-window zp-window--browser">
-      <div className="zp-window__titlebar">
-        <div className="zp-window__dots">
-          <span className="zp-window__dot zp-window__dot--close" />
-          <span className="zp-window__dot zp-window__dot--minimize" />
-          <span className="zp-window__dot zp-window__dot--maximize" />
+    <div className="cp-window cp-window--browser">
+      <div className="cp-window__titlebar">
+        <div className="cp-window__dots">
+          <span className="cp-window__dot cp-window__dot--close" />
+          <span className="cp-window__dot cp-window__dot--minimize" />
+          <span className="cp-window__dot cp-window__dot--maximize" />
         </div>
         {match(tab)
           .with(P.nonNullable, (t) => (
-            <div className="zp-browser__tab">
+            <div className="cp-browser__tab">
               {match(t.icon)
-                .with(P.nonNullable, (icon) => <span className="zp-browser__tab-icon">{icon}</span>)
+                .with(P.nonNullable, (icon) => <span className="cp-browser__tab-icon">{icon}</span>)
                 .otherwise(() => null)}
-              <span className="zp-browser__tab-title">{t.title}</span>
+              <span className="cp-browser__tab-title">{t.title}</span>
             </div>
           ))
           .otherwise(() => null)}
@@ -232,9 +232,9 @@ export function BrowserWindow({
       </div>
       {match(url)
         .with(P.nonNullable, (u) => (
-          <div className="zp-browser__url-bar">
+          <div className="cp-browser__url-bar">
             <BrowserNavButtons />
-            <span className="zp-browser__url">{u}</span>
+            <span className="cp-browser__url">{u}</span>
             <BrowserMenuButton />
           </div>
         ))
@@ -256,8 +256,8 @@ export function BrowserWindow({
  */
 function BrowserNavButtons(): React.ReactElement {
   return (
-    <div className="zp-browser__nav">
-      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+    <div className="cp-browser__nav">
+      <svg className="cp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
         <path
           d="M10.5 3L5.5 8l5 5"
           stroke="currentColor"
@@ -267,7 +267,7 @@ function BrowserNavButtons(): React.ReactElement {
           strokeLinejoin="round"
         />
       </svg>
-      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+      <svg className="cp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
         <path
           d="M5.5 3L10.5 8l-5 5"
           stroke="currentColor"
@@ -277,7 +277,7 @@ function BrowserNavButtons(): React.ReactElement {
           strokeLinejoin="round"
         />
       </svg>
-      <svg className="zp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
+      <svg className="cp-browser__nav-icon" viewBox="0 0 16 16" fill="currentColor">
         <path
           d="M13 8A5 5 0 113 8a5 5 0 0110 0z"
           stroke="currentColor"
@@ -304,7 +304,7 @@ function BrowserNavButtons(): React.ReactElement {
  */
 function BrowserMenuButton(): React.ReactElement {
   return (
-    <svg className="zp-browser__menu-icon" viewBox="0 0 16 16" fill="currentColor">
+    <svg className="cp-browser__menu-icon" viewBox="0 0 16 16" fill="currentColor">
       <circle cx="8" cy="3" r="1.2" />
       <circle cx="8" cy="8" r="1.2" />
       <circle cx="8" cy="13" r="1.2" />
@@ -387,7 +387,7 @@ export function IDEWindow({
 
   const body = match(code)
     .with(P.nonNullable, (c) => (
-      <div className="zp-window__code">
+      <div className="cp-window__code">
         <CodeBlockRuntime
           lang={match(lang)
             .with(P.nonNullable, (l) => l)
@@ -399,7 +399,7 @@ export function IDEWindow({
     .otherwise(() => children)
 
   return (
-    <DesktopWindow variant="zp-window--ide" tabs={tabs}>
+    <DesktopWindow variant="cp-window--ide" tabs={tabs}>
       {body}
     </DesktopWindow>
   )
@@ -462,7 +462,7 @@ export function TerminalWindow({ title, children }: TerminalWindowProps): React.
   }
 
   return (
-    <DesktopWindow variant="zp-window--terminal" title={title ?? 'Terminal'}>
+    <DesktopWindow variant="cp-window--terminal" title={title ?? 'Terminal'}>
       {children}
     </DesktopWindow>
   )
@@ -490,7 +490,7 @@ export function Command({ children }: CommandProps): React.ReactElement {
     return <>{`$ ${String(children)}\n`}</>
   }
 
-  return <span className="zp-term-line zp-term-line--command">{children}</span>
+  return <span className="cp-term-line cp-term-line--command">{children}</span>
 }
 
 export interface OutputProps {
@@ -511,7 +511,7 @@ export function Output({ children }: OutputProps): React.ReactElement {
     return <>{`${String(children)}\n`}</>
   }
 
-  return <span className="zp-term-line zp-term-line--output">{children}</span>
+  return <span className="cp-term-line cp-term-line--output">{children}</span>
 }
 
 export interface LineProps {
@@ -547,13 +547,13 @@ export function Line({ color, bold, dim, children }: LineProps): React.ReactElem
 
   const classes = [
     match(color)
-      .with(P.nonNullable, (c) => `zp-term-text--${c}`)
+      .with(P.nonNullable, (c) => `cp-term-text--${c}`)
       .otherwise(() => ''),
     match(bold)
-      .with(true, () => 'zp-term-text--bold')
+      .with(true, () => 'cp-term-text--bold')
       .otherwise(() => ''),
     match(dim)
-      .with(true, () => 'zp-term-text--dim')
+      .with(true, () => 'cp-term-text--dim')
       .otherwise(() => ''),
   ]
     .filter(Boolean)

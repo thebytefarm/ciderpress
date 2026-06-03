@@ -40,17 +40,17 @@ export function Feedback(props: FeedbackProps): React.ReactElement {
   )
 
   return (
-    <div className="zp-feedback">
+    <div className="cp-feedback">
       {match(state)
         .with('idle', () => (
           <>
-            <span className="zp-feedback__q">{question}</span>
-            <div className="zp-feedback__actions">
-              <button className="zp-feedback__btn" type="button" onClick={handleClick('yes')}>
+            <span className="cp-feedback__q">{question}</span>
+            <div className="cp-feedback__actions">
+              <button className="cp-feedback__btn" type="button" onClick={handleClick('yes')}>
                 <ThumbIcon />
                 Yes
               </button>
-              <button className="zp-feedback__btn" type="button" onClick={handleClick('no')}>
+              <button className="cp-feedback__btn" type="button" onClick={handleClick('no')}>
                 <ThumbIcon flipped />
                 No
               </button>
@@ -58,7 +58,7 @@ export function Feedback(props: FeedbackProps): React.ReactElement {
           </>
         ))
         .otherwise(() => (
-          <span className="zp-feedback__thanks">Thanks for the feedback.</span>
+          <span className="cp-feedback__thanks">Thanks for the feedback.</span>
         ))}
     </div>
   )

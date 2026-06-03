@@ -8,7 +8,7 @@ export interface ContentFooterPortalProps {
   readonly children: React.ReactNode
 }
 
-const HOST_ATTR = 'data-zp-content-footer-host'
+const HOST_ATTR = 'data-cp-content-footer-host'
 
 /**
  * ContentFooterPortal — portals its children into Rspress's `.rp-doc-footer`
@@ -66,5 +66,5 @@ export function ContentFooterPortal(props: ContentFooterPortalProps): React.Reac
   if (host === null) {
     return null
   }
-  return createPortal(<div className="zp-content-footer">{props.children}</div>, host)
+  return createPortal(<div className="cp-content-footer">{props.children}</div>, host)
 }

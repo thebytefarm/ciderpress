@@ -1,10 +1,10 @@
-// Local-only: bypasses the Ink TUI in `zpress dev` so the server can run
+// Local-only: bypasses the Ink TUI in `ciderpress dev` so the server can run
 // in a non-TTY background process. Not committed (gitignored / lint-ignored).
 import { resolve } from 'node:path'
 
 import { dev } from '@rspress/core'
-import { loadConfig } from '@zpress/config/loader'
-import { createRspressConfig } from '@zpress/ui/node'
+import { loadConfig } from '@ciderpress/config/loader'
+import { createRspressConfig } from '@ciderpress/ui/node'
 
 // Workspace-internal imports — this script is local-only, not published.
 import { createPaths } from '../cli/dist/index.mjs'

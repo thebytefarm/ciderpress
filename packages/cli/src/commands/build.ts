@@ -1,5 +1,5 @@
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
+import { loadConfig } from '@ciderpress/config/loader'
 import { z } from 'zod'
 
 import { generateAssets } from '../lib/banner/index.ts'
@@ -31,7 +31,7 @@ export default command({
   handler: async (ctx) => {
     const { quiet, check, verbose } = ctx.args
     const paths = createPaths(process.cwd())
-    ctx.log.intro('zpress build')
+    ctx.log.intro('ciderpress build')
 
     if (ctx.args.clean) {
       const removed = await clean(paths)
@@ -95,7 +95,7 @@ export default command({
 // ---------------------------------------------------------------------------
 
 /**
- * Build an `AssetConfig` from the loaded zpress config.
+ * Build an `AssetConfig` from the loaded ciderpress config.
  * Returns `null` when no title is configured (nothing to generate).
  *
  * @private

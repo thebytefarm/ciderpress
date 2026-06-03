@@ -9,54 +9,54 @@
  * that accepts non-hex CSS color values (`rgba(...)`, `hsl(...)`, `transparent`,
  * named colors) but rejects malformed hex codes such as `#zzz`.
  *
- * Helper sub-schemas (the `zpress*Schema` consts below the exports) are not
+ * Helper sub-schemas (the `ciderpress*Schema` consts below the exports) are not
  * exported but are declared above the public API so the `const`-initializer
  * references in `tokensSchema` resolve at module-load time. Each helper has a
  * `z.ZodType<...>` guard immediately below it to enforce schema/type parity
- * with `ZpressTokens` and its sub-interfaces.
+ * with `CiderpressTokens` and its sub-interfaces.
  */
 
 import { z } from 'zod'
 
 import type {
-  ZpressBadgeColor,
-  ZpressBadgeColors,
-  ZpressBlurs,
-  ZpressBorderColors,
-  ZpressBrandColors,
-  ZpressBreakpoints,
-  ZpressButtonBrandColors,
-  ZpressButtonColors,
-  ZpressColors,
-  ZpressFontFamilies,
-  ZpressFontSizes,
-  ZpressFontWeights,
-  ZpressFonts,
-  ZpressGradientColors,
-  ZpressGradients,
-  ZpressLetterSpacings,
-  ZpressLineHeights,
-  ZpressMotion,
-  ZpressMotionDurations,
-  ZpressMotionEasings,
-  ZpressOasColors,
-  ZpressOpacities,
-  ZpressRadii,
-  ZpressScrollbarColors,
-  ZpressSemanticColors,
-  ZpressShadows,
-  ZpressSizes,
-  ZpressSpacing,
-  ZpressSurfaceColors,
-  ZpressSyntaxColors,
-  ZpressTerminalColors,
-  ZpressTextColors,
-  ZpressTintBrightColor,
-  ZpressTintColor,
-  ZpressTintColors,
-  ZpressTokens,
-  ZpressWindowColors,
-  ZpressZIndex,
+  CiderpressBadgeColor,
+  CiderpressBadgeColors,
+  CiderpressBlurs,
+  CiderpressBorderColors,
+  CiderpressBrandColors,
+  CiderpressBreakpoints,
+  CiderpressButtonBrandColors,
+  CiderpressButtonColors,
+  CiderpressColors,
+  CiderpressFontFamilies,
+  CiderpressFontSizes,
+  CiderpressFontWeights,
+  CiderpressFonts,
+  CiderpressGradientColors,
+  CiderpressGradients,
+  CiderpressLetterSpacings,
+  CiderpressLineHeights,
+  CiderpressMotion,
+  CiderpressMotionDurations,
+  CiderpressMotionEasings,
+  CiderpressOasColors,
+  CiderpressOpacities,
+  CiderpressRadii,
+  CiderpressScrollbarColors,
+  CiderpressSemanticColors,
+  CiderpressShadows,
+  CiderpressSizes,
+  CiderpressSpacing,
+  CiderpressSurfaceColors,
+  CiderpressSyntaxColors,
+  CiderpressTerminalColors,
+  CiderpressTextColors,
+  CiderpressTintBrightColor,
+  CiderpressTintColor,
+  CiderpressTintColors,
+  CiderpressTokens,
+  CiderpressWindowColors,
+  CiderpressZIndex,
 } from './tokens.ts'
 
 /**
@@ -80,7 +80,7 @@ const tokenStringSchema = z
 
 /**
  * Theme name pattern — lowercase alphanumeric with hyphens, must start with
- * an alphanumeric. Interpolated into `html[data-zp-theme='{name}']` selectors
+ * an alphanumeric. Interpolated into `html[data-cp-theme='{name}']` selectors
  * so we constrain it to a slug rather than escape at emission time.
  *
  * @private
@@ -91,7 +91,7 @@ const themeNamePattern = /^[a-z0-9][a-z0-9-]*$/
  * Zod schema for a theme `name` identifier.
  *
  * Names must be a lowercase slug (`/^[a-z0-9][a-z0-9-]*$/`) — they are
- * interpolated into the `html[data-zp-theme='{name}']` selector emitted
+ * interpolated into the `html[data-cp-theme='{name}']` selector emitted
  * by `themeToCss`, so constraining at the schema boundary avoids the need
  * for runtime escaping in the emitter.
  */
@@ -140,7 +140,7 @@ export const cssColorSchema = z
 // non-exported `const`s above the public exports because Zod schema
 // composition resolves references at initializer time (not call time).
 
-const zpressBrandColorsSchema = z
+const ciderpressBrandColorsSchema = z
   .object({
     primary: cssColorSchema,
     hover: cssColorSchema,
@@ -153,9 +153,9 @@ const zpressBrandColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBrandColors: z.ZodType<ZpressBrandColors> = zpressBrandColorsSchema
+const _guardBrandColors: z.ZodType<CiderpressBrandColors> = ciderpressBrandColorsSchema
 
-const zpressSemanticColorsSchema = z
+const ciderpressSemanticColorsSchema = z
   .object({
     success: cssColorSchema,
     error: cssColorSchema,
@@ -165,9 +165,9 @@ const zpressSemanticColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardSemanticColors: z.ZodType<ZpressSemanticColors> = zpressSemanticColorsSchema
+const _guardSemanticColors: z.ZodType<CiderpressSemanticColors> = ciderpressSemanticColorsSchema
 
-const zpressSurfaceColorsSchema = z
+const ciderpressSurfaceColorsSchema = z
   .object({
     bg: cssColorSchema,
     bgAlt: cssColorSchema,
@@ -181,9 +181,9 @@ const zpressSurfaceColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardSurfaceColors: z.ZodType<ZpressSurfaceColors> = zpressSurfaceColorsSchema
+const _guardSurfaceColors: z.ZodType<CiderpressSurfaceColors> = ciderpressSurfaceColorsSchema
 
-const zpressTextColorsSchema = z
+const ciderpressTextColorsSchema = z
   .object({
     text1: cssColorSchema,
     text2: cssColorSchema,
@@ -191,9 +191,9 @@ const zpressTextColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTextColors: z.ZodType<ZpressTextColors> = zpressTextColorsSchema
+const _guardTextColors: z.ZodType<CiderpressTextColors> = ciderpressTextColorsSchema
 
-const zpressBorderColorsSchema = z
+const ciderpressBorderColorsSchema = z
   .object({
     border: cssColorSchema,
     divider: cssColorSchema,
@@ -201,44 +201,44 @@ const zpressBorderColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBorderColors: z.ZodType<ZpressBorderColors> = zpressBorderColorsSchema
+const _guardBorderColors: z.ZodType<CiderpressBorderColors> = ciderpressBorderColorsSchema
 
-const zpressTintColorSchema = z
+const ciderpressTintColorSchema = z
   .object({
     bg: cssColorSchema,
     fg: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTintColor: z.ZodType<ZpressTintColor> = zpressTintColorSchema
+const _guardTintColor: z.ZodType<CiderpressTintColor> = ciderpressTintColorSchema
 
-const zpressTintBrightColorSchema = z
+const ciderpressTintBrightColorSchema = z
   .object({
     fg: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTintBrightColor: z.ZodType<ZpressTintBrightColor> = zpressTintBrightColorSchema
+const _guardTintBrightColor: z.ZodType<CiderpressTintBrightColor> = ciderpressTintBrightColorSchema
 
-const zpressTintColorsSchema = z
+const ciderpressTintColorsSchema = z
   .object({
-    purple: zpressTintColorSchema,
-    blue: zpressTintColorSchema,
-    green: zpressTintColorSchema,
-    amber: zpressTintColorSchema,
-    red: zpressTintColorSchema,
-    slate: zpressTintColorSchema,
-    cyan: zpressTintColorSchema,
-    pink: zpressTintColorSchema,
-    purpleBright: zpressTintBrightColorSchema,
-    amberBright: zpressTintBrightColorSchema,
+    purple: ciderpressTintColorSchema,
+    blue: ciderpressTintColorSchema,
+    green: ciderpressTintColorSchema,
+    amber: ciderpressTintColorSchema,
+    red: ciderpressTintColorSchema,
+    slate: ciderpressTintColorSchema,
+    cyan: ciderpressTintColorSchema,
+    pink: ciderpressTintColorSchema,
+    purpleBright: ciderpressTintBrightColorSchema,
+    amberBright: ciderpressTintBrightColorSchema,
     purpleGlow: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTintColors: z.ZodType<ZpressTintColors> = zpressTintColorsSchema
+const _guardTintColors: z.ZodType<CiderpressTintColors> = ciderpressTintColorsSchema
 
-const zpressTerminalColorsSchema = z
+const ciderpressTerminalColorsSchema = z
   .object({
     bg: cssColorSchema,
     titlebarBg: cssColorSchema,
@@ -265,9 +265,9 @@ const zpressTerminalColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTerminalColors: z.ZodType<ZpressTerminalColors> = zpressTerminalColorsSchema
+const _guardTerminalColors: z.ZodType<CiderpressTerminalColors> = ciderpressTerminalColorsSchema
 
-const zpressWindowColorsSchema = z
+const ciderpressWindowColorsSchema = z
   .object({
     dotClose: cssColorSchema,
     dotMinimize: cssColorSchema,
@@ -276,38 +276,38 @@ const zpressWindowColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardWindowColors: z.ZodType<ZpressWindowColors> = zpressWindowColorsSchema
+const _guardWindowColors: z.ZodType<CiderpressWindowColors> = ciderpressWindowColorsSchema
 
-const zpressBadgeColorSchema = z
+const ciderpressBadgeColorSchema = z
   .object({
     bg: cssColorSchema,
     fg: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBadgeColor: z.ZodType<ZpressBadgeColor> = zpressBadgeColorSchema
+const _guardBadgeColor: z.ZodType<CiderpressBadgeColor> = ciderpressBadgeColorSchema
 
-const zpressBadgeColorsSchema = z
+const ciderpressBadgeColorsSchema = z
   .object({
-    info: zpressBadgeColorSchema,
-    success: zpressBadgeColorSchema,
-    warning: zpressBadgeColorSchema,
-    error: zpressBadgeColorSchema,
+    info: ciderpressBadgeColorSchema,
+    success: ciderpressBadgeColorSchema,
+    warning: ciderpressBadgeColorSchema,
+    error: ciderpressBadgeColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBadgeColors: z.ZodType<ZpressBadgeColors> = zpressBadgeColorsSchema
+const _guardBadgeColors: z.ZodType<CiderpressBadgeColors> = ciderpressBadgeColorsSchema
 
-const zpressScrollbarColorsSchema = z
+const ciderpressScrollbarColorsSchema = z
   .object({
     thumb: cssColorSchema,
     thumbHover: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardScrollbarColors: z.ZodType<ZpressScrollbarColors> = zpressScrollbarColorsSchema
+const _guardScrollbarColors: z.ZodType<CiderpressScrollbarColors> = ciderpressScrollbarColorsSchema
 
-const zpressSyntaxColorsSchema = z
+const ciderpressSyntaxColorsSchema = z
   .object({
     kw: cssColorSchema,
     str: cssColorSchema,
@@ -315,18 +315,18 @@ const zpressSyntaxColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardSyntaxColors: z.ZodType<ZpressSyntaxColors> = zpressSyntaxColorsSchema
+const _guardSyntaxColors: z.ZodType<CiderpressSyntaxColors> = ciderpressSyntaxColorsSchema
 
-const zpressGradientColorsSchema = z
+const ciderpressGradientColorsSchema = z
   .object({
     heroCyan: cssColorSchema,
     heroPurple: cssColorSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardGradientColors: z.ZodType<ZpressGradientColors> = zpressGradientColorsSchema
+const _guardGradientColors: z.ZodType<CiderpressGradientColors> = ciderpressGradientColorsSchema
 
-const zpressOasColorsSchema = z
+const ciderpressOasColorsSchema = z
   .object({
     get: cssColorSchema,
     post: cssColorSchema,
@@ -338,9 +338,9 @@ const zpressOasColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardOasColors: z.ZodType<ZpressOasColors> = zpressOasColorsSchema
+const _guardOasColors: z.ZodType<CiderpressOasColors> = ciderpressOasColorsSchema
 
-const zpressButtonBrandColorsSchema = z
+const ciderpressButtonBrandColorsSchema = z
   .object({
     bg: cssColorSchema,
     hoverBg: cssColorSchema,
@@ -349,38 +349,38 @@ const zpressButtonBrandColorsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardButtonBrandColors: z.ZodType<ZpressButtonBrandColors> = zpressButtonBrandColorsSchema
+const _guardButtonBrandColors: z.ZodType<CiderpressButtonBrandColors> = ciderpressButtonBrandColorsSchema
 
-const zpressButtonColorsSchema = z
+const ciderpressButtonColorsSchema = z
   .object({
-    brand: zpressButtonBrandColorsSchema,
+    brand: ciderpressButtonBrandColorsSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardButtonColors: z.ZodType<ZpressButtonColors> = zpressButtonColorsSchema
+const _guardButtonColors: z.ZodType<CiderpressButtonColors> = ciderpressButtonColorsSchema
 
-const zpressColorsSchema = z
+const ciderpressColorsSchema = z
   .object({
-    brand: zpressBrandColorsSchema,
-    semantic: zpressSemanticColorsSchema,
-    surface: zpressSurfaceColorsSchema,
-    text: zpressTextColorsSchema,
-    border: zpressBorderColorsSchema,
-    tint: zpressTintColorsSchema,
-    terminal: zpressTerminalColorsSchema,
-    window: zpressWindowColorsSchema,
-    badge: zpressBadgeColorsSchema,
-    scrollbar: zpressScrollbarColorsSchema,
-    syntax: zpressSyntaxColorsSchema,
-    gradient: zpressGradientColorsSchema,
-    oas: zpressOasColorsSchema,
-    button: zpressButtonColorsSchema,
+    brand: ciderpressBrandColorsSchema,
+    semantic: ciderpressSemanticColorsSchema,
+    surface: ciderpressSurfaceColorsSchema,
+    text: ciderpressTextColorsSchema,
+    border: ciderpressBorderColorsSchema,
+    tint: ciderpressTintColorsSchema,
+    terminal: ciderpressTerminalColorsSchema,
+    window: ciderpressWindowColorsSchema,
+    badge: ciderpressBadgeColorsSchema,
+    scrollbar: ciderpressScrollbarColorsSchema,
+    syntax: ciderpressSyntaxColorsSchema,
+    gradient: ciderpressGradientColorsSchema,
+    oas: ciderpressOasColorsSchema,
+    button: ciderpressButtonColorsSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardColors: z.ZodType<ZpressColors> = zpressColorsSchema
+const _guardColors: z.ZodType<CiderpressColors> = ciderpressColorsSchema
 
-const zpressSpacingSchema = z
+const ciderpressSpacingSchema = z
   .object({
     s1: tokenStringSchema,
     s2: tokenStringSchema,
@@ -407,9 +407,9 @@ const zpressSpacingSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardSpacing: z.ZodType<ZpressSpacing> = zpressSpacingSchema
+const _guardSpacing: z.ZodType<CiderpressSpacing> = ciderpressSpacingSchema
 
-const zpressRadiiSchema = z
+const ciderpressRadiiSchema = z
   .object({
     xs: tokenStringSchema,
     xsSm: tokenStringSchema,
@@ -422,18 +422,18 @@ const zpressRadiiSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardRadii: z.ZodType<ZpressRadii> = zpressRadiiSchema
+const _guardRadii: z.ZodType<CiderpressRadii> = ciderpressRadiiSchema
 
-const zpressFontFamiliesSchema = z
+const ciderpressFontFamiliesSchema = z
   .object({
     sans: tokenStringSchema,
     mono: tokenStringSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardFontFamilies: z.ZodType<ZpressFontFamilies> = zpressFontFamiliesSchema
+const _guardFontFamilies: z.ZodType<CiderpressFontFamilies> = ciderpressFontFamiliesSchema
 
-const zpressFontWeightsSchema = z
+const ciderpressFontWeightsSchema = z
   .object({
     regular: z.number().int().positive(),
     medium: z.number().int().positive(),
@@ -442,9 +442,9 @@ const zpressFontWeightsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardFontWeights: z.ZodType<ZpressFontWeights> = zpressFontWeightsSchema
+const _guardFontWeights: z.ZodType<CiderpressFontWeights> = ciderpressFontWeightsSchema
 
-const zpressFontSizesSchema = z
+const ciderpressFontSizesSchema = z
   .object({
     body: tokenStringSchema,
     btn: tokenStringSchema,
@@ -492,19 +492,19 @@ const zpressFontSizesSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardFontSizes: z.ZodType<ZpressFontSizes> = zpressFontSizesSchema
+const _guardFontSizes: z.ZodType<CiderpressFontSizes> = ciderpressFontSizesSchema
 
-const zpressFontsSchema = z
+const ciderpressFontsSchema = z
   .object({
-    family: zpressFontFamiliesSchema,
-    weight: zpressFontWeightsSchema,
-    size: zpressFontSizesSchema,
+    family: ciderpressFontFamiliesSchema,
+    weight: ciderpressFontWeightsSchema,
+    size: ciderpressFontSizesSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardFonts: z.ZodType<ZpressFonts> = zpressFontsSchema
+const _guardFonts: z.ZodType<CiderpressFonts> = ciderpressFontsSchema
 
-const zpressShadowsSchema = z
+const ciderpressShadowsSchema = z
   .object({
     cardHover: tokenStringSchema,
     menu: tokenStringSchema,
@@ -514,35 +514,35 @@ const zpressShadowsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardShadows: z.ZodType<ZpressShadows> = zpressShadowsSchema
+const _guardShadows: z.ZodType<CiderpressShadows> = ciderpressShadowsSchema
 
-const zpressMotionDurationsSchema = z
+const ciderpressMotionDurationsSchema = z
   .object({
     fast: tokenStringSchema,
     base: tokenStringSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardMotionDurations: z.ZodType<ZpressMotionDurations> = zpressMotionDurationsSchema
+const _guardMotionDurations: z.ZodType<CiderpressMotionDurations> = ciderpressMotionDurationsSchema
 
-const zpressMotionEasingsSchema = z
+const ciderpressMotionEasingsSchema = z
   .object({
     base: tokenStringSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardMotionEasings: z.ZodType<ZpressMotionEasings> = zpressMotionEasingsSchema
+const _guardMotionEasings: z.ZodType<CiderpressMotionEasings> = ciderpressMotionEasingsSchema
 
-const zpressMotionSchema = z
+const ciderpressMotionSchema = z
   .object({
-    duration: zpressMotionDurationsSchema,
-    easing: zpressMotionEasingsSchema,
+    duration: ciderpressMotionDurationsSchema,
+    easing: ciderpressMotionEasingsSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardMotion: z.ZodType<ZpressMotion> = zpressMotionSchema
+const _guardMotion: z.ZodType<CiderpressMotion> = ciderpressMotionSchema
 
-const zpressZIndexSchema = z
+const ciderpressZIndexSchema = z
   .object({
     dropdown: z.number().int(),
     floating: z.number().int(),
@@ -550,9 +550,9 @@ const zpressZIndexSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardZIndex: z.ZodType<ZpressZIndex> = zpressZIndexSchema
+const _guardZIndex: z.ZodType<CiderpressZIndex> = ciderpressZIndexSchema
 
-const zpressLineHeightsSchema = z
+const ciderpressLineHeightsSchema = z
   .object({
     display: tokenStringSchema,
     tight: tokenStringSchema,
@@ -566,9 +566,9 @@ const zpressLineHeightsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardLineHeights: z.ZodType<ZpressLineHeights> = zpressLineHeightsSchema
+const _guardLineHeights: z.ZodType<CiderpressLineHeights> = ciderpressLineHeightsSchema
 
-const zpressLetterSpacingsSchema = z
+const ciderpressLetterSpacingsSchema = z
   .object({
     wide: tokenStringSchema,
     eyebrow: tokenStringSchema,
@@ -577,9 +577,9 @@ const zpressLetterSpacingsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardLetterSpacings: z.ZodType<ZpressLetterSpacings> = zpressLetterSpacingsSchema
+const _guardLetterSpacings: z.ZodType<CiderpressLetterSpacings> = ciderpressLetterSpacingsSchema
 
-const zpressOpacitiesSchema = z
+const ciderpressOpacitiesSchema = z
   .object({
     muted: tokenStringSchema,
     deprecated: tokenStringSchema,
@@ -587,9 +587,9 @@ const zpressOpacitiesSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardOpacities: z.ZodType<ZpressOpacities> = zpressOpacitiesSchema
+const _guardOpacities: z.ZodType<CiderpressOpacities> = ciderpressOpacitiesSchema
 
-const zpressSizesSchema = z
+const ciderpressSizesSchema = z
   .object({
     titlebar: tokenStringSchema,
     windowDot: tokenStringSchema,
@@ -624,9 +624,9 @@ const zpressSizesSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardSizes: z.ZodType<ZpressSizes> = zpressSizesSchema
+const _guardSizes: z.ZodType<CiderpressSizes> = ciderpressSizesSchema
 
-const zpressBreakpointsSchema = z
+const ciderpressBreakpointsSchema = z
   .object({
     sm: tokenStringSchema,
     md: tokenStringSchema,
@@ -635,29 +635,29 @@ const zpressBreakpointsSchema = z
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBreakpoints: z.ZodType<ZpressBreakpoints> = zpressBreakpointsSchema
+const _guardBreakpoints: z.ZodType<CiderpressBreakpoints> = ciderpressBreakpointsSchema
 
-const zpressBlursSchema = z
+const ciderpressBlursSchema = z
   .object({
     base: tokenStringSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardBlurs: z.ZodType<ZpressBlurs> = zpressBlursSchema
+const _guardBlurs: z.ZodType<CiderpressBlurs> = ciderpressBlursSchema
 
-const zpressGradientsSchema = z
+const ciderpressGradientsSchema = z
   .object({
     brand: tokenStringSchema,
     heroTitle: tokenStringSchema,
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardGradients: z.ZodType<ZpressGradients> = zpressGradientsSchema
+const _guardGradients: z.ZodType<CiderpressGradients> = ciderpressGradientsSchema
 
 /**
  * Zod schema for partial theme color overrides.
  *
- * Each field maps to one or more `--zp-c-*` / `--rp-c-*` CSS custom properties.
+ * Each field maps to one or more `--cp-c-*` / `--rp-c-*` CSS custom properties.
  * All fields are optional; omitted fields fall back to the active theme's defaults.
  * Hex values are validated via `cssColorSchema` — `#zzz`-style malformed hex is rejected.
  */
@@ -681,7 +681,7 @@ export const themeColorsSchema = z
   .strict()
 
 /**
- * Zod schema for the top-level theme configuration block in `zpress.config.ts`.
+ * Zod schema for the top-level theme configuration block in `ciderpress.config.ts`.
  *
  * Validates and coerces the `theme` key, applying defaults where fields are omitted.
  */
@@ -696,9 +696,9 @@ export const themeConfigSchema = z
   .strict()
 
 /**
- * Zod schema for the full `ZpressTokens` design-token registry.
+ * Zod schema for the full `CiderpressTokens` design-token registry.
  *
- * Mirrors the `ZpressTokens` interface defined in `./tokens.ts` exactly. The
+ * Mirrors the `CiderpressTokens` interface defined in `./tokens.ts` exactly. The
  * compile-time guard below enforces schema/type parity — if a field is added,
  * renamed, or has its type changed in `tokens.ts` without a matching update
  * here, TypeScript errors at this declaration.
@@ -713,25 +713,25 @@ export const themeConfigSchema = z
  */
 export const tokensSchema = z
   .object({
-    colors: zpressColorsSchema,
-    spacing: zpressSpacingSchema,
-    radii: zpressRadiiSchema,
-    fonts: zpressFontsSchema,
-    shadows: zpressShadowsSchema,
-    motion: zpressMotionSchema,
-    zIndex: zpressZIndexSchema,
-    lineHeights: zpressLineHeightsSchema,
-    letterSpacings: zpressLetterSpacingsSchema,
-    opacities: zpressOpacitiesSchema,
-    sizes: zpressSizesSchema,
-    breakpoints: zpressBreakpointsSchema,
-    blurs: zpressBlursSchema,
-    gradients: zpressGradientsSchema,
+    colors: ciderpressColorsSchema,
+    spacing: ciderpressSpacingSchema,
+    radii: ciderpressRadiiSchema,
+    fonts: ciderpressFontsSchema,
+    shadows: ciderpressShadowsSchema,
+    motion: ciderpressMotionSchema,
+    zIndex: ciderpressZIndexSchema,
+    lineHeights: ciderpressLineHeightsSchema,
+    letterSpacings: ciderpressLetterSpacingsSchema,
+    opacities: ciderpressOpacitiesSchema,
+    sizes: ciderpressSizesSchema,
+    breakpoints: ciderpressBreakpointsSchema,
+    blurs: ciderpressBlursSchema,
+    gradients: ciderpressGradientsSchema,
   })
   .strict()
 
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardTokens: z.ZodType<ZpressTokens> = tokensSchema as unknown as z.ZodType<ZpressTokens>
+const _guardTokens: z.ZodType<CiderpressTokens> = tokensSchema as unknown as z.ZodType<CiderpressTokens>
 
 // ---------------------------------------------------------------------------
 // Private

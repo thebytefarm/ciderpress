@@ -5,7 +5,7 @@ import { safeUrl } from '../../lib/safe-url.ts'
 
 import './announcement-bar.css'
 
-const STORAGE_PREFIX = 'zpress-announcement-dismissed:'
+const STORAGE_PREFIX = 'ciderpress-announcement-dismissed:'
 
 export interface AnnouncementBarProps {
   /**
@@ -13,7 +13,7 @@ export interface AnnouncementBarProps {
    */
   readonly id?: string
   /**
-   * Lead text. Use for the highlighted phrase ("zpress 1.0", "NEW:", etc).
+   * Lead text. Use for the highlighted phrase ("ciderpress 1.0", "NEW:", etc).
    */
   readonly lead?: React.ReactNode
   /**
@@ -54,13 +54,13 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
   return match(dismissed)
     .with(true, () => null)
     .otherwise(() => (
-      <div className="zp-announce" role="region" aria-label="Announcement">
-        <span className="zp-announce__pulse" aria-hidden="true" />
-        <span className="zp-announce__msg">
+      <div className="cp-announce" role="region" aria-label="Announcement">
+        <span className="cp-announce__pulse" aria-hidden="true" />
+        <span className="cp-announce__msg">
           {match(lead)
             .with(undefined, () => null)
             .otherwise((l) => (
-              <em className="zp-announce__lead">{l}</em>
+              <em className="cp-announce__lead">{l}</em>
             ))}{' '}
           {children}
           {match(cta)
@@ -71,7 +71,7 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
                 return null
               }
               return (
-                <a className="zp-announce__cta" href={href}>
+                <a className="cp-announce__cta" href={href}>
                   {c.label} →
                 </a>
               )
@@ -81,7 +81,7 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
           .with(true, () => null)
           .otherwise(() => (
             <button
-              className="zp-announce__close"
+              className="cp-announce__close"
               type="button"
               onClick={handleDismiss}
               aria-label="Dismiss announcement"

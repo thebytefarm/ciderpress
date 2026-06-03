@@ -12,7 +12,7 @@ import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.
  *
  * @example
  * ```ts
- * import { createRegistry } from '@zpress/templates'
+ * import { createRegistry } from '@ciderpress/templates'
  *
  * // Use built-in templates as-is
  * const registry = createRegistry()

@@ -19,10 +19,10 @@ Pass a code string via the `code` prop:
 import { IDEWindow } from '@theme'
 
 <IDEWindow
-  files={[{ name: 'zpress.config.ts', active: true }]}
+  files={[{ name: 'ciderpress.config.ts', active: true }]}
   lang="ts"
   code={
-    "import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
   }
 />
 ```
@@ -30,10 +30,10 @@ import { IDEWindow } from '@theme'
 **Output**
 
 <IDEWindow
-  files={[{ name: 'zpress.config.ts', active: true }]}
+  files={[{ name: 'ciderpress.config.ts', active: true }]}
   lang="ts"
   code={
-    "import { defineConfig } from '@zpress/kit'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
   }
 />
 
@@ -94,7 +94,7 @@ Use full paths for clarity in monorepo contexts:
   files={[{ name: 'package.json', active: true }]}
   lang="json"
   code={
-    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "zpress dev",\n    "build": "zpress build"\n  },\n  "dependencies": {\n    "@zpress/kit": "^0.2.4"\n  }\n}'
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "ciderpress dev",\n    "build": "ciderpress build"\n  },\n  "dependencies": {\n    "ciderpress": "^0.2.4"\n  }\n}'
   }
 />
 ```
@@ -105,7 +105,7 @@ Use full paths for clarity in monorepo contexts:
   files={[{ name: 'package.json', active: true }]}
   lang="json"
   code={
-    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "zpress dev",\n    "build": "zpress build"\n  },\n  "dependencies": {\n    "@zpress/kit": "^0.2.4"\n  }\n}'
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "ciderpress dev",\n    "build": "ciderpress build"\n  },\n  "dependencies": {\n    "ciderpress": "^0.2.4"\n  }\n}'
   }
 />
 

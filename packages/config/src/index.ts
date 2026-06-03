@@ -1,6 +1,6 @@
 // ─── Config types ────────────────────────────────────────────────────────
 export type {
-  ZpressConfig,
+  CiderpressConfig,
   ThemeName,
   IconColor,
   IconPrefix,
@@ -8,7 +8,7 @@ export type {
   IconConfig,
   ThemeColors,
   ThemeConfig,
-  ZpressThemeInput,
+  CiderpressThemeInput,
   Frontmatter,
   NavItem,
   CardConfig,
@@ -50,7 +50,7 @@ export type {
 // ─── Define / validate ───────────────────────────────────────────────────
 export { defineConfig } from './define-config.ts'
 export { validateConfig } from './validator.ts'
-export { zpressConfigSchema, pathsSchema } from './schema.ts'
+export { ciderpressConfigSchema, pathsSchema } from './schema.ts'
 
 // ─── Errors ──────────────────────────────────────────────────────────────
 export { configError, configErrorFromZod, configWarning } from './errors.ts'
@@ -82,10 +82,10 @@ export {
   isBuiltInTheme,
   isBuiltInIconColor,
   defineTheme,
-} from '@zpress/theme'
-export type { BuiltInThemeName, BuiltInIconColor } from '@zpress/theme'
+} from '@ciderpress/theme'
+export type { BuiltInThemeName, BuiltInIconColor } from '@ciderpress/theme'
 
 // ─── Loader (Node-only) ──────────────────────────────────────────────────
-// NOTE: `loadConfig` is exported separately at `@zpress/config/loader` to keep
+// NOTE: `loadConfig` is exported separately at `@ciderpress/config/loader` to keep
 // the main entry client-safe. See package.json `exports`.
 export type { LoadConfigOptions } from './loader.ts'

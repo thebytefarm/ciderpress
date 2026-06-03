@@ -3,21 +3,21 @@
  */
 
 /* ── Section grid ────────────────────────────────────────── */
-.zp-section-grid {
+.cp-section-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 12px;
   margin-top: 24px;
 }
 
-.zp-section-card {
+.cp-section-card {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 14px 16px;
   border-radius: var(--rp-radius);
-  border: 1px solid var(--zp-c-border);
-  background: var(--zp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+  background: var(--cp-c-bg-soft);
   text-decoration: none !important;
   transition:
     border-color 0.2s,
@@ -25,19 +25,19 @@
     box-shadow 0.2s;
 }
 
-.zp-section-card__header {
+.cp-section-card__header {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.zp-section-card:hover {
-  border-color: var(--zp-c-brand-1);
-  background: var(--zp-c-bg-elv);
-  box-shadow: var(--zp-shadow-card-hover);
+.cp-section-card:hover {
+  border-color: var(--cp-c-brand-1);
+  background: var(--cp-c-bg-elv);
+  box-shadow: var(--cp-shadow-card-hover);
 }
 
-.zp-section-card__icon {
+.cp-section-card__icon {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -47,68 +47,68 @@
   flex-shrink: 0;
 }
 
-.zp-section-card__icon svg {
+.cp-section-card__icon svg {
   width: 16px;
   height: 16px;
 }
 
 /* ── Section icon colors ─────────────────────────────────── */
-.zp-section-card__icon--blue {
-  background: var(--zp-c-tint-blue-bg);
-  color: var(--zp-c-tint-blue-fg);
+.cp-section-card__icon--blue {
+  background: var(--cp-c-tint-blue-bg);
+  color: var(--cp-c-tint-blue-fg);
 }
 
-.zp-section-card__icon--purple {
-  background: var(--zp-c-tint-purple-bg);
-  color: var(--zp-c-tint-purple-fg);
+.cp-section-card__icon--purple {
+  background: var(--cp-c-tint-purple-bg);
+  color: var(--cp-c-tint-purple-fg);
 }
 
-.zp-section-card__icon--green {
-  background: var(--zp-c-tint-green-bg);
-  color: var(--zp-c-tint-green-fg);
+.cp-section-card__icon--green {
+  background: var(--cp-c-tint-green-bg);
+  color: var(--cp-c-tint-green-fg);
 }
 
-.zp-section-card__icon--amber {
-  background: var(--zp-c-tint-amber-bg);
-  color: var(--zp-c-tint-amber-fg);
+.cp-section-card__icon--amber {
+  background: var(--cp-c-tint-amber-bg);
+  color: var(--cp-c-tint-amber-fg);
 }
 
-.zp-section-card__icon--red {
-  background: var(--zp-c-tint-red-bg);
-  color: var(--zp-c-tint-red-fg);
+.cp-section-card__icon--red {
+  background: var(--cp-c-tint-red-bg);
+  color: var(--cp-c-tint-red-fg);
 }
 
-.zp-section-card__icon--slate {
-  background: var(--zp-c-tint-slate-bg);
-  color: var(--zp-c-tint-slate-fg);
+.cp-section-card__icon--slate {
+  background: var(--cp-c-tint-slate-bg);
+  color: var(--cp-c-tint-slate-fg);
 }
 
-.zp-section-card__icon--cyan {
-  background: var(--zp-c-tint-cyan-bg);
-  color: var(--zp-c-tint-cyan-fg);
+.cp-section-card__icon--cyan {
+  background: var(--cp-c-tint-cyan-bg);
+  color: var(--cp-c-tint-cyan-fg);
 }
 
-.zp-section-card__icon--pink {
-  background: var(--zp-c-tint-pink-bg);
-  color: var(--zp-c-tint-pink-fg);
+.cp-section-card__icon--pink {
+  background: var(--cp-c-tint-pink-bg);
+  color: var(--cp-c-tint-pink-fg);
 }
 
-.zp-section-card__title {
+.cp-section-card__title {
   font-size: 14px;
   font-weight: 600;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
   line-height: 1;
 }
 
-.zp-section-card__desc {
+.cp-section-card__desc {
   font-size: 12.5px;
-  color: var(--zp-c-text-2);
+  color: var(--cp-c-text-2);
   line-height: 1.45;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .zp-section-grid {
+  .cp-section-grid {
     grid-template-columns: 1fr;
   }
 }

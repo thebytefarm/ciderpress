@@ -1,10 +1,10 @@
 import { useFrontmatter } from '@rspress/core/runtime'
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
-import type { SiteEditConfig, SiteReportConfig } from '@zpress/config'
+import type { SiteEditConfig, SiteReportConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
-import { useZpress } from '../../hooks/use-zpress'
+import { useCiderpress } from '../../hooks/use-ciderpress'
 import { AnnouncementBar } from '../announcement/announcement-bar'
 import { ContentFooterPortal } from '../content-footer/content-footer-portal'
 import { Feedback } from '../content-footer/feedback'
@@ -20,10 +20,10 @@ import { TopbarCTA } from './topbar-cta'
 import { VersionChip } from './version-chip'
 import { VscodeTag } from './vscode-tag'
 
-declare const __ZPRESS_VSCODE__: boolean
+declare const __CIDERPRESS_VSCODE__: boolean
 
 /**
- * Custom Layout override for zpress.
+ * Custom Layout override for ciderpress.
  *
  * Wires the chrome described by `config.site`:
  * - AnnouncementBar via the `top` slot (when `site.announcement` is set)
@@ -37,7 +37,7 @@ declare const __ZPRESS_VSCODE__: boolean
  * @returns React element with the custom layout
  */
 export function Layout(): React.ReactElement {
-  const { sidebarAbove, sidebarBelow, site } = useZpress()
+  const { sidebarAbove, sidebarBelow, site } = useCiderpress()
   const {
     announcement,
     version,
@@ -73,7 +73,7 @@ export function Layout(): React.ReactElement {
     .with(undefined, () => null)
     .otherwise((v) => <VersionChip version={v} />)
 
-  const navSlot = match(__ZPRESS_VSCODE__)
+  const navSlot = match(__CIDERPRESS_VSCODE__)
     .with(true, () => (
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {sidebarToggle}
@@ -108,7 +108,7 @@ export function Layout(): React.ReactElement {
 
   const beforeSidebar = match(aboveItems.length > 0)
     .with(true, () => (
-      <div className="zp-sidebar-top">
+      <div className="cp-sidebar-top">
         <SidebarLinks items={aboveItems} position="above" />
       </div>
     ))
@@ -131,7 +131,7 @@ export function Layout(): React.ReactElement {
   const afterSidebar = match(belowLinks === null && sidebarPromo === null)
     .with(true, () => null)
     .otherwise(() => (
-      <div className="zp-sidebar-bottom">
+      <div className="cp-sidebar-bottom">
         {belowLinks}
         {sidebarPromo}
       </div>

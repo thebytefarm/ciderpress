@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Set up zpress and ship your first documentation site in minutes.
+description: Set up ciderpress and ship your first documentation site in minutes.
 ---
 
 # Getting Started
@@ -11,5 +11,5 @@ Everything you need to go from zero to a deployed documentation site.
 
 | Page                                          | Description                                                         |
 | --------------------------------------------- | ------------------------------------------------------------------- |
-| [Introduction](/getting-started/introduction) | What zpress is, why it exists, and what it gives you out of the box |
-| [Quick Start](/getting-started/quick-start)   | Install zpress and build your first site in under five minutes      |
+| [Introduction](/getting-started/introduction) | What ciderpress is, why it exists, and what it gives you out of the box |
+| [Quick Start](/getting-started/quick-start)   | Install ciderpress and build your first site in under five minutes      |

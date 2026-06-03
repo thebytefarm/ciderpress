@@ -1,6 +1,6 @@
-# Contributing to zpress
+# Contributing to ciderpress
 
-Thanks for your interest in contributing to zpress! This document covers the basics you need to get started.
+Thanks for your interest in contributing to ciderpress! This document covers the basics you need to get started.
 
 ## Prerequisites
 
@@ -67,10 +67,10 @@ Write clear, concise descriptions in the imperative mood ("add feature" not "add
 
 ```text
 packages/
-├── cli/              # @zpress/cli — CLI commands, watcher, Rspress integration
-├── core/             # @zpress/core — config loading, sync engine, sidebar/nav generation
-├── ui/               # @zpress/ui — Rspress plugin, theme components, and styles
-└── zpress/           # @zpress/kit — public wrapper package (CLI + config re-exports)
+├── cli/              # @ciderpress/cli — CLI commands, watcher, Rspress integration
+├── core/             # @ciderpress/core — config loading, sync engine, sidebar/nav generation
+├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
+└── ciderpress/           # ciderpress — public wrapper package (CLI + config re-exports)
 ```
 
 ## Code Style

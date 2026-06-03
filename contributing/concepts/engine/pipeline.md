@@ -76,16 +76,16 @@ flowchart TB
 
 | #   | Step                    | Phase    | What it does                                                                                |
 | --- | ----------------------- | -------- | ------------------------------------------------------------------------------------------- |
-| 1   | Create dirs             | Setup    | Create `.zpress/content/`, `.zpress/content/.generated/`, and `.zpress/public/` directories |
+| 1   | Create dirs             | Setup    | Create `.ciderpress/content/`, `.ciderpress/content/.generated/`, and `.ciderpress/public/` directories |
 | 2   | Load manifest           | Setup    | Load previous sync manifest for incremental diffing                                         |
 | 3   | Generate assets         | Setup    | Generate branded SVG assets (conditional -- skipped when asset config hash unchanged)       |
-| 4   | Copy public/            | Setup    | Copy public assets into `.zpress/public/` for Rspress                                       |
+| 4   | Copy public/            | Setup    | Copy public assets into `.ciderpress/public/` for Rspress                                       |
 | 5   | Synthesize workspaces   | Resolve  | Convert `apps`/`packages`/`workspaces` into entry sections                                  |
 | 6   | Resolve entries         | Resolve  | Walk config tree, resolve globs, derive text, merge frontmatter                             |
 | 7   | Enrich cards            | Resolve  | Attach workspace metadata (icon, scope, tags, badge)                                        |
 | 8   | Inject landing pages    | Resolve  | Generate virtual MDX for sections with children but no page                                 |
 | 9   | Collect pages           | Resolve  | Flatten the resolved tree into a flat page list                                             |
-| 10  | Write workspace data    | Resolve  | Serialize workspace metadata to `.zpress/content/.generated/workspaces.json`                |
+| 10  | Write workspace data    | Resolve  | Serialize workspace metadata to `.ciderpress/content/.generated/workspaces.json`                |
 | 11  | Generate home           | Resolve  | Create default home page from config metadata (when no explicit index.md)                   |
 | 12  | Discover planning pages | Resolve  | Resolve pages from `.planning/` directory (included in output, excluded from sidebar/nav)   |
 | 13  | OpenAPI sync            | Resolve  | Dereference specs, generate `.mdx` per operation                                            |
@@ -93,7 +93,7 @@ flowchart TB
 | 15  | Clean stale files       | Write    | Remove files present in old manifest but absent in new; prune empty directories             |
 | 16  | Build sidebar + nav     | Generate | Build multi-sidebar JSON and nav array                                                      |
 | 17  | Save manifest           | Generate | Record file hashes and incremental metadata                                                 |
-| 18  | Write README            | Generate | Write bare-bones README to `.zpress/` root                                                  |
+| 18  | Write README            | Generate | Write bare-bones README to `.ciderpress/` root                                                  |
 
 Returns: `{ pagesWritten, pagesSkipped, pagesRemoved, elapsed }` (elapsed in milliseconds)
 
@@ -149,7 +149,7 @@ flowchart LR
 4. Copy referenced images to `content/public/images/`, rewrite paths to `/images/<name>-<hash>.<ext>` (8-char MD5 of the image path)
 5. Merge frontmatter (config defaults + source frontmatter, source wins)
 6. SHA-256 content hash -- skip write if unchanged from previous manifest
-7. Write final markdown/MDX to `.zpress/content/`
+7. Write final markdown/MDX to `.ciderpress/content/`
 
 ## Entry Resolution
 
@@ -176,7 +176,7 @@ Text derivation is configurable via the `title` field's `from` property:
 
 ## Multi-Sidebar
 
-zpress generates a multi-sidebar structure for Rspress. Root entries share the `/` namespace. Isolated sections (workspace items, explicit `isolated: true`) get their own namespace (e.g., `/apps/api/`). Each isolated section has an independent sidebar tree.
+ciderpress generates a multi-sidebar structure for Rspress. Root entries share the `/` namespace. Isolated sections (workspace items, explicit `isolated: true`) get their own namespace (e.g., `/apps/api/`). Each isolated section has an independent sidebar tree.
 
 ## References
 

@@ -5,7 +5,7 @@ description: Inline superscript and subscript syntax.
 
 # Superscript & Subscript
 
-zpress bundles `rspress-plugin-supersub` for inline superscript and subscript text. No configuration required.
+ciderpress bundles `rspress-plugin-supersub` for inline superscript and subscript text. No configuration required.
 
 ## Superscript
 

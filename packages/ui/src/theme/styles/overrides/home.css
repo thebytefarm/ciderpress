@@ -1,18 +1,18 @@
 /**
  * Home page overrides — hero image sizing, Rspress card/code tweaks.
  *
- * Cascade layer: `zpress.overrides` (see styles/layers.css).
+ * Cascade layer: `ciderpress.overrides` (see styles/layers.css).
  *
  * `!important` inventory (task 8.2):
  *   - Before: 24
  *   - After:  17
  *
  * Retained `!important` declarations override Rspress styles that are
- * authored outside the `zpress.*` layer stack — either unlayered (Rspress's
+ * authored outside the `ciderpress.*` layer stack — either unlayered (Rspress's
  * `.rp-home-hero*` component CSS, which beats layered rules in the normal
  * cascade) or inside Rspress's own `@layer rp-base` (e.g. shiki's
  * `[class*=language-]` border-radius). Both cases require `!important` to
- * win from inside `@layer zpress.overrides`.
+ * win from inside `@layer ciderpress.overrides`.
  *
  * Removed `!important` declarations targeted selectors with no competing
  * Rspress rule (`.rp-home-hero__name`, `.rp-home-hero__text`, and the
@@ -20,7 +20,7 @@
  * so the layer cascade alone is sufficient.
  */
 
-@layer zpress.overrides {
+@layer ciderpress.overrides {
   /* ── Rspress home hero image sizing ──────────────────────── */
   html .rp-home-hero__image {
     flex: none;
@@ -125,12 +125,12 @@
   }
 
   /* ── Feature section ───────────────────────────────────────── */
-  .zp-feature-section {
+  .cp-feature-section {
     padding: 64px 32px;
   }
 
   @media (max-width: 720px) {
-    .zp-feature-section {
+    .cp-feature-section {
       padding: 48px 20px;
     }
   }
@@ -139,13 +139,13 @@
      constrains the content column — additional horizontal padding here
      just misaligns the feature grid with the body paragraphs above it.
      Strip it so cards land on the same left edge as prose. */
-  .rp-doc .zp-feature-section {
+  .rp-doc .cp-feature-section {
     padding-left: 0;
     padding-right: 0;
   }
 
   /* Eyebrow + title above the feature grid (mockup pattern) */
-  .zp-feature-section-head {
+  .cp-feature-section-head {
     text-align: center;
     margin-bottom: 56px;
     max-width: 720px;
@@ -153,27 +153,27 @@
     margin-right: auto;
   }
 
-  .zp-feature-section-head__eyebrow {
-    font-family: var(--zp-font-family-mono);
+  .cp-feature-section-head__eyebrow {
+    font-family: var(--cp-font-family-mono);
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--zp-c-brand-1);
+    color: var(--cp-c-brand-1);
     margin-bottom: 12px;
   }
 
-  .zp-feature-section-head__title {
+  .cp-feature-section-head__title {
     font-size: clamp(28px, 4vw, 44px);
     font-weight: 600;
     letter-spacing: -0.025em;
     line-height: 1.1;
     margin: 0 0 16px;
-    color: var(--zp-c-text-1);
+    color: var(--cp-c-text-1);
   }
 
-  .zp-feature-section-head__sub {
+  .cp-feature-section-head__sub {
     font-size: 17px;
-    color: var(--zp-c-text-2);
+    color: var(--cp-c-text-2);
     margin: 0;
     line-height: 1.55;
   }
@@ -181,37 +181,37 @@
   /* ── Feature grid — hairline-divider grid (mockup pattern) ─── */
   /* The grid has `gap: 1px` on a border-color background so the gap shows
    through as hairlines between cells. Each cell paints its own panel bg. */
-  .zp-feature-grid {
+  .cp-feature-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1px;
-    background: var(--zp-c-border);
-    border: 1px solid var(--zp-c-border);
-    border-radius: var(--zp-radius-frame);
+    background: var(--cp-c-border);
+    border: 1px solid var(--cp-c-border);
+    border-radius: var(--cp-radius-frame);
     overflow: hidden;
     max-width: 1200px;
     margin: 0 auto;
   }
 
   @media (max-width: 880px) {
-    .zp-feature-grid {
+    .cp-feature-grid {
       grid-template-columns: 1fr;
     }
   }
 
-  .zp-feature-grid__item {
+  .cp-feature-grid__item {
     position: relative;
-    background: var(--zp-c-bg-elv);
+    background: var(--cp-c-bg-elv);
     transition: background 0.15s ease;
   }
 
-  .zp-feature-grid__item:hover {
-    background: var(--zp-c-bg-soft);
+  .cp-feature-grid__item:hover {
+    background: var(--cp-c-bg-soft);
   }
 
   /* Strip the inner card chrome; the grid gutter does the work now */
-  .zp-feature-grid__item .zp-card,
-  .zp-feature-grid__item .zp-feature-card {
+  .cp-feature-grid__item .cp-card,
+  .cp-feature-grid__item .cp-feature-card {
     background: transparent !important;
     border: 0 !important;
     border-radius: 0 !important;
@@ -220,15 +220,15 @@
     height: 100%;
   }
 
-  .zp-feature-grid__item-wrap {
+  .cp-feature-grid__item-wrap {
     height: 100%;
   }
 
   /* Span system retained but neutralized — every item takes one grid column. */
-  .zp-feature-grid__item--span-2,
-  .zp-feature-grid__item--span-3,
-  .zp-feature-grid__item--span-4,
-  .zp-feature-grid__item--span-6 {
+  .cp-feature-grid__item--span-2,
+  .cp-feature-grid__item--span-3,
+  .cp-feature-grid__item--span-4,
+  .cp-feature-grid__item--span-6 {
     width: auto;
   }
 

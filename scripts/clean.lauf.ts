@@ -14,10 +14,10 @@ export default lauf({
       'examples/*/dist',
       'extensions/*/dist',
 
-      // Zpress outputs
-      'examples/*/.zpress/dist',
-      'examples/*/.zpress/cache',
-      'examples/*/.zpress/content',
+      // Ciderpress outputs
+      'examples/*/.ciderpress/dist',
+      'examples/*/.ciderpress/cache',
+      'examples/*/.ciderpress/content',
 
       // Caches
       '**/node_modules/.cache',

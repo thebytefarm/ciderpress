@@ -10,8 +10,8 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import SwaggerParser from '@apidevtools/swagger-parser'
-import type { OpenAPIConfig, Workspace, ZpressConfig } from '@zpress/config'
-import { collectAllWorkspaceItems } from '@zpress/config'
+import type { OpenAPIConfig, Workspace, CiderpressConfig } from '@ciderpress/config'
+import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { capitalize } from 'massaman/string'
 
@@ -162,7 +162,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
       const message = match(error)
         .with(P.instanceOf(Error), (e) => e.message)
         .otherwise(String)
-      console.warn(`[zpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
+      console.warn(`[ciderpress] Failed to parse OpenAPI spec at ${specAbsPath}: ${message}`)
       return null
     })
     if (parsed === null) {
@@ -220,7 +220,7 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   if (duplicates.length > 0) {
     const duplicatePaths = duplicates.map(([p]) => p).join(', ')
     console.warn(
-      `[zpress] Duplicate OpenAPI slugs detected: ${duplicatePaths}. Later operations will overwrite earlier ones.`
+      `[ciderpress] Duplicate OpenAPI slugs detected: ${duplicatePaths}. Later operations will overwrite earlier ones.`
     )
   }
 
@@ -239,10 +239,10 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
  * Collect root-level OpenAPI config (if present).
  *
  * @private
- * @param config - Zpress config
+ * @param config - Ciderpress config
  * @returns Array of config entries (zero or one)
  */
-function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
+function collectRootConfigs(config: CiderpressConfig): readonly ConfigEntry[] {
   return match(config.openapi)
     .with(P.nonNullable, (o) => [{ config: o, rootLevel: true }])
     .otherwise(() => [])
@@ -252,10 +252,10 @@ function collectRootConfigs(config: ZpressConfig): readonly ConfigEntry[] {
  * Collect workspace-level OpenAPI configs from apps, packages, and workspace categories.
  *
  * @private
- * @param config - Zpress config
+ * @param config - Ciderpress config
  * @returns Array of config entries from workspace items
  */
-function collectWorkspaceConfigs(config: ZpressConfig): readonly ConfigEntry[] {
+function collectWorkspaceConfigs(config: CiderpressConfig): readonly ConfigEntry[] {
   const allWorkspaces = collectAllWorkspaceItems(config)
 
   return allWorkspaces
@@ -347,7 +347,7 @@ function buildOperationPage(
     '---',
     '',
     "import spec from './openapi.json'",
-    "import { CopyMarkdownButton, OpenAPIOperation } from '@zpress/ui/theme'",
+    "import { CopyMarkdownButton, OpenAPIOperation } from '@ciderpress/ui/theme'",
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
@@ -392,7 +392,7 @@ function buildIndexPage(title: string, prefix: string, spec: Record<string, unkn
     '---',
     '',
     "import spec from './openapi.json'",
-    "import { CopyMarkdownButton, OpenAPIOverview } from '@zpress/ui/theme'",
+    "import { CopyMarkdownButton, OpenAPIOverview } from '@ciderpress/ui/theme'",
     '',
     `export const markdown = ${JSON.stringify(markdown)}`,
     '',
@@ -447,8 +447,8 @@ function buildSidebarItems(
  * Format sidebar text for an operation based on the configured style.
  *
  * - `'method-path'` renders an HTML string with a colored method badge
- *   (`.zp-oas-sidebar-badge--{method}`) and the API path in monospace
- *   (`.zp-oas-sidebar-path`). Rspress renders this via `dangerouslySetInnerHTML`.
+ *   (`.cp-oas-sidebar-badge--{method}`) and the API path in monospace
+ *   (`.cp-oas-sidebar-path`). Rspress renders this via `dangerouslySetInnerHTML`.
  * - `'title'` renders the operation summary as plain text (e.g., "List Users")
  *
  * @private
@@ -461,8 +461,8 @@ function formatSidebarText(op: OperationInfo, style: 'method-path' | 'title'): s
     .with('title', () => op.summary)
     .with('method-path', () => {
       const method = op.method.toUpperCase()
-      const badge = `<span class="zp-oas-sidebar-badge zp-oas-sidebar-badge--${op.method}">${method}</span>`
-      const pathHtml = `<code class="zp-oas-sidebar-path">${escapeHtml(op.path)}</code>`
+      const badge = `<span class="cp-oas-sidebar-badge cp-oas-sidebar-badge--${op.method}">${method}</span>`
+      const pathHtml = `<code class="cp-oas-sidebar-path">${escapeHtml(op.path)}</code>`
       return `${badge}${pathHtml}`
     })
     .exhaustive()

@@ -1,14 +1,14 @@
 import { useSite } from '@rspress/core/runtime'
-import type { FooterConfig, HomeConfig, SiteConfig } from '@zpress/config'
+import type { FooterConfig, HomeConfig, SiteConfig } from '@ciderpress/config'
 
-export interface ZpressSidebarItem {
+export interface CiderpressSidebarItem {
   readonly text?: string
   readonly link?: string
   readonly icon?: string
-  readonly items?: readonly ZpressSidebarItem[]
+  readonly items?: readonly CiderpressSidebarItem[]
 }
 
-export interface ZpressSidebarLink {
+export interface CiderpressSidebarLink {
   readonly text: string
   readonly link: string
   readonly icon?: string | { readonly id: string; readonly color: string }
@@ -33,29 +33,29 @@ export interface WorkspaceGroupData {
   readonly cards: readonly WorkspaceCardData[]
 }
 
-interface ZpressThemeConfig {
-  readonly sidebar: Record<string, readonly ZpressSidebarItem[]>
-  readonly sidebarAbove: readonly ZpressSidebarLink[] | undefined
-  readonly sidebarBelow: readonly ZpressSidebarLink[] | undefined
+interface CiderpressThemeConfig {
+  readonly sidebar: Record<string, readonly CiderpressSidebarItem[]>
+  readonly sidebarAbove: readonly CiderpressSidebarLink[] | undefined
+  readonly sidebarBelow: readonly CiderpressSidebarLink[] | undefined
   readonly workspaces: readonly WorkspaceGroupData[] | undefined
   readonly standaloneScopePaths: readonly string[] | undefined
   readonly home: HomeConfig | undefined
-  readonly zpressFooter: FooterConfig | undefined
+  readonly ciderpressFooter: FooterConfig | undefined
   readonly site: SiteConfig | undefined
 }
 
 /**
  * Typed wrapper around Rspress `useSite()` that exposes
- * zpress-specific themeConfig fields.
+ * ciderpress-specific themeConfig fields.
  *
  * The double cast is necessary because Rspress types `themeConfig` as
- * `NormalizedThemeConfig`, but zpress injects custom fields (sidebar,
+ * `NormalizedThemeConfig`, but ciderpress injects custom fields (sidebar,
  * workspaces) via spread at build time. No Zod schema exists for runtime
  * validation yet.
  *
- * @returns zpress theme config with sidebar and workspace data.
+ * @returns ciderpress theme config with sidebar and workspace data.
  */
-export function useZpress(): ZpressThemeConfig {
+export function useCiderpress(): CiderpressThemeConfig {
   const { site } = useSite()
-  return site.themeConfig as unknown as ZpressThemeConfig
+  return site.themeConfig as unknown as CiderpressThemeConfig
 }

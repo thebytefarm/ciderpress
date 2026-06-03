@@ -33,8 +33,8 @@ describe('renderFigletText (ANSI Shadow)', () => {
     expect(bordered(result.lines)).toMatchSnapshot()
   })
 
-  it('should render full word "zpress"', () => {
-    const result = renderFigletText('zpress')
+  it('should render full word "ciderpress"', () => {
+    const result = renderFigletText('ciderpress')
     expect(bordered(result.lines)).toMatchSnapshot()
   })
 
@@ -50,8 +50,8 @@ describe('renderPixelText (RubiFont)', () => {
     expect(bordered(result.lines)).toMatchSnapshot()
   })
 
-  it('should render full word "zpress"', () => {
-    const result = renderPixelText('zpress')
+  it('should render full word "ciderpress"', () => {
+    const result = renderPixelText('ciderpress')
     expect(bordered(result.lines)).toMatchSnapshot()
   })
 

@@ -1,4 +1,4 @@
-.zp-sidebar-links {
+.cp-sidebar-links {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -6,14 +6,14 @@
 }
 
 /* Position modifiers (`--above` / `--below`) used to own their own
-   divider hairlines + spacing, but the `.zp-sidebar-top` and
-   `.zp-sidebar-bottom` wrappers (added in v1) now provide the dividers
+   divider hairlines + spacing, but the `.cp-sidebar-top` and
+   `.cp-sidebar-bottom` wrappers (added in v1) now provide the dividers
    and edge-to-edge backgrounds. Keep the modifier classes as semantic
    hooks for downstream consumers, but don't paint extra borders here. */
 
 /* ── Base ───────────────────────────────────────────────── */
 
-.zp-sidebar-link {
+.cp-sidebar-link {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -33,55 +33,55 @@
 
 /* ── Ghost (default) — no background, subtle hover ───── */
 
-.zp-sidebar-link--ghost {
+.cp-sidebar-link--ghost {
   background-color: transparent;
 }
 
-.zp-sidebar-link--ghost:hover {
+.cp-sidebar-link--ghost:hover {
   color: var(--rp-c-text-1);
   background-color: var(--rp-c-bg-mute);
 }
 
 /* ── Brand — solid brand background ──────────────────── */
 
-.zp-sidebar-link--brand {
-  color: var(--zp-c-on-brand);
+.cp-sidebar-link--brand {
+  color: var(--cp-c-on-brand);
   background: var(--rp-c-brand-darker);
 }
 
-.zp-sidebar-link--brand:hover {
+.cp-sidebar-link--brand:hover {
   background: var(--rp-c-brand-dark);
 }
 
 /* ── Alt — outlined with border ──────────────────────── */
 
-.zp-sidebar-link--alt {
+.cp-sidebar-link--alt {
   border: 1px solid var(--rp-c-gray-light-3);
   color: var(--rp-c-text-1);
   background-color: var(--rp-c-bg);
 }
 
-html.dark .zp-sidebar-link--alt {
+html.dark .cp-sidebar-link--alt {
   background-color: var(--rp-c-bg-mute);
-  border-color: var(--zp-c-sidebar-alt-border-dark);
+  border-color: var(--cp-c-sidebar-alt-border-dark);
 }
 
-.zp-sidebar-link--alt:hover {
+.cp-sidebar-link--alt:hover {
   opacity: 0.8;
   background-color: var(--rp-c-bg-mute);
 }
 
 /* ── Shapes ──────────────────────────────────────────── */
 
-.zp-sidebar-link--square {
+.cp-sidebar-link--square {
   border-radius: 8px;
 }
 
-.zp-sidebar-link--rounded {
+.cp-sidebar-link--rounded {
   border-radius: 9999px;
 }
 
-.zp-sidebar-link--circle {
+.cp-sidebar-link--circle {
   border-radius: 50%;
   justify-content: center;
   width: 36px;
@@ -89,13 +89,13 @@ html.dark .zp-sidebar-link--alt {
   padding: 0;
 }
 
-.zp-sidebar-link-icon {
+.cp-sidebar-link-icon {
   flex-shrink: 0;
   width: 16px;
   height: 16px;
 }
 
-.zp-sidebar-link-text {
+.cp-sidebar-link-text {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

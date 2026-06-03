@@ -1,8 +1,8 @@
 /**
- * zpress Rspress theme entry.
+ * ciderpress Rspress theme entry.
  *
  * Re-exports the default Rspress theme and extends it with
- * zpress-specific components.
+ * ciderpress-specific components.
  *
  * Global styles are imported here so Rspress includes them
  * in the site bundle when this theme entry is loaded.
@@ -16,13 +16,13 @@ import './styles/layers.css'
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
 import './styles/overrides/rspress.css'
-// Theme color palettes — scoped via [data-zp-theme][data-zp-variant] selectors
+// Theme color palettes — scoped via [data-cp-theme][data-cp-variant] selectors
 import './styles/themes/default.css'
 import './styles/themes/midnight.css'
 import './styles/themes/arcade.css'
 // arcade-fx.css is intentionally separate from arcade.css:
 // arcade.css = color palette tokens, arcade-fx.css = visual effects
-// (border trace, neon pulse, CRT scanlines, etc.) scoped to [data-zp-theme='arcade']
+// (border trace, neon pulse, CRT scanlines, etc.) scoped to [data-cp-theme='arcade']
 import './styles/themes/arcade-fx.css'
 import './styles/overrides/details.css'
 import './styles/overrides/scrollbar.css'
@@ -69,7 +69,7 @@ export * from '@rspress/core/theme-original'
 
 // ── Layout overrides (@internal — required by Rspress theme resolution) ──
 
-/** @internal Rspress layout override — injects zpress nav components via layout slots */
+/** @internal Rspress layout override — injects ciderpress nav components via layout slots */
 export { Layout } from './components/nav/layout'
 /** @internal Home page feature block override */
 export { HomeFeature } from './components/home/feature'

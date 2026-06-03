@@ -1,23 +1,23 @@
 {
-  "name": "@zpress/cli",
+  "name": "@ciderpress/cli",
   "version": "1.0.0-rc.0",
-  "description": "CLI for building and serving zpress documentation sites",
+  "description": "CLI for building and serving ciderpress documentation sites",
   "keywords": [
     "cli",
     "docs",
     "rspress",
-    "zpress"
+    "ciderpress"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/cli#readme",
-  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/cli#readme",
+  "bugs": "https://github.com/thebytefarm/ciderpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joggrdocs/zpress.git",
+    "url": "https://github.com/thebytefarm/ciderpress.git",
     "directory": "packages/cli"
   },
   "bin": {
-    "zpress": "./dist/index.mjs"
+    "ciderpress": "./dist/index.mjs"
   },
   "files": [
     "dist",
@@ -46,10 +46,10 @@
     "@clack/prompts": "^1.4.0",
     "@kidd-cli/core": "^0.24.0",
     "@rspress/core": "catalog:",
-    "@zpress/config": "workspace:*",
-    "@zpress/templates": "workspace:*",
-    "@zpress/theme": "workspace:*",
-    "@zpress/ui": "workspace:*",
+    "@ciderpress/config": "workspace:*",
+    "@ciderpress/templates": "workspace:*",
+    "@ciderpress/theme": "workspace:*",
+    "@ciderpress/ui": "workspace:*",
     "fast-glob": "^3.3.3",
     "get-port": "^7.2.0",
     "gray-matter": "^4.0.3",

@@ -1,6 +1,6 @@
 /*
 |==========================================================================
-| zpress CLI
+| ciderpress CLI
 |==========================================================================
 |
 | CLI for building and serving documentation.
@@ -42,7 +42,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 await cli({
-  name: 'zpress',
+  name: 'ciderpress',
   version: __KIDD_VERSION__,
   description: 'CLI for building and serving documentation',
   middleware: [errorBoundary()],

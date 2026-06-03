@@ -8,7 +8,7 @@ const LINE_HEIGHT = 16
 const X_OFFSET = 24
 const Y_OFFSET = 24
 
-const ZPRESS_ART: readonly string[] = Object.freeze([
+const CIDERPRESS_ART: readonly string[] = Object.freeze([
   '███████╗██████╗ ██████╗ ███████╗███████╗███████╗',
   '╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝',
   '  ███╔╝ ██████╔╝██████╔╝█████╗  ███████╗███████╗',
@@ -17,14 +17,14 @@ const ZPRESS_ART: readonly string[] = Object.freeze([
   '╚══════╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝',
 ])
 
-export interface ZpressLogoProps {
+export interface CiderpressLogoProps {
   /**
    * Optional className applied to the root `<svg>` element.
    */
   readonly className?: string
   /**
    * Accessible label rendered into an SVG `<title>` element. Defaults to
-   * `"zpress"` so the logo is always announced by screen readers.
+   * `"ciderpress"` so the logo is always announced by screen readers.
    */
   readonly title?: string
   /**
@@ -49,13 +49,13 @@ export interface ZpressLogoProps {
  * active without any JS re-renders or theme subscriptions.
  *
  * Falls back to `#60a5fa` when `--rp-c-brand` is not defined (e.g. when
- * rendered outside the zpress theme context).
+ * rendered outside the ciderpress theme context).
  *
  * @param props - Optional className, title, and explicit size overrides
  * @returns Inline SVG element
  */
-export function ZpressLogo(props: ZpressLogoProps): React.ReactElement {
-  const title = props.title ?? 'zpress'
+export function CiderpressLogo(props: CiderpressLogoProps): React.ReactElement {
+  const title = props.title ?? 'ciderpress'
 
   return (
     <svg
@@ -73,7 +73,7 @@ export function ZpressLogo(props: ZpressLogoProps): React.ReactElement {
         fontFamily={FONT_STACK}
         fill="currentColor"
       >
-        {ZPRESS_ART.map((line, i) => (
+        {CIDERPRESS_ART.map((line, i) => (
           <text key={line} fontSize={FONT_SIZE} y={i * LINE_HEIGHT} xmlSpace="preserve">
             {line}
           </text>

@@ -14,7 +14,7 @@ const os = await import('node:os')
 const { reportCrash } = await import('./crash-reporter.ts')
 
 describe('reportCrash()', () => {
-  const testDir = mkdtempSync(join(tmpdir(), 'zpress-test-'))
+  const testDir = mkdtempSync(join(tmpdir(), 'ciderpress-test-'))
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -22,7 +22,7 @@ describe('reportCrash()', () => {
   })
 
   afterEach(() => {
-    rmSync(join(testDir, 'zpress'), { recursive: true, force: true })
+    rmSync(join(testDir, 'ciderpress'), { recursive: true, force: true })
   })
 
   it('should return ok: true with a logPath when write succeeds', () => {
@@ -34,7 +34,7 @@ describe('reportCrash()', () => {
 
     expect(result.ok).toBe(true)
     expect(result.message).toBe('test crash')
-    expect(result.logPath).toMatch(/\/zpress\/error-.*\.log$/)
+    expect(result.logPath).toMatch(/\/ciderpress\/error-.*\.log$/)
     expect(result.error).toBeNull()
   })
 
@@ -61,7 +61,7 @@ describe('reportCrash()', () => {
     expect(report.env.node).toBeDefined()
     expect(report.env.platform).toBeDefined()
     expect(report.env.arch).toBeDefined()
-    expect(report.env.zpress).toBe('0.8.4')
+    expect(report.env.ciderpress).toBe('0.8.4')
   })
 
   it('should include command and args when provided', () => {

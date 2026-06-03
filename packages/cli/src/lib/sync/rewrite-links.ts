@@ -7,7 +7,7 @@ import type { PageData } from './types.ts'
 /**
  * Placeholder prefix used to protect code blocks from link rewriting.
  */
-const PLACEHOLDER_PREFIX = '<!--ZPRESS_CODE_BLOCK_'
+const PLACEHOLDER_PREFIX = '<!--CIDERPRESS_CODE_BLOCK_'
 
 /**
  * Placeholder suffix for code block markers.
@@ -29,7 +29,7 @@ const LINK_RE = /(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
 /**
  * Regex to restore code block placeholders.
  */
-const PLACEHOLDER_RE = /<!--ZPRESS_CODE_BLOCK_(\d+)-->/g
+const PLACEHOLDER_RE = /<!--CIDERPRESS_CODE_BLOCK_(\d+)-->/g
 
 /**
  * Mapping from repo-relative source path to content-relative output path.

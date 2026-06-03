@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { log } from '@clack/prompts'
-import type { Frontmatter } from '@zpress/config'
+import type { Frontmatter } from '@ciderpress/config'
 import { match } from 'massaman/match'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
@@ -29,7 +29,7 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
   const cached = await tryMtimeSkip(page, ctx)
   if (cached !== null) {
     // Verify the output file still exists on disk — the manifest may survive
-    // even if .zpress/content/ was partially deleted.
+    // even if .ciderpress/content/ was partially deleted.
     const outputExists = await fs.stat(outPath).catch(() => null)
     if (outputExists !== null) {
       return cached
@@ -49,7 +49,7 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
         .otherwise(() => page.content as string)
       return injectFrontmatter(await body, page.frontmatter)
     }
-    log.error(`[zpress] Page "${page.outputPath}" has neither source nor content`)
+    log.error(`[ciderpress] Page "${page.outputPath}" has neither source nor content`)
     return ''
   })()
 
@@ -271,7 +271,7 @@ function warnMdxExports(content: string, outputPath: string): void {
 
   if (outsideFence.length > 0) {
     log.warn(
-      `[zpress] ${outputPath}: found ESM export(s) on line(s) ${outsideFence.join(', ')}. ` +
+      `[ciderpress] ${outputPath}: found ESM export(s) on line(s) ${outsideFence.join(', ')}. ` +
         'ESM exports are stripped during SSG-MD rendering and will cause ReferenceErrors ' +
         'if referenced by JSX. Use inline values instead.'
     )

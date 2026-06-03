@@ -11,8 +11,8 @@ import type {
   Paths,
   ThemeColors,
   ThemeName,
-  ZpressConfig,
-} from '@zpress/config'
+  CiderpressConfig,
+} from '@ciderpress/config'
 import {
   BUILT_IN_THEMES,
   defineTheme,
@@ -20,8 +20,8 @@ import {
   resolveDefaultVariant,
   resolveThemeVariants,
   themeToCss,
-} from '@zpress/theme'
-import type { ThemeVariant, ZpressTheme } from '@zpress/theme'
+} from '@ciderpress/theme'
+import type { ThemeVariant, CiderpressTheme } from '@ciderpress/theme'
 import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
@@ -29,12 +29,12 @@ import supersub from 'rspress-plugin-supersub'
 
 import { getThemeCss } from './css.ts'
 import { readJs } from './head/read.ts'
-import { zpressPlugin } from './plugin.ts'
+import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 
 interface CreateRspressConfigOptions {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly paths: Paths
   readonly logLevel?: 'info' | 'warn' | 'error' | 'silent'
   readonly vscode?: boolean
@@ -52,7 +52,7 @@ interface HeadScriptOptions {
 /**
  * Serialized theme registry entry consumed by the theme switcher and
  * theme provider. Carries the minimum metadata needed to render and apply
- * a theme without re-importing `@zpress/theme` at runtime.
+ * a theme without re-importing `@ciderpress/theme` at runtime.
  */
 interface ThemeRegistryEntry {
   readonly name: string
@@ -62,20 +62,20 @@ interface ThemeRegistryEntry {
   readonly defaultVariant: ThemeVariant
 }
 
-const VSCODE_SET_JS = `document.documentElement.dataset.zpressEnv='vscode'`
+const VSCODE_SET_JS = `document.documentElement.dataset.ciderpressEnv='vscode'`
 const VSCODE_NAV_JS = readJs('js/vscode-nav.js')
 const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 
 /**
  * Serialized registry of built-in themes — the static portion of the
- * `__ZPRESS_THEME_REGISTRY__` define. User-defined themes from
+ * `__CIDERPRESS_THEME_REGISTRY__` define. User-defined themes from
  * `config.themes` are appended per build inside `createRspressConfig`.
  */
 const BUILT_IN_THEME_REGISTRY: readonly ThemeRegistryEntry[] =
   Object.values(BUILT_IN_THEMES).map(buildRegistryEntry)
 
 /**
- * Translate zpress config + sync engine output into a complete
+ * Translate ciderpress config + sync engine output into a complete
  * Rspress configuration object.
  *
  * @param options - Config, paths, and optional log level
@@ -124,15 +124,15 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
   // Force a single React instance across all compiled theme components.
   // Without this alias, Rspress's rspack may resolve react from the
-  // @zpress/ui dist/theme directory (deep inside pnpm's .pnpm store),
+  // @ciderpress/ui dist/theme directory (deep inside pnpm's .pnpm store),
   // producing a second copy that triggers "Invalid hook call" errors.
-  // Resolve from this package's context (react is a peer dep of @zpress/ui).
+  // Resolve from this package's context (react is a peer dep of @ciderpress/ui).
   const selfRequire = createRequire(import.meta.url)
   const reactAlias = path.dirname(selfRequire.resolve('react/package.json'))
   const reactDomAlias = path.dirname(selfRequire.resolve('react-dom/package.json'))
 
-  // Bundle the user's zpress.config.{ts,js,...} into the browser graph so
-  // function-form fields (e.g. `logo: ({ theme }) => <ZpressLogo />`) can
+  // Bundle the user's ciderpress.config.{ts,js,...} into the browser graph so
+  // function-form fields (e.g. `logo: ({ theme }) => <CiderpressLogo />`) can
   // run at render time. The slot component imports from this alias; the
   // shim falls back to an empty object so the import always resolves even
   // when the user has no config file or only data fields.
@@ -157,7 +157,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     llms: true,
 
-    title: config.title ?? 'zpress',
+    title: config.title ?? 'ciderpress',
     description: config.description ?? 'Documentation',
 
     icon: config.icon ?? '/icon.svg',
@@ -170,7 +170,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     themeDir: path.resolve(import.meta.dirname, 'theme'),
 
     plugins: [
-      zpressPlugin(),
+      ciderpressPlugin(),
       mermaidPlugin(),
       fileTree({ initialExpandDepth: 1 }),
       supersub(),
@@ -193,7 +193,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           {
             tag: 'style',
             children: themeCss,
-            attrs: { 'data-zpress-theme-css': true },
+            attrs: { 'data-ciderpress-theme-css': true },
             append: false,
             head: true,
           },
@@ -211,39 +211,39 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           // different physical copies from theme components vs Rspress internals.
           react: reactAlias,
           'react-dom': reactDomAlias,
-          // Allow generated MDX files in .zpress/content/ to import
-          // zpress React components used in landing pages.
-          '@zpress/ui/theme': path.resolve(import.meta.dirname, 'theme', 'index.tsx'),
-          // Bridge the user's zpress.config.* into the browser bundle so
+          // Allow generated MDX files in .ciderpress/content/ to import
+          // ciderpress React components used in landing pages.
+          '@ciderpress/ui/theme': path.resolve(import.meta.dirname, 'theme', 'index.tsx'),
+          // Bridge the user's ciderpress.config.* into the browser bundle so
           // function-form fields (e.g. `logo`) can run at render time.
           // Falls back to a stub re-exporting `{}` when no config file exists.
-          '@zpress/internal/user-config': userConfigAlias,
-          // The user's `zpress.config.ts` imports `defineConfig`/`defineTheme`
-          // from `@zpress/kit`. When Rspress's webpack bundles that config into
-          // the client (via the alias above), it needs to resolve `@zpress/kit`
+          '@ciderpress/internal/user-config': userConfigAlias,
+          // The user's `ciderpress.config.ts` imports `defineConfig`/`defineTheme`
+          // from `ciderpress`. When Rspress's webpack bundles that config into
+          // the client (via the alias above), it needs to resolve `ciderpress`
           // — and pnpm's symlinked layout doesn't always work from Rspress's
           // resolve context. Point the alias at the kit's main entry directly.
           // Uses `import.meta.resolve` (not CJS `require.resolve`) so the
           // package's `"import"` export condition is honored.
-          '@zpress/kit': fileURLToPath(import.meta.resolve('@zpress/kit')),
-          // `@zpress/kit/dist/index.mjs` re-exports `ZpressLogo` from bare
-          // `@zpress/ui`, and user MDX may also import components directly
-          // from `@zpress/ui`. Both paths hit the same CJS/ESM exports gap
-          // (`@zpress/ui` declares only the `"import"` condition), so alias
-          // the bare specifier the same way `@zpress/kit` is handled above.
-          '@zpress/ui$': fileURLToPath(import.meta.resolve('@zpress/ui')),
+          'ciderpress': fileURLToPath(import.meta.resolve('ciderpress')),
+          // `ciderpress/dist/index.mjs` re-exports `CiderpressLogo` from bare
+          // `@ciderpress/ui`, and user MDX may also import components directly
+          // from `@ciderpress/ui`. Both paths hit the same CJS/ESM exports gap
+          // (`@ciderpress/ui` declares only the `"import"` condition), so alias
+          // the bare specifier the same way `ciderpress` is handled above.
+          '@ciderpress/ui$': fileURLToPath(import.meta.resolve('@ciderpress/ui')),
         },
       },
       source: {
         define: {
-          __ZPRESS_GIT_BRANCH__: JSON.stringify(gitBranch),
-          __ZPRESS_THEME_NAME__: JSON.stringify(themeName),
-          __ZPRESS_DEFAULT_VARIANT__: JSON.stringify(variant),
-          __ZPRESS_THEME_COLORS__: JSON.stringify(JSON.stringify(themeColors)),
-          __ZPRESS_THEME_DARK_COLORS__: JSON.stringify(JSON.stringify(themeDarkColors)),
-          __ZPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
-          __ZPRESS_THEME_REGISTRY__: JSON.stringify(JSON.stringify(themeRegistry)),
-          __ZPRESS_VSCODE__: JSON.stringify(isVscode),
+          __CIDERPRESS_GIT_BRANCH__: JSON.stringify(gitBranch),
+          __CIDERPRESS_THEME_NAME__: JSON.stringify(themeName),
+          __CIDERPRESS_DEFAULT_VARIANT__: JSON.stringify(variant),
+          __CIDERPRESS_THEME_COLORS__: JSON.stringify(JSON.stringify(themeColors)),
+          __CIDERPRESS_THEME_DARK_COLORS__: JSON.stringify(JSON.stringify(themeDarkColors)),
+          __CIDERPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
+          __CIDERPRESS_THEME_REGISTRY__: JSON.stringify(JSON.stringify(themeRegistry)),
+          __CIDERPRESS_VSCODE__: JSON.stringify(isVscode),
         },
       },
       output: {
@@ -258,10 +258,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // more than one variant — when there's only one, the toggle is
       // visually irrelevant. CSS in
       // `packages/ui/src/theme/styles/overrides/rspress.css` hides it on
-      // single-variant themes via `[data-zp-variants]`.
+      // single-variant themes via `[data-cp-variants]`.
       darkMode: true,
       search: true,
-      // Custom zpress data injected alongside standard Rspress themeConfig.
+      // Custom ciderpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),
       ...({
@@ -269,7 +269,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
         sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
         sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
         home: resolveHomeConfig(config),
-        zpressFooter: config.footer,
+        ciderpressFooter: config.footer,
         site: config.site,
       } as Record<string, unknown>),
     },
@@ -297,7 +297,7 @@ function loadGenerated<T>(params: {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
   if (!existsSync(p)) {
     process.stderr.write(
-      `[zpress] Generated file not found: ${params.name} — run "zpress sync" first\n`
+      `[ciderpress] Generated file not found: ${params.name} — run "ciderpress sync" first\n`
     )
     return params.fallback
   }
@@ -305,7 +305,7 @@ function loadGenerated<T>(params: {
     // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
     return JSON.parse(readFileSync(p, 'utf8')) as T
   } catch {
-    process.stderr.write(`[zpress] Failed to parse ${params.name} — returning fallback\n`)
+    process.stderr.write(`[ciderpress] Failed to parse ${params.name} — returning fallback\n`)
     return params.fallback
   }
 }
@@ -334,18 +334,18 @@ function detectGitBranch(): string {
  * so the build still produces working CSS.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @param override - Optional CLI override (e.g. `--theme=midnight`)
  * @returns Resolved theme name
  */
-function resolveThemeName(config: ZpressConfig, override?: ThemeName): ThemeName {
+function resolveThemeName(config: CiderpressConfig, override?: ThemeName): ThemeName {
   const registeredNames = collectRegisteredThemeNames(config)
   const requested = resolveRequestedThemeName(config, override)
   if (registeredNames.has(requested)) {
     return requested
   }
   process.stderr.write(
-    `[zpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to 'default'.\n`
+    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to 'default'.\n`
   )
   return 'default'
 }
@@ -355,11 +355,11 @@ function resolveThemeName(config: ZpressConfig, override?: ThemeName): ThemeName
  * CLI override > `config.theme.name` > `'default'`.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @param override - Optional CLI override
  * @returns Requested theme name (not yet validated against the registry)
  */
-function resolveRequestedThemeName(config: ZpressConfig, override?: ThemeName): ThemeName {
+function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeName): ThemeName {
   if (override) {
     return override
   }
@@ -375,10 +375,10 @@ function resolveRequestedThemeName(config: ZpressConfig, override?: ThemeName): 
  * `defineTheme` to surface bad input before this point).
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Set of registered theme names
  */
-function collectRegisteredThemeNames(config: ZpressConfig): ReadonlySet<string> {
+function collectRegisteredThemeNames(config: CiderpressConfig): ReadonlySet<string> {
   const builtIn = Object.keys(BUILT_IN_THEMES)
   const user = (config.themes ?? []).map((t) => t.name)
   return new Set<string>([...builtIn, ...user])
@@ -397,10 +397,10 @@ function collectRegisteredThemeNames(config: ZpressConfig): ReadonlySet<string> 
  * @returns Variant to apply on first render
  */
 function resolveActiveVariant(params: {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly themeName: ThemeName
   readonly override?: ThemeVariant
-  readonly userThemes: readonly ZpressTheme[]
+  readonly userThemes: readonly CiderpressTheme[]
 }): ThemeVariant {
   const supported = resolveSupportedVariants(params.themeName, params.userThemes)
   const themeBlock = params.config.theme
@@ -413,7 +413,7 @@ function resolveActiveVariant(params: {
   }
   if (requested !== undefined) {
     process.stderr.write(
-      `[zpress] Theme '${params.themeName}' does not declare variant '${requested}'. Falling back to its default variant.\n`
+      `[ciderpress] Theme '${params.themeName}' does not declare variant '${requested}'. Falling back to its default variant.\n`
     )
   }
   if (isBuiltInTheme(params.themeName)) {
@@ -438,7 +438,7 @@ function resolveActiveVariant(params: {
  */
 function resolveSupportedVariants(
   themeName: ThemeName,
-  userThemes: readonly ZpressTheme[]
+  userThemes: readonly CiderpressTheme[]
 ): readonly ThemeVariant[] {
   if (isBuiltInTheme(themeName)) {
     return resolveThemeVariants(themeName as BuiltInThemeName)
@@ -456,10 +456,10 @@ function resolveSupportedVariants(
  * Resolve whether the theme switcher is enabled.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns True if the theme switcher is enabled
  */
-function resolveThemeSwitcher(config: ZpressConfig): boolean {
+function resolveThemeSwitcher(config: CiderpressConfig): boolean {
   if (config.theme && config.theme.switcher) {
     return config.theme.switcher
   }
@@ -471,10 +471,10 @@ function resolveThemeSwitcher(config: ZpressConfig): boolean {
  * defaulting to empty object.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Theme color overrides
  */
-function resolveThemeColors(config: ZpressConfig): ThemeColors {
+function resolveThemeColors(config: CiderpressConfig): ThemeColors {
   if (config.theme && config.theme.colors) {
     return config.theme.colors
   }
@@ -486,10 +486,10 @@ function resolveThemeColors(config: ZpressConfig): ThemeColors {
  * defaulting to empty object.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Dark variant color overrides
  */
-function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
+function resolveThemeDarkColors(config: CiderpressConfig): ThemeColors {
   if (config.theme && config.theme.darkColors) {
     return config.theme.darkColors
   }
@@ -497,19 +497,19 @@ function resolveThemeDarkColors(config: ZpressConfig): ThemeColors {
 }
 
 /**
- * Validate and freeze every `ZpressThemeInput` declared in `config.themes`,
- * producing fully-typed `ZpressTheme` instances ready for CSS emission and
+ * Validate and freeze every `CiderpressThemeInput` declared in `config.themes`,
+ * producing fully-typed `CiderpressTheme` instances ready for CSS emission and
  * registry serialisation.
  *
  * Each input flows through `defineTheme`, which runs each variant's token
  * tree through `tokensSchema` — surfaced validation errors are intentional
- * config-time failures (same contract as `defineTheme` in `@zpress/theme`).
+ * config-time failures (same contract as `defineTheme` in `@ciderpress/theme`).
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Resolved user theme definitions, in declaration order
  */
-function resolveUserThemes(config: ZpressConfig): readonly ZpressTheme[] {
+function resolveUserThemes(config: CiderpressConfig): readonly CiderpressTheme[] {
   if (!config.themes) {
     return []
   }
@@ -524,7 +524,7 @@ function resolveUserThemes(config: ZpressConfig): readonly ZpressTheme[] {
  * @returns Array of sidebar link items
  */
 function resolveSidebarLinks(params: {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly position: 'above' | 'below'
 }): readonly {
   text: string
@@ -545,10 +545,10 @@ function resolveSidebarLinks(params: {
  * Workspaces default to 2 columns.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Resolved home config
  */
-function resolveHomeConfig(config: ZpressConfig): HomeConfig {
+function resolveHomeConfig(config: CiderpressConfig): HomeConfig {
   if (config.home) {
     return {
       features: config.home.features,
@@ -565,7 +565,7 @@ function resolveHomeConfig(config: ZpressConfig): HomeConfig {
  * Build the raw JS body for the inline head script (no wrapping tags).
  *
  * Resolves the active theme and variant **once** in a single IIFE so
- * `data-zp-theme`, `data-zp-variant`, `.rp-dark`, and Rspress's
+ * `data-cp-theme`, `data-cp-variant`, `.rp-dark`, and Rspress's
  * `localStorage['rspress-theme-appearance']` are all consistent before
  * React hydrates. The script intersects persisted values from
  * `localStorage` against the embedded registry — stale or unsupported
@@ -598,7 +598,7 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
     var buildVariant = ${JSON.stringify(options.variant)};
     function readLS(k){try{return localStorage.getItem(k)}catch(_){return null}}
     var name = (function(){
-      var s = readLS('zpress-theme');
+      var s = readLS('ciderpress-theme');
       for (var i = 0; i < R.length; i++) { if (R[i].name === s) { return s; } }
       return buildTheme;
     })();
@@ -606,7 +606,7 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
     var supported = entry ? entry.variants : ['dark'];
     var themeDefault = entry ? entry.defaultVariant : buildVariant;
     var variant = (function(){
-      var s = readLS('zpress-variant');
+      var s = readLS('ciderpress-variant');
       if ((s === 'dark' || s === 'light') && supported.indexOf(s) !== -1) { return s; }
       if (supported.indexOf(themeDefault) !== -1) { return themeDefault; }
       if (supported.indexOf(buildVariant) !== -1) { return buildVariant; }
@@ -636,7 +636,7 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
 }
 
 /**
- * Map a `ZpressTheme` to its serialized registry entry. The swatch is the
+ * Map a `CiderpressTheme` to its serialized registry entry. The swatch is the
  * default variant's `colors.brand.primary` — the single hex value the
  * theme switcher paints into each option's swatch dot.
  *
@@ -644,7 +644,7 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
  * @param theme - Built-in or user theme definition
  * @returns Registry entry consumed by the theme switcher and provider
  */
-function buildRegistryEntry(theme: ZpressTheme): ThemeRegistryEntry {
+function buildRegistryEntry(theme: CiderpressTheme): ThemeRegistryEntry {
   const defaultTokens = theme.variants[theme.defaultVariant]
   const swatch = match(defaultTokens)
     .with(undefined, () => '')
@@ -680,7 +680,7 @@ function toLabel(name: string): string {
 
 /**
  * Extensions in priority order — first match wins. Mirrors `c12`'s
- * default zpress.config resolution so the alias points at the same file
+ * default ciderpress.config resolution so the alias points at the same file
  * c12 loaded server-side.
  */
 const USER_CONFIG_EXTENSIONS: readonly string[] = Object.freeze([
@@ -693,9 +693,9 @@ const USER_CONFIG_EXTENSIONS: readonly string[] = Object.freeze([
 ])
 
 /**
- * Path to the empty stub re-exported when the user has no zpress.config
+ * Path to the empty stub re-exported when the user has no ciderpress.config
  * file at the standard location (or only has a non-bundleable variant
- * like `.json` / `.yaml`). Keeps the `@zpress/internal/user-config` alias
+ * like `.json` / `.yaml`). Keeps the `@ciderpress/internal/user-config` alias
  * resolvable so the slot component's import never breaks the build.
  */
 const USER_CONFIG_STUB_PATH = path.resolve(
@@ -706,10 +706,10 @@ const USER_CONFIG_STUB_PATH = path.resolve(
 )
 
 /**
- * Resolve the absolute path used by the `@zpress/internal/user-config`
+ * Resolve the absolute path used by the `@ciderpress/internal/user-config`
  * webpack alias.
  *
- * Looks for a bundleable user config (`zpress.config.{ts,mts,cts,js,mjs,cjs}`)
+ * Looks for a bundleable user config (`ciderpress.config.{ts,mts,cts,js,mjs,cjs}`)
  * in `repoRoot`; falls back to a stub that re-exports `{}` so the slot
  * component's import always resolves.
  *
@@ -723,7 +723,7 @@ const USER_CONFIG_STUB_PATH = path.resolve(
  */
 function resolveUserConfigAlias(repoRoot: string): string {
   const candidates = USER_CONFIG_EXTENSIONS.map((ext) =>
-    path.resolve(repoRoot, `zpress.config${ext}`)
+    path.resolve(repoRoot, `ciderpress.config${ext}`)
   )
   // oxlint-disable-next-line security/detect-non-literal-fs-filename -- candidates derived from trusted repoRoot + known extension list
   const found = candidates.find((p) => existsSync(p))

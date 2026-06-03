@@ -30,7 +30,7 @@ export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | nul
   return match(props.items.length > 0)
     .with(true, () => (
       <nav
-        className={`zp-sidebar-links zp-sidebar-links--${props.position}`}
+        className={`cp-sidebar-links cp-sidebar-links--${props.position}`}
         aria-label={`Sidebar links ${props.position}`}
       >
         {props.items.map((item) => (
@@ -54,9 +54,9 @@ export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | nul
  */
 function renderIcon(icon: SidebarLinkItem['icon']): React.ReactElement | null {
   return match(icon)
-    .with(P.string, (id) => <Icon icon={id} className="zp-sidebar-link-icon" />)
+    .with(P.string, (id) => <Icon icon={id} className="cp-sidebar-link-icon" />)
     .with({ id: P.string, color: P.string }, (i) => (
-      <Icon icon={i.id} className="zp-sidebar-link-icon" style={{ color: i.color }} />
+      <Icon icon={i.id} className="cp-sidebar-link-icon" style={{ color: i.color }} />
     ))
     .otherwise(() => null)
 }
@@ -88,14 +88,14 @@ function SidebarLinkEntry({ item }: { readonly item: SidebarLinkItem }): React.R
       {match(isCircle)
         .with(true, () => null)
         .otherwise(() => (
-          <span className="zp-sidebar-link-text">{item.text}</span>
+          <span className="cp-sidebar-link-text">{item.text}</span>
         ))}
     </>
   )
 
   const variant = item.style ?? 'ghost'
   const shape = item.shape ?? 'square'
-  const cls = `zp-sidebar-link zp-sidebar-link--${variant} zp-sidebar-link--${shape}`
+  const cls = `cp-sidebar-link cp-sidebar-link--${variant} cp-sidebar-link--${shape}`
   /* oxlint-disable unicorn/no-useless-undefined -- React aria-label expects undefined, not null */
   const ariaLabel = match(isCircle)
     .with(true, () => item.text)

@@ -15,11 +15,11 @@ html[data-dark='true'] ::-webkit-scrollbar-track {
 
 .rp-dark ::-webkit-scrollbar-thumb,
 html[data-dark='true'] ::-webkit-scrollbar-thumb {
-  background: var(--zp-c-scrollbar-thumb);
+  background: var(--cp-c-scrollbar-thumb);
   border-radius: 3px;
 }
 
 .rp-dark ::-webkit-scrollbar-thumb:hover,
 html[data-dark='true'] ::-webkit-scrollbar-thumb:hover {
-  background: var(--zp-c-scrollbar-thumb-hover);
+  background: var(--cp-c-scrollbar-thumb-hover);
 }

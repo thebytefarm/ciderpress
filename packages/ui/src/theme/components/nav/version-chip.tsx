@@ -14,7 +14,7 @@ export interface VersionChipProps {
  * VersionChip — small mono label rendered next to the topbar brand to
  * advertise the active package version. Renders a thin vertical divider
  * before the version text so it visually attaches to the brand:
- * `zpress | v0.5`.
+ * `ciderpress | v0.5`.
  *
  * Portals into `.rp-nav__title` so the chip sits directly beside the
  * Rspress logo/title rather than in the nav-menu area. Falls back to
@@ -32,9 +32,9 @@ export function VersionChip(props: VersionChipProps): React.ReactElement | null 
   }, [])
 
   const chip = (
-    <span className="zp-version-chip">
-      <span className="zp-version-chip__divider" aria-hidden="true" />
-      <span className="zp-version-chip__text">{props.version}</span>
+    <span className="cp-version-chip">
+      <span className="cp-version-chip__divider" aria-hidden="true" />
+      <span className="cp-version-chip__text">{props.version}</span>
     </span>
   )
 

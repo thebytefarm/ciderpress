@@ -78,7 +78,7 @@ export interface GenerateFixtureOptions {
  * Generate a fixture project with deterministic markdown files.
  *
  * Creates a temp directory inside the repo (so workspace deps resolve),
- * writes a zpress config and distributes markdown files across sections
+ * writes a ciderpress config and distributes markdown files across sections
  * and subdirectories automatically.
  *
  * Sections default to `clamp(ceil(files / 50), 2, 15)`.
@@ -107,7 +107,7 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
     return `${base}-${Math.floor(i / DIRECTORY_NAMES.length) + 1}`
   })
 
-  // Write zpress.config.ts
+  // Write ciderpress.config.ts
   const sectionConfigs = sectionNames
     .map(
       (name) => `    {
@@ -120,8 +120,8 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
     .join(',\n')
 
   fs.writeFileSync(
-    path.join(dir, 'zpress.config.ts'),
-    `import { defineConfig } from '@zpress/kit'
+    path.join(dir, 'ciderpress.config.ts'),
+    `import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'Benchmark Fixture',
@@ -141,7 +141,7 @@ ${sectionConfigs}
         name: 'bench-fixture',
         private: true,
         type: 'module',
-        dependencies: { '@zpress/kit': 'workspace:*' },
+        dependencies: { 'ciderpress': 'workspace:*' },
       },
       null,
       2

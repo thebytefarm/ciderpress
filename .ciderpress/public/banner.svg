@@ -31,7 +31,7 @@
   <circle cx="80" cy="18" r="6" fill="#a6e3a1" />
 
   <!-- Title bar text -->
-  <text class="text dim" font-size="12" x="439" y="22" text-anchor="middle">zpress</text>
+  <text class="text dim" font-size="12" x="439" y="22" text-anchor="middle">ciderpress</text>
 
   <!-- ZPRESS ASCII art logo (centered) -->
   <g transform="translate(248, 0)">
@@ -58,10 +58,10 @@
   <rect x="24" y="192" width="80" height="24" rx="4" ry="4" fill="#181825" />
   <text class="tab" x="38" y="208">terminal</text>
 
-  <text class="code" x="38" y="236"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">zpress dev</tspan></text>
+  <text class="code" x="38" y="236"><tspan class="prompt">~</tspan><tspan class="dim"> $ </tspan><tspan class="tx">ciderpress dev</tspan></text>
 
   <!-- Starting -->
-  <text class="code" x="38" y="264"><tspan class="dim">Starting </tspan><tspan class="brand">zpress</tspan><tspan class="dim">...</tspan></text>
+  <text class="code" x="38" y="264"><tspan class="dim">Starting </tspan><tspan class="brand">ciderpress</tspan><tspan class="dim">...</tspan></text>
 
   <!-- Output -->
   <text class="code" x="38" y="288" xml:space="preserve"><tspan class="st">  ✓</tspan><tspan class="tx"> Loaded config</tspan></text>
@@ -97,8 +97,8 @@
   <text class="ln" x="469" y="396">11</text>
   <text class="ln" x="469" y="412">12</text>
 
-  <!-- Line 1: import { defineConfig } from 'zpress' -->
-  <text class="code" x="487" y="236"><tspan class="kw">import</tspan><tspan class="op"> { </tspan><tspan class="fn">defineConfig</tspan><tspan class="op"> } </tspan><tspan class="kw">from</tspan><tspan class="st"> 'zpress'</tspan></text>
+  <!-- Line 1: import { defineConfig } from 'ciderpress' -->
+  <text class="code" x="487" y="236"><tspan class="kw">import</tspan><tspan class="op"> { </tspan><tspan class="fn">defineConfig</tspan><tspan class="op"> } </tspan><tspan class="kw">from</tspan><tspan class="st"> 'ciderpress'</tspan></text>
 
   <!-- Line 2: (empty) -->
 

@@ -1,158 +1,158 @@
 /* ── Field ── */
 
-.zp-field {
-  padding: var(--zp-s-12) var(--zp-s-16);
-  border-bottom: 1px solid var(--zp-c-border);
+.cp-field {
+  padding: var(--cp-s-12) var(--cp-s-16);
+  border-bottom: 1px solid var(--cp-c-border);
 }
 
-.zp-field:last-child {
+.cp-field:last-child {
   border-bottom: none;
 }
 
-.zp-field__header {
+.cp-field__header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--zp-s-8);
+  gap: var(--cp-s-8);
   flex-wrap: wrap;
-  margin-bottom: var(--zp-s-4);
+  margin-bottom: var(--cp-s-4);
 }
 
-.zp-field__name {
-  font-family: var(--zp-font-family-mono);
+.cp-field__name {
+  font-family: var(--cp-font-family-mono);
   font-weight: 600;
-  font-size: var(--zp-fs-field-name);
-  color: var(--zp-c-text-1);
+  font-size: var(--cp-fs-field-name);
+  color: var(--cp-c-text-1);
 }
 
-.zp-field__name--deprecated {
+.cp-field__name--deprecated {
   text-decoration: line-through;
-  opacity: var(--zp-opacity-deprecated);
+  opacity: var(--cp-opacity-deprecated);
 }
 
-.zp-field__type {
+.cp-field__type {
   display: inline-block;
-  padding: var(--zp-s-1) var(--zp-s-8);
-  border-radius: var(--zp-radius-pill);
-  font-family: var(--zp-font-family-mono);
-  font-size: var(--zp-fs-field-type);
-  color: var(--zp-c-text-2);
-  background: var(--zp-c-bg-soft);
+  padding: var(--cp-s-1) var(--cp-s-8);
+  border-radius: var(--cp-radius-pill);
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-field-type);
+  color: var(--cp-c-text-2);
+  background: var(--cp-c-bg-soft);
 }
 
-.zp-field__badge {
-  font-size: var(--zp-fs-field-badge);
+.cp-field__badge {
+  font-size: var(--cp-fs-field-badge);
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: var(--zp-letter-wide);
+  letter-spacing: var(--cp-letter-wide);
 }
 
-.zp-field__badge--required {
-  color: var(--zp-c-tint-red-fg);
+.cp-field__badge--required {
+  color: var(--cp-c-tint-red-fg);
 }
 
-.zp-field__badge--optional {
-  color: var(--zp-c-text-3);
+.cp-field__badge--optional {
+  color: var(--cp-c-text-3);
 }
 
-.zp-field__badge--deprecated {
-  padding: var(--zp-s-1) var(--zp-s-8);
-  border-radius: var(--zp-radius-pill);
-  background: var(--zp-c-tint-amber-bg);
-  color: var(--zp-c-tint-amber-fg);
+.cp-field__badge--deprecated {
+  padding: var(--cp-s-1) var(--cp-s-8);
+  border-radius: var(--cp-radius-pill);
+  background: var(--cp-c-tint-amber-bg);
+  color: var(--cp-c-tint-amber-fg);
 }
 
-.zp-field__default {
-  font-size: var(--zp-fs-field-default);
-  color: var(--zp-c-text-3);
-  margin-bottom: var(--zp-s-2);
+.cp-field__default {
+  font-size: var(--cp-fs-field-default);
+  color: var(--cp-c-text-3);
+  margin-bottom: var(--cp-s-2);
 }
 
-.zp-field__default code {
-  font-family: var(--zp-font-family-mono);
-  font-size: var(--zp-fs-field-default-code);
-  padding: var(--zp-s-1) var(--zp-s-4);
-  border-radius: var(--zp-radius-sm);
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-2);
+.cp-field__default code {
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-field-default-code);
+  padding: var(--cp-s-1) var(--cp-s-4);
+  border-radius: var(--cp-radius-sm);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-2);
 }
 
-.zp-field__body {
-  font-size: var(--zp-fs-field-body);
-  color: var(--zp-c-text-2);
-  line-height: var(--zp-lh-relaxed);
+.cp-field__body {
+  font-size: var(--cp-fs-field-body);
+  color: var(--cp-c-text-2);
+  line-height: var(--cp-lh-relaxed);
 }
 
-.zp-field__body > p {
+.cp-field__body > p {
   margin: 0;
 }
 
 /* ── FieldGroup (top-level) ── */
 
-.zp-field-group {
-  margin: var(--zp-s-16) 0;
+.cp-field-group {
+  margin: var(--cp-s-16) 0;
 }
 
-.zp-field-group__title {
-  font-size: var(--zp-fs-field-group-title);
+.cp-field-group__title {
+  font-size: var(--cp-fs-field-group-title);
   font-weight: 600;
-  color: var(--zp-c-text-1);
-  margin-bottom: var(--zp-s-12);
-  padding-bottom: var(--zp-s-8);
-  border-bottom: 1px solid var(--zp-c-border);
+  color: var(--cp-c-text-1);
+  margin-bottom: var(--cp-s-12);
+  padding-bottom: var(--cp-s-8);
+  border-bottom: 1px solid var(--cp-c-border);
 }
 
 /* ── FieldGroup (expandable) ── */
 
-.zp-field-group--expandable {
-  margin: var(--zp-s-8) 0 0;
-  border: 1px solid var(--zp-c-border);
-  border-radius: var(--zp-radius-md-sm);
+.cp-field-group--expandable {
+  margin: var(--cp-s-8) 0 0;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-md-sm);
   overflow: hidden;
 }
 
-.zp-field-group__trigger {
+.cp-field-group__trigger {
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: var(--zp-s-6);
+  gap: var(--cp-s-6);
   width: 100%;
-  padding: var(--zp-s-8) var(--zp-s-12);
+  padding: var(--cp-s-8) var(--cp-s-12);
   border: none;
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-2);
-  font-size: var(--zp-fs-field-trigger);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-2);
+  font-size: var(--cp-fs-field-trigger);
   font-weight: 500;
   cursor: pointer;
 }
 
-.zp-field-group__trigger:hover {
-  color: var(--zp-c-text-1);
+.cp-field-group__trigger:hover {
+  color: var(--cp-c-text-1);
 }
 
-.zp-field-group__chevron {
+.cp-field-group__chevron {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--zp-size-chevron);
-  height: var(--zp-size-chevron);
-  color: var(--zp-c-text-3);
-  transition: transform var(--zp-duration-base);
+  width: var(--cp-size-chevron);
+  height: var(--cp-size-chevron);
+  color: var(--cp-c-text-3);
+  transition: transform var(--cp-duration-base);
 }
 
-.zp-field-group--expandable[data-open] .zp-field-group__chevron {
+.cp-field-group--expandable[data-open] .cp-field-group__chevron {
   transform: rotate(90deg);
 }
 
-.zp-field-group__panel {
+.cp-field-group__panel {
   display: none;
-  padding: var(--zp-s-4) 0;
+  padding: var(--cp-s-4) 0;
 }
 
-.zp-field-group--expandable[data-open] .zp-field-group__panel {
+.cp-field-group--expandable[data-open] .cp-field-group__panel {
   display: block;
 }
 
-.zp-field-group--expandable .zp-field {
-  padding-left: var(--zp-s-24);
+.cp-field-group--expandable .cp-field {
+  padding-left: var(--cp-s-24);
 }

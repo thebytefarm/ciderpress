@@ -11,7 +11,7 @@
     "example-kitchen-sink",
     "example-large",
     "example-simple",
-    "zpress-vscode",
+    "ciderpress-vscode",
     "benchmarks"
   ],
   "privatePackages": {

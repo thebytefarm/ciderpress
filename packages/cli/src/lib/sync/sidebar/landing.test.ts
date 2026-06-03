@@ -101,7 +101,7 @@ describe('generateLandingContent()', () => {
   it('should include import statement for components', async () => {
     const result = await generateLandingContent('My Section', undefined, [mockEntry()], 'blue')
     expect(result).toContain(
-      "import { WorkspaceCard, WorkspaceGrid, SectionCard, SectionGrid } from '@zpress/ui/theme'"
+      "import { WorkspaceCard, WorkspaceGrid, SectionCard, SectionGrid } from '@ciderpress/ui/theme'"
     )
   })
 

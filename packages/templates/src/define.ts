@@ -5,7 +5,7 @@ import type { Template } from './types.ts'
  *
  * @example
  * ```ts
- * import { defineTemplate, createRegistry } from '@zpress/templates'
+ * import { defineTemplate, createRegistry } from '@ciderpress/templates'
  *
  * const adr = defineTemplate({
  *   type: 'adr',

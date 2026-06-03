@@ -2,7 +2,7 @@ import { match } from 'massaman/match'
 import type React from 'react'
 import { useEffect, useRef } from 'react'
 
-declare const __ZPRESS_VSCODE__: boolean
+declare const __CIDERPRESS_VSCODE__: boolean
 
 /**
  * "Edit" button injected next to the Rspress "Copy Markdown" LLMs button.
@@ -11,7 +11,7 @@ declare const __ZPRESS_VSCODE__: boolean
  * that Rspress renders on every doc page. Re-injects on SPA navigation
  * by observing `<title>` mutations (same technique as vscode-nav.js).
  *
- * Posts a `zpress:edit` message to the parent VS Code webview,
+ * Posts a `ciderpress:edit` message to the parent VS Code webview,
  * which resolves the URL path to the source markdown file and
  * opens it in the editor.
  *
@@ -20,7 +20,7 @@ declare const __ZPRESS_VSCODE__: boolean
  * @returns Null element (side-effect only component)
  */
 export default function EditSourceButton(): React.ReactElement | null {
-  return match(__ZPRESS_VSCODE__)
+  return match(__CIDERPRESS_VSCODE__)
     .with(true, () => <EditSourceButtonInner />)
     .otherwise(() => null)
 }
@@ -53,7 +53,7 @@ function EditSourceButtonInner(): React.ReactElement | null {
 
       const btn = document.createElement('button')
       btn.type = 'button'
-      btn.className = 'zp-edit-source-btn'
+      btn.className = 'cp-edit-source-btn'
       btn.setAttribute('aria-label', 'Edit source file')
       btn.title = 'Open in editor'
       btn.innerHTML = [
@@ -66,7 +66,7 @@ function EditSourceButtonInner(): React.ReactElement | null {
 
       btn.addEventListener('click', () => {
         globalThis.parent.postMessage(
-          { type: 'zpress:edit', path: globalThis.location.pathname },
+          { type: 'ciderpress:edit', path: globalThis.location.pathname },
           '*'
         )
       })

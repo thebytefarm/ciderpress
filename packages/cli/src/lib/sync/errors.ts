@@ -1,5 +1,5 @@
-export type { ConfigError, ConfigResult } from '@zpress/config'
-export { configError } from '@zpress/config'
+export type { ConfigError, ConfigResult } from '@ciderpress/config'
+export { configError } from '@ciderpress/config'
 
 /**
  * Error produced by the sync engine during entry resolution, page copy, or sidebar generation.

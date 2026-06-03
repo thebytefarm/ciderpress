@@ -2,7 +2,7 @@
 
 ## Overview
 
-All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This creates a cohesive dark-mode aesthetic that renders well on GitHub and in the zpress site. File tree structures use ` ```tree ` code blocks that render as interactive, collapsible trees on the site (see [Use Tree Blocks for File Trees](#use-tree-blocks-for-file-trees)).
+All diagrams use **Mermaid** with the **Catppuccin Mocha** color theme. This creates a cohesive dark-mode aesthetic that renders well on GitHub and in the ciderpress site. File tree structures use ` ```tree ` code blocks that render as interactive, collapsible trees on the site (see [Use Tree Blocks for File Trees](#use-tree-blocks-for-file-trees)).
 
 ### Rendering Plugins
 
@@ -327,7 +327,7 @@ Script ||--o{ Execution : produces
 
 ### Use Tree Blocks for File Trees
 
-File tree structures use ` ```tree ` fenced code blocks. On the zpress site these render as interactive, collapsible tree components. On GitHub they display as readable plain text.
+File tree structures use ` ```tree ` fenced code blocks. On the ciderpress site these render as interactive, collapsible tree components. On GitHub they display as readable plain text.
 
 Use box-drawing characters for tree branches:
 

@@ -40,38 +40,38 @@ export function PagePager(props: PagePagerProps): React.ReactElement | null {
   return match(prev === undefined && next === undefined)
     .with(true, () => null)
     .otherwise(() => (
-      <nav className="zp-pager">
+      <nav className="cp-pager">
         {match(prev)
-          .with(undefined, () => <span className="zp-pager__placeholder" />)
+          .with(undefined, () => <span className="cp-pager__placeholder" />)
           .otherwise((p) => {
             const href = safeUrl(p.href)
             if (href === null) {
-              return <span className="zp-pager__placeholder" />
+              return <span className="cp-pager__placeholder" />
             }
             return (
-              <a className="zp-pager__link zp-pager__link--prev" href={href}>
-                <span className="zp-pager__label">
+              <a className="cp-pager__link cp-pager__link--prev" href={href}>
+                <span className="cp-pager__label">
                   <Chev direction="left" />
                   Previous
                 </span>
-                <span className="zp-pager__title">{p.title}</span>
+                <span className="cp-pager__title">{p.title}</span>
               </a>
             )
           })}
         {match(next)
-          .with(undefined, () => <span className="zp-pager__placeholder" />)
+          .with(undefined, () => <span className="cp-pager__placeholder" />)
           .otherwise((n) => {
             const href = safeUrl(n.href)
             if (href === null) {
-              return <span className="zp-pager__placeholder" />
+              return <span className="cp-pager__placeholder" />
             }
             return (
-              <a className="zp-pager__link zp-pager__link--next" href={href}>
-                <span className="zp-pager__label">
+              <a className="cp-pager__link cp-pager__link--next" href={href}>
+                <span className="cp-pager__label">
                   Next
                   <Chev direction="right" />
                 </span>
-                <span className="zp-pager__title">{n.title}</span>
+                <span className="cp-pager__title">{n.title}</span>
               </a>
             )
           })}

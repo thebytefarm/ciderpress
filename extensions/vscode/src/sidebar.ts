@@ -71,7 +71,7 @@ interface Sidebar extends Disposable {
 /**
  * Fixed view IDs matching the 4 views registered in package.json.
  */
-const VIEW_IDS = ['zpress.pages', 'zpress.apps', 'zpress.packages', 'zpress.workspaces'] as const
+const VIEW_IDS = ['ciderpress.pages', 'ciderpress.apps', 'ciderpress.packages', 'ciderpress.workspaces'] as const
 
 /**
  * The sidebar.json keys that map to the 3 fixed sections.
@@ -85,7 +85,7 @@ const FIXED_KEYS: Readonly<Record<string, number>> = {
 
 const NUM_SECTIONS = VIEW_IDS.length
 
-const SIDEBAR_RELATIVE = path.join('.zpress', 'content', '.generated', 'sidebar.json')
+const SIDEBAR_RELATIVE = path.join('.ciderpress', 'content', '.generated', 'sidebar.json')
 
 const HTTP_METHODS: ReadonlySet<string> = new Set([
   'GET',
@@ -102,7 +102,7 @@ const HTTP_METHODS: ReadonlySet<string> = new Set([
  * VS Code theme color IDs mapped to HTTP methods.
  *
  * Uses `charts.*` colors which are available across all VS Code themes
- * and closely match the zpress OpenAPI palette:
+ * and closely match the ciderpress OpenAPI palette:
  *   GET → green, POST → blue, PUT/PATCH → yellow, DELETE → red
  */
 const METHOD_COLORS: Readonly<Record<string, string>> = {
@@ -397,7 +397,7 @@ function createSidebar(deps: SidebarDeps): Sidebar {
 
   const sidebarGlob = new deps.RelativePattern(
     deps.workspaceRoot,
-    '.zpress/content/.generated/sidebar.json'
+    '.ciderpress/content/.generated/sidebar.json'
   )
   const watcher = deps.createWatcher(sidebarGlob)
   watcher.onDidChange(reload)
@@ -461,11 +461,11 @@ function createSidebar(deps: SidebarDeps): Sidebar {
             return `/${node.link}`
           })()
           item.command = {
-            title: 'Open in zpress',
-            command: 'zpress.openPage',
+            title: 'Open in ciderpress',
+            command: 'ciderpress.openPage',
             arguments: [`${base}${segment}`],
           }
-          item.contextValue = 'zpressLeaf'
+          item.contextValue = 'ciderpressLeaf'
         }
 
         return item

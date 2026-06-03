@@ -1,4 +1,4 @@
-import type { IconColor, ThemeConfig, ZpressThemeInput } from '@zpress/theme'
+import type { IconColor, ThemeConfig, CiderpressThemeInput } from '@ciderpress/theme'
 import type React from 'react'
 
 export type {
@@ -7,8 +7,8 @@ export type {
   ColorMode,
   ThemeColors,
   IconColor,
-  ZpressThemeInput,
-} from '@zpress/theme'
+  CiderpressThemeInput,
+} from '@ciderpress/theme'
 
 /**
  * Installed Iconify icon-set prefixes.
@@ -63,8 +63,8 @@ type FilePath = string
 /**
  * All user-project paths derived from a single root directory.
  *
- * Materialised at CLI runtime via `createPaths(dir)` in `@zpress/cli` —
- * this interface lives in `@zpress/config` so plugins (e.g. `@zpress/ui`)
+ * Materialised at CLI runtime via `createPaths(dir)` in `@ciderpress/cli` —
+ * this interface lives in `@ciderpress/config` so plugins (e.g. `@ciderpress/ui`)
  * can type their inputs without depending on the CLI.
  */
 export interface Paths {
@@ -810,7 +810,7 @@ export interface HomeTrustConfig {
  * ```ts
  * cta: {
  *   title: 'Ready to ship?',
- *   subtitle: 'Install zpress and write your first page in five minutes.',
+ *   subtitle: 'Install ciderpress and write your first page in five minutes.',
  *   actions: [{ theme: 'brand', text: 'Quick start', link: '/getting-started' }],
  * }
  * ```
@@ -937,7 +937,7 @@ export interface SocialLink {
  * @example
  * ```ts
  * footer: {
- *   message: 'Built with zpress',
+ *   message: 'Built with ciderpress',
  *   copyright: 'Copyright © 2025 Acme Inc.',
  * }
  * ```
@@ -969,7 +969,7 @@ export interface FooterConfig {
  *   announcement: {
  *     id: 'v1-launch',
  *     lead: 'NEW',
- *     message: 'zpress 1.0 is out.',
+ *     message: 'ciderpress 1.0 is out.',
  *     cta: { href: '/changelog', label: 'See changes' },
  *   },
  * }
@@ -1164,7 +1164,7 @@ export interface SiteFooterConfig {
  *       { heading: 'Product', links: [...] },
  *       { heading: 'Community', links: [...] },
  *     ],
- *     tagline: 'Built with zpress',
+ *     tagline: 'Built with ciderpress',
  *   },
  * }
  * ```
@@ -1204,7 +1204,7 @@ export interface SiteConfig {
 /**
  * Live theme context passed to a `LogoFn` at render time.
  *
- * Re-derived from `<html>`'s `data-zp-theme` / `data-zp-variant` attributes
+ * Re-derived from `<html>`'s `data-cp-theme` / `data-cp-variant` attributes
  * and the resolved CSS custom properties (`--rp-c-*`). Updates when the user
  * switches theme or variant, so the function re-runs and the logo retints
  * without a page reload.
@@ -1264,35 +1264,35 @@ export interface LogoImage {
  *
  * @example
  * ```tsx
- * import { defineConfig, ZpressLogo } from 'zpress'
+ * import { defineConfig, CiderpressLogo } from 'ciderpress'
  *
  * export default defineConfig({
- *   logo: ({ theme }) => <ZpressLogo color={theme.colors.brand} />,
+ *   logo: ({ theme }) => <CiderpressLogo color={theme.colors.brand} />,
  * })
  * ```
  */
 export type LogoFn = (params: { readonly theme: LogoContext }) => LogoImage | React.ReactNode
 
 /**
- * Logo configuration accepted on `ZpressConfig.logo`.
+ * Logo configuration accepted on `CiderpressConfig.logo`.
  *
  * - `string` — image path (forwarded to Rspress's `logo` field as-is).
  * - `LogoFn` — function called at render time; receives the live theme
  *   context and returns either a `LogoImage` or a React node.
  *
- * When omitted, the topbar renders the default themed `<ZpressLogo />`
+ * When omitted, the topbar renders the default themed `<CiderpressLogo />`
  * wordmark.
  */
 export type LogoConfig = string | LogoFn
 
 /**
- * zpress configuration.
+ * ciderpress configuration.
  *
- * Schema: `zpressConfigSchema` in schema.ts validates this shape.
+ * Schema: `ciderpressConfigSchema` in schema.ts validates this shape.
  * The information architecture tree IS the config — each node defines
  * what it is, where its content comes from, and where it sits in the sidebar.
  */
-export interface ZpressConfig {
+export interface CiderpressConfig {
   /**
    * Site title — used as the default `<title>` template suffix and as
    * the brand label in the topbar when no logo is configured.
@@ -1311,14 +1311,14 @@ export interface ZpressConfig {
   /**
    * Custom theme definitions registered at config time.
    *
-   * Each entry is a `ZpressThemeInput` (the same shape accepted by
+   * Each entry is a `CiderpressThemeInput` (the same shape accepted by
    * `defineTheme`). Registering a theme here makes its `name` selectable
    * via `theme.name` and via the theme switcher. Built-in themes
    * (`default`, `midnight`, `arcade`) remain available regardless of this field.
    *
    * @example
    * ```ts
-   * import { defineTheme } from 'zpress'
+   * import { defineTheme } from 'ciderpress'
    *
    * export default defineConfig({
    *   themes: [
@@ -1330,7 +1330,7 @@ export interface ZpressConfig {
    * })
    * ```
    */
-  readonly themes?: readonly ZpressThemeInput[]
+  readonly themes?: readonly CiderpressThemeInput[]
   /**
    * Brand icon rendered next to the site title in the topbar. Iconify id
    * only — the topbar logo position does not accept colored icon configs.
@@ -1339,7 +1339,7 @@ export interface ZpressConfig {
   /**
    * Brand logo rendered in the topbar. Three forms:
    *
-   * - **omit** — render the default themed `<ZpressLogo />` wordmark.
+   * - **omit** — render the default themed `<CiderpressLogo />` wordmark.
    * - `string` — image path; forwarded to Rspress's `logo` field as-is.
    * - `({ theme }) => LogoImage | ReactNode` — function called at render
    *   time with the live theme context. Return a `LogoImage` (image-props
@@ -1357,8 +1357,8 @@ export interface ZpressConfig {
    * })
    *
    * // Inline JSX with a custom component
-   * import { ZpressLogo } from 'zpress'
-   * logo: ({ theme }) => <ZpressLogo />
+   * import { CiderpressLogo } from 'ciderpress'
+   * logo: ({ theme }) => <CiderpressLogo />
    * ```
    */
   readonly logo?: LogoConfig

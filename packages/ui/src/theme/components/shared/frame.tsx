@@ -29,19 +29,19 @@ export interface FrameProps {
  */
 export function Frame({ caption, hint, children }: FrameProps): React.ReactElement {
   const hintEl = match(hint)
-    .with(P.nonNullable, (h) => <span className="zp-frame__hint">{h}</span>)
+    .with(P.nonNullable, (h) => <span className="cp-frame__hint">{h}</span>)
     .otherwise(() => null)
 
   const captionEl = match(caption)
-    .with(P.nonNullable, (c) => <figcaption className="zp-frame__caption">{c}</figcaption>)
+    .with(P.nonNullable, (c) => <figcaption className="cp-frame__caption">{c}</figcaption>)
     .otherwise(() => null)
 
   const enhancedChildren = React.Children.map(children, enhanceVideoChild)
 
   return (
-    <figure className="zp-frame">
+    <figure className="cp-frame">
       {hintEl}
-      <div className="zp-frame__content">{enhancedChildren}</div>
+      <div className="cp-frame__content">{enhancedChildren}</div>
       {captionEl}
     </figure>
   )

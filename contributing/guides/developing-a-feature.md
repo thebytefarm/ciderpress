@@ -68,7 +68,7 @@ Format: `type(scope): description` -- see [Commit Standards](../standards/git-co
 
 ### 6. Add a changeset
 
-If the change affects published packages (`@zpress/core`, `@zpress/*`), create a changeset:
+If the change affects published packages (`@ciderpress/core`, `@ciderpress/*`), create a changeset:
 
 ```bash
 pnpm changeset
@@ -78,7 +78,7 @@ Follow the prompts to select the package, semver bump type (patch, minor, major)
 
 **When to add a changeset:**
 
-- New features, bug fixes, or breaking changes to `@zpress/core` or `@zpress/*` packages
+- New features, bug fixes, or breaking changes to `@ciderpress/core` or `@ciderpress/*` packages
 
 **When to skip:**
 

@@ -1,11 +1,11 @@
 ---
 title: Overview
-description: zpress's opinionated take on documentation organization, inspired by Diataxis.
+description: ciderpress's opinionated take on documentation organization, inspired by Diataxis.
 ---
 
 # Framework
 
-Most documentation sites grow organically and end up as a pile of markdown files with no clear structure. zpress recommends an opinionated framework for organizing your docs so they stay useful as your project scales.
+Most documentation sites grow organically and end up as a pile of markdown files with no clear structure. ciderpress recommends an opinionated framework for organizing your docs so they stay useful as your project scales.
 
 ## Why this matters
 
@@ -41,9 +41,9 @@ We extend this with three additional types that most real-world projects need: *
 
 Each type has its own structure, rules, and templates. See [Types](/framework/types) for details.
 
-## How this maps to zpress
+## How this maps to ciderpress
 
-The framework maps directly to zpress sections. A typical project might look like:
+The framework maps directly to ciderpress sections. A typical project might look like:
 
 ```ts
 sections: [

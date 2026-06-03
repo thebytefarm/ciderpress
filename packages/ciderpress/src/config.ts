@@ -1,13 +1,13 @@
 /**
- * Config-only entry point for `@zpress/kit` — re-exports `defineConfig` and
- * all config-related types from `@zpress/config`.
+ * Config-only entry point for `ciderpress` — re-exports `defineConfig` and
+ * all config-related types from `@ciderpress/config`.
  *
  * @module
  */
-export { defineConfig } from '@zpress/config'
+export { defineConfig } from '@ciderpress/config'
 
 export type {
-  ZpressConfig,
+  CiderpressConfig,
   Section,
   Feature,
   Workspace,
@@ -20,4 +20,4 @@ export type {
   IconId,
   SidebarConfig,
   SidebarLink,
-} from '@zpress/config'
+} from '@ciderpress/config'

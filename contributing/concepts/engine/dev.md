@@ -1,6 +1,6 @@
 # Dev Mode
 
-The watch loop that powers `zpress dev` -- file watching, incremental resyncs, and Rspress hot reload.
+The watch loop that powers `ciderpress dev` -- file watching, incremental resyncs, and Rspress hot reload.
 
 ## Overview
 
@@ -53,7 +53,7 @@ sequenceDiagram
 
 ```text
 1. Parse args (@kidd-cli/core)
-2. Resolve paths (.zpress/)
+2. Resolve paths (.ciderpress/)
 3. Load config (c12)
 4. Clean (optional: remove cache/content/dist)
 5. Create shared OpenAPI cache
@@ -67,14 +67,14 @@ sequenceDiagram
 
 The watcher (`packages/cli/src/lib/watcher.ts`) uses Node.js native `fs.watch` with `recursive: true` -- a single FSEvents subscription on macOS, a single inotify recursive watch on Linux (Node 22+). It monitors the entire repo root and filters events in the callback.
 
-**Ignored directories:** `node_modules`, `.git`, `.zpress`, `dist`, `.turbo`, `bundle`
+**Ignored directories:** `node_modules`, `.git`, `.ciderpress`, `dist`, `.turbo`, `bundle`
 
 ### Trigger Table
 
 | Event                                     | Trigger        | What happens                                                                  |
 | ----------------------------------------- | -------------- | ----------------------------------------------------------------------------- |
 | `.md`/`.mdx` change                       | 150ms debounce | Incremental `sync()` -- unchanged pages skipped via mtime + content hash      |
-| `zpress.config.*` change (repo root only) | 150ms debounce | Reload config, full `sync()`, restart Rspress dev server (clears build cache) |
+| `ciderpress.config.*` change (repo root only) | 150ms debounce | Reload config, full `sync()`, restart Rspress dev server (clears build cache) |
 | OpenAPI spec change (`.yaml`/`.json`)     | --             | Not watched -- restart `dev` or trigger a config change to re-parse           |
 | Non-markdown file change                  | --             | Ignored                                                                       |
 | Files in ignored dirs                     | --             | Dropped silently                                                              |
@@ -85,7 +85,7 @@ If a sync is already running, the next change queues a pending resync. Config re
 
 ## Rspress Restart
 
-When a config change triggers a reload, the watcher invokes `onConfigReload` after sync completes. This restarts the Rspress dev server with a fresh config (disabling persistent build cache so title/theme/color changes take effect). Content-only changes do not restart Rspress -- its HMR picks up the updated files directly from `.zpress/content/`.
+When a config change triggers a reload, the watcher invokes `onConfigReload` after sync completes. This restarts the Rspress dev server with a fresh config (disabling persistent build cache so title/theme/color changes take effect). Content-only changes do not restart Rspress -- its HMR picks up the updated files directly from `.ciderpress/content/`.
 
 ## OpenAPI Cache
 

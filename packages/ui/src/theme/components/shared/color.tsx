@@ -50,7 +50,7 @@ export function Color({ value, name }: ColorProps): React.ReactElement {
   }, [value])
 
   const nameEl = match(name)
-    .with(P.nonNullable, (n) => <span className="zp-color__name">{n}</span>)
+    .with(P.nonNullable, (n) => <span className="cp-color__name">{n}</span>)
     .otherwise(() => null)
 
   const label = match(copied)
@@ -58,11 +58,11 @@ export function Color({ value, name }: ColorProps): React.ReactElement {
     .otherwise(() => value)
 
   return (
-    <button type="button" className="zp-color" onClick={handleClick} title={`Copy ${value}`}>
-      <span className="zp-color__swatch" style={{ backgroundColor: value }} />
-      <span className="zp-color__info">
+    <button type="button" className="cp-color" onClick={handleClick} title={`Copy ${value}`}>
+      <span className="cp-color__swatch" style={{ backgroundColor: value }} />
+      <span className="cp-color__info">
         {nameEl}
-        <span className="zp-color__value">{label}</span>
+        <span className="cp-color__value">{label}</span>
       </span>
     </button>
   )

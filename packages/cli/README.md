@@ -1,19 +1,19 @@
-# @zpress/cli
+# @ciderpress/cli
 
-CLI for building and serving zpress documentation sites.
+CLI for building and serving ciderpress documentation sites.
 
-<span class="zp-badge">
+<span class="cp-badge">
 
-[![CI](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/joggrdocs/zpress/actions/workflows/ci.yml)
-[![npm version](https://img.shields.io/npm/v/@zpress/cli)](https://www.npmjs.com/package/@zpress/cli)
-[![License](https://img.shields.io/github/license/joggrdocs/zpress)](https://github.com/joggrdocs/zpress/blob/main/LICENSE)
+[![CI](https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/@ciderpress/cli)](https://www.npmjs.com/package/@ciderpress/cli)
+[![License](https://img.shields.io/github/license/thebytefarm/ciderpress)](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE)
 
 </span>
 
 ## Install
 
 ```bash
-npm install @zpress/cli
+npm install @ciderpress/cli
 ```
 
 ## Commands
@@ -26,19 +26,19 @@ npm install @zpress/cli
 | `sync`     | Sync config to documentation output |
 | `clean`    | Remove generated output             |
 | `dump`     | Dump resolved config for debugging  |
-| `setup`    | Scaffold a new zpress project       |
+| `setup`    | Scaffold a new ciderpress project       |
 | `generate` | Generate assets (banners, icons)    |
 
 ## Usage
 
 ```bash
-npx zpress dev       # start dev server
-npx zpress build     # production build
-npx zpress serve     # preview build
+npx ciderpress dev       # start dev server
+npx ciderpress build     # production build
+npx ciderpress serve     # preview build
 ```
 
-> Most users should install [`@zpress/kit`](https://www.npmjs.com/package/@zpress/kit) instead, which re-exports the CLI alongside config helpers.
+> Most users should install [`ciderpress`](https://www.npmjs.com/package/ciderpress) instead, which re-exports the CLI alongside config helpers.
 
 ## License
 
-[MIT](https://github.com/joggrdocs/zpress/blob/main/LICENSE) - Joggr, Inc.
+[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE) - Joggr, Inc.

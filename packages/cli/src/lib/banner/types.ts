@@ -2,7 +2,7 @@
  * Types for auto-generated SVG banner and logo assets.
  */
 
-import type { Result } from '@zpress/config'
+import type { Result } from '@ciderpress/config'
 
 /**
  * Error produced during asset generation or file writing.
@@ -30,7 +30,7 @@ export function assetError(type: AssetError['type'], message: string): AssetErro
 }
 
 /**
- * Input configuration for asset generation, extracted from ZpressConfig.
+ * Input configuration for asset generation, extracted from CiderpressConfig.
  */
 export interface AssetConfig {
   readonly title: string

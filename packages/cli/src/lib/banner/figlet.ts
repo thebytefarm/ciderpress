@@ -2,7 +2,7 @@
  * FIGlet text renderers.
  *
  * Two renderers:
- * 1. `renderFigletText` — ANSI Shadow (primary zpress brand font)
+ * 1. `renderFigletText` — ANSI Shadow (primary ciderpress brand font)
  * 2. `renderPixelText` — compact pixel-art (retro fallback for long titles)
  */
 

@@ -4,9 +4,9 @@ import { Server } from 'node:http'
 import { platform } from 'node:os'
 
 import { dev, build, serve } from '@rspress/core'
-import type { ZpressConfig } from '@zpress/config'
-import type { ThemeVariant } from '@zpress/theme'
-import { createRspressConfig } from '@zpress/ui/node'
+import type { CiderpressConfig } from '@ciderpress/config'
+import type { ThemeVariant } from '@ciderpress/theme'
+import { createRspressConfig } from '@ciderpress/ui/node'
 import getPort, { portNumbers } from 'get-port'
 import { toError } from 'massaman/conversion'
 import { match } from 'massaman/match'
@@ -24,7 +24,7 @@ const DEV_PORT_RANGE = 5
 export const SERVE_PORT = 8080
 
 interface ServerOptions {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly paths: Paths
   readonly port?: number
   readonly vscode?: boolean
@@ -56,7 +56,7 @@ interface StartServerOptions {
 /**
  * Callback invoked when the dev server should restart due to config changes.
  */
-export type OnConfigReload = (newConfig: ZpressConfig) => Promise<void>
+export type OnConfigReload = (newConfig: CiderpressConfig) => Promise<void>
 
 /**
  * Result returned by `startDevServer` containing the reload callback and resolved port.
@@ -68,7 +68,7 @@ export interface DevServerResult {
 }
 
 /**
- * Start the Rspress dev server with zpress configuration.
+ * Start the Rspress dev server with ciderpress configuration.
  *
  * Returns the resolved port and a callback that will restart the server when
  * invoked with updated config. The callback closes the current server instance
@@ -86,7 +86,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
   let serverInstance: ServerInstance | null = null
 
   async function startServer(
-    config: ZpressConfig,
+    config: CiderpressConfig,
     internalOptions: StartServerOptions
   ): Promise<boolean> {
     const rspressConfig = createRspressConfig({
@@ -109,7 +109,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
             strictPort: true,
           },
           dev: {
-            // Suppress Rsbuild's progress bar — zpress TUI renders its own status
+            // Suppress Rsbuild's progress bar — ciderpress TUI renders its own status
             progressBar: false,
           },
           // Disable persistent build cache on config-reload restarts.
@@ -133,7 +133,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
   }
 
   // Return resolved port and callback that restarts server with new config
-  async function handleConfigReload(newConfig: ZpressConfig): Promise<void> {
+  async function handleConfigReload(newConfig: CiderpressConfig): Promise<void> {
     process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
 
     // Close existing server and wait for port release
@@ -192,7 +192,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
 }
 
 /**
- * Build the Rspress site with zpress configuration.
+ * Build the Rspress site with ciderpress configuration.
  *
  * @param options - Build configuration including config and paths
  * @returns A promise that resolves when the build completes

@@ -5,31 +5,31 @@ description: Starter templates for each documentation type.
 
 # Templates
 
-Every doc type has a matching template bundled in the `@zpress/templates` package. Use the CLI to scaffold them or import the SDK directly into your own tooling.
+Every doc type has a matching template bundled in the `@ciderpress/templates` package. Use the CLI to scaffold them or import the SDK directly into your own tooling.
 
 ## Scaffolding with the CLI
 
-The fastest way to create a new doc is `zpress draft`:
+The fastest way to create a new doc is `ciderpress draft`:
 
 ```bash
 # Interactive — prompts for type and title
-zpress draft
+ciderpress draft
 
 # Specify type and title directly
-zpress draft --type guide --title "Deploy to Vercel"
+ciderpress draft --type guide --title "Deploy to Vercel"
 
 # Output to a specific directory
-zpress draft --type guide --title "Deploy to Vercel" --out docs/guides
+ciderpress draft --type guide --title "Deploy to Vercel" --out docs/guides
 ```
 
 This renders the template with your title and writes it to the output directory.
 
 ## Using the SDK
 
-You can import `@zpress/templates` directly to integrate with your own CLI or tooling:
+You can import `@ciderpress/templates` directly to integrate with your own CLI or tooling:
 
 ```ts
-import { createRegistry, render, toSlug, defineTemplate } from '@zpress/templates'
+import { createRegistry, render, toSlug, defineTemplate } from '@ciderpress/templates'
 
 // Use built-in templates
 const registry = createRegistry()

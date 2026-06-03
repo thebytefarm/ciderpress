@@ -83,7 +83,7 @@ A fast-track from zero to working result. A compressed tutorial that prioritizes
 | Result              | Yes      |
 | Next Steps          | Yes      |
 
-**Example title:** "Get Started with zpress"
+**Example title:** "Get Started with ciderpress"
 
 ## Explanation
 

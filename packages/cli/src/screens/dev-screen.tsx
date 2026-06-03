@@ -38,7 +38,7 @@ interface DevScreenProps {
 }
 
 /**
- * React/Ink TUI for the `zpress dev` command.
+ * React/Ink TUI for the `ciderpress dev` command.
  *
  * Renders a fullscreen status display with styled banner, activity log,
  * sync stats, and hotkey bar. All lifecycle logic is delegated to

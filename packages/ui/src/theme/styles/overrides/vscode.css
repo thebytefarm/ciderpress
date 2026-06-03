@@ -1,36 +1,36 @@
 /**
  * VS Code preview mode overrides.
  *
- * Applied when html[data-zpress-env="vscode"] is set — injected synchronously
+ * Applied when html[data-ciderpress-env="vscode"] is set — injected synchronously
  * by the inline head script before first paint.
  */
 
 /* Hide left sidebar and its placeholder */
-html[data-zpress-env='vscode'] .rp-doc-layout__sidebar,
-html[data-zpress-env='vscode'] .rp-doc-layout__sidebar-placeholder {
+html[data-ciderpress-env='vscode'] .rp-doc-layout__sidebar,
+html[data-ciderpress-env='vscode'] .rp-doc-layout__sidebar-placeholder {
   display: none;
 }
 
 /* Hide right TOC and its placeholder */
-html[data-zpress-env='vscode'] .rp-doc-layout__outline,
-html[data-zpress-env='vscode'] .rp-doc-layout__outline-placeholder {
+html[data-ciderpress-env='vscode'] .rp-doc-layout__outline,
+html[data-ciderpress-env='vscode'] .rp-doc-layout__outline-placeholder {
   display: none;
 }
 
 /* Center content at 1200px max */
-html[data-zpress-env='vscode'] .rp-doc-layout__doc {
+html[data-ciderpress-env='vscode'] .rp-doc-layout__doc {
   max-width: 1200px;
   margin: 0 auto;
 }
 
 /* ── Hide Copy Markdown in VS Code — replaced by Edit button ── */
-html[data-zpress-env='vscode'] .rp-llms-copy-button {
+html[data-ciderpress-env='vscode'] .rp-llms-copy-button {
   display: none;
 }
 
 /* ── Edit source button (inside .rp-llms-container) ────── */
 /* Matches Rspress .rp-llms-button styles exactly */
-.zp-edit-source-btn {
+.cp-edit-source-btn {
   border: 1px solid var(--rp-c-divider-light);
   background: var(--rp-c-bg);
   height: 36px;
@@ -57,32 +57,32 @@ html[data-zpress-env='vscode'] .rp-llms-copy-button {
   display: inline-flex;
 }
 
-.zp-edit-source-btn:hover {
+.cp-edit-source-btn:hover {
   background: var(--rp-c-bg-soft);
   border-color: var(--rp-c-divider);
   color: var(--rp-c-text-1);
   box-shadow: 0 2px 6px rgb(0 0 0 / 4%);
 }
 
-.zp-edit-source-btn:active {
+.cp-edit-source-btn:active {
   background: var(--rp-c-bg-soft);
   box-shadow: none;
 }
 
-.zp-edit-source-btn svg {
+.cp-edit-source-btn svg {
   flex-shrink: 0;
 }
 
 /* Hide nav items, social links, hamburger, mobile nav, appearance toggle */
-html[data-zpress-env='vscode'] .rp-nav-menu__item,
-html[data-zpress-env='vscode'] .rp-social-links,
-html[data-zpress-env='vscode'] .rp-nav-hamburger,
-html[data-zpress-env='vscode'] .rp-nav-screen,
-html[data-zpress-env='vscode'] .rp-nav-screen-menu,
-html[data-zpress-env='vscode'] .rp-local-nav,
-html[data-zpress-env='vscode'] .rp-switch-appearance,
-html[data-zpress-env='vscode'] .rp-nav-screen-appearance,
-html[data-zpress-env='vscode'] .rp-doc-layout__menu,
-html[data-zpress-env='vscode'] .zp-site-footer {
+html[data-ciderpress-env='vscode'] .rp-nav-menu__item,
+html[data-ciderpress-env='vscode'] .rp-social-links,
+html[data-ciderpress-env='vscode'] .rp-nav-hamburger,
+html[data-ciderpress-env='vscode'] .rp-nav-screen,
+html[data-ciderpress-env='vscode'] .rp-nav-screen-menu,
+html[data-ciderpress-env='vscode'] .rp-local-nav,
+html[data-ciderpress-env='vscode'] .rp-switch-appearance,
+html[data-ciderpress-env='vscode'] .rp-nav-screen-appearance,
+html[data-ciderpress-env='vscode'] .rp-doc-layout__menu,
+html[data-ciderpress-env='vscode'] .cp-site-footer {
   display: none;
 }

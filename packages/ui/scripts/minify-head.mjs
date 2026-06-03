@@ -23,7 +23,7 @@ function minifyEntry(srcPath, distPath) {
     const { code } = transformSync(content, { loader: ext.slice(1), minify: true })
     writeFileSync(distPath, code)
   } catch (err) {
-    process.stderr.write(`[zpress] Failed to minify ${srcPath}: ${err.message}\n`)
+    process.stderr.write(`[ciderpress] Failed to minify ${srcPath}: ${err.message}\n`)
     process.exit(1)
   }
 }

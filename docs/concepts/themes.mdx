@@ -11,7 +11,7 @@ How the visual identity of your documentation site is controlled through built-i
 
 ## Overview
 
-A theme in zpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. zpress ships with three built-in themes — Default, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
+A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with three built-in themes — Default, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
 
 | UI                | Job                                                                                                  |
 | ----------------- | ---------------------------------------------------------------------------------------------------- |
@@ -52,10 +52,10 @@ Retro neon-green theme inspired by arcade cabinets and CRT monitors. Single-vari
 
 ## Configuration
 
-Set the theme in your `zpress.config.ts`:
+Set the theme in your `ciderpress.config.ts`:
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -95,7 +95,7 @@ The user's last variant choice persists in `localStorage` and overrides this def
 
 ### Hiding the toggle
 
-Themes with only one variant (`midnight`, `arcade`) automatically hide the ☀️/🌙 toggle. CSS keys off `data-zp-variants` on `<html>` — the provider sets it from the active theme's variant list. No config needed.
+Themes with only one variant (`midnight`, `arcade`) automatically hide the ☀️/🌙 toggle. CSS keys off `data-cp-variants` on `<html>` — the provider sets it from the active theme's variant list. No config needed.
 
 ## Color Overrides
 
@@ -142,10 +142,10 @@ Color values must be valid CSS hex (`#xxx` or `#xxxxxx`) or `rgba()` values. The
 
 ## Custom Themes
 
-When the built-in themes plus color overrides aren't enough, register a fully custom theme through `defineTheme`. The theme is validated at config time and emitted as one `html[data-zp-theme='{name}'][data-zp-variant='{variant}']` CSS block per variant.
+When the built-in themes plus color overrides aren't enough, register a fully custom theme through `defineTheme`. The theme is validated at config time and emitted as one `html[data-cp-theme='{name}'][data-cp-variant='{variant}']` CSS block per variant.
 
 ```ts
-import { defineConfig, defineTheme } from '@zpress/kit'
+import { defineConfig, defineTheme } from 'ciderpress'
 
 const sunset = defineTheme({
   name: 'sunset',
@@ -163,7 +163,7 @@ const sunset = defineTheme({
           light: '#ffa56a',
           lighter: '#ffc89a',
         },
-        // ... see `ZpressTokens` for the full token tree
+        // ... see `CiderpressTokens` for the full token tree
       },
       // ... spacing, radii, fonts, shadows, motion, etc.
     },
@@ -204,12 +204,12 @@ defineTheme({
 
 | Constraint                     | Detail                                                                                                                                                                                                                                                  |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-zp-theme='{name}']` selector.                                                                                                                                                      |
+| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                                      |
 | At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                                             |
-| Token tree must be complete    | Every leaf in `ZpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                                              |
+| Token tree must be complete    | Every leaf in `CiderpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                                              |
 | Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                                  |
 | Persisted theme is validated   | When `switcher: true`, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.                                  |
-| Persisted variant is validated | The active variant is persisted in `localStorage['zpress-variant']`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
+| Persisted variant is validated | The active variant is persisted in `localStorage['ciderpress-variant']`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
 
 ## Comparing Approaches
 

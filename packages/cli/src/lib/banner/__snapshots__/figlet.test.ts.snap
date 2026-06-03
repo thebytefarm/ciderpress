@@ -110,7 +110,7 @@ exports[`renderFigletText (ANSI Shadow) > should render digit 9 1`] = `
 ────────────────────────────────"
 `;
 
-exports[`renderFigletText (ANSI Shadow) > should render full word "zpress" 1`] = `
+exports[`renderFigletText (ANSI Shadow) > should render full word "ciderpress" 1`] = `
 "────────────────────────────────
 ███████╗██████╗ ██████╗ ███████╗███████╗███████╗
 ╚══███╔╝██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝
@@ -460,7 +460,7 @@ exports[`renderPixelText (RubiFont) > should render a long title 1`] = `
 ────────────────────────────────"
 `;
 
-exports[`renderPixelText (RubiFont) > should render full word "zpress" 1`] = `
+exports[`renderPixelText (RubiFont) > should render full word "ciderpress" 1`] = `
 "────────────────────────────────
 ▗▄▄▄▄▖ ▗▄▄▖  ▗▄▄▖  ▗▄▄▄▖  ▗▄▄▖  ▗▄▄▖
    ▗▞▘ ▐▌ ▐▌ ▐▌ ▐▌ ▐▌    ▐▌    ▐▌   

@@ -14,7 +14,7 @@
     if (path === lastPath && !title) return
     lastPath = path
     window.parent.postMessage(
-      { type: 'zpress:navigate', path: path, title: title || document.title },
+      { type: 'ciderpress:navigate', path: path, title: title || document.title },
       '*'
     )
   }

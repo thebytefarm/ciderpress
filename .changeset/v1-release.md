@@ -1,13 +1,13 @@
 ---
-'@zpress/kit': major
-'@zpress/cli': major
-'@zpress/config': major
-'@zpress/ui': major
-'@zpress/theme': major
-'@zpress/templates': major
+'ciderpress': major
+'@ciderpress/cli': major
+'@ciderpress/config': major
+'@ciderpress/ui': major
+'@ciderpress/theme': major
+'@ciderpress/templates': major
 ---
 
-zpress 1.0 — release candidate
+ciderpress 1.0 — release candidate
 
 This is a major release that locks the v1 public API. Headline changes:
 
@@ -23,10 +23,10 @@ This is a major release that locks the v1 public API. Headline changes:
   to `{ name, variants: { dark?, light? }, defaultVariant? }`. The factory
   validates the envelope before parsing token trees so error messages now
   point at the offending input field.
-- `@zpress/kit`, `@zpress/core`, and `@zpress/config` no longer re-export
+- `ciderpress`, `@ciderpress/core`, and `@ciderpress/config` no longer re-export
   `ColorMode`, `ThemeMode`, `COLOR_MODES`, or `resolveDefaultColorMode`.
   Use `ThemeVariant`, `THEME_VARIANTS`, and `resolveDefaultVariant` from
-  `@zpress/theme`. The deprecated aliases remain in `@zpress/theme` itself
+  `@ciderpress/theme`. The deprecated aliases remain in `@ciderpress/theme` itself
   for one-version migration safety.
 
 **Config surface**
@@ -36,7 +36,7 @@ This is a major release that locks the v1 public API. Headline changes:
   unaffected (gray-matter never typed it as `Frontmatter`).
 - Renamed `WorkspaceCategory` → `WorkspaceGroup`. The `config.workspaces`
   field name is unchanged.
-- Every field on `ZpressConfig` and its sub-types now has solid JSDoc that
+- Every field on `CiderpressConfig` and its sub-types now has solid JSDoc that
   propagates to IDE hover docs.
 - Tightened the CLI `--color-mode` schema from `string` to `enum('dark', 'light')`.
 
@@ -45,7 +45,7 @@ This is a major release that locks the v1 public API. Headline changes:
 - Removed `gray-matter` (last released 2021, drags in the abandoned
   `js-yaml@3` line with known prototype-pollution CVEs). Replaced with a
   ~25-line `parse` / `stringify` helper built on `yaml` (eemeli/yaml).
-- Removed unused `js-yaml` and `@types/js-yaml` direct deps from `@zpress/core`.
+- Removed unused `js-yaml` and `@types/js-yaml` direct deps from `@ciderpress/core`.
 
 **Fixes**
 
@@ -60,8 +60,8 @@ This is a major release that locks the v1 public API. Headline changes:
 **Migration**
 
 ```diff
-- import { ColorMode, ThemeMode, COLOR_MODES } from '@zpress/kit'
-+ import { ThemeVariant, THEME_VARIANTS } from '@zpress/kit'
+- import { ColorMode, ThemeMode, COLOR_MODES } from 'ciderpress'
++ import { ThemeVariant, THEME_VARIANTS } from 'ciderpress'
 
   defineConfig({
     theme: {

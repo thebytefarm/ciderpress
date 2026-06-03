@@ -11,5 +11,5 @@ export interface SectionGridProps {
  * @returns React element wrapping children in a section grid
  */
 export function SectionGrid({ children }: SectionGridProps): React.ReactElement {
-  return <div className="zp-section-grid">{children}</div>
+  return <div className="cp-section-grid">{children}</div>
 }

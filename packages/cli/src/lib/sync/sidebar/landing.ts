@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 
-import { resolveOptionalIcon, serializeIcon } from '@zpress/config'
-import type { IconColor } from '@zpress/config'
+import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import type { IconColor } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import { parse as parseFrontmatter } from '../frontmatter.ts'
@@ -73,7 +73,7 @@ export async function generateLandingContent(
 
   const imports =
     'import { WorkspaceCard, WorkspaceGrid, SectionCard, SectionGrid } from ' +
-    "'@zpress/ui/theme'\n\n"
+    "'@ciderpress/ui/theme'\n\n"
 
   if (useWorkspace) {
     const cards = await Promise.all(visible.map((child) => buildWorkspaceCard(child)))

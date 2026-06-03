@@ -1,20 +1,20 @@
 {
-  "name": "@zpress/ui",
+  "name": "@ciderpress/ui",
   "version": "1.0.0-rc.0",
-  "description": "Rspress plugin, theme components, and styles for zpress",
+  "description": "Rspress plugin, theme components, and styles for ciderpress",
   "keywords": [
     "react",
     "rspress",
     "theme",
     "ui",
-    "zpress"
+    "ciderpress"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/ui#readme",
-  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/ui#readme",
+  "bugs": "https://github.com/thebytefarm/ciderpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joggrdocs/zpress.git",
+    "url": "https://github.com/thebytefarm/ciderpress.git",
     "directory": "packages/ui"
   },
   "files": [
@@ -63,8 +63,8 @@
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify-json/vscode-icons": "^1.2.50",
     "@iconify/react": "^6.0.2",
-    "@zpress/config": "workspace:*",
-    "@zpress/theme": "workspace:*",
+    "@ciderpress/config": "workspace:*",
+    "@ciderpress/theme": "workspace:*",
     "katex": "^0.16.47",
     "massaman": "^0.2.0",
     "mermaid": "^10.9.5",

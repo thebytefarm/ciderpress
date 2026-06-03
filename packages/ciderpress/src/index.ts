@@ -1,10 +1,10 @@
-export { defineConfig, defineTheme, hasGlobChars } from '@zpress/config'
-export { ZpressLogo } from '@zpress/ui'
-export type { ZpressLogoProps } from '@zpress/ui'
+export { defineConfig, defineTheme, hasGlobChars } from '@ciderpress/config'
+export { CiderpressLogo } from '@ciderpress/ui'
+export type { CiderpressLogoProps } from '@ciderpress/ui'
 
-// Config types — what consumers fill in when writing `zpress.config.ts`.
+// Config types — what consumers fill in when writing `ciderpress.config.ts`.
 export type {
-  ZpressConfig,
+  CiderpressConfig,
   Section,
   Feature,
   Workspace,
@@ -44,14 +44,14 @@ export type {
   LogoContext,
   LogoFn,
   LogoImage,
-} from '@zpress/config'
+} from '@ciderpress/config'
 
 // Theme types — what `defineTheme` accepts and returns.
 export type {
-  ZpressTheme,
-  ZpressThemeInput,
-  ZpressThemeInputVariants,
-  ZpressTokens,
+  CiderpressTheme,
+  CiderpressThemeInput,
+  CiderpressThemeInputVariants,
+  CiderpressTokens,
   ThemeVariant,
   ThemeVariantTokens,
   ThemeName,
@@ -59,7 +59,7 @@ export type {
   ThemeConfig,
   BuiltInThemeName,
   BuiltInIconColor,
-} from '@zpress/theme'
+} from '@ciderpress/theme'
 
 // Config loader option types.
-export type { LoadConfigOptions } from '@zpress/config'
+export type { LoadConfigOptions } from '@ciderpress/config'

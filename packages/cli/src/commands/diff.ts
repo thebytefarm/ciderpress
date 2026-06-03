@@ -1,9 +1,9 @@
 import { execFileSync } from 'node:child_process'
 
 import { command } from '@kidd-cli/core'
-import { hasGlobChars, normalizeInclude } from '@zpress/config'
-import type { Section, ZpressConfig, Result } from '@zpress/config'
-import { loadConfig } from '@zpress/config/loader'
+import { hasGlobChars, normalizeInclude } from '@ciderpress/config'
+import type { Section, CiderpressConfig, Result } from '@ciderpress/config'
+import { loadConfig } from '@ciderpress/config/loader'
 import { uniq } from 'massaman/array'
 import { match } from 'massaman/match'
 import { z } from 'zod'
@@ -11,13 +11,13 @@ import { z } from 'zod'
 import { createPaths } from '../lib/paths.ts'
 
 const CONFIG_GLOBS = [
-  'zpress.config.ts',
-  'zpress.config.mts',
-  'zpress.config.cts',
-  'zpress.config.js',
-  'zpress.config.mjs',
-  'zpress.config.cjs',
-  'zpress.config.json',
+  'ciderpress.config.ts',
+  'ciderpress.config.mts',
+  'ciderpress.config.cts',
+  'ciderpress.config.js',
+  'ciderpress.config.mjs',
+  'ciderpress.config.cjs',
+  'ciderpress.config.json',
 ] as const
 
 /**
@@ -34,16 +34,16 @@ const CONFIG_GLOBS = [
  * @example
  * ```bash
  * # Detect uncommitted changes (default, uses git status)
- * zpress diff
+ * ciderpress diff
  *
  * # Compare against parent commit (CI / Vercel ignoreCommand)
- * zpress diff --ref HEAD^
+ * ciderpress diff --ref HEAD^
  *
  * # Compare against main branch (PR context)
- * zpress diff --ref main
+ * ciderpress diff --ref main
  *
  * # Human-readable output
- * zpress diff --ref main --pretty
+ * ciderpress diff --ref main --pretty
  * ```
  */
 export default command({
@@ -65,7 +65,7 @@ export default command({
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
       if (pretty) {
-        ctx.log.intro('zpress diff')
+        ctx.log.intro('ciderpress diff')
         ctx.log.error(configErr.message)
         if (configErr.errors && configErr.errors.length > 0) {
           // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect: logging each validation error
@@ -82,7 +82,7 @@ export default command({
 
     if (dirs.length === 0) {
       if (pretty) {
-        ctx.log.intro('zpress diff')
+        ctx.log.intro('ciderpress diff')
         ctx.log.warn('No source directories found in config')
         ctx.log.outro('Done')
       }
@@ -98,7 +98,7 @@ export default command({
 
     if (gitErr) {
       if (pretty) {
-        ctx.log.intro('zpress diff')
+        ctx.log.intro('ciderpress diff')
         ctx.log.error(`Git failed: ${gitErr.message}`)
         ctx.log.outro('Done')
       }
@@ -107,7 +107,7 @@ export default command({
 
     if (changed.length === 0) {
       if (pretty) {
-        ctx.log.intro('zpress diff')
+        ctx.log.intro('ciderpress diff')
         ctx.log.success('No changes detected')
         ctx.log.outro('Done')
       }
@@ -115,7 +115,7 @@ export default command({
     }
 
     if (pretty) {
-      ctx.log.intro('zpress diff')
+      ctx.log.intro('ciderpress diff')
       ctx.log.step(`Watching ${dirs.length} path(s)`)
       ctx.log.note(changed.join('\n'), `${changed.length} changed file(s)`)
       ctx.log.outro('Done')
@@ -139,10 +139,10 @@ export default command({
  * Collect unique directory paths from all section `include` fields in the config.
  *
  * @private
- * @param config - Resolved zpress config
+ * @param config - Resolved ciderpress config
  * @returns Deduplicated array of directory paths to watch
  */
-function collectWatchPaths(config: ZpressConfig): readonly string[] {
+function collectWatchPaths(config: CiderpressConfig): readonly string[] {
   const dirs = flattenIncludePaths(config.sections).map(toDirectory)
   const roots = dirs.map(toTopLevelRoot).filter((r) => r.length > 0)
   return uniq([...dirs, ...roots, ...CONFIG_GLOBS])
@@ -350,7 +350,7 @@ function execSilent(params: {
     }).trimEnd()
     return [null, output]
   } catch (error) {
-    // See https://github.com/joggrdocs/zpress/issues/73 — replace with shared toError util
+    // See https://github.com/thebytefarm/ciderpress/issues/73 — replace with shared toError util
     if (error instanceof Error) {
       return [error, null]
     }

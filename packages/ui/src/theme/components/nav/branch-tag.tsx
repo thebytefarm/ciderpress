@@ -3,7 +3,7 @@ import type React from 'react'
 import './branch-tag.css'
 import { Icon } from '../shared/icon.tsx'
 
-declare const __ZPRESS_GIT_BRANCH__: string | undefined
+declare const __CIDERPRESS_GIT_BRANCH__: string | undefined
 
 /**
  * Git branch tag — pill-shaped badge rendered via the `beforeNavMenu`
@@ -21,14 +21,14 @@ export function BranchTag(): React.ReactElement | null {
 
   return (
     <a
-      className="zp-branch-tag"
-      href={`https://github.com/joggrdocs/zpress/tree/${branch}`}
+      className="cp-branch-tag"
+      href={`https://github.com/thebytefarm/ciderpress/tree/${branch}`}
       target="_blank"
       rel="noopener noreferrer"
       title={`Branch: ${branch}`}
     >
       <Icon icon="pixelarticons:git-branch" width={14} height={14} />
-      <span className="zp-branch-tag__text">{branch}</span>
+      <span className="cp-branch-tag__text">{branch}</span>
     </a>
   )
 }
@@ -47,8 +47,8 @@ export { BranchTag as default }
  * @returns Current git branch name or empty string
  */
 function resolveBranch(): string {
-  if (__ZPRESS_GIT_BRANCH__ !== undefined) {
-    return __ZPRESS_GIT_BRANCH__
+  if (__CIDERPRESS_GIT_BRANCH__ !== undefined) {
+    return __CIDERPRESS_GIT_BRANCH__
   }
   return ''
 }

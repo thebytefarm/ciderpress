@@ -13,7 +13,7 @@ export interface CardProps {
 /**
  * Shared base card handling link-vs-div rendering.
  *
- * Renders `<a>` with `zp-card--clickable` when `href` is provided AND
+ * Renders `<a>` with `cp-card--clickable` when `href` is provided AND
  * passes `safeUrl()` validation. When `href` is omitted or fails
  * validation, falls back to a plain `<div>` so the card surface stays
  * visible without becoming a script-execution sink.
@@ -27,9 +27,9 @@ export function Card({ href, className, children }: CardProps): React.ReactEleme
     .otherwise((h) => safeUrl(h))
   return match(safeHref)
     .with(P.nonNullable, (h) => (
-      <Link className={`zp-card zp-card--clickable ${className ?? ''}`} to={h}>
+      <Link className={`cp-card cp-card--clickable ${className ?? ''}`} to={h}>
         {children}
       </Link>
     ))
-    .otherwise(() => <div className={`zp-card ${className ?? ''}`}>{children}</div>)
+    .otherwise(() => <div className={`cp-card ${className ?? ''}`}>{children}</div>)
 }

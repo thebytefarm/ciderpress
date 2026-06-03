@@ -41,15 +41,15 @@ export function AskAIButton(props: AskAIButtonProps): React.ReactElement {
   }, [onClick])
 
   return (
-    <button className="zp-ask-ai" type="button" onClick={handleClick} aria-label={label}>
-      <span className="zp-ask-ai__icon" aria-hidden="true">
+    <button className="cp-ask-ai" type="button" onClick={handleClick} aria-label={label}>
+      <span className="cp-ask-ai__icon" aria-hidden="true">
         {badge}
       </span>
-      <span className="zp-ask-ai__label">{label}</span>
+      <span className="cp-ask-ai__label">{label}</span>
       {match(shortcut)
         .with(undefined, () => null)
         .otherwise((s) => (
-          <span className="zp-ask-ai__shortcut">{s}</span>
+          <span className="cp-ask-ai__shortcut">{s}</span>
         ))}
     </button>
   )

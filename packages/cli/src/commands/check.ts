@@ -1,5 +1,5 @@
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
+import { loadConfig } from '@ciderpress/config/loader'
 
 import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
 import { createPaths } from '../lib/paths.ts'
@@ -13,7 +13,7 @@ export default command({
   description: 'Validate config and check for broken links',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())
-    ctx.log.intro('zpress check')
+    ctx.log.intro('ciderpress check')
 
     // Config validation — loadConfig validates via validateConfig and
     // returns a Result tuple. No process.exit, no process overrides.

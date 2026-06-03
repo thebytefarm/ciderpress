@@ -1,11 +1,11 @@
-import { defineConfig, defineTheme } from '@zpress/kit'
+import { defineConfig, defineTheme } from 'ciderpress'
 
 // TEST: remove before merge — sample custom theme registered via `defineTheme`
-// from `@zpress/kit`. Verifies that the design-system pipeline (config →
-// theme registry → `__ZPRESS_THEME_REGISTRY__` define → inline `<style>` tag)
+// from `ciderpress`. Verifies that the design-system pipeline (config →
+// theme registry → `__CIDERPRESS_THEME_REGISTRY__` define → inline `<style>` tag)
 // works end-to-end for user-supplied themes. The token tree below is a sunset
 // recast of the built-in `arcade` palette — full token coverage is required
-// because `tokensSchema` (in `@zpress/theme`) is `.strict()`.
+// because `tokensSchema` (in `@ciderpress/theme`) is `.strict()`.
 const sunsetTheme = defineTheme({
   name: 'sunset',
   defaultVariant: 'dark',
@@ -118,7 +118,7 @@ const sunsetTheme = defineTheme({
           put: '#fbbf24',
           patch: '#fbbf24',
           delete: '#f87171',
-          deprecated: 'var(--zp-c-text-3)',
+          deprecated: 'var(--cp-c-text-3)',
           required: '#f87171',
         },
         button: {
@@ -222,11 +222,11 @@ const sunsetTheme = defineTheme({
         },
       },
       shadows: {
-        cardHover: '0 2px 12px var(--zp-c-tint-purple-glow)',
+        cardHover: '0 2px 12px var(--cp-c-tint-purple-glow)',
         menu: '0 8px 24px rgba(0, 0, 0, 0.12)',
         tooltip: '0 4px 12px rgba(0, 0, 0, 0.08)',
         heroDemo:
-          '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--zp-c-brand-soft)',
+          '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--cp-c-brand-soft)',
         askAi: '0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(0, 0, 0, 0.5)',
       },
       motion: {
@@ -300,15 +300,15 @@ const sunsetTheme = defineTheme({
       },
       blurs: { base: '8px' },
       gradients: {
-        brand: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-3))',
-        heroTitle: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-light))',
+        brand: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-3))',
+        heroTitle: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-light))',
       },
     },
   },
 })
 
 export default defineConfig({
-  title: 'zpress',
+  title: 'ciderpress',
   description: 'Beautiful Docs, Zero Effort',
   tagline:
     'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
@@ -322,16 +322,16 @@ export default defineConfig({
   site: {
     version: 'v1.0',
     topbarCta: { text: 'Get started →', href: '/getting-started/quick-start' },
-    edit: { repo: 'joggrdocs/zpress', branch: 'main', directory: 'docs' },
-    report: { repo: 'joggrdocs/zpress' },
+    edit: { repo: 'thebytefarm/ciderpress', branch: 'main', directory: 'docs' },
+    report: { repo: 'thebytefarm/ciderpress' },
     sidebarPromo: {
       title: 'Ship docs that stay in sync',
       body: 'Pull docs from your codebase and keep them green automatically.',
       cta: { text: 'Try Joggr →', href: 'https://joggr.io' },
     },
     announcement: {
-      id: 'zpress-1.0',
-      lead: 'zpress 1.0',
+      id: 'ciderpress-1.0',
+      lead: 'ciderpress 1.0',
       message: 'is shipping soon · early-access program now open',
       cta: { href: '/getting-started/quick-start', label: 'Get on the list' },
     },
@@ -349,8 +349,8 @@ export default defineConfig({
         {
           heading: 'Community',
           links: [
-            { text: 'GitHub', href: 'https://github.com/joggrdocs/zpress' },
-            { text: 'npm', href: 'https://www.npmjs.com/package/@zpress/kit' },
+            { text: 'GitHub', href: 'https://github.com/thebytefarm/ciderpress' },
+            { text: 'npm', href: 'https://www.npmjs.com/package/ciderpress' },
           ],
         },
       ],
@@ -369,7 +369,7 @@ export default defineConfig({
       subtitle: 'One CLI. Three minutes. Production-ready.',
       actions: [
         { theme: 'brand', text: 'Get started', link: '/getting-started/quick-start' },
-        { theme: 'alt', text: 'Star on GitHub →', link: 'https://github.com/joggrdocs/zpress' },
+        { theme: 'alt', text: 'Star on GitHub →', link: 'https://github.com/thebytefarm/ciderpress' },
       ],
     },
   },
@@ -420,25 +420,25 @@ export default defineConfig({
   ],
   packages: [
     {
-      title: '@zpress/kit',
+      title: 'ciderpress',
       icon: { id: 'pixelarticons:archive', color: 'purple' },
       description:
         'Documentation framework powered by Rspress with a config-driven information architecture',
       tags: ['typescript', 'node'],
-      path: '/packages/zpress',
+      path: '/packages/ciderpress',
       items: [
-        { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
+        { title: 'Overview', path: '/packages/ciderpress', include: 'packages/ciderpress/README.md' },
         {
           title: 'Changelog',
-          path: '/packages/zpress/changelog',
-          include: 'packages/zpress/CHANGELOG.md',
+          path: '/packages/ciderpress/changelog',
+          include: 'packages/ciderpress/CHANGELOG.md',
         },
       ],
     },
     {
-      title: '@zpress/cli',
+      title: '@ciderpress/cli',
       icon: { id: 'pixelarticons:terminal', color: 'green' },
-      description: 'CLI for building and serving zpress documentation sites',
+      description: 'CLI for building and serving ciderpress documentation sites',
       tags: ['typescript', 'node'],
       path: '/packages/cli',
       items: [
@@ -451,9 +451,9 @@ export default defineConfig({
       ],
     },
     {
-      title: '@zpress/config',
+      title: '@ciderpress/config',
       icon: { id: 'pixelarticons:sliders', color: 'amber' },
-      description: 'Configuration loading and validation for zpress',
+      description: 'Configuration loading and validation for ciderpress',
       tags: ['typescript', 'zod'],
       path: '/packages/config',
       items: [
@@ -466,9 +466,9 @@ export default defineConfig({
       ],
     },
     {
-      title: '@zpress/ui',
+      title: '@ciderpress/ui',
       icon: { id: 'pixelarticons:paint-bucket', color: 'pink' },
-      description: 'Rspress plugin, theme components, and styles for zpress',
+      description: 'Rspress plugin, theme components, and styles for ciderpress',
       tags: ['typescript', 'react'],
       path: '/packages/ui',
       items: [
@@ -481,9 +481,9 @@ export default defineConfig({
       ],
     },
     {
-      title: '@zpress/theme',
+      title: '@ciderpress/theme',
       icon: { id: 'pixelarticons:mood-happy', color: 'cyan' },
-      description: 'Theme types and definitions for zpress',
+      description: 'Theme types and definitions for ciderpress',
       tags: ['typescript'],
       path: '/packages/theme',
       items: [
@@ -496,7 +496,7 @@ export default defineConfig({
       ],
     },
     {
-      title: '@zpress/templates',
+      title: '@ciderpress/templates',
       icon: { id: 'pixelarticons:note', color: 'slate' },
       description:
         'Documentation templates SDK — built-in templates, extensions, and custom registrations',
@@ -512,20 +512,20 @@ export default defineConfig({
   sections: [
     {
       title: 'Getting Started',
-      description: 'Set up zpress and ship your first documentation site in minutes.',
+      description: 'Set up ciderpress and ship your first documentation site in minutes.',
       icon: 'pixelarticons:speed-fast',
       path: '/getting-started',
       landing: true,
       items: [
         {
           title: 'Introduction',
-          description: 'What zpress is, why it exists, and what it gives you out of the box.',
+          description: 'What ciderpress is, why it exists, and what it gives you out of the box.',
           path: '/getting-started/introduction',
           include: 'docs/getting-started/introduction.mdx',
         },
         {
           title: 'Quick Start',
-          description: 'Install zpress and create your first documentation site in minutes.',
+          description: 'Install ciderpress and create your first documentation site in minutes.',
           path: '/getting-started/quick-start',
           include: 'docs/getting-started/quick-start.md',
         },
@@ -533,7 +533,7 @@ export default defineConfig({
     },
     {
       title: 'Concepts',
-      description: 'Core ideas behind how zpress organizes and renders documentation.',
+      description: 'Core ideas behind how ciderpress organizes and renders documentation.',
       icon: 'pixelarticons:book-open',
       path: '/concepts',
       landing: true,
@@ -579,13 +579,13 @@ export default defineConfig({
       items: [
         {
           title: 'Deploy to Vercel',
-          description: 'Build and deploy your zpress site to Vercel static hosting.',
+          description: 'Build and deploy your ciderpress site to Vercel static hosting.',
           path: '/guides/deploying-to-vercel',
           include: 'docs/guides/deploying-to-vercel.md',
         },
         {
           title: 'Deploy to GitHub Pages',
-          description: 'Build and deploy your zpress site with GitHub Actions.',
+          description: 'Build and deploy your ciderpress site with GitHub Actions.',
           path: '/guides/deploying-to-github-pages',
           include: 'docs/guides/deploying-to-github-pages.md',
         },
@@ -600,7 +600,7 @@ export default defineConfig({
       items: [
         {
           title: 'Overview',
-          description: 'Why documentation needs structure and how zpress maps to Diataxis.',
+          description: 'Why documentation needs structure and how ciderpress maps to Diataxis.',
           path: '/framework/overview',
           include: 'docs/framework/overview.md',
         },
@@ -612,7 +612,7 @@ export default defineConfig({
         },
         {
           title: 'Recommended',
-          description: 'The recommended section layout for a zpress documentation site.',
+          description: 'The recommended section layout for a ciderpress documentation site.',
           path: '/framework/recommended',
           include: 'docs/framework/recommended.md',
         },
@@ -646,7 +646,7 @@ export default defineConfig({
     },
     {
       title: 'Reference',
-      description: 'Technical reference for every zpress API surface.',
+      description: 'Technical reference for every ciderpress API surface.',
       icon: 'pixelarticons:list-box',
       path: '/reference',
       landing: true,
@@ -662,25 +662,25 @@ export default defineConfig({
       items: [
         {
           title: 'Configuration',
-          description: 'Complete reference for all zpress.config.ts fields and entry shapes.',
+          description: 'Complete reference for all ciderpress.config.ts fields and entry shapes.',
           path: '/reference/configuration',
           include: 'docs/references/configuration.md',
         },
         {
           title: 'CLI Commands',
-          description: 'All zpress CLI commands, flags, and behavior.',
+          description: 'All ciderpress CLI commands, flags, and behavior.',
           path: '/reference/cli',
           include: 'docs/references/cli.md',
         },
         {
           title: 'Frontmatter Fields',
-          description: 'Every frontmatter field supported by zpress pages.',
+          description: 'Every frontmatter field supported by ciderpress pages.',
           path: '/reference/frontmatter',
           include: 'docs/references/frontmatter.md',
         },
         {
           title: 'VSCode Extension',
-          description: 'Preview your zpress docs site directly inside VS Code.',
+          description: 'Preview your ciderpress docs site directly inside VS Code.',
           path: '/reference/vscode-extension',
           include: 'docs/references/vscode-extension.md',
         },
@@ -894,7 +894,7 @@ export default defineConfig({
       path: '/packages',
       standalone: true,
       sort: (a, b) => {
-        const order = ['@zpress/kit', '@zpress/cli', '@zpress/config', '@zpress/core']
+        const order = ['ciderpress', '@ciderpress/cli', '@ciderpress/config', '@ciderpress/core']
         const aIdx = order.indexOf(a.title)
         const bIdx = order.indexOf(b.title)
         if (aIdx !== -1 && bIdx !== -1) {
@@ -910,19 +910,19 @@ export default defineConfig({
       },
       items: [
         {
-          title: '@zpress/kit',
-          path: '/packages/zpress',
+          title: 'ciderpress',
+          path: '/packages/ciderpress',
           items: [
-            { title: 'Overview', path: '/packages/zpress', include: 'packages/zpress/README.md' },
+            { title: 'Overview', path: '/packages/ciderpress', include: 'packages/ciderpress/README.md' },
             {
               title: 'Changelog',
-              path: '/packages/zpress/changelog',
-              include: 'packages/zpress/CHANGELOG.md',
+              path: '/packages/ciderpress/changelog',
+              include: 'packages/ciderpress/CHANGELOG.md',
             },
           ],
         },
         {
-          title: '@zpress/cli',
+          title: '@ciderpress/cli',
           path: '/packages/cli',
           items: [
             { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
@@ -934,7 +934,7 @@ export default defineConfig({
           ],
         },
         {
-          title: '@zpress/config',
+          title: '@ciderpress/config',
           path: '/packages/config',
           items: [
             { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
@@ -946,7 +946,7 @@ export default defineConfig({
           ],
         },
         {
-          title: '@zpress/ui',
+          title: '@ciderpress/ui',
           path: '/packages/ui',
           items: [
             { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
@@ -958,7 +958,7 @@ export default defineConfig({
           ],
         },
         {
-          title: '@zpress/theme',
+          title: '@ciderpress/theme',
           path: '/packages/theme',
           items: [
             { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
@@ -970,7 +970,7 @@ export default defineConfig({
           ],
         },
         {
-          title: '@zpress/templates',
+          title: '@ciderpress/templates',
           path: '/packages/templates',
           items: [
             {
@@ -1051,11 +1051,11 @@ export default defineConfig({
     { title: 'Reference', link: '/reference/configuration' },
   ],
   socialLinks: [
-    { icon: 'github', mode: 'link', content: 'https://github.com/joggrdocs/zpress' },
-    { icon: 'npm', mode: 'link', content: 'https://www.npmjs.com/package/@zpress/kit' },
+    { icon: 'github', mode: 'link', content: 'https://github.com/thebytefarm/ciderpress' },
+    { icon: 'npm', mode: 'link', content: 'https://www.npmjs.com/package/ciderpress' },
   ],
   footer: {
-    message: 'Built with zpress',
+    message: 'Built with ciderpress',
     copyright: `Copyright © ${new Date().getFullYear()} Joggr`,
     socials: true,
   },

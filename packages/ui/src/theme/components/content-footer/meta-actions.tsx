@@ -37,17 +37,17 @@ export function MetaActions(props: MetaActionsProps): React.ReactElement | null 
   return match(safeActions.length === 0)
     .with(true, () => null)
     .otherwise(() => (
-      <div className="zp-meta-actions">
+      <div className="cp-meta-actions">
         {safeActions.map((action) => (
           <a
             key={`${action.label}:${action.href}`}
-            className="zp-meta-actions__item"
+            className="cp-meta-actions__item"
             href={action.href}
           >
             {match(action.icon)
               .with(undefined, () => null)
               .otherwise((icon) => (
-                <span className="zp-meta-actions__icon">{icon}</span>
+                <span className="cp-meta-actions__icon">{icon}</span>
               ))}
             <span>{action.label}</span>
           </a>

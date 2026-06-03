@@ -1,10 +1,10 @@
 # Engine
 
-The materialization layer that transforms `zpress.config.ts` into a Rspress-compatible documentation site.
+The materialization layer that transforms `ciderpress.config.ts` into a Rspress-compatible documentation site.
 
 ## Overview
 
-The engine reads a declarative config, discovers markdown files via globs, resolves the information architecture (sidebar, nav, landing pages), and writes everything into `.zpress/content/`. Rspress only consumes the engine's output in `.zpress/content/`.
+The engine reads a declarative config, discovers markdown files via globs, resolves the information architecture (sidebar, nav, landing pages), and writes everything into `.ciderpress/content/`. Rspress only consumes the engine's output in `.ciderpress/content/`.
 
 ```mermaid
 %%{init: {
@@ -25,7 +25,7 @@ The engine reads a declarative config, discovers markdown files via globs, resol
 }}%%
 flowchart LR
     subgraph input ["Input"]
-        CONFIG(["zpress.config.ts"])
+        CONFIG(["ciderpress.config.ts"])
         MD(["*.md / *.mdx"])
         SPECS(["OpenAPI specs"])
     end
@@ -36,7 +36,7 @@ flowchart LR
         GENERATE(["generate"])
     end
 
-    subgraph output [".zpress/content/"]
+    subgraph output [".ciderpress/content/"]
         CONTENT(["pages"])
         META([".generated/"])
         IMAGES(["images"])
@@ -73,13 +73,13 @@ flowchart LR
 
 ## Build vs Dev
 
-**Build** (`zpress build`) runs a single sync pass:
+**Build** (`ciderpress build`) runs a single sync pass:
 
 ```text
-loadConfig() --> sync() --> createRspressConfig() --> rspress build() --> .zpress/dist/
+loadConfig() --> sync() --> createRspressConfig() --> rspress build() --> .ciderpress/dist/
 ```
 
-**Dev** (`zpress dev`) runs sync then enters a watch loop:
+**Dev** (`ciderpress dev`) runs sync then enters a watch loop:
 
 ```text
 loadConfig() --> sync() --> createRspressConfig() --> rspress dev() --> watcher

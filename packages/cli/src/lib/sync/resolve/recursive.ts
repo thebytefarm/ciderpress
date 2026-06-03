@@ -1,8 +1,8 @@
 import path from 'node:path'
 
 import { log } from '@clack/prompts'
-import { normalizeInclude } from '@zpress/config'
-import type { Section, Frontmatter } from '@zpress/config'
+import { normalizeInclude } from '@ciderpress/config'
+import type { Section, Frontmatter } from '@ciderpress/config'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 
@@ -34,7 +34,7 @@ export async function resolveRecursiveGlob(
 
   const patterns = normalizeInclude(section.include)
   if (patterns.length === 0) {
-    log.error('[zpress] resolveRecursiveGlob called without section.include')
+    log.error('[ciderpress] resolveRecursiveGlob called without section.include')
     return []
   }
 

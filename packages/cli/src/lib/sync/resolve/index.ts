@@ -2,8 +2,8 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { log } from '@clack/prompts'
-import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@zpress/config'
-import type { Section, Frontmatter } from '@zpress/config'
+import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@ciderpress/config'
+import type { Section, Frontmatter } from '@ciderpress/config'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 
@@ -317,7 +317,7 @@ async function resolveGlob(
   const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
 
   if (section.include === null || section.include === undefined) {
-    log.error('[zpress] resolveGlob called without section.include')
+    log.error('[ciderpress] resolveGlob called without section.include')
     return []
   }
 

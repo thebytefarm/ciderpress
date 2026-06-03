@@ -31,7 +31,7 @@ export function TopbarCTA(props: TopbarCTAProps): React.ReactElement | null {
     return null
   }
   return (
-    <a className="zp-topbar-cta" href={href}>
+    <a className="cp-topbar-cta" href={href}>
       {props.text}
     </a>
   )

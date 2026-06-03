@@ -1,11 +1,11 @@
 ---
 title: Concepts
-description: Core ideas behind how zpress organizes and renders documentation.
+description: Core ideas behind how ciderpress organizes and renders documentation.
 ---
 
 # Concepts
 
-Understand the building blocks of a zpress documentation site.
+Understand the building blocks of a ciderpress documentation site.
 
 ## Topics
 

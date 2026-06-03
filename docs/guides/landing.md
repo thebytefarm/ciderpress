@@ -1,11 +1,11 @@
 ---
 title: Guides
-description: Step-by-step instructions for common zpress tasks.
+description: Step-by-step instructions for common ciderpress tasks.
 ---
 
 # Guides
 
-Task-oriented walkthroughs for deploying and configuring your zpress site.
+Task-oriented walkthroughs for deploying and configuring your ciderpress site.
 
 ## Available guides
 

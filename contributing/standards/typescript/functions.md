@@ -142,12 +142,12 @@ function buildScriptCommand(script: Script, args: readonly string[]): string {
 
 ```ts
 // Pure business logic separated from side effects
-function validateConfig(config: ZpressConfig): ValidationResult {
+function validateConfig(config: CiderpressConfig): ValidationResult {
   // ...
 }
 
 // Side effects isolated in handler
-async function handleInit(config: ZpressConfig) {
+async function handleInit(config: CiderpressConfig) {
   const validation = validateConfig(config) // Pure
 
   if (!validation.ok) {

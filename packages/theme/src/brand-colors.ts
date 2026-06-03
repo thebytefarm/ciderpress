@@ -44,7 +44,7 @@ export interface BrandPalette {
  * Pulled from each theme's default variant — brand colors stay constant
  * across variants for built-in themes, so picking `defaultVariant` is
  * unambiguous. Kept under the historical name so existing consumers
- * (`@zpress/core/banner`, CLI banner, asset scripts) continue to compile
+ * (`@ciderpress/core/banner`, CLI banner, asset scripts) continue to compile
  * unchanged.
  */
 export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Object.freeze(

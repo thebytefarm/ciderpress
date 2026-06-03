@@ -1,23 +1,23 @@
 {
-  "name": "@zpress/kit",
+  "name": "ciderpress",
   "version": "1.0.0-rc.0",
   "description": "Documentation framework powered by Rspress with a config-driven information architecture",
   "keywords": [
     "docs",
     "documentation",
     "rspress",
-    "zpress"
+    "ciderpress"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/zpress#readme",
-  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/ciderpress#readme",
+  "bugs": "https://github.com/thebytefarm/ciderpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joggrdocs/zpress.git",
-    "directory": "packages/zpress"
+    "url": "https://github.com/thebytefarm/ciderpress.git",
+    "directory": "packages/ciderpress"
   },
   "bin": {
-    "zpress": "./dist/cli.mjs"
+    "ciderpress": "./dist/cli.mjs"
   },
   "files": [
     "dist"
@@ -43,10 +43,10 @@
     "typecheck": "tsgo --noEmit"
   },
   "dependencies": {
-    "@zpress/cli": "workspace:*",
-    "@zpress/config": "workspace:*",
-    "@zpress/theme": "workspace:*",
-    "@zpress/ui": "workspace:*"
+    "@ciderpress/cli": "workspace:*",
+    "@ciderpress/config": "workspace:*",
+    "@ciderpress/theme": "workspace:*",
+    "@ciderpress/ui": "workspace:*"
   },
   "devDependencies": {
     "@rslib/core": "catalog:",

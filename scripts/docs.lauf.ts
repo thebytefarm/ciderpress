@@ -383,7 +383,7 @@ function countEntries(categories: readonly Category[]): number {
 
 // ── Rendering — shared ──────────────────────────────────────
 
-const mdxImport = "import { Icon, TechIconTable } from '@zpress/ui/theme'"
+const mdxImport = "import { Icon, TechIconTable } from '@ciderpress/ui/theme'"
 
 function frontmatter(title: string, description: string): string {
   return ['---', `title: ${title}`, `description: ${description}`, '---'].join('\n')
@@ -445,7 +445,7 @@ function renderOverview(): string {
     '',
     '# Icons',
     '',
-    'zpress uses [Iconify](https://iconify.design) for all icon rendering. Icons are resolved offline at build time — no external requests are made.',
+    'ciderpress uses [Iconify](https://iconify.design) for all icon rendering. Icons are resolved offline at build time — no external requests are made.',
     '',
     '## Format',
     '',
@@ -685,7 +685,7 @@ function renderTechOverview(allCategories: readonly Category[]): string {
     '',
     '# Technology Tags',
     '',
-    `Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. zpress ships with a curated map of **${totalCount} technologies** that auto-resolve to the correct icon and display label.`,
+    `Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. ciderpress ships with a curated map of **${totalCount} technologies** that auto-resolve to the correct icon and display label.`,
     '',
     '## How it works',
     '',

@@ -148,7 +148,7 @@
     ".agents",
     ".claude",
     ".vitepress",
-    ".zpress",
+    ".ciderpress",
     "**/*.d.ts",
     "packages/ui/src/head/js",
     "packages/ui/scripts"

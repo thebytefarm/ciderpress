@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Install zpress and create your first documentation site in minutes.
+description: Install ciderpress and create your first documentation site in minutes.
 ---
 
 # Quick Start
@@ -8,15 +8,15 @@ description: Install zpress and create your first documentation site in minutes.
 ## Install
 
 ```bash
-pnpm add @zpress/kit
+pnpm add ciderpress
 ```
 
 ## Initialize
 
-Run `zpress setup` for an interactive walkthrough, or create a `zpress.config.ts` manually at your repo root:
+Run `ciderpress setup` for an interactive walkthrough, or create a `ciderpress.config.ts` manually at your repo root:
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Project',
@@ -47,10 +47,10 @@ Every `.md` file matching the glob becomes a page under `/guides/`.
 
 ## Configure the site chrome
 
-Tell zpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA:
+Tell ciderpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA:
 
 ```ts
-// zpress.config.ts
+// ciderpress.config.ts
 export default defineConfig({
   // ...
   site: {
@@ -67,37 +67,37 @@ Every field is optional — pieces you don't configure render nothing rather tha
 ## Start the dev server
 
 ```bash
-zpress dev
+ciderpress dev
 ```
 
-This copies and processes your source markdown into the `.zpress/content/` build directory, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
+This copies and processes your source markdown into the `.ciderpress/content/` build directory, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
 
 ## Commands
 
 | Command           | Purpose                                           |
 | ----------------- | ------------------------------------------------- |
-| `zpress setup`    | Create a starter config and generate SVG assets   |
-| `zpress sync`     | Sync source files into `.zpress/content/`         |
-| `zpress dev`      | Start the dev server with live reload             |
-| `zpress build`    | Build the static site for production              |
-| `zpress serve`    | Preview the production build locally              |
-| `zpress check`    | Validate config and check for broken links        |
-| `zpress draft`    | Scaffold a new documentation file from a template |
-| `zpress clean`    | Remove build artifacts, synced content, and cache |
-| `zpress dump`     | Print the resolved site structure as JSON         |
-| `zpress generate` | Generate banner, logo, and icon SVG assets        |
+| `ciderpress setup`    | Create a starter config and generate SVG assets   |
+| `ciderpress sync`     | Sync source files into `.ciderpress/content/`         |
+| `ciderpress dev`      | Start the dev server with live reload             |
+| `ciderpress build`    | Build the static site for production              |
+| `ciderpress serve`    | Preview the production build locally              |
+| `ciderpress check`    | Validate config and check for broken links        |
+| `ciderpress draft`    | Scaffold a new documentation file from a template |
+| `ciderpress clean`    | Remove build artifacts, synced content, and cache |
+| `ciderpress dump`     | Print the resolved site structure as JSON         |
+| `ciderpress generate` | Generate banner, logo, and icon SVG assets        |
 
 ## Project structure
 
-After running `zpress dev`, the `.zpress/` directory is created:
+After running `ciderpress dev`, the `.ciderpress/` directory is created:
 
 ```
 your-repo/
 ├── docs/                       # Your source markdown
 │   ├── intro.md
 │   └── guides/
-├── zpress.config.ts         # Site configuration
-└── .zpress/                 # Generated — add to .gitignore
+├── ciderpress.config.ts         # Site configuration
+└── .ciderpress/                 # Generated — add to .gitignore
     ├── content/                # Synced pages
     │   └── .generated/         # sidebar.json, nav.json
     ├── public/                 # Static assets
@@ -105,9 +105,9 @@ your-repo/
     └── cache/                  # Build cache
 ```
 
-Add `.zpress/` to your `.gitignore`.
+Add `.ciderpress/` to your `.gitignore`.
 
 ## Next steps
 
 - [Content](/concepts/content) — learn how sections, pages, and navigation work
-- [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`
+- [Configuration reference](/reference/configuration) — complete field reference for `ciderpress.config.ts`

@@ -18,7 +18,7 @@
     "coverage",
     ".claude",
     ".vitepress",
-    ".zpress",
+    ".ciderpress",
     "**/*.d.ts",
     "packages/config/schemas/**"
   ]

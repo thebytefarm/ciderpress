@@ -2,87 +2,87 @@
  * Steps — vertical timeline stepper with numbered circles and connecting lines.
  */
 
-.zp-steps {
+.cp-steps {
   display: flex;
   flex-direction: column;
   padding: 0;
   margin: 16px 0;
 }
 
-.zp-step {
+.cp-step {
   display: flex;
   gap: 16px;
 }
 
-.zp-step__rail {
+.cp-step__rail {
   display: flex;
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
 }
 
-.zp-step__indicator {
+.cp-step__indicator {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 1px solid var(--zp-c-border);
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-1);
+  border: 1px solid var(--cp-c-border);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
   font-size: 12px;
   font-weight: 600;
   line-height: 1;
   flex-shrink: 0;
 }
 
-.zp-step__connector {
+.cp-step__connector {
   margin-top: 4px;
   margin-bottom: 4px;
   width: 2px;
   flex: 1;
-  background: var(--zp-c-border);
+  background: var(--cp-c-border);
   min-height: 16px;
 }
 
-.zp-step:last-child .zp-step__connector {
-  background: linear-gradient(to bottom, var(--zp-c-border) 50%, transparent);
+.cp-step:last-child .cp-step__connector {
+  background: linear-gradient(to bottom, var(--cp-c-border) 50%, transparent);
 }
 
-.zp-step__body {
+.cp-step__body {
   padding-bottom: 24px;
   min-width: 0;
   flex: 1;
 }
 
-.zp-step:last-child .zp-step__body {
+.cp-step:last-child .cp-step__body {
   padding-bottom: 0;
 }
 
-.zp-step__title {
+.cp-step__title {
   margin-top: 0 !important;
   font-size: 16px;
   font-weight: 600;
   line-height: 24px;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
 }
 
-h2.zp-step__title {
+h2.cp-step__title {
   font-size: 20px;
   line-height: 24px;
 }
 
-p.zp-step__title {
+p.cp-step__title {
   font-size: 14px;
   font-weight: 500;
   line-height: 24px;
 }
 
-.zp-step__content {
+.cp-step__content {
   margin-top: 8px;
 }
 
-.zp-step__content:empty {
+.cp-step__content:empty {
   display: none;
 }

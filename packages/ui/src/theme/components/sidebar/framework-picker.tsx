@@ -40,29 +40,29 @@ export function FrameworkPicker(props: FrameworkPickerProps): React.ReactElement
   const { label = 'Framework', current, mark, version, showCollapseToggle } = props
 
   return (
-    <div className="zp-fwpicker">
-      <div className="zp-fwpicker__head">
-        <span className="zp-fwpicker__label">{label}</span>
-        <div className="zp-fwpicker__head-right">
+    <div className="cp-fwpicker">
+      <div className="cp-fwpicker__head">
+        <span className="cp-fwpicker__label">{label}</span>
+        <div className="cp-fwpicker__head-right">
           {match(version)
             .with(undefined, () => null)
             .otherwise((v) => (
-              <span className="zp-fwpicker__version">{v}</span>
+              <span className="cp-fwpicker__version">{v}</span>
             ))}
           {match(showCollapseToggle)
             .with(true, () => <SidebarToggle />)
             .otherwise(() => null)}
         </div>
       </div>
-      <div className="zp-fwpicker__control">
+      <div className="cp-fwpicker__control">
         {match(mark)
           .with(undefined, () => null)
           .otherwise((m) => (
-            <span className="zp-fwpicker__mark">{m}</span>
+            <span className="cp-fwpicker__mark">{m}</span>
           ))}
-        <span className="zp-fwpicker__name">{current}</span>
+        <span className="cp-fwpicker__name">{current}</span>
         <svg
-          className="zp-fwpicker__chev"
+          className="cp-fwpicker__chev"
           width="14"
           height="14"
           viewBox="0 0 24 24"

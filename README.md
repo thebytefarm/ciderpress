@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="assets/banner.svg" alt="zpress" width="90%" />
+  <img src="assets/banner.svg" alt="ciderpress" width="90%" />
   <p><strong>Zero-effort, turnkey documentation sites for monorepos — just point it at your existing docs.</strong></p>
 
-<a href="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml"><img src="https://github.com/joggrdocs/zpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
-<a href="https://www.npmjs.com/package/@zpress/kit"><img src="https://img.shields.io/npm/v/@zpress/kit" alt="npm version" /></a>
-<a href="https://github.com/joggrdocs/zpress/blob/main/LICENSE"><img src="https://img.shields.io/github/license/joggrdocs/zpress" alt="License" /></a>
+<a href="https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml"><img src="https://github.com/thebytefarm/ciderpress/actions/workflows/ci.yml/badge.svg?branch=main" alt="CI" /></a>
+<a href="https://www.npmjs.com/package/ciderpress"><img src="https://img.shields.io/npm/v/ciderpress" alt="npm version" /></a>
+<a href="https://github.com/thebytefarm/ciderpress/blob/main/LICENSE"><img src="https://img.shields.io/github/license/thebytefarm/ciderpress" alt="License" /></a>
 
 </div>
 
@@ -18,7 +18,7 @@
 ## Install
 
 ```bash
-npm install @zpress/kit
+npm install ciderpress
 ```
 
 ## Usage
@@ -26,8 +26,8 @@ npm install @zpress/kit
 ### Define your docs
 
 ```ts
-// zpress.config.ts
-import { defineConfig } from '@zpress/kit'
+// ciderpress.config.ts
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'my-project',
@@ -59,14 +59,14 @@ export default defineConfig({
 ### Run it
 
 ```bash
-npx zpress dev       # start dev server with hot reload
-npx zpress build     # build for production
-npx zpress serve     # preview production build
+npx ciderpress dev       # start dev server with hot reload
+npx ciderpress build     # build for production
+npx ciderpress serve     # preview production build
 ```
 
-## Why `@zpress/kit` and not `zpress`?
+## Why `ciderpress` and not `ciderpress`?
 
-The package is published as `@zpress/kit` because npm's moniker rules are overly aggressive and ban names that are similar in any way to existing packages. We will fix once we get npm to allow us to push to that namespace. If you work at `npm` please feel free to help out :)
+The package is published as `ciderpress` because npm's moniker rules are overly aggressive and ban names that are similar in any way to existing packages. We will fix once we get npm to allow us to push to that namespace. If you work at `npm` please feel free to help out :)
 
 ## License
 

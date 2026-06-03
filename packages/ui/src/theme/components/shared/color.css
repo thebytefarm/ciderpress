@@ -2,55 +2,55 @@
  * Color — color swatch with click-to-copy.
  */
 
-.zp-color {
+.cp-color {
   display: inline-flex;
   align-items: center;
-  gap: var(--zp-s-8);
-  padding: var(--zp-s-4) var(--zp-s-10) var(--zp-s-4) var(--zp-s-4);
-  border: 1px solid var(--zp-c-border);
+  gap: var(--cp-s-8);
+  padding: var(--cp-s-4) var(--cp-s-10) var(--cp-s-4) var(--cp-s-4);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius-large);
-  background: var(--zp-c-bg);
+  background: var(--cp-c-bg);
   cursor: pointer;
-  font-family: var(--zp-font-family-base);
-  transition: border-color var(--zp-duration-base);
+  font-family: var(--cp-font-family-base);
+  transition: border-color var(--cp-duration-base);
 }
 
-.zp-color:hover {
-  border-color: var(--zp-c-brand-1);
+.cp-color:hover {
+  border-color: var(--cp-c-brand-1);
 }
 
-.zp-color:focus-visible {
-  border-color: var(--zp-c-brand-1);
-  outline: var(--zp-size-focus-ring) solid var(--zp-c-brand-1);
-  outline-offset: var(--zp-size-focus-ring-offset);
+.cp-color:focus-visible {
+  border-color: var(--cp-c-brand-1);
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
 }
 
-.zp-color__swatch {
+.cp-color__swatch {
   display: block;
-  width: var(--zp-size-swatch);
-  height: var(--zp-size-swatch);
+  width: var(--cp-size-swatch);
+  height: var(--cp-size-swatch);
   border-radius: var(--rp-radius);
-  border: 1px solid var(--zp-c-overlay-faint);
+  border: 1px solid var(--cp-c-overlay-faint);
   flex-shrink: 0;
 }
 
-.zp-color__info {
+.cp-color__info {
   display: flex;
   flex-direction: column;
   gap: 0;
   min-width: 0;
 }
 
-.zp-color__name {
-  font-size: var(--zp-fs-color-name);
+.cp-color__name {
+  font-size: var(--cp-fs-color-name);
   font-weight: 600;
-  color: var(--zp-c-text-1);
-  line-height: var(--zp-lh-tighter);
+  color: var(--cp-c-text-1);
+  line-height: var(--cp-lh-tighter);
 }
 
-.zp-color__value {
-  font-size: var(--zp-fs-color-value);
-  font-family: var(--zp-font-family-mono);
-  color: var(--zp-c-text-2);
-  line-height: var(--zp-lh-tighter);
+.cp-color__value {
+  font-size: var(--cp-fs-color-value);
+  font-family: var(--cp-font-family-mono);
+  color: var(--cp-c-text-2);
+  line-height: var(--cp-lh-tighter);
 }

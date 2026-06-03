@@ -1,9 +1,9 @@
 /**
- * Zod schemas for zpress configuration validation.
+ * Zod schemas for ciderpress configuration validation.
  *
  * Theme schemas (`themeColorsSchema`, `themeConfigSchema`) are imported from
- * `@zpress/theme` — that package owns the canonical theme surface; redefining
- * them here would create drift. Because `@zpress/theme` uses Zod v4, this file
+ * `@ciderpress/theme` — that package owns the canonical theme surface; redefining
+ * them here would create drift. Because `@ciderpress/theme` uses Zod v4, this file
  * also uses the Zod v4 entrypoint (`import { z } from 'zod'`). JSON Schema
  * generation in `packages/config/scripts/generate-schema.ts` uses Zod v4's
  * native `z.toJSONSchema()` accordingly.
@@ -17,7 +17,7 @@
  * lossy (...args: unknown[]) => unknown inference, preserving exact call signatures.
  */
 
-import { themeColorsSchema, themeConfigSchema, themeVariantSchema } from '@zpress/theme'
+import { themeColorsSchema, themeConfigSchema, themeVariantSchema } from '@ciderpress/theme'
 import { z } from 'zod'
 
 import type {
@@ -383,7 +383,7 @@ const footerConfigSchema = z
 //   1. `name` is a valid slug
 //   2. at least one of `variants.dark` / `variants.light` is present
 //   3. `defaultVariant`, when provided, points at a declared variant
-const zpressThemeInputSchema = z
+const ciderpressThemeInputSchema = z
   .object({
     name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, {
       message:
@@ -414,12 +414,12 @@ const zpressThemeInputSchema = z
     }
   )
 
-export const zpressConfigSchema = z
+export const ciderpressConfigSchema = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
-    themes: z.array(zpressThemeInputSchema).optional(),
+    themes: z.array(ciderpressThemeInputSchema).optional(),
     icon: iconIdSchema.optional(),
     logo: logoConfigSchema.optional(),
     tagline: z.string().optional(),

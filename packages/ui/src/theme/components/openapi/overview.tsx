@@ -49,11 +49,11 @@ export function OpenAPIOverview({ spec, markdown }: OpenAPIOverviewProps): React
   const tags = useMemo(() => collectTags(spec), [spec])
 
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <div className="zp-oas-overview__description">{d}</div>)
+    .with(P.nonNullable, (d) => <div className="cp-oas-overview__description">{d}</div>)
     .otherwise(() => null)
 
   return (
-    <div className="zp-oas-overview">
+    <div className="cp-oas-overview">
       {descEl}
       <ServerList servers={servers} />
       <AuthSchemes schemes={securitySchemes} />
@@ -119,19 +119,19 @@ function ServerList({
     .with(
       P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
       (s) => (
-        <div className="zp-oas-servers">
-          <div className="zp-oas-overview__section-title">Servers</div>
+        <div className="cp-oas-servers">
+          <div className="cp-oas-overview__section-title">Servers</div>
           {s.map((server) => {
             const url = String(server['url'] ?? '')
             const description = server['description'] as string | undefined
             const descEl = match(description)
               .with(P.nonNullable, (d) => (
-                <span className="zp-oas-server__description">{` — ${d}`}</span>
+                <span className="cp-oas-server__description">{` — ${d}`}</span>
               ))
               .otherwise(() => null)
             return (
-              <div key={url} className="zp-oas-server">
-                <span className="zp-oas-server__url">{url}</span>
+              <div key={url} className="cp-oas-server">
+                <span className="cp-oas-server__url">{url}</span>
                 {descEl}
               </div>
             )
@@ -159,13 +159,13 @@ function AuthSchemes({
     .with(
       P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
       (e) => (
-        <div className="zp-oas-auth-schemes">
-          <div className="zp-oas-overview__section-title">Authentication</div>
+        <div className="cp-oas-auth-schemes">
+          <div className="cp-oas-overview__section-title">Authentication</div>
           {e.map(([name, scheme]) => (
-            <div key={name} className="zp-oas-auth-scheme">
+            <div key={name} className="cp-oas-auth-scheme">
               <LockIcon />
-              <span className="zp-oas-auth-scheme__name">{name}</span>
-              <span className="zp-oas-auth-scheme__type">{String(scheme['type'] ?? '')}</span>
+              <span className="cp-oas-auth-scheme__name">{name}</span>
+              <span className="cp-oas-auth-scheme__type">{String(scheme['type'] ?? '')}</span>
             </div>
           ))}
         </div>
@@ -186,20 +186,20 @@ function TagGroups({ tags }: { readonly tags: readonly TagInfo[] }): React.React
     .with(
       P.when((t): t is readonly TagInfo[] => t.length > 0),
       (t) => (
-        <div className="zp-oas-tags">
-          <div className="zp-oas-overview__section-title">Operations</div>
+        <div className="cp-oas-tags">
+          <div className="cp-oas-overview__section-title">Operations</div>
           {t.map((tag) => {
             const descEl = match(tag.description)
               .with(
                 P.when((d): d is string => d.length > 0),
-                (d) => <div className="zp-oas-tag-group__description">{d}</div>
+                (d) => <div className="cp-oas-tag-group__description">{d}</div>
               )
               .otherwise(() => null)
             return (
-              <div key={tag.name} className="zp-oas-tag-group">
-                <div className="zp-oas-tag-group__header">
-                  <span className="zp-oas-tag-group__name">{tag.name}</span>
-                  <span className="zp-oas-tag-group__count">
+              <div key={tag.name} className="cp-oas-tag-group">
+                <div className="cp-oas-tag-group__header">
+                  <span className="cp-oas-tag-group__name">{tag.name}</span>
+                  <span className="cp-oas-tag-group__count">
                     {`${String(tag.operationCount)} operations`}
                   </span>
                 </div>

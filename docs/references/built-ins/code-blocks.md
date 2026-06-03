@@ -5,7 +5,7 @@ description: Syntax highlighting, line numbers, diffs, and other code block feat
 
 # Code Blocks
 
-zpress uses Rspress's built-in Shiki integration for compile-time syntax highlighting. All features below work in any `.md` or `.mdx` file with zero configuration.
+ciderpress uses Rspress's built-in Shiki integration for compile-time syntax highlighting. All features below work in any `.md` or `.mdx` file with zero configuration.
 
 ## Syntax highlighting
 
@@ -79,7 +79,7 @@ Highlight specific lines using curly-brace ranges in the meta:
 
 ````md
 ```ts {2,4-5}
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -92,7 +92,7 @@ export default defineConfig({
 **Output**
 
 ```ts {2,4-5}
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -107,7 +107,7 @@ Or use inline notation comments:
 
 ````md
 ```ts
-import { defineConfig } from '@zpress/kit' // [!code highlight]
+import { defineConfig } from 'ciderpress' // [!code highlight]
 
 export default defineConfig({
   title: 'My Docs', // [!code highlight]
@@ -118,7 +118,7 @@ export default defineConfig({
 **Output**
 
 ```ts
-import { defineConfig } from '@zpress/kit' // [!code highlight]
+import { defineConfig } from 'ciderpress' // [!code highlight]
 
 export default defineConfig({
   title: 'My Docs', // [!code highlight]
@@ -184,7 +184,7 @@ Dim everything except the focused lines:
 
 ````md
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs', // [!code focus]
@@ -197,7 +197,7 @@ export default defineConfig({
 **Output**
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs', // [!code focus]
@@ -251,8 +251,8 @@ All meta attributes can be combined:
 **Code**
 
 ````md
-```ts lineNumbers title="zpress.config.ts" {3-4}
-import { defineConfig } from '@zpress/kit'
+```ts lineNumbers title="ciderpress.config.ts" {3-4}
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -263,8 +263,8 @@ export default defineConfig({
 
 **Output**
 
-```ts lineNumbers title="zpress.config.ts" {3-4}
-import { defineConfig } from '@zpress/kit'
+```ts lineNumbers title="ciderpress.config.ts" {3-4}
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -312,7 +312,7 @@ Auto-generate install commands for npm, yarn, pnpm, bun, and deno. Requires an `
 ```mdx
 import { PackageManagerTabs } from 'rspress/theme'
 
-<PackageManagerTabs command="install @zpress/kit" />
+<PackageManagerTabs command="install ciderpress" />
 ```
 
 Or provide custom per-manager commands:

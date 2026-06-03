@@ -17,8 +17,8 @@ The `<Steps>` component creates a vertical timeline layout for sequential instru
 import { Steps, Step } from '@theme'
 
 <Steps>
-  <Step title="Install the package">Run `pnpm add @zpress/kit` to install zpress.</Step>
-  <Step title="Create a config file">Add a `zpress.config.ts` file to your project root.</Step>
+  <Step title="Install the package">Run `pnpm add ciderpress` to install ciderpress.</Step>
+  <Step title="Create a config file">Add a `ciderpress.config.ts` file to your project root.</Step>
   <Step title="Build your docs">Run `pnpm build` to generate your documentation site.</Step>
 </Steps>
 ```
@@ -26,8 +26,8 @@ import { Steps, Step } from '@theme'
 **Output**
 
 <Steps>
-  <Step title="Install the package">Run `pnpm add @zpress/kit` to install zpress.</Step>
-  <Step title="Create a config file">Add a `zpress.config.ts` file to your project root.</Step>
+  <Step title="Install the package">Run `pnpm add ciderpress` to install ciderpress.</Step>
+  <Step title="Create a config file">Add a `ciderpress.config.ts` file to your project root.</Step>
   <Step title="Build your docs">Run `pnpm build` to generate your documentation site.</Step>
 </Steps>
 
@@ -76,14 +76,14 @@ Steps can contain arbitrary MDX content, including code blocks.
   <Step title="Install dependencies">
 
 ```bash
-pnpm add @zpress/kit
+pnpm add ciderpress
 ```
 
   </Step>
   <Step title="Add your config">
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -103,14 +103,14 @@ export default defineConfig({
   <Step title="Install dependencies">
 
 ```bash
-pnpm add @zpress/kit
+pnpm add ciderpress
 ```
 
   </Step>
   <Step title="Add your config">
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',

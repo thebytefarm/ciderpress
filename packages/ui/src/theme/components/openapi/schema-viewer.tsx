@@ -49,7 +49,7 @@ export function SchemaViewer({
   const depthExceeded = depth >= MAX_DEPTH
 
   const nameEl = match(name)
-    .with(P.nonNullable, (n) => <span className="zp-oas-schema__name">{n}</span>)
+    .with(P.nonNullable, (n) => <span className="cp-oas-schema__name">{n}</span>)
     .otherwise(() => null)
 
   const enumEl = match(enumValues)
@@ -61,14 +61,14 @@ export function SchemaViewer({
 
   return match({ schemaType, oneOf, anyOf, depthExceeded })
     .with({ depthExceeded: true }, () => (
-      <div className="zp-oas-schema__row">
+      <div className="cp-oas-schema__row">
         {nameEl}
-        <span className="zp-oas-schema__type">{'...'}</span>
+        <span className="cp-oas-schema__type">{'...'}</span>
       </div>
     ))
     .with({ oneOf: P.nonNullable }, ({ oneOf: variants }) => (
       <>
-        <div className="zp-oas-schema__row">
+        <div className="cp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
@@ -78,7 +78,7 @@ export function SchemaViewer({
     ))
     .with({ anyOf: P.nonNullable }, ({ anyOf: variants }) => (
       <>
-        <div className="zp-oas-schema__row">
+        <div className="cp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
@@ -88,7 +88,7 @@ export function SchemaViewer({
     ))
     .with({ schemaType: 'object' }, () => (
       <>
-        <div className="zp-oas-schema__row">
+        <div className="cp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
@@ -98,7 +98,7 @@ export function SchemaViewer({
     ))
     .with({ schemaType: 'array' }, () => (
       <>
-        <div className="zp-oas-schema__row">
+        <div className="cp-oas-schema__row">
           {nameEl}
           <RequiredBadge show={isRequired} />
           <DescriptionText text={description} />
@@ -107,9 +107,9 @@ export function SchemaViewer({
       </>
     ))
     .otherwise(() => (
-      <div className="zp-oas-schema__row">
+      <div className="cp-oas-schema__row">
         {nameEl}
-        <span className="zp-oas-schema__type">{schemaType}</span>
+        <span className="cp-oas-schema__type">{schemaType}</span>
         <RequiredBadge show={isRequired} />
         {enumEl}
         <DescriptionText text={description} />
@@ -130,7 +130,7 @@ export function SchemaViewer({
  */
 function RequiredBadge({ show }: { readonly show: boolean }): React.ReactElement | null {
   return match(show)
-    .with(true, () => <span className="zp-oas-schema__required">required</span>)
+    .with(true, () => <span className="cp-oas-schema__required">required</span>)
     .otherwise(() => null)
 }
 
@@ -143,7 +143,7 @@ function RequiredBadge({ show }: { readonly show: boolean }): React.ReactElement
  */
 function EnumValues({ values }: { readonly values: readonly unknown[] }): React.ReactElement {
   return (
-    <span className="zp-oas-schema__enum">
+    <span className="cp-oas-schema__enum">
       {'enum: '}
       {values.map(String).join(', ')}
     </span>
@@ -163,7 +163,7 @@ function DescriptionText({
   readonly text: string | undefined
 }): React.ReactElement | null {
   return match(text)
-    .with(P.nonNullable, (t) => <span className="zp-oas-schema__description">{t}</span>)
+    .with(P.nonNullable, (t) => <span className="cp-oas-schema__description">{t}</span>)
     .otherwise(() => null)
 }
 
@@ -192,21 +192,21 @@ function ObjectProperties({
 
   return (
     <div
-      className="zp-oas-schema"
+      className="cp-oas-schema"
       data-expanded={match(expanded)
         .with(true, () => '' as string | null)
         .otherwise(() => null)}
     >
-      <button type="button" className="zp-oas-schema__trigger" onClick={handleToggle}>
-        <ChevronIcon className="zp-oas-schema__trigger-chevron" />
-        <span className="zp-oas-schema__type">{'object'}</span>
-        <span className="zp-oas-schema__description">
+      <button type="button" className="cp-oas-schema__trigger" onClick={handleToggle}>
+        <ChevronIcon className="cp-oas-schema__trigger-chevron" />
+        <span className="cp-oas-schema__type">{'object'}</span>
+        <span className="cp-oas-schema__description">
           {`{${String(propEntries.length)} properties}`}
         </span>
       </button>
       {match(expanded)
         .with(true, () => (
-          <div className="zp-oas-schema__indent">
+          <div className="cp-oas-schema__indent">
             {propEntries.map(([propName, propSchema]) => (
               <SchemaViewer
                 key={propName}
@@ -239,11 +239,11 @@ function ArrayItems({
 }): React.ReactElement {
   const items = (schema['items'] ?? {}) as Record<string, unknown>
   return (
-    <div className="zp-oas-schema">
-      <div className="zp-oas-schema__row">
-        <span className="zp-oas-schema__type">{'array of'}</span>
+    <div className="cp-oas-schema">
+      <div className="cp-oas-schema__row">
+        <span className="cp-oas-schema__type">{'array of'}</span>
       </div>
-      <div className="zp-oas-schema__indent">
+      <div className="cp-oas-schema__indent">
         <SchemaViewer schema={items} depth={depth + 1} />
       </div>
     </div>
@@ -267,11 +267,11 @@ function VariantSchemas({
   readonly depth: number
 }): React.ReactElement {
   return (
-    <div className="zp-oas-schema">
-      <div className="zp-oas-schema__row">
-        <span className="zp-oas-schema__type">{label}</span>
+    <div className="cp-oas-schema">
+      <div className="cp-oas-schema__row">
+        <span className="cp-oas-schema__type">{label}</span>
       </div>
-      <div className="zp-oas-schema__indent">
+      <div className="cp-oas-schema__indent">
         {variants.map((variant, idx) => (
           <SchemaViewer key={String(idx)} schema={variant} depth={depth + 1} />
         ))}

@@ -33,7 +33,7 @@ html:root {
 }
 
 html body {
-  background: var(--zp-c-bg);
+  background: var(--cp-c-bg);
 }
 
 /* ── Doc body rail ──────────────────────────────────────── */
@@ -42,18 +42,18 @@ html body {
    the box past the viewport edge). */
 html .rp-doc-layout__container {
   width: auto;
-  margin: 0 var(--zp-frame-gutter);
-  background: var(--zp-c-bg);
-  border-left: 1px solid var(--zp-c-border);
-  border-right: 1px solid var(--zp-c-border);
+  margin: 0 var(--cp-frame-gutter);
+  background: var(--cp-c-bg);
+  border-left: 1px solid var(--cp-c-border);
+  border-right: 1px solid var(--cp-c-border);
 }
 
 html .rp-doc-layout__menu {
   width: auto;
-  margin: 0 var(--zp-frame-gutter);
-  background: var(--zp-c-bg);
-  border-left: 1px solid var(--zp-c-border);
-  border-right: 1px solid var(--zp-c-border);
+  margin: 0 var(--cp-frame-gutter);
+  background: var(--cp-c-bg);
+  border-left: 1px solid var(--cp-c-border);
+  border-right: 1px solid var(--cp-c-border);
   /* Mobile-only menu drawer — on desktop it renders as an empty 1px-tall
      element, so a `border-bottom` here paints a duplicate hairline right
      beneath the topbar's own `border-bottom`. Drop it; the drawer when
@@ -62,15 +62,15 @@ html .rp-doc-layout__menu {
 
 /* ── Sidebar / content / outline dividers ──────────────── */
 html .rp-doc-layout__sidebar {
-  background: var(--zp-c-bg);
-  border-right: 1px solid var(--zp-c-border);
+  background: var(--cp-c-bg);
+  border-right: 1px solid var(--cp-c-border);
   /* Flex column so the bottom band can grow to fill remaining space
      (sidebar layout: nav items stack from the top, bottom band fills
      the rest). No vertical padding — the sticky top/bottom wrappers
      supply their own internal padding so they hug the actual edges
      (sticky `top: 0` / `bottom: 0` would otherwise sit inside the
      padding box and leave a "see-through" gap above/below). The
-     `:first-child:not(.zp-sidebar-top)` rule below restores top
+     `:first-child:not(.cp-sidebar-top)` rule below restores top
      breathing room for nav items when no above-links are configured. */
   display: flex;
   flex-direction: column;
@@ -99,12 +99,12 @@ html .rp-doc-layout__sidebar::-webkit-scrollbar {
  * the bottom). When neither is configured, the sidebar scrolls cleanly
  * with no empty bands.
  * ────────────────────────────────────────────────────────── */
-html .zp-sidebar-top {
+html .cp-sidebar-top {
   position: sticky;
   top: 0;
   z-index: 2;
-  background: var(--zp-c-bg);
-  border-bottom: 1px solid var(--zp-c-divider);
+  background: var(--cp-c-bg);
+  border-bottom: 1px solid var(--cp-c-divider);
   /* Edge-to-edge horizontal extension over the sidebar's 8px padding
      so the divider hairline spans the full sidebar width. */
   margin: 0 -8px;
@@ -113,11 +113,11 @@ html .zp-sidebar-top {
 
 /* Without a top wrapper, the first nav item butts right against the
    topbar's border-bottom — give it breathing room. */
-html .rp-doc-layout__sidebar > :first-child:not(.zp-sidebar-top) {
+html .rp-doc-layout__sidebar > :first-child:not(.cp-sidebar-top) {
   margin-top: 12px;
 }
 
-html .zp-sidebar-bottom {
+html .cp-sidebar-bottom {
   /* Grow to fill the remaining sidebar space so the nav tree stacks
      from the top and this band occupies everything below it. When the
      nav tree is short, the band is tall and its content (promo +
@@ -133,8 +133,8 @@ html .zp-sidebar-bottom {
   position: sticky;
   bottom: 0;
   z-index: 3;
-  background: var(--zp-c-bg);
-  border-top: 1px solid var(--zp-c-divider);
+  background: var(--cp-c-bg);
+  border-top: 1px solid var(--cp-c-divider);
   /* Negative left/right margins extend the band edge-to-edge over the
      sidebar's horizontal padding so the divider hairline (and the
      band's bg) run flush to the sidebar's right border, covering any
@@ -144,21 +144,21 @@ html .zp-sidebar-bottom {
 }
 
 html .rp-doc-layout__outline {
-  background: var(--zp-c-bg);
-  border-left: 1px solid var(--zp-c-border);
+  background: var(--cp-c-bg);
+  border-left: 1px solid var(--cp-c-border);
   box-shadow: none;
   padding: 24px 16px;
 }
 
 html .rp-doc-layout__doc {
-  background: var(--zp-c-bg);
+  background: var(--cp-c-bg);
 }
 
 /* Cap the prose reading width INSIDE the doc-container — sidebar and
    outline stay pinned to the rail edges; the gutter lives here as
    centered whitespace around the article body. */
 html .rp-doc-layout__doc-container {
-  max-width: var(--zp-content-reading-max, 1000px);
+  max-width: var(--cp-content-reading-max, 1000px);
   margin: 0 auto;
 }
 
@@ -183,8 +183,8 @@ html .rp-aside a {
    No vertical hairlines on the navbar — only the body grid has them. */
 html .rspress-nav,
 html .rp-nav {
-  background: var(--zp-c-bg);
-  border-bottom: 1px solid var(--zp-c-border);
+  background: var(--cp-c-bg);
+  border-bottom: 1px solid var(--cp-c-border);
   padding: 0 16px;
   backdrop-filter: blur(8px);
 }
@@ -226,19 +226,19 @@ html .rp-nav-screen-menu-item--active {
 
 /* ── Landing page navbar — wraps the rail with vertical hairlines so
    the lines run continuously from the top of the navbar to the bottom
-   of the footer. Detected by the presence of `.zp-page-rail` in the
+   of the footer. Detected by the presence of `.cp-page-rail` in the
    document. ───────────────────────────────────────────── */
-html body:has(.zp-page-rail) .rspress-nav,
-html body:has(.zp-page-rail) .rp-nav {
-  border-left: 1px solid var(--zp-c-border);
-  border-right: 1px solid var(--zp-c-border);
-  margin: 0 var(--zp-frame-gutter);
-  max-width: var(--zp-landing-max-width);
+html body:has(.cp-page-rail) .rspress-nav,
+html body:has(.cp-page-rail) .rp-nav {
+  border-left: 1px solid var(--cp-c-border);
+  border-right: 1px solid var(--cp-c-border);
+  margin: 0 var(--cp-frame-gutter);
+  max-width: var(--cp-landing-max-width);
 }
 
 @media (min-width: 1248px) {
-  html body:has(.zp-page-rail) .rspress-nav,
-  html body:has(.zp-page-rail) .rp-nav {
+  html body:has(.cp-page-rail) .rspress-nav,
+  html body:has(.cp-page-rail) .rp-nav {
     margin: 0 auto;
   }
 }
@@ -246,9 +246,9 @@ html body:has(.zp-page-rail) .rp-nav {
 /* ── Footer ────────────────────────────────────────────── */
 /* Footer inherits the page background — only the hairline at the top
    separates it from the content above. */
-html .zp-site-footer {
+html .cp-site-footer {
   background: transparent;
-  border-top: 1px solid var(--zp-c-border);
+  border-top: 1px solid var(--cp-c-border);
 }
 
 /* The docs rail keeps its 12px frame gutter at all viewport widths.
