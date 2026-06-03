@@ -613,9 +613,9 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
       return supported[0] || 'dark';
     })();
     var d = document.documentElement;
-    d.dataset.zpTheme = name;
-    d.dataset.zpVariant = variant;
-    d.dataset.zpVariants = supported.join(' ');
+    d.dataset.cpTheme = name;
+    d.dataset.cpVariant = variant;
+    d.dataset.cpVariants = supported.join(' ');
     if (variant === 'dark') {
       d.classList.add('rp-dark', 'dark');
       d.dataset.dark = 'true';

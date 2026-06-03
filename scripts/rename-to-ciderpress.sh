@@ -37,11 +37,12 @@ run() {
 # zpress            -> ciderpress       (lowercase brand)
 # --zp-             -> --cp-            (CSS custom properties)
 # zp-               -> cp-              (CSS class prefixes)
+# zp<UPPER>         -> cp<UPPER>        (camelCase identifiers like dataset.zpReady)
 
 # Pattern used to grep target files. Includes bare lowercase `zpress`
 # (case-sensitive) to catch files like .gitignore that mention .zpress/
 # without any other token.
-TARGETS='zpress|Zpress|ZPRESS_|joggrdocs/|--zp-|zp-'
+TARGETS='zpress|Zpress|ZPRESS_|joggrdocs/|--zp-|zp-|zp[A-Z]'
 
 # ----------------------------------------------------------------------
 # 1. Build the file list — tracked files, text-relevant types.
@@ -94,6 +95,7 @@ else
       -e 's|zpress|ciderpress|g' \
       -e 's|--zp-|--cp-|g' \
       -e 's|zp-|cp-|g' \
+      -e 's|zp\([A-Z]\)|cp\1|g' \
       "$f"
   done < "$TARGET_FILES"
 fi

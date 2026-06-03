@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import './sidebar-toggle.css'
 
 const STORAGE_KEY = 'ciderpress-sidebar-collapsed'
-const HTML_ATTR = 'zpSidebarCollapsed'
+const HTML_ATTR = 'cpSidebarCollapsed'
 
 /**
  * SidebarToggle — small icon button in the topbar to collapse/expand the

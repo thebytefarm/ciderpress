@@ -186,8 +186,8 @@ function optionClassName(isActive: boolean): string {
  */
 function applyTheme(theme: ThemeOption): void {
   const html = document.documentElement
-  html.dataset.zpTheme = theme.name
-  html.dataset.zpVariants = theme.variants.join(' ')
+  html.dataset.cpTheme = theme.name
+  html.dataset.cpVariants = theme.variants.join(' ')
   try {
     localStorage.setItem('ciderpress-theme', theme.name)
   } catch {
@@ -197,7 +197,7 @@ function applyTheme(theme: ThemeOption): void {
   const currentVariant = readCurrentVariant(html)
   const nextVariant = resolveNextVariant(currentVariant, theme)
 
-  html.dataset.zpVariant = nextVariant
+  html.dataset.cpVariant = nextVariant
   if (nextVariant === 'dark') {
     html.classList.add('rp-dark', 'dark')
     html.dataset.dark = 'true'
@@ -243,7 +243,7 @@ function resolveNextVariant(current: Variant | null, theme: ThemeOption): Varian
  * @returns Current variant or `null`
  */
 function readCurrentVariant(html: HTMLElement): Variant | null {
-  const raw = html.dataset.zpVariant
+  const raw = html.dataset.cpVariant
   if (raw === 'dark' || raw === 'light') {
     return raw
   }

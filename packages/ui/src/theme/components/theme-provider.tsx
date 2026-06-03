@@ -107,10 +107,10 @@ const COLOR_VAR_MAP: Readonly<Record<ThemeColorKey, readonly string[]>> = Object
     (Object.keys(THEME_COLOR_TOKEN_PATHS) as readonly ThemeColorKey[]).map((key) => {
       const tokenPath = THEME_COLOR_TOKEN_PATHS[key]
       const legacy = LEGACY_RP_VARS[key]
-      const zpVar = match(tokenPath)
+      const cpVar = match(tokenPath)
         .with(P.nullish, () => [] as readonly string[])
         .otherwise((path) => [TOKEN_TO_CSS_VAR[path]] as readonly string[])
-      return [key, [...zpVar, ...legacy]] as const
+      return [key, [...cpVar, ...legacy]] as const
     })
   ) as Record<ThemeColorKey, readonly string[]>
 )
@@ -174,15 +174,15 @@ export function ThemeProvider(): React.ReactElement | null {
     const hasDarkColors = Object.keys(darkColors).length > 0
 
     // 1. Set theme attribute
-    html.dataset.zpTheme = themeName
+    html.dataset.cpTheme = themeName
 
     // 2. Set supported variants — CSS hides the appearance toggle for
     //    themes that only declare one variant.
     const variants = VARIANTS_BY_THEME[themeName]
     if (variants) {
-      html.dataset.zpVariants = variants
+      html.dataset.cpVariants = variants
     } else {
-      html.dataset.zpVariants = 'dark'
+      html.dataset.cpVariants = 'dark'
     }
 
     // 3. Apply the resolved variant — both as `data-cp-variant` (our
@@ -216,7 +216,7 @@ export function ThemeProvider(): React.ReactElement | null {
       const nextVariant = match(nowDark)
         .with(true, (): ThemeVariant => 'dark')
         .otherwise((): ThemeVariant => 'light')
-      if (html.dataset.zpVariant === nextVariant) {
+      if (html.dataset.cpVariant === nextVariant) {
         return
       }
       if (!supportedSet.has(nextVariant)) {
@@ -225,9 +225,9 @@ export function ThemeProvider(): React.ReactElement | null {
         // do NOT persist the illegal flip.
         //
         // The classList mutation below re-fires this observer. The
-        // re-entrant pass hits the `dataset.zpVariant === nextVariant`
+        // re-entrant pass hits the `dataset.cpVariant === nextVariant`
         // early return above — safe, just one extra callback.
-        if (html.dataset.zpVariant === 'dark') {
+        if (html.dataset.cpVariant === 'dark') {
           html.classList.add('rp-dark', 'dark')
           html.dataset.dark = 'true'
         } else {
@@ -236,7 +236,7 @@ export function ThemeProvider(): React.ReactElement | null {
         }
         return
       }
-      html.dataset.zpVariant = nextVariant
+      html.dataset.cpVariant = nextVariant
       persistVariant(nextVariant)
       clearColorOverrides(html)
       if (hasColors) {
@@ -333,7 +333,7 @@ function resolveActiveVariant(params: {
  * @param variant - Variant to apply
  */
 function applyVariant(html: HTMLElement, variant: ThemeVariant): void {
-  html.dataset.zpVariant = variant
+  html.dataset.cpVariant = variant
   if (variant === 'dark') {
     html.classList.add('rp-dark', 'dark')
     html.dataset.dark = 'true'
@@ -592,10 +592,10 @@ function getIsomorphicEffect(): typeof useLayoutEffect {
  */
 function clearDotsInterval(): void {
   const g = globalThis as Record<string, unknown>
-  const dotsInterval = g.__zpDotsInterval as ReturnType<typeof setInterval> | undefined
+  const dotsInterval = g.__cpDotsInterval as ReturnType<typeof setInterval> | undefined
   if (dotsInterval !== undefined) {
     clearInterval(dotsInterval)
-    delete g.__zpDotsInterval
+    delete g.__cpDotsInterval
   }
 }
 
@@ -618,7 +618,7 @@ function dismissLoader(html: HTMLElement): () => void {
   }, LOADER_MIN_DISPLAY_MS)
 
   const removeTimer = setTimeout(() => {
-    html.dataset.zpReady = 'true'
+    html.dataset.cpReady = 'true'
     html.classList.remove('cp-loader-fade')
     clearDotsInterval()
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)

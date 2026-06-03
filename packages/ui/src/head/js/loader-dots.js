@@ -11,9 +11,9 @@
 ;(function () {
   var frames = ['loading', 'loading.', 'loading..', 'loading...']
   var idx = 0
-  document.documentElement.dataset.zpLoaderText = frames[0]
-  window.__zpDotsInterval = setInterval(function () {
+  document.documentElement.dataset.cpLoaderText = frames[0]
+  window.__cpDotsInterval = setInterval(function () {
     idx = (idx + 1) % 4
-    document.documentElement.dataset.zpLoaderText = frames[idx]
+    document.documentElement.dataset.cpLoaderText = frames[idx]
   }, 300)
 })()

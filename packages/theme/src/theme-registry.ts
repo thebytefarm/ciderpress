@@ -882,9 +882,9 @@ function renderRpDeclaration(cssVar: string, tokens: CiderpressTokens): string {
  * @returns Multi-line CSS body (no surrounding braces)
  */
 function renderDeclarationBody(tokens: CiderpressTokens): string {
-  const zpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
+  const cpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
   const rpLines = RSPRESS_COMPAT_VAR_NAMES.map((name) => renderRpDeclaration(name, tokens))
-  return [...zpLines, ...rpLines].join('\n')
+  return [...cpLines, ...rpLines].join('\n')
 }
 
 /**
