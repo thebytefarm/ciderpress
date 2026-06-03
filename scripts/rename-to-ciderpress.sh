@@ -76,6 +76,9 @@ else
   while IFS= read -r f; do
     [ -z "$f" ] && continue
     [ -f "$f" ] || continue
+    # Skip symlinks — sed -i '' cannot edit them. Their targets are
+    # processed separately if also tracked.
+    [ -L "$f" ] && continue
     sed -i '' \
       -e 's|@zpress/kit|ciderpress|g' \
       -e 's|@zpress/|@ciderpress/|g' \
