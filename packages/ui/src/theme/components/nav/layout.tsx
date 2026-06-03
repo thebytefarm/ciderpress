@@ -14,7 +14,7 @@ import { SiteFooter } from '../footer/site-footer'
 import { SidebarLinks } from '../sidebar/sidebar-links'
 import { SidebarPromo } from '../sidebar/sidebar-promo'
 import { SidebarToggle } from '../sidebar/sidebar-toggle'
-import { BranchTag } from './branch-tag'
+import { FloatingBranchIndicator } from './floating-branch-indicator'
 import { MobileNavCTA } from './mobile-nav-cta'
 import { TopbarCTA } from './topbar-cta'
 import { VersionChip } from './version-chip'
@@ -78,7 +78,6 @@ export function Layout(): React.ReactElement {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {sidebarToggle}
         {versionChip}
-        <BranchTag />
         <VscodeTag />
       </div>
     ))
@@ -86,7 +85,6 @@ export function Layout(): React.ReactElement {
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
         {sidebarToggle}
         {versionChip}
-        <BranchTag />
       </div>
     ))
 
@@ -162,15 +160,18 @@ export function Layout(): React.ReactElement {
   )
 
   return (
-    <OriginalLayout
-      top={announcementSlot}
-      beforeNavMenu={navSlot}
-      afterNavMenu={afterNavSlot}
-      beforeSidebar={beforeSidebar}
-      afterSidebar={afterSidebar}
-      afterDoc={afterDocSlot}
-      bottom={bottomSlot}
-    />
+    <>
+      <OriginalLayout
+        top={announcementSlot}
+        beforeNavMenu={navSlot}
+        afterNavMenu={afterNavSlot}
+        beforeSidebar={beforeSidebar}
+        afterSidebar={afterSidebar}
+        afterDoc={afterDocSlot}
+        bottom={bottomSlot}
+      />
+      <FloatingBranchIndicator />
+    </>
   )
 }
 

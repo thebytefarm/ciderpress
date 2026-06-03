@@ -185,7 +185,7 @@ html .rspress-nav,
 html .rp-nav {
   background: var(--cp-c-bg);
   border-bottom: 1px solid var(--cp-c-border);
-  padding: 0 16px;
+  padding: 0 8px;
   backdrop-filter: blur(8px);
 }
 
