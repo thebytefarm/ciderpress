@@ -18,7 +18,6 @@
   z-index: var(--cp-header-z, 50);
   width: 100%;
   background: var(--cp-header-bg, var(--cp-c-bg));
-  border-bottom: 1px solid var(--cp-header-border, var(--cp-c-border));
   backdrop-filter: blur(8px);
 }
 
@@ -29,6 +28,11 @@
   height: var(--cp-header-height, 56px);
   padding: 0 var(--cp-header-pad-x, 16px);
   margin: 0 auto;
+  /* Border lives on the inner so it stays aligned with the constrained
+     container, not the full viewport. Docs pages keep the bottom edge
+     (full-width inner). Landing also picks up left + right edges to
+     match `.cp-page-rail`'s box treatment. */
+  border-bottom: 1px solid var(--cp-header-border, var(--cp-c-border));
   /* Allow `.cp-nav-menu__overflow-popover` to escape vertically; the
      CiderpressNavMenu owns horizontal overflow via its own measure +
      collapse logic. */
@@ -43,7 +47,9 @@
 .cp-header--landing .cp-header-inner {
   max-width: var(--cp-landing-max-width, 1200px);
   margin: 0 var(--cp-frame-gutter);
-  padding: 0;
+  padding: 0 16px;
+  border-left: 1px solid var(--cp-header-border, var(--cp-c-border));
+  border-right: 1px solid var(--cp-header-border, var(--cp-c-border));
 }
 
 @media (min-width: 1248px) {
@@ -71,6 +77,16 @@
   width: auto;
 }
 
+/* `.cp-sidebar-toggle` ships with `position: absolute; left: 16px` so it
+   pins to the far-left of its container — fine inside Rspress's own
+   `.rp-nav`, but inside our header it overlaps the logo. Restore inline
+   flex positioning so it flows alongside the other items. */
+.cp-header-inner .cp-sidebar-toggle {
+  position: static;
+  transform: none;
+  margin: 0;
+}
+
 /* Wrapper that grows to claim every pixel between the search button
    and the right-aligned icon cluster. `CiderpressNavMenu` inside reads
    `wrapper.clientWidth` and decides how many items can fit. */
@@ -94,7 +110,8 @@
   .cp-header-inner > .cp-nav-social,
   .cp-header-inner > .cp-topbar-cta,
   .cp-header-inner > .rp-switch-appearance,
-  .cp-header-inner > .cp-theme-switcher {
+  .cp-header-inner > .cp-theme-switcher,
+  .cp-header-inner > .cp-sidebar-toggle {
     display: none;
   }
 }
