@@ -1,9 +1,11 @@
-import { SocialLinks } from '@rspress/core/theme-original'
+import { useSite } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
+import { readSocialLinks } from '../../lib/read-social-links'
 import { safeUrl } from '../../lib/safe-url.ts'
+import { CiderpressNavSocialLinks } from '../nav/ciderpress-nav-social-links'
 import { ThemeSwitcher } from '../nav/theme-switcher'
 
 import './site-footer.css'
@@ -25,6 +27,8 @@ declare const __CIDERPRESS_THEME_SWITCHER__: boolean
  */
 export function SiteFooter(): React.ReactElement | null {
   const { ciderpressFooter, site } = useCiderpress()
+  const { site: rspressSite } = useSite()
+  const socialLinks = readSocialLinks(rspressSite)
   const { footer: siteFooter } = site ?? {}
   const { message, copyright, socials } = ciderpressFooter ?? {}
   const { columns, tagline, brandMark } = siteFooter ?? {}
@@ -41,23 +45,28 @@ export function SiteFooter(): React.ReactElement | null {
   }
 
   const resolvedColumns = columns ?? []
-  const resolvedBrandMark = brandMark ?? 'Z'
 
   return (
     <footer className="cp-site-footer">
       <div className="cp-site-footer__inner">
         <div className="cp-site-footer__grid">
           <div className="cp-site-footer__brand">
-            <div className="cp-site-footer__brand-mark">{resolvedBrandMark}</div>
+            <div className="cp-site-footer__brand-mark">
+              {match(brandMark)
+                .with(undefined, () => (
+                  <img src="/icon.svg" alt="" className="cp-site-footer__brand-icon" />
+                ))
+                .otherwise((mark) => mark)}
+            </div>
             {match(message)
               .with(undefined, () => null)
               .otherwise((msg) => (
                 <p className="cp-site-footer__message">{msg}</p>
               ))}
-            {match(socials === true)
+            {match(socials === true && socialLinks.length > 0)
               .with(true, () => (
                 <div className="cp-site-footer__socials">
-                  <SocialLinks />
+                  <CiderpressNavSocialLinks links={socialLinks} />
                 </div>
               ))
               .otherwise(() => null)}

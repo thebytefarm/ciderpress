@@ -19,10 +19,11 @@ const DEFAULT_VARIANT_ORDER: readonly ThemeVariant[] = ['dark', 'light'] as cons
 /**
  * Name of the framework's default theme — used by `renderThemeCss` to
  * decide which theme also emits the `:root { ... }` FOUC fallback. Kept
- * in lockstep with `BUILT_IN_THEMES.default` and the build-time fallback
- * in `packages/ui/src/config.ts`.
+ * in lockstep with `BUILT_IN_THEMES.honeycrisp` and the build-time
+ * fallback in `packages/ui/src/config.ts`. The legacy `'default'` slug
+ * aliases to `'honeycrisp'` via `THEME_ALIASES` in `definitions.ts`.
  */
-const FOUC_ROOT_THEME_NAME = 'default' as const
+const FOUC_ROOT_THEME_NAME = 'honeycrisp' as const
 
 /**
  * Envelope schema for `defineTheme` input. Validates the *shape* — name,
@@ -87,20 +88,29 @@ interface RawBrandPalette {
  * brand surface so `RSPRESS_COMPAT_MAP` can pick them up by token path.
  */
 const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Object.freeze({
-  default: {
-    primary: '#d97706',
-    hover: '#b45309',
-    active: '#92400e',
+  honeycrisp: {
+    primary: '#dc2626',
+    hover: '#b91c1c',
+    active: '#7f1d1d',
     fg: '#ffffff',
-    soft: 'rgba(217, 119, 6, 0.14)',
-    light: '#f59e0b',
-    lighter: '#fbbf24',
+    soft: 'rgba(220, 38, 38, 0.14)',
+    light: '#f87171',
+    lighter: '#fca5a5',
+  },
+  grannysmith: {
+    primary: '#65a30d',
+    hover: '#4d7c0f',
+    active: '#365314',
+    fg: '#ffffff',
+    soft: 'rgba(101, 163, 13, 0.14)',
+    light: '#a3e635',
+    lighter: '#bef264',
   },
   midnight: {
     primary: '#60a5fa',
     hover: '#3b82f6',
     active: '#2563eb',
-    fg: '#0a0a0a',
+    fg: '#050505',
     soft: 'rgba(96, 165, 250, 0.14)',
     light: '#93c5fd',
     lighter: '#bfdbfe',
@@ -345,9 +355,9 @@ const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
 const RSPRESS_COMPAT_VAR_NAMES: readonly string[] = Object.freeze(Object.keys(RSPRESS_COMPAT_MAP))
 
 /**
- * Shared OpenAPI / OAS badge palette — light-mode values from the
- * `default` theme. Midnight and arcade override the entire set via
- * their own constants.
+ * Shared OpenAPI / OAS badge palette — semantic colors shared across
+ * the apple-named light/dark themes (`honeycrisp`, `grannysmith`).
+ * Midnight and arcade override the entire set via their own constants.
  */
 const SHARED_OAS_COLORS_BASE = {
   get: '#16a34a',
@@ -725,7 +735,7 @@ export interface CiderpressThemeInput {
  *
  * @example
  * const myTheme = defineTheme({
- *   name: 'sunset',
+ *   name: 'company-brand',
  *   variants: {
  *     dark: { ...allTokens },
  *   },
@@ -764,9 +774,10 @@ export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
  * order is fixed by `TOKEN_TO_CSS_VAR` (then `RSPRESS_COMPAT_MAP`) so the
  * output is byte-deterministic given the same input.
  *
- * The default theme additionally emits a `:root { ... }` FOUC block that
- * mirrors its default variant — the browser applies it before JS hydrates
- * the `data-cp-*` attributes on `<html>`.
+ * The FOUC-root theme (`FOUC_ROOT_THEME_NAME` — currently `'honeycrisp'`)
+ * additionally emits a `:root { ... }` block that mirrors its default
+ * variant — the browser applies it before JS hydrates the `data-cp-*`
+ * attributes on `<html>`.
  *
  * @param theme - Theme to render
  * @returns CSS source containing one block per variant
@@ -776,25 +787,36 @@ export function themeToCss(theme: CiderpressTheme): string {
 }
 
 /**
- * The three first-party themes shipped with ciderpress.
+ * The four first-party themes shipped with ciderpress.
  *
- *  - `default` is the brand-purple theme and ships both `dark` and
- *    `light` variants. The sun/moon toggle swaps between them.
+ *  - `honeycrisp` is the canonical brand — apple-red palette, ships both
+ *    `dark` and `light` variants. The sun/moon toggle swaps between them.
+ *    The legacy slug `'default'` aliases to this theme via
+ *    `THEME_ALIASES` in `definitions.ts`.
+ *  - `grannysmith` is the green dev-tool-native counterpart — both
+ *    variants supported.
  *  - `midnight` is an opinionated near-black blue theme — dark only.
  *  - `arcade` is a neon green retro theme — dark only.
  *
- * Built-in token trees are lifted from
- * `packages/ui/src/theme/styles/themes/*.css` plus
- * `packages/ui/src/theme/styles/overrides/tokens.css`. The registry is
- * the single source of truth from this point forward — generated CSS is
- * produced by `packages/ui/scripts/generate-theme-css.mjs`.
+ * Built-in token trees and the generated CSS at
+ * `packages/ui/src/theme/styles/themes/*.css` are produced by
+ * `packages/ui/scripts/generate-theme-css.mjs` — the registry below is
+ * the single source of truth.
  */
 export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>> = Object.freeze({
-  default: defineTheme({
-    name: 'default',
+  honeycrisp: defineTheme({
+    name: 'honeycrisp',
     variants: {
-      dark: buildDefaultDarkTokens(),
-      light: buildDefaultLightTokens(),
+      dark: buildHoneycrispDarkTokens(),
+      light: buildHoneycrispLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
+  grannysmith: defineTheme({
+    name: 'grannysmith',
+    variants: {
+      dark: buildGrannysmithDarkTokens(),
+      light: buildGrannysmithLightTokens(),
     },
     defaultVariant: 'dark',
   }),
@@ -1053,14 +1075,14 @@ function freezeChildThenReturnParent<T>(parent: T, child: unknown): T {
 }
 
 /**
- * Build the `light` variant of the `default` theme — bright surfaces
- * with the brand-purple palette.
+ * Build the `light` variant of the `honeycrisp` theme — bright surfaces
+ * paired with the apple-red brand palette (`#dc2626`).
  *
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
-function buildDefaultLightTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.default
+function buildHoneycrispLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.honeycrisp
   return {
     colors: {
       brand: {
@@ -1105,9 +1127,9 @@ function buildDefaultLightTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#b45309',
-          hoverBg: '#d97706',
-          activeBg: '#92400e',
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
           text: '#ffffff',
         },
       },
@@ -1136,7 +1158,7 @@ function buildDefaultLightTokens(): ParsedTokens {
 }
 
 /**
- * Build the `dark` variant of the `default` theme — same brand-purple
+ * Build the `dark` variant of the `honeycrisp` theme — same brand-apple-red
  * palette as the light variant, paired with dark surfaces and inverted
  * text. This is the variant ciderpress renders by default (the framework
  * treats dark as its baseline aesthetic).
@@ -1144,8 +1166,8 @@ function buildDefaultLightTokens(): ParsedTokens {
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
-function buildDefaultDarkTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.default
+function buildHoneycrispDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.honeycrisp
   return {
     colors: {
       brand: {
@@ -1190,9 +1212,9 @@ function buildDefaultDarkTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#d97706',
-          hoverBg: '#f59e0b',
-          activeBg: '#b45309',
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
           text: '#ffffff',
         },
       },
@@ -1221,8 +1243,177 @@ function buildDefaultDarkTokens(): ParsedTokens {
 }
 
 /**
- * Build the `midnight` theme token tree from the CSS at
- * `packages/ui/src/theme/styles/themes/midnight.css`.
+ * Build the `light` variant of the `grannysmith` theme — bright surfaces
+ * with the brand-apple-green palette. Mirrors `honeycrisp` light surfaces
+ * (canvas / text / borders) with grannysmith brand colors swapped in so
+ * the two apple themes are visually consistent at the chrome level.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildGrannysmithLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.grannysmith
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#ffffff',
+        bgAlt: '#f9f9f9',
+        bgElv: '#f5f5f5',
+        bgSoft: '#f0f0f0',
+        bgIcon: '#cccccc',
+        homeBg: '#ffffff',
+        overlayFaint: 'rgba(0, 0, 0, 0.1)',
+        gutter: '#f5f5f5',
+        codeBlockBg: '#f5f5f5',
+      },
+      text: {
+        text1: '#1a1a1a',
+        text2: 'rgba(26, 26, 26, 0.72)',
+        text3: 'rgba(26, 26, 26, 0.48)',
+      },
+      border: {
+        border: '#d0d0d0',
+        divider: '#e2e2e2',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `grannysmith` theme — dark surfaces
+ * matching `honeycrisp` paired with the green brand palette.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildGrannysmithDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.grannysmith
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `midnight` theme token tree — an opinionated near-black
+ * canvas (one step above pure black) with a cool blue brand accent. The
+ * surface palette is intentionally darker than every other built-in.
  *
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
@@ -1243,15 +1434,15 @@ function buildMidnightTokens(): ParsedTokens {
       },
       semantic: { ...SHARED_SEMANTIC_COLORS },
       surface: {
-        bg: '#0f0f0f',
-        bgAlt: '#121212',
-        bgElv: '#161616',
-        bgSoft: '#1a1a1a',
-        bgIcon: '#2a2a2a',
-        homeBg: '#0f0f0f',
+        bg: '#050505',
+        bgAlt: '#080808',
+        bgElv: '#0d0d0d',
+        bgSoft: '#111111',
+        bgIcon: '#1f1f1f',
+        homeBg: '#050505',
         overlayFaint: 'rgba(255, 255, 255, 0.08)',
-        gutter: '#121212',
-        codeBlockBg: '#121212',
+        gutter: '#080808',
+        codeBlockBg: '#080808',
       },
       text: {
         text1: '#f0f0f0',
@@ -1259,9 +1450,9 @@ function buildMidnightTokens(): ParsedTokens {
         text3: 'rgba(240, 240, 240, 0.48)',
       },
       border: {
-        border: '#282828',
-        divider: '#1e1e1e',
-        sidebarAltBorderDark: '#484848',
+        border: '#1f1f1f',
+        divider: '#141414',
+        sidebarAltBorderDark: '#3a3a3a',
       },
       tint: { ...SHARED_TINT_COLORS },
       terminal: { ...SHARED_TERMINAL_COLORS },

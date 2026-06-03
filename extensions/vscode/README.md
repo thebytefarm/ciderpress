@@ -51,7 +51,7 @@ Brings your ciderpress docs into VS Code so you can browse them without leaving 
 | ----------------------------- | --------- | ------- | -------------------------------------------------------------- |
 | `ciderpress.server.autoStart` | `boolean` | `true`  | Automatically start the dev server when the sidebar is opened. |
 | `ciderpress.server.port`      | `number`  | `6174`  | Port for the dev server.                                       |
-| `ciderpress.theme`            | `string`  | —       | Override the theme (`base`, `midnight`, or `arcade`).          |
+| `ciderpress.theme`            | `string`  | —       | Override the theme (`honeycrisp`, `grannysmith`, `midnight`, or `arcade`). |
 | `ciderpress.theme.mode`       | `string`  | —       | Override the color mode (`dark`, `light`, or `toggle`).        |
 
 ## Known Issues

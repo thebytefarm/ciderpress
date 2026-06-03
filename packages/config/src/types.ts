@@ -1126,8 +1126,8 @@ export interface SiteFooterConfig {
    */
   readonly tagline?: string
   /**
-   * Brand mark character rendered in the footer's brand block.
-   * Defaults to `'Z'`.
+   * Character/glyph rendered in the footer's brand block. When omitted,
+   * the footer falls back to the site's `/icon.svg`.
    */
   readonly brandMark?: string
 }
@@ -1211,7 +1211,7 @@ export interface SiteConfig {
  */
 export interface LogoContext {
   /**
-   * Active theme name (e.g. `'default'`, `'midnight'`, or a user-defined name).
+   * Active theme name (e.g. `'honeycrisp'`, `'midnight'`, or a user-defined name).
    */
   readonly name: string
   /**
@@ -1314,7 +1314,8 @@ export interface CiderpressConfig {
    * Each entry is a `CiderpressThemeInput` (the same shape accepted by
    * `defineTheme`). Registering a theme here makes its `name` selectable
    * via `theme.name` and via the theme switcher. Built-in themes
-   * (`default`, `midnight`, `arcade`) remain available regardless of this field.
+   * (`honeycrisp`, `grannysmith`, `midnight`, `arcade`) remain available
+   * regardless of this field.
    *
    * @example
    * ```ts
@@ -1323,8 +1324,8 @@ export interface CiderpressConfig {
    * export default defineConfig({
    *   themes: [
    *     defineTheme({
-   *       name: 'sunset',
-   *       variants: { dark: sunsetTokens },
+   *       name: 'company-brand',
+   *       variants: { dark: brandTokens },
    *     }),
    *   ],
    * })

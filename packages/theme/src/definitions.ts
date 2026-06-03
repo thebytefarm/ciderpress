@@ -87,13 +87,48 @@ export function resolveThemeModes(theme: BuiltInThemeName): readonly ThemeVarian
 }
 
 /**
+ * Legacy theme-name aliases resolved at lookup time.
+ *
+ * `'default'` predates the apple-named built-in palette and remains the most
+ * common slug in user configs. Aliasing it to `'honeycrisp'` keeps existing
+ * `theme: { name: 'default' }` configs rendering the canonical brand
+ * palette without churn.
+ */
+export const THEME_ALIASES: Readonly<Record<string, BuiltInThemeName>> = Object.freeze({
+  default: 'honeycrisp',
+})
+
+/**
+ * Normalize a theme name through {@link THEME_ALIASES}.
+ *
+ * Returns the input unchanged when no alias matches — callers can chain this
+ * in front of `isBuiltInTheme` and registry lookups without special-casing
+ * the alias map themselves.
+ *
+ * @param name - Theme name to resolve (may be a legacy alias or any string)
+ * @returns Canonical theme name (aliased if applicable)
+ */
+export function resolveThemeAlias(name: string): string {
+  const aliased = THEME_ALIASES[name]
+  if (aliased === undefined) {
+    return name
+  }
+  return aliased
+}
+
+/**
  * Check if a theme name is a built-in theme.
  *
+ * Legacy aliases (e.g. `'default'`) resolve through {@link THEME_ALIASES}
+ * before the membership check, so `isBuiltInTheme('default')` returns
+ * `true` and the caller can treat it as `'honeycrisp'` downstream.
+ *
  * @param name - Theme name to check
- * @returns True if the theme is built-in
+ * @returns True if the theme is built-in (directly or via alias)
  */
 export function isBuiltInTheme(name: string): name is BuiltInThemeName {
-  return THEME_NAMES.includes(name as BuiltInThemeName)
+  const resolved = resolveThemeAlias(name)
+  return THEME_NAMES.includes(resolved as BuiltInThemeName)
 }
 
 /**

@@ -4,8 +4,8 @@
  * Reads `BUILT_IN_THEMES` from `@ciderpress/theme` and renders each entry with
  * `themeToCss`, then writes the result to:
  *
- *   - packages/ui/src/theme/styles/themes/{base,midnight,arcade}.css
- *   - packages/ui/src/head/css/themes/{base,midnight,arcade}.css   (FOUC fallback)
+ *   - packages/ui/src/theme/styles/themes/{honeycrisp,grannysmith,midnight,arcade}.css
+ *   - packages/ui/src/head/css/themes/{honeycrisp,grannysmith,midnight,arcade}.css   (FOUC fallback)
  *
  * Both output paths receive the same byte-identical body — the FOUC mirror
  * exists so the head injector can ship the critical block inline before the
@@ -55,7 +55,7 @@ const THEME_NAMES = Object.freeze(Object.keys(BUILT_IN_THEMES))
 /**
  * Render a single theme to its final CSS string (banner + body).
  *
- * @param {string} name - Built-in theme name (`base` | `midnight` | `arcade`)
+ * @param {string} name - Built-in theme name (`honeycrisp` | `grannysmith` | `midnight` | `arcade`)
  * @returns {string} Banner-prefixed CSS source
  */
 const renderThemeCss = (name) => `${GENERATED_BANNER}\n${themeToCss(BUILT_IN_THEMES[name])}`

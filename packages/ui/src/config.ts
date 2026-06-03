@@ -17,6 +17,7 @@ import {
   defineTheme,
   isBuiltInTheme,
   resolveDefaultVariant,
+  resolveThemeAlias,
   resolveThemeVariants,
   themeToCss,
 } from '@ciderpress/theme'
@@ -325,13 +326,17 @@ function detectGitBranch(): string {
 }
 
 /**
- * Resolve the theme name from config, defaulting to `'default'`.
+ * Resolve the theme name from config, defaulting to `'honeycrisp'`.
  *
- * Validates the resolved name against the merged registry (built-in themes
- * plus any user themes declared in `config.themes`). An unknown name —
- * caused by a typo or by removing a custom theme without updating
- * `theme.name` — writes a warning to stderr and falls back to `'default'`
- * so the build still produces working CSS.
+ * The requested name is normalized through `resolveThemeAlias` so legacy
+ * slugs (e.g. `'default'`) map to their canonical apple-named built-in
+ * before registry membership is checked. Custom themes declared in
+ * `config.themes` are validated by their raw name (aliases only ever
+ * point at built-ins).
+ *
+ * An unknown name — caused by a typo or by removing a custom theme without
+ * updating `theme.name` — writes a warning to stderr and falls back to
+ * `'honeycrisp'` so the build still produces working CSS.
  *
  * @private
  * @param config - Ciderpress config object
@@ -340,24 +345,24 @@ function detectGitBranch(): string {
  */
 function resolveThemeName(config: CiderpressConfig, override?: ThemeName): ThemeName {
   const registeredNames = collectRegisteredThemeNames(config)
-  const requested = resolveRequestedThemeName(config, override)
+  const requested = resolveThemeAlias(resolveRequestedThemeName(config, override))
   if (registeredNames.has(requested)) {
     return requested
   }
   process.stderr.write(
-    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to 'default'.\n`
+    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to 'honeycrisp'.\n`
   )
-  return 'default'
+  return 'honeycrisp'
 }
 
 /**
  * Pick the theme name the consumer asked for, in precedence order:
- * CLI override > `config.theme.name` > `'default'`.
+ * CLI override > `config.theme.name` > `'honeycrisp'`.
  *
  * @private
  * @param config - Ciderpress config object
  * @param override - Optional CLI override
- * @returns Requested theme name (not yet validated against the registry)
+ * @returns Requested theme name (not yet alias-normalized or validated)
  */
 function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeName): ThemeName {
   if (override) {
@@ -366,7 +371,7 @@ function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeNam
   if (config.theme && config.theme.name) {
     return config.theme.name
   }
-  return 'default'
+  return 'honeycrisp'
 }
 
 /**

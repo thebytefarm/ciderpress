@@ -37,6 +37,33 @@
     display: inline;
   }
 
+  /* ── Mobile: un-float so the H1 gets its own line, compact the
+       Copy Markdown button to icon-only (the view-options dropdown
+       trigger is already hidden globally above). ──────────────── */
+  @media (max-width: 640px) {
+    html .rp-llms-container {
+      float: none;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
+
+    html .rp-doc h1.rp-toc-include {
+      display: block;
+    }
+
+    html .rp-llms-container .rp-llms-copy-button {
+      padding: 0;
+      width: 36px;
+      gap: 0;
+    }
+
+    html .rp-llms-container .rp-llms-copy-button > span {
+      display: none;
+    }
+  }
+
   /* ── Buttons — pill shape ─────────────────────────────────── */
   html .rp-button--medium,
   html .rp-button--big {

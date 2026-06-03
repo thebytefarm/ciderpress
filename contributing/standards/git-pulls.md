@@ -13,8 +13,8 @@ Use the same `type(scope): description` format as commit messages. The title sho
 #### Correct
 
 ```
-feat(packages/core): add parallel script execution
-fix(packages/core): resolve nested workspace discovery
+feat(packages/cli): add parallel script execution
+fix(packages/config): resolve nested workspace discovery
 docs: update CLI usage guide
 ```
 

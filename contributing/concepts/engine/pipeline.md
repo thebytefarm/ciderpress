@@ -4,7 +4,7 @@ The sync pipeline that transforms config into content.
 
 ## Overview
 
-The `sync()` function in `packages/core/src/sync/index.ts` runs a four-phase pipeline: setup, resolve, write, and generate. This expands the three-phase model from the [Engine Overview](./overview.md) into the individual steps that run within each phase.
+The `sync()` function in `packages/cli/src/lib/sync/index.ts` runs a four-phase pipeline: setup, resolve, write, and generate. This expands the three-phase model from the [Engine Overview](./overview.md) into the individual steps that run within each phase.
 
 ```mermaid
 %%{init: {

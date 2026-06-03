@@ -1,4 +1,4 @@
-import { BUILT_IN_THEMES } from '@ciderpress/theme'
+import { BUILT_IN_THEMES, resolveThemeAlias } from '@ciderpress/theme'
 
 import { readCss } from './head/read.ts'
 
@@ -30,10 +30,11 @@ const LOADER_CSS = BACKDROP_CSS + DOTS_LOADER_CSS
  * @returns Inline CSS string to inject in the document head
  */
 export function getThemeCss(themeName: string): string {
-  if (!Object.hasOwn(THEME_CSS_MAP, themeName)) {
+  const resolved = resolveThemeAlias(themeName)
+  if (!Object.hasOwn(THEME_CSS_MAP, resolved)) {
     return LOADER_CSS
   }
-  const themeColors = THEME_CSS_MAP[themeName]
+  const themeColors = THEME_CSS_MAP[resolved]
   if (themeColors) {
     return themeColors + LOADER_CSS
   }

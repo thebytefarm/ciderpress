@@ -43,4 +43,4 @@ npx ciderpress serve     # preview build
 
 ## License
 
-[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE) - Joggr, Inc.
+[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE)

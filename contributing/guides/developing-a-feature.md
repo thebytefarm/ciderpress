@@ -61,14 +61,14 @@ pnpm check
 Use [Conventional Commits](https://www.conventionalcommits.org/) format:
 
 ```bash
-git commit -m "feat(packages/core): add parallel script execution"
+git commit -m "feat(packages/cli): add parallel script execution"
 ```
 
 Format: `type(scope): description` -- see [Commit Standards](../standards/git-commits.md) for types, scopes, and examples.
 
 ### 6. Add a changeset
 
-If the change affects published packages (`@ciderpress/core`, `@ciderpress/*`), create a changeset:
+If the change affects published packages (`ciderpress`, `@ciderpress/*`), create a changeset:
 
 ```bash
 pnpm changeset
@@ -78,7 +78,7 @@ Follow the prompts to select the package, semver bump type (patch, minor, major)
 
 **When to add a changeset:**
 
-- New features, bug fixes, or breaking changes to `@ciderpress/core` or `@ciderpress/*` packages
+- New features, bug fixes, or breaking changes to `ciderpress` or `@ciderpress/*` packages
 
 **When to skip:**
 
@@ -126,7 +126,7 @@ CI runs: lint, format, typecheck.
 Respond to review comments within 24 hours. Make fixup commits and push:
 
 ```bash
-git commit -m "fix(packages/core): address review feedback"
+git commit -m "fix(packages/cli): address review feedback"
 git push
 ```
 

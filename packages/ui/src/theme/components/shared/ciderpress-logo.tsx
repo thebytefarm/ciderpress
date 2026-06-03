@@ -1,12 +1,19 @@
 import type React from 'react'
 
 const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
-const LOGO_VIEWBOX = '0 0 620 130'
-const LOGO_FALLBACK_COLOR = '#f59e0b'
+/**
+ * ViewBox cropped to the measured glyph bounding box plus a 1px border
+ * on every side. With `translate(0, 14)` below, the first line's
+ * ascender sits at y≈0 and the sixth line's descender bottoms out at
+ * y≈99, so the whole wordmark fills the box edge-to-edge instead of
+ * floating in extra empty space.
+ */
+const LOGO_VIEWBOX = '-1 -1 588 101'
+const LOGO_FALLBACK_COLOR = '#dc2626'
 const FONT_SIZE = 13
 const LINE_HEIGHT = 16
-const X_OFFSET = 24
-const Y_OFFSET = 24
+const X_OFFSET = 0
+const Y_OFFSET = 14
 
 const CIDERPRESS_ART: readonly string[] = Object.freeze([
   ' ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗',
@@ -48,8 +55,9 @@ export interface CiderpressLogoProps {
  * `ThemeProvider` — so the logo tints to whichever theme (and variant) is
  * active without any JS re-renders or theme subscriptions.
  *
- * Falls back to `#60a5fa` when `--rp-c-brand` is not defined (e.g. when
- * rendered outside the ciderpress theme context).
+ * Falls back to the honeycrisp primary (`#dc2626`) when `--rp-c-brand`
+ * is not defined (e.g. when rendered outside the ciderpress theme
+ * context).
  *
  * @param props - Optional className, title, and explicit size overrides
  * @returns Inline SVG element

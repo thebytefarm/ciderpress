@@ -20,4 +20,4 @@ npm install @ciderpress/ui
 
 ## License
 
-[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE) - Joggr, Inc.
+[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE)

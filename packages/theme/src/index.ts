@@ -14,10 +14,12 @@ export {
   THEME_VARIANTS,
   COLOR_MODES,
   ICON_COLORS,
+  THEME_ALIASES,
   resolveDefaultVariant,
   resolveDefaultColorMode,
   resolveThemeVariants,
   resolveThemeModes,
+  resolveThemeAlias,
   isBuiltInTheme,
   isBuiltInIconColor,
 } from './definitions.ts'

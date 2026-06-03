@@ -22,7 +22,9 @@
   border-radius: 8px;
   color: var(--cp-c-text-2);
   cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    color 0.15s ease;
 }
 
 .cp-nav-hamburger:hover {
@@ -94,7 +96,9 @@
   border-radius: 6px;
   color: var(--cp-c-text-2);
   cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .cp-nav-drawer__close:hover {
@@ -116,7 +120,9 @@
   font-size: 15px;
   font-weight: 500;
   text-decoration: none;
-  transition: background 0.12s ease, color 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .cp-nav-drawer__link:hover {

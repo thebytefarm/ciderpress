@@ -10,12 +10,16 @@
  *   --cp-header-pad-x       inline padding (default 16px)
  *   --cp-header-max-width   inner content max width (default 1280px)
  *   --cp-header-gap         flex gap between header items (default 8px)
- *   --cp-header-z           stacking index (default 50)
+ *   --cp-header-z           stacking index (default 60 — matches the
+ *                            Rspress nav slot it replaces and sits
+ *                            above `--rp-z-index-sidebar: 50` so the
+ *                            sidebar doesn't punch through when the
+ *                            page is scrolled)
  */
 .cp-header {
   position: sticky;
   top: 0;
-  z-index: var(--cp-header-z, 50);
+  z-index: var(--cp-header-z, 60);
   width: 100%;
   background: var(--cp-header-bg, var(--cp-c-bg));
   backdrop-filter: blur(8px);
@@ -87,22 +91,33 @@
   margin: 0;
 }
 
-/* Menu wrapper grows to claim every pixel between the left cluster
-   (logo) and the right cluster (search, chrome, CTA). Its width is
-   therefore "actual available room for items", which is the stable
-   signal CiderpressNavMenu's ResizeObserver needs — without flex:grow
-   the wrapper would track its content width and collapse-then-rebound
-   forever. Items inside right-align so they visually cluster with the
-   right-side chrome. */
+/* Menu wrapper claims every pixel between the left cluster (logo) and
+   the trailing chrome (theme / socials / CTA). `justify-content:
+   flex-end` pushes both children (search + menu) to the right edge of
+   the wrapper, putting them side-by-side as a single right-anchored
+   cluster. CiderpressNavMenu observes this wrapper (not its own width)
+   to decide how many items fit — see ciderpress-nav-menu.tsx. */
 .cp-header-menu-wrap {
-  flex: 1 1 auto;
+  flex: 1 1 0;
   min-width: 0;
   display: flex;
   align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
-.cp-header-menu-wrap .cp-nav-menu {
-  justify-content: flex-end;
+.cp-header-menu-wrap > .cp-nav-search {
+  flex-shrink: 0;
+}
+
+.cp-header-menu-wrap > .cp-nav-menu {
+  /* Reset the `width: 100%` baked into ciderpress-nav-menu.css; in the
+     header context we want the menu to size to its content so the wrap's
+     `justify-content: flex-end` cleanly pushes both search and the menu
+     items to the right edge as a single right-anchored cluster. */
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
 }
 
 /* ── Mobile collapse ───────────────────────────────────────────────
@@ -112,14 +127,23 @@
    in the React tree — the drawer renders its own copies so nothing is
    actually lost from the mobile UX. */
 @media (max-width: 768px) {
+  /* Hide the chrome that the drawer surfaces. Keep the menu wrap (it
+     still holds the search button), but hide the inline menu items
+     and right-anchor the search to the viewport edge. */
   .cp-header-inner > .cp-nav-divider,
-  .cp-header-inner > .cp-header-menu-wrap,
   .cp-header-inner > .cp-nav-social,
   .cp-header-inner > .cp-topbar-cta,
   .cp-header-inner > .rp-switch-appearance,
   .cp-header-inner > .cp-theme-switcher,
   .cp-header-inner > .cp-sidebar-toggle {
     display: none;
+  }
+  .cp-header-menu-wrap > .cp-nav-menu,
+  .cp-header-menu-wrap > .cp-nav-divider {
+    display: none;
+  }
+  .cp-header-menu-wrap > .cp-nav-search {
+    margin-left: auto;
   }
 }
 

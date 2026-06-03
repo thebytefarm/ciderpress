@@ -65,8 +65,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
     <header className={`cp-header ${variantClass}`}>
       {props.announcement}
       <div className="cp-header-inner">
-        {/* Left cluster: hamburger (mobile only) + logo + sidebar toggle
-            (docs only). */}
+        {/* Left: hamburger (mobile) + logo + sidebar toggle (docs only) */}
         <CiderpressNavHamburger
           navItems={props.navItems}
           socialLinks={props.socialLinks}
@@ -77,19 +76,21 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
         </a>
         {props.isHome ? null : <SidebarToggle />}
 
-        {/* The menu wrapper claims all leftover horizontal space and
-            right-aligns its items inside. That keeps the wrapper width
-            equal to "available room for items" (stable, so the React
-            overflow logic doesn't oscillate) while pushing the visible
-            items toward the right cluster they belong to. */}
+        {/* Right cluster wrapper. Grows from a zero basis so its width
+            equals the actual available room (not the content), which is
+            the stable measurement target the React overflow logic
+            inside CiderpressNavMenu needs.
+
+            Inside: search comes first, then the menu (which itself
+            fills the leftover room and right-aligns items inside).
+            That places search immediately before the menu items, both
+            anchored to the right edge of the wrapper. */}
         <div className="cp-header-menu-wrap">
+          <CiderpressNavSearch />
+          <NavDivider />
           <CiderpressNavMenu items={props.navItems} />
         </div>
 
-        {/* Right cluster (immediately after the menu items): search →
-            divider → theme → socials → divider → CTA. */}
-        <NavDivider />
-        <CiderpressNavSearch />
         <NavDivider />
         <ThemeSwitcher />
         <CiderpressNavSocialLinks links={props.socialLinks} />

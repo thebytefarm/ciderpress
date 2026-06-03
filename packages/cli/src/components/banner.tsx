@@ -14,12 +14,13 @@ import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
 
 /**
- * Render the ciderpress logo banner with the default theme's brand gradient.
+ * Render the ciderpress logo banner with the canonical honeycrisp brand
+ * gradient (the apple-red palette is the framework's default identity).
  *
  * @returns React element with the styled ciderpress banner
  */
 export function Banner(): React.ReactElement {
-  const colors = resolveBrandGradient('default')
+  const colors = resolveBrandGradient('honeycrisp')
   return (
     <Gradient colors={[...colors]}>
       <BigText text="ciderpress" font="block" />

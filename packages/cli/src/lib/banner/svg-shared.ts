@@ -11,8 +11,8 @@ import { resolveBrandPalette } from '@ciderpress/theme'
 
 /**
  * Catppuccin Mocha palette colors used across all generated SVGs.
- * `brand` resolves to the base theme's primary at module load — the
- * same color the docs site and CLI render.
+ * `brand` resolves to the canonical honeycrisp theme's primary at module
+ * load — the same color the docs site and CLI render.
  */
 export const COLORS = Object.freeze({
   base: '#1e1e2e',
@@ -24,7 +24,7 @@ export const COLORS = Object.freeze({
   green: '#a6e3a1',
   red: '#f38ba8',
   yellow: '#f9e2af',
-  brand: resolveBrandPalette('default').primary,
+  brand: resolveBrandPalette('honeycrisp').primary,
 })
 
 /**

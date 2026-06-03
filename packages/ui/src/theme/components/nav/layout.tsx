@@ -6,6 +6,7 @@ import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { useNavItems } from '../../hooks/use-nav-items'
+import { readSocialLinks } from '../../lib/read-social-links'
 import { AnnouncementBar } from '../announcement/announcement-bar'
 import { ContentFooterPortal } from '../content-footer/content-footer-portal'
 import { Feedback } from '../content-footer/feedback'
@@ -16,7 +17,6 @@ import { SidebarLinks } from '../sidebar/sidebar-links'
 import { SidebarPromo } from '../sidebar/sidebar-promo'
 import { CiderpressHeader } from './ciderpress-header'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
-import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
 import { FloatingBranchIndicator } from './floating-branch-indicator'
 
 /**
@@ -151,30 +151,6 @@ function readNavItems(site: unknown): readonly CiderpressNavMenuItem[] {
       item !== null &&
       typeof (item as { text?: unknown }).text === 'string' &&
       typeof (item as { link?: unknown }).link === 'string'
-  )
-}
-
-/**
- * Pull social-link entries (GitHub, npm, etc) from Rspress's `site`
- * shape. Lives on `site.themeConfig.socialLinks` after Rspress
- * normalisation but isn't surfaced on the public typings.
- *
- * @private
- * @param site - Rspress site data
- * @returns Array of social-link entries (empty array when not configured)
- */
-function readSocialLinks(site: unknown): readonly CiderpressSocialLink[] {
-  const themeConfig = (site as { readonly themeConfig?: unknown }).themeConfig
-  const candidate = (themeConfig as { readonly socialLinks?: unknown } | undefined)?.socialLinks
-  if (!Array.isArray(candidate)) {
-    return []
-  }
-  return candidate.filter(
-    (item): item is CiderpressSocialLink =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as { icon?: unknown }).icon === 'string' &&
-      typeof (item as { content?: unknown }).content === 'string'
   )
 }
 

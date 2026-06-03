@@ -114,7 +114,9 @@
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
-  transition: background 0.1s ease, color 0.1s ease;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease;
 }
 
 .cp-nav-menu__overflow-item:hover {

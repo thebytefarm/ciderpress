@@ -238,7 +238,7 @@ function isLogoImage(value: unknown): value is LogoImage {
  */
 function readThemeContext(html: HTMLElement): LogoContext {
   const variant: 'light' | 'dark' = html.dataset.cpVariant === 'light' ? 'light' : 'dark'
-  const name = typeof html.dataset.cpTheme === 'string' ? html.dataset.cpTheme : 'default'
+  const name = typeof html.dataset.cpTheme === 'string' ? html.dataset.cpTheme : 'honeycrisp'
 
   const styles = globalThis.window.getComputedStyle(html)
   function read(cssVar: string, fallback: string): string {

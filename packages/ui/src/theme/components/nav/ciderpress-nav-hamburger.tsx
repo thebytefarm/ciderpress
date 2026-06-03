@@ -28,9 +28,7 @@ export interface CiderpressNavHamburgerProps {
  * @param props - Nav items / social / CTA configuration
  * @returns Hamburger button (mobile) + drawer (when open)
  */
-export function CiderpressNavHamburger(
-  props: CiderpressNavHamburgerProps
-): React.ReactElement {
+export function CiderpressNavHamburger(props: CiderpressNavHamburgerProps): React.ReactElement {
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -96,7 +94,12 @@ interface DrawerProps {
  */
 function CiderpressNavDrawer(props: DrawerProps): React.ReactElement {
   return (
-    <div className="cp-nav-drawer-root" role="dialog" aria-modal="true" aria-label="Site navigation">
+    <div
+      className="cp-nav-drawer-root"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Site navigation"
+    >
       <div className="cp-nav-drawer-backdrop" onClick={props.onClose} />
       <aside className="cp-nav-drawer">
         <header className="cp-nav-drawer__header">

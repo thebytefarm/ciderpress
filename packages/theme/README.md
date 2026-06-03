@@ -1,6 +1,6 @@
 # @ciderpress/theme
 
-Theme types, tokens, and built-in themes (`base`, `midnight`, `arcade`). Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
+Theme types, tokens, and built-in themes (`honeycrisp`, `grannysmith`, `midnight`, `arcade`). Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 
@@ -20,4 +20,4 @@ npm install @ciderpress/theme
 
 ## License
 
-[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE) - Joggr, Inc.
+[MIT](https://github.com/thebytefarm/ciderpress/blob/main/LICENSE)

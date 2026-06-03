@@ -24,9 +24,9 @@ const entries = resolveEntries(config)
 This example is too noisy and the reader is distracted by the boilerplate and obvious code.
 
 ```ts
-import { loadConfig } from '@ciderpress/core'
-import { resolveEntries } from '@ciderpress/core'
-import { createPaths } from '@ciderpress/core'
+import { loadConfig } from '@ciderpress/config'
+import { resolveEntries } from '@ciderpress/cli/lib/sync/resolve'
+import { createPaths } from '@ciderpress/cli/lib/paths'
 import { log } from '@clack/prompts'
 
 async function main() {

@@ -688,7 +688,7 @@ export const themeColorsSchema = z
  */
 export const themeConfigSchema = z
   .object({
-    name: z.string().default('default'),
+    name: z.string().default('honeycrisp'),
     variant: themeVariantSchema.optional(),
     switcher: z.boolean().optional(),
     colors: themeColorsSchema.optional(),

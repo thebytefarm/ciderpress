@@ -12,33 +12,31 @@ The codebase follows a functional, immutable, composition-first design. There ar
 
 ```tree
 packages/
-├── core/            # Sync engine, config loading, sidebar/nav generation
-├── cli/             # CLI commands (dev, build, serve, check, diff, draft, clean, setup, dump)
+├── cli/             # CLI commands + sync engine (dev, build, serve, check, diff, draft, clean, setup, dump, sync)
 ├── ui/              # Rspress plugin, theme components, styles
 ├── config/          # @ciderpress/config — c12-based config loading, Zod validation
 ├── templates/       # @ciderpress/templates — Liquid template registry for draft command
 ├── theme/           # @ciderpress/theme — theme definitions and schema
-└── ciderpress/          # ciderpress — public wrapper (re-exports core + ui + cli)
+└── ciderpress/      # ciderpress — public wrapper (re-exports config + ui + cli bin)
 ```
 
-| Package                 | Purpose                                                                 |
-| ----------------------- | ----------------------------------------------------------------------- |
-| `@ciderpress/core`      | Config loading, entry resolution, sync engine, sidebar/nav gen          |
-| `@ciderpress/cli`       | CLI commands: dev, build, serve, check, diff, draft, clean, setup, dump |
-| `@ciderpress/ui`        | Rspress plugin, React theme components, CSS overrides                   |
-| `@ciderpress/config`    | Config schema (Zod), type definitions, c12-based loading                |
-| `@ciderpress/templates` | Liquid template registry for the `draft` command                        |
-| `@ciderpress/theme`     | Theme definitions and schema                                            |
-| `ciderpress`            | Public package: `.` and `./config` entry points + `ciderpress` CLI bin  |
+| Package                 | Purpose                                                                              |
+| ----------------------- | ------------------------------------------------------------------------------------ |
+| `@ciderpress/cli`       | CLI commands + sync engine: dev, build, serve, check, diff, draft, clean, setup, dump, sync |
+| `@ciderpress/ui`        | Rspress plugin, React theme components, CSS overrides                                |
+| `@ciderpress/config`    | Config schema (Zod), type definitions, c12-based loading                             |
+| `@ciderpress/templates` | Liquid template registry for the `draft` command                                     |
+| `@ciderpress/theme`     | Theme definitions and schema                                                         |
+| `ciderpress`            | Public package: `.` and `./config` entry points + `ciderpress` CLI bin               |
 
 ### `ciderpress` (wrapper)
 
 The public-facing package. Two entry points and a CLI bin:
 
-| Entry      | Purpose                                   |
-| ---------- | ----------------------------------------- |
-| `.`        | Full API: core types + sync + UI + plugin |
-| `./config` | Lightweight: just `defineConfig` + types  |
+| Entry      | Purpose                                                          |
+| ---------- | ---------------------------------------------------------------- |
+| `.`        | Public API: `defineConfig`, `defineTheme`, UI components + types |
+| `./config` | Lightweight: just `defineConfig` + types                         |
 
 The `ciderpress` CLI bin is provided by this package and delegates to `@ciderpress/cli`. Users import `defineConfig` from `ciderpress` (or `ciderpress/config`) in their config file.
 
@@ -125,38 +123,39 @@ The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-fram
 
 ### Core Layer
 
-**Package:** `@ciderpress/core`
+**Package:** `@ciderpress/cli` (sync engine lives at `packages/cli/src/lib/sync/`)
 
-The sync engine and config system. See [Engine](./engine/overview.md) for pipeline details.
+The sync engine. Config loading lives separately in `@ciderpress/config`. See [Engine](./engine/overview.md) for pipeline details.
 
-| Module                       | Purpose                                                   |
-| ---------------------------- | --------------------------------------------------------- |
-| `config.ts`                  | Config file discovery and loading via c12                 |
-| `define-config.ts`           | Config validation at the boundary                         |
-| `paths.ts`                   | Path constants for `.ciderpress/` output structure        |
-| `sync/index.ts`              | Main sync pipeline orchestrator                           |
-| `sync/errors.ts`             | SyncError and ConfigError definitions                     |
-| `sync/types.ts`              | Sync-specific type definitions                            |
-| `sync/copy.ts`               | Page writing with frontmatter injection and hash tracking |
-| `sync/home.ts`               | Default home page generation                              |
-| `sync/manifest.ts`           | Incremental sync tracking via content hashes              |
-| `sync/openapi.ts`            | OpenAPI spec sync (dereference, MDX generation)           |
-| `sync/images.ts`             | Image discovery, copy, and path rewriting                 |
-| `sync/planning.ts`           | Planning page discovery from `.planning/` directory       |
-| `sync/rewrite-links.ts`      | Relative link rewriting during copy                       |
-| `sync/strip-xml.ts`          | XML tag stripping for planning documents                  |
-| `sync/workspace.ts`          | Workspace item synthesis and card enrichment              |
-| `sync/collect-workspaces.ts` | Workspace item collection from config                     |
-| `sync/resolve/index.ts`      | Entry tree resolution (globs, text derivation, sorting)   |
-| `sync/resolve/path.ts`       | Path resolution utilities                                 |
-| `sync/resolve/recursive.ts`  | Recursive directory resolution                            |
-| `sync/resolve/sort.ts`       | Entry sorting strategies                                  |
-| `sync/resolve/text.ts`       | Text derivation from filename/heading/frontmatter         |
-| `sync/sidebar/index.ts`      | Sidebar and nav JSON generation                           |
-| `sync/sidebar/multi.ts`      | Multi-sidebar namespace building                          |
-| `sync/sidebar/inject.ts`     | Virtual landing page generation (MDX)                     |
-| `sync/sidebar/landing.ts`    | Landing page MDX generation                               |
-| `banner/index.ts`            | SVG asset generation (banner, logo, icon)                 |
+| Module                                | Purpose                                                   |
+| ------------------------------------- | --------------------------------------------------------- |
+| `lib/paths.ts`                        | Path constants for `.ciderpress/` output structure        |
+| `lib/sync/index.ts`                   | Main sync pipeline orchestrator                           |
+| `lib/sync/errors.ts`                  | SyncError and ConfigError definitions                     |
+| `lib/sync/types.ts`                   | Sync-specific type definitions                            |
+| `lib/sync/copy.ts`                    | Page writing with frontmatter injection and hash tracking |
+| `lib/sync/home.ts`                    | Default home page generation                              |
+| `lib/sync/manifest.ts`                | Incremental sync tracking via content hashes              |
+| `lib/sync/openapi.ts`                 | OpenAPI spec sync (dereference, MDX generation)           |
+| `lib/sync/openapi-spec.ts`            | OpenAPI spec loading and dereferencing                    |
+| `lib/sync/openapi-markdown.ts`        | OpenAPI operation MDX generation                          |
+| `lib/sync/images.ts`                  | Image discovery, copy, and path rewriting                 |
+| `lib/sync/planning.ts`                | Planning page discovery from `.planning/` directory       |
+| `lib/sync/rewrite-links.ts`           | Relative link rewriting during copy                       |
+| `lib/sync/strip-xml.ts`               | XML tag stripping for planning documents                  |
+| `lib/sync/workspace.ts`               | Workspace item synthesis and card enrichment              |
+| `lib/sync/frontmatter.ts`             | Frontmatter merge and hash logic                          |
+| `lib/sync/resolve/index.ts`           | Entry tree resolution (globs, text derivation, sorting)   |
+| `lib/sync/resolve/path.ts`            | Path resolution utilities                                 |
+| `lib/sync/resolve/recursive.ts`       | Recursive directory resolution                            |
+| `lib/sync/resolve/sort.ts`            | Entry sorting strategies                                  |
+| `lib/sync/resolve/text.ts`            | Text derivation from filename/heading/frontmatter         |
+| `lib/sync/sidebar/index.ts`           | Sidebar and nav JSON generation                           |
+| `lib/sync/sidebar/inject.ts`          | Virtual landing page generation (MDX)                     |
+| `lib/sync/sidebar/landing.ts`         | Landing page MDX generation                               |
+| `lib/sync/sidebar/meta.ts`            | Sidebar meta resolution                                   |
+| `lib/sync/sidebar/write-meta.ts`      | Sidebar meta serialization                                |
+| `lib/banner/index.ts`                 | SVG asset generation (banner, logo, icon)                 |
 
 ### UI Layer
 

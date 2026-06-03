@@ -108,10 +108,50 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
       return
     }
 
+    // We observe the menu's PARENT (the wrap), not the menu itself.
+    // Measuring the menu would self-collapse: when items hide, the
+    // menu shrinks, clientWidth drops, the budget shrinks, more items
+    // hide. Observing the parent gives us a width that's a function of
+    // the layout (not of how many items we currently render).
+    const parent = container.parentElement
+    if (parent === null) {
+      return
+    }
+
+    const inLayoutFlow = (child: Element): boolean => {
+      // Exclude elements removed from the layout (the hidden measure
+      // layer is `position: absolute`, anything `display: none` is
+      // gone, anything `visibility: hidden` still occupies space so
+      // it stays counted). We only want flex-contributing siblings.
+      const cs = window.getComputedStyle(child)
+      return cs.display !== 'none' && cs.position !== 'absolute' && cs.position !== 'fixed'
+    }
+
     const recompute = (): void => {
       const itemElements = measure.querySelectorAll<HTMLElement>('[data-cp-menu-item]')
       const widths = Array.from(itemElements).map((el) => el.getBoundingClientRect().width)
-      const available = container.clientWidth
+      // Available room for the menu = parent width minus every layout
+      // sibling's width minus the parent's flex gap between them.
+      const parentWidth = parent.clientWidth
+      const parentGap = parseFloat(getComputedStyle(parent).columnGap || '0') || 0
+      const layoutSiblings: Element[] = []
+      for (const child of parent.children) {
+        if (child === container) {
+          continue
+        }
+        if (!inLayoutFlow(child)) {
+          continue
+        }
+        layoutSiblings.push(child)
+      }
+      const siblingsWidth = layoutSiblings.reduce(
+        (sum, child) => sum + child.getBoundingClientRect().width,
+        0
+      )
+      // gap × (layout-children count − 1), where layout-children includes
+      // the menu container itself plus every layout sibling.
+      const gapCount = Math.max(0, layoutSiblings.length + 1 - 1)
+      const available = Math.max(0, parentWidth - siblingsWidth - gapCount * parentGap)
       const totals = computeVisibleCount({
         widths,
         available,
@@ -122,8 +162,12 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
     }
 
     const observer = new ResizeObserver(recompute)
-    observer.observe(container)
-    // First pass — measurements are live now.
+    observer.observe(parent)
+    for (const child of parent.children) {
+      if (child !== container && inLayoutFlow(child)) {
+        observer.observe(child)
+      }
+    }
     recompute()
     return () => {
       observer.disconnect()
@@ -136,7 +180,11 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
     }
     const onDocClick = (event: MouseEvent): void => {
       const target = event.target as Node | null
-      if (target !== null && overflowRef.current !== null && !overflowRef.current.contains(target)) {
+      if (
+        target !== null &&
+        overflowRef.current !== null &&
+        !overflowRef.current.contains(target)
+      ) {
         setOverflowOpen(false)
       }
     }

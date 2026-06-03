@@ -11,7 +11,7 @@ How the visual identity of your documentation site is controlled through built-i
 
 ## Overview
 
-A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with three built-in themes — Default, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
+A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with four built-in themes — Honeycrisp, Granny Smith, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
 
 | UI                | Job                                                                                                  |
 | ----------------- | ---------------------------------------------------------------------------------------------------- |
@@ -20,19 +20,25 @@ A theme in ciderpress is a **brand identity** with one or more **variants**. Eac
 
 ## Built-in Themes
 
-### Default
+### Honeycrisp
 
-The framework default. Brand-purple identity with both `dark` and `light` variants — the sun/moon toggle is enabled.
+The canonical brand. Apple-red identity (primary `#dc2626`) with both `dark` and `light` variants — the sun/moon toggle is enabled. This is the default when `theme.name` is omitted. The legacy slug `'default'` is preserved as an alias and resolves to `'honeycrisp'`, so existing `theme: { name: 'default' }` configs continue to render the canonical palette without churn.
 
 **Variants:** `dark` (default) · `light`
 
 <BrowserWindow url="https://docs.example.com">
-  ![Default theme — dark](../.assets/theme-base.png)
+  ![Honeycrisp theme — dark](../.assets/theme-base.png)
 </BrowserWindow>
+
+### Granny Smith
+
+Apple-green identity (primary `#65a30d`) with both `dark` and `light` variants — the sun/moon toggle is enabled.
+
+**Variants:** `dark` (default) · `light`
 
 ### Midnight
 
-Opinionated near-black blue theme. Single-variant (`dark` only) — the sun/moon toggle is hidden when this theme is active.
+Opinionated deep-black blue theme. Background sits at `#050505` for a near-pure-black surface. Single-variant (`dark` only) — the sun/moon toggle is hidden when this theme is active.
 
 **Variants:** `dark`
 
@@ -68,17 +74,17 @@ export default defineConfig({
 })
 ```
 
-The `name` accepts any built-in theme (`default`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. An unknown name writes a build-time warning to stderr and falls back to `default`.
+The `name` accepts any built-in theme (`honeycrisp`, `grannysmith`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. The legacy slug `'default'` is preserved as an alias for `'honeycrisp'`. An unknown name writes a build-time warning to stderr and falls back to `honeycrisp`.
 
 ### Options
 
-| Property     | Type                                  | Default         | Description                                                                                                |
-| ------------ | ------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| `name`       | `'default' \| 'midnight' \| 'arcade'` | `'default'`     | Built-in or registered theme to use                                                                        |
-| `variant`    | `'dark' \| 'light'`                   | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
-| `switcher`   | `boolean`                             | `false`         | Show the theme switcher dropdown in the site footer                                                        |
-| `colors`     | `ThemeColors`                         | —               | Color overrides applied to the `light` variant                                                             |
-| `darkColors` | `ThemeColors`                         | —               | Color overrides applied to the `dark` variant                                                              |
+| Property     | Type                                                            | Default         | Description                                                                                                |
+| ------------ | --------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`       | `'honeycrisp' \| 'grannysmith' \| 'midnight' \| 'arcade'`       | `'honeycrisp'`  | Built-in or registered theme to use. `'default'` is accepted as an alias for `'honeycrisp'`                |
+| `variant`    | `'dark' \| 'light'`                                             | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
+| `switcher`   | `boolean`                                                       | `false`         | Show the theme switcher dropdown in the site footer                                                        |
+| `colors`     | `ThemeColors`                                                   | —               | Color overrides applied to the `light` variant                                                             |
+| `darkColors` | `ThemeColors`                                                   | —               | Color overrides applied to the `dark` variant                                                              |
 
 ### Forcing a starting variant
 
@@ -86,7 +92,7 @@ Each theme picks its own initial variant when there's no persisted preference. Y
 
 ```ts
 theme: {
-  name: 'default',
+  name: 'honeycrisp',
   variant: 'light',  // start in light mode on first visit
 }
 ```
@@ -147,8 +153,8 @@ When the built-in themes plus color overrides aren't enough, register a fully cu
 ```ts
 import { defineConfig, defineTheme } from 'ciderpress'
 
-const sunset = defineTheme({
-  name: 'sunset',
+const citrus = defineTheme({
+  name: 'citrus',
   defaultVariant: 'dark',
   variants: {
     dark: {
@@ -172,8 +178,8 @@ const sunset = defineTheme({
 })
 
 export default defineConfig({
-  themes: [sunset],
-  theme: { name: 'sunset' },
+  themes: [citrus],
+  theme: { name: 'citrus' },
   // ...
 })
 ```
@@ -190,7 +196,7 @@ const shared = {
 }
 
 defineTheme({
-  name: 'sunset',
+  name: 'citrus',
   variants: {
     dark:  { ...shared, colors: { /* dark palette */ } },
     light: { ...shared, colors: { /* light palette */ } },
@@ -213,11 +219,12 @@ defineTheme({
 
 ## Comparing Approaches
 
-| Theme    | Best For                          | Variants    | Default variant |
-| -------- | --------------------------------- | ----------- | --------------- |
-| Default  | General-purpose docs              | dark, light | `dark`          |
-| Midnight | Developer tools, dark-first sites | dark        | `dark`          |
-| Arcade   | Playful branding, creative tools  | dark        | `dark`          |
+| Theme        | Best For                          | Variants    | Default variant |
+| ------------ | --------------------------------- | ----------- | --------------- |
+| Honeycrisp   | General-purpose docs (canonical)  | dark, light | `dark`          |
+| Granny Smith | Green-branded, accessible docs    | dark, light | `dark`          |
+| Midnight     | Developer tools, dark-first sites | dark        | `dark`          |
+| Arcade       | Playful branding, creative tools  | dark        | `dark`          |
 
 ## Design Decisions
 

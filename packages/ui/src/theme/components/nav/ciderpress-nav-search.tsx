@@ -14,7 +14,8 @@ import './ciderpress-nav-search.css'
  */
 export function CiderpressNavSearch(): React.ReactElement {
   const onClick = (): void => {
-    const isMac = typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac')
+    const isMac =
+      typeof navigator !== 'undefined' && navigator.platform.toLowerCase().includes('mac')
     const event = new KeyboardEvent('keydown', {
       key: 'k',
       code: 'KeyK',

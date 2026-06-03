@@ -23,7 +23,7 @@ const THEME_OPTIONS: readonly ThemeOption[] = parseThemeRegistry(__CIDERPRESS_TH
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
 
 const FALLBACK_THEME = match(THEME_OPTIONS[0])
-  .with(P.nullish, () => 'default')
+  .with(P.nullish, () => 'honeycrisp')
   .otherwise((entry) => entry.name)
 
 /**

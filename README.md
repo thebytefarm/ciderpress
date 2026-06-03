@@ -13,7 +13,7 @@
 
 - **Your docs, your structure** — conforms to your repo, not the other way around.
 - **One config, full chrome** — sidebars, nav, footer, edit links, version chip, announcement, and theme from one file.
-- **Beautiful themes out of the box** — three built-in themes with full dark-mode support, plus first-class custom themes.
+- **Beautiful themes out of the box** — four built-in themes (`honeycrisp`, `grannysmith`, `midnight`, `arcade`) with full dark-mode support, plus first-class custom themes.
 - **Monorepo-first** — built for internal docs with workspace cards, OpenAPI integration, and Liquid template support.
 
 ## Install

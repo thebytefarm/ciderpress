@@ -23,7 +23,9 @@
   border-radius: 6px;
   color: var(--cp-nav-social-color, var(--cp-c-text-2));
   text-decoration: none;
-  transition: color 0.15s ease, background 0.15s ease;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
 }
 
 .cp-nav-social__item:hover {

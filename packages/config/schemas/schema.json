@@ -15,7 +15,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "default": "default",
+          "default": "honeycrisp",
           "type": "string"
         },
         "variant": {

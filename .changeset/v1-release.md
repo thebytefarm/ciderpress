@@ -13,9 +13,11 @@ This is a major release that locks the v1 public API. Headline changes:
 
 **Theme system**
 
-- Renamed the built-in `base` theme to `default`. The `default` theme now
-  ships both `dark` and `light` variants; the sun/moon toggle swaps between
-  them.
+- Replaced the built-in `base` theme with apple-named built-ins:
+  `honeycrisp` (red, dark + light — the canonical brand), `grannysmith`
+  (green, dark + light), `midnight` (deep dark blue, dark only), and
+  `arcade` (neon green, dark only). The legacy slug `'default'` aliases
+  to `'honeycrisp'` via `THEME_ALIASES`.
 - Replaced `theme.colorMode` with `theme.variant` (values: `'dark' | 'light'`).
   The `'toggle'` value is no longer supported — themes that declare both
   variants always show the toggle; themes that declare one hide it.
@@ -68,15 +70,15 @@ This is a major release that locks the v1 public API. Headline changes:
 -     colorMode: 'dark',
 +     variant: 'dark',
 -     name: 'base',
-+     name: 'default',
++     name: 'honeycrisp',
     },
     themes: [
       defineTheme({
-        name: 'sunset',
--       tokens: sunsetTokens,
+        name: 'company-brand',
+-       tokens: brandTokens,
 -       modes: ['dark'],
 -       defaultMode: 'dark',
-+       variants: { dark: sunsetTokens },
++       variants: { dark: brandTokens },
 +       defaultVariant: 'dark',
       }),
     ],
