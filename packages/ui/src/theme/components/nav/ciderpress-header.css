@@ -87,15 +87,22 @@
   margin: 0;
 }
 
-/* Wrapper that grows to claim every pixel between the search button
-   and the right-aligned icon cluster. `CiderpressNavMenu` inside reads
-   `wrapper.clientWidth` and decides how many items can fit. */
+/* Menu wrapper grows to claim every pixel between the left cluster
+   (logo) and the right cluster (search, chrome, CTA). Its width is
+   therefore "actual available room for items", which is the stable
+   signal CiderpressNavMenu's ResizeObserver needs — without flex:grow
+   the wrapper would track its content width and collapse-then-rebound
+   forever. Items inside right-align so they visually cluster with the
+   right-side chrome. */
 .cp-header-menu-wrap {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;
   align-items: center;
-  margin: 0 16px;
+}
+
+.cp-header-menu-wrap .cp-nav-menu {
+  justify-content: flex-end;
 }
 
 /* ── Mobile collapse ───────────────────────────────────────────────

@@ -65,15 +65,31 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
     <header className={`cp-header ${variantClass}`}>
       {props.announcement}
       <div className="cp-header-inner">
+        {/* Left cluster: hamburger (mobile only) + logo + sidebar toggle
+            (docs only). */}
+        <CiderpressNavHamburger
+          navItems={props.navItems}
+          socialLinks={props.socialLinks}
+          topbarCta={props.topbarCta}
+        />
         <a href="/" className="cp-header-logo" aria-label="Home">
           <CiderpressLogo />
         </a>
-        <NavDivider />
         {props.isHome ? null : <SidebarToggle />}
-        <CiderpressNavSearch />
+
+        {/* The menu wrapper claims all leftover horizontal space and
+            right-aligns its items inside. That keeps the wrapper width
+            equal to "available room for items" (stable, so the React
+            overflow logic doesn't oscillate) while pushing the visible
+            items toward the right cluster they belong to. */}
         <div className="cp-header-menu-wrap">
           <CiderpressNavMenu items={props.navItems} />
         </div>
+
+        {/* Right cluster (immediately after the menu items): search →
+            divider → theme → socials → divider → CTA. */}
+        <NavDivider />
+        <CiderpressNavSearch />
         <NavDivider />
         <ThemeSwitcher />
         <CiderpressNavSocialLinks links={props.socialLinks} />
@@ -83,11 +99,6 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
             <TopbarCTA text={props.topbarCta.text} href={props.topbarCta.href} />
           </>
         )}
-        <CiderpressNavHamburger
-          navItems={props.navItems}
-          socialLinks={props.socialLinks}
-          topbarCta={props.topbarCta}
-        />
       </div>
     </header>
   )

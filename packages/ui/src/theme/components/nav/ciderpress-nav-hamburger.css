@@ -54,14 +54,14 @@
 .cp-nav-drawer {
   position: absolute;
   top: 0;
-  right: 0;
+  left: 0;
   height: 100vh;
   width: min(var(--cp-nav-drawer-width, 320px), 100vw);
   display: flex;
   flex-direction: column;
   background: var(--cp-nav-drawer-bg, var(--cp-c-bg));
-  border-left: 1px solid var(--cp-c-border);
-  box-shadow: var(--cp-nav-drawer-shadow, -8px 0 32px rgba(0, 0, 0, 0.3));
+  border-right: 1px solid var(--cp-c-border);
+  box-shadow: var(--cp-nav-drawer-shadow, 8px 0 32px rgba(0, 0, 0, 0.3));
   animation: cp-nav-drawer-slide-in 0.22s cubic-bezier(0.2, 0.6, 0.2, 1) forwards;
   overflow-y: auto;
 }
@@ -169,7 +169,7 @@
 
 @keyframes cp-nav-drawer-slide-in {
   from {
-    transform: translateX(100%);
+    transform: translateX(-100%);
   }
   to {
     transform: translateX(0);
