@@ -140,10 +140,6 @@ export function Layout(): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Pull the primary nav menu items off Rspress's `site` shape. The
  * Rspress `SiteData` type doesn't expose `nav` at compile time, so we

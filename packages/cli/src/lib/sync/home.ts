@@ -204,10 +204,6 @@ export function buildWorkspaceData(config: CiderpressConfig): WorkspaceDataResul
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Internal result wrapper returned by `buildWorkspaceData`.
  *
@@ -415,7 +411,6 @@ function findFirstChildLink(section: Section): string | undefined {
  * @returns Description string for the section
  */
 async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
-  // Single-file source — read frontmatter description
   if (isString(section.include) && !hasGlobChars(section.include)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.include))
     if (description) {
@@ -423,12 +418,10 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
     }
   }
 
-  // Config-level frontmatter description
   if (isNotNil(section.frontmatter) && section.frontmatter.description) {
     return String(section.frontmatter.description)
   }
 
-  // Well-known section name → curated default
   const titleStr = resolveSectionTitle(section)
   const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {

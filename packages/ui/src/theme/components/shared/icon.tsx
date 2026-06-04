@@ -29,10 +29,6 @@ const _iconCollectionsLoaded = [
 
 export { Icon }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Cast an icon JSON import to the type expected by `addCollection`.
  *

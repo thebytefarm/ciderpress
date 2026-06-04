@@ -80,10 +80,6 @@ export function PagePager(props: PagePagerProps): React.ReactElement | null {
     ))
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 interface ChevProps {
   readonly direction: 'left' | 'right'
 }

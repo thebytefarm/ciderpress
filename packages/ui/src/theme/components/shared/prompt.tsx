@@ -107,7 +107,6 @@ export function Prompt({
             })
         })
         .with('vscode', () => {
-          // Copy prompt to clipboard then open VS Code so the user can paste
           navigator.clipboard
             .writeText(text)
             .then(() => {
@@ -146,7 +145,6 @@ export function Prompt({
     .with(P.nonNullable, (msg) => <span className="cp-prompt__feedback">{msg}</span>)
     .otherwise(() => null)
 
-  // Split first action as primary button, rest go into dropdown
   const primaryAction = actions[0] ?? 'copy'
   const dropdownActions = actions.slice(1)
 
@@ -192,10 +190,6 @@ export function Prompt({
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Action metadata for display.
@@ -287,7 +281,6 @@ function ActionDropdown({ actions, onPress }: ActionDropdownProps): React.ReactE
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
 
-  // Close on outside click
   useEffect(() => {
     if (!open) {
       return

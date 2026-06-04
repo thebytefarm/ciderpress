@@ -80,10 +80,6 @@ export function composeLogo(params: { readonly title: string }): string {
   ].join('\n')
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build text art (FIGlet or pixel) as SVG text elements for the logo.
  *

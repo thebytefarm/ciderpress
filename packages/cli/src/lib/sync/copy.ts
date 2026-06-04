@@ -61,14 +61,12 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
 
   const contentHash = createHash('sha256').update(content).digest('hex')
 
-  // Store source as repo-relative path (not machine-local absolute path)
   const relativeSource = (() => {
     if (isNotNil(page.source)) {
       return path.relative(ctx.repoRoot, page.source)
     }
   })()
 
-  // Incremental: skip write if content unchanged
   const prev = (() => {
     if (isNotNil(ctx.previousManifest)) {
       return ctx.previousManifest.files[page.outputPath]
@@ -104,10 +102,6 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
     frontmatterHash: fmHash,
   }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Compute an MD5 hash of serialized frontmatter for change detection.
@@ -252,7 +246,6 @@ function warnMdxExports(content: string, outputPath: string): void {
     return
   }
 
-  // Filter out exports inside fenced code blocks
   const fenceRanges = lines.reduce<readonly (readonly [number, number])[]>((acc, line, index) => {
     const isFence = line.trimStart().startsWith('```')
     const lastRange = acc.at(-1)

@@ -76,7 +76,6 @@ export async function cleanStaleFiles(
 
   const resolved = stalePaths.map((oldPath) => path.resolve(outDir, oldPath))
 
-  // Remove files in parallel (independent I/O, safe to parallelize)
   const outcomes = await Promise.all(
     resolved.map(async (abs) => {
       const result = await attemptAsync(async () => {
@@ -92,7 +91,6 @@ export async function cleanStaleFiles(
     reason: resolveReason(result.error),
   }))
 
-  // Deduplicate parents so shared ancestors aren't raced N times
   const uniqueParents = uniq(resolved.map((abs) => path.dirname(abs)))
   await Promise.all(uniqueParents.map((dir) => pruneEmptyDirs(dir, outDir)))
 
@@ -102,10 +100,6 @@ export async function cleanStaleFiles(
     failed,
   }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Translate an `attemptAsync` error into a human-readable reason string.

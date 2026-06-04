@@ -30,10 +30,6 @@ export function HomeWorkspaces(): React.ReactElement | null {
     .otherwise(() => null)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single workspace group with its cards.
  *

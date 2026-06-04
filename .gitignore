@@ -63,6 +63,9 @@ packages/*/.ciderpress-dev-headless.mjs
 # Benchmark fixtures
 .bench-fixtures/
 
+# Scratchpad
+.scratchpad
+
 # Misc
 *.tgz
 *.vsix

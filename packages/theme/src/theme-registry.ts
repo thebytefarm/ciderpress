@@ -8,10 +8,6 @@ import type { TokenPath, CiderpressTokens } from './tokens.ts'
 import { TOKEN_TO_CSS_VAR } from './tokens.ts'
 import type { BuiltInThemeName, ThemeVariant } from './types.ts'
 
-// ---------------------------------------------------------------------------
-// Module-level constants — referenced by the public exports below
-// ---------------------------------------------------------------------------
-
 /**
  * Variant preference order used when `defineTheme` callers omit
  * `defaultVariant`. We pick `'dark'` first because the framework treats
@@ -22,9 +18,9 @@ const DEFAULT_VARIANT_ORDER: readonly ThemeVariant[] = ['dark', 'light'] as cons
 /**
  * Name of the framework's default theme — used by `renderThemeCss` to
  * decide which theme also emits the `:root { ... }` FOUC fallback. Kept
- * in lockstep with `BUILT_IN_THEMES.honeycrisp` and the build-time
+ * in lockstep with `BUILT_IN_THEMES[DEFAULT_THEME_NAME]` and the build-time
  * fallback in `packages/ui/src/config.ts`. The legacy `'default'` slug
- * aliases to `'honeycrisp'` via `THEME_ALIASES` in `definitions.ts`.
+ * aliases to this theme via `THEME_ALIASES` in `definitions.ts`.
  */
 const FOUC_ROOT_THEME_NAME: typeof DEFAULT_THEME_NAME = DEFAULT_THEME_NAME
 
@@ -183,6 +179,15 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(153, 27, 27, 0.14)',
     light: '#dc2626',
     lighter: '#f87171',
+  },
+  amber: {
+    primary: '#d97706',
+    hover: '#b45309',
+    active: '#78350f',
+    fg: '#ffffff',
+    soft: 'rgba(217, 119, 6, 0.14)',
+    light: '#fbbf24',
+    lighter: '#fcd34d',
   },
   midnight: {
     primary: '#60a5fa',
@@ -742,10 +747,6 @@ const SHARED_GRADIENTS = {
   heroTitle: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-light))',
 } as const
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
 /**
  * Legacy alias for {@link ThemeVariant}. Retained inside `@ciderpress/theme`
  * for one-version migration safety. Removed from `@ciderpress/core`,
@@ -857,7 +858,7 @@ export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
  * order is fixed by `TOKEN_TO_CSS_VAR` (then `RSPRESS_COMPAT_MAP`) so the
  * output is byte-deterministic given the same input.
  *
- * The FOUC-root theme (`FOUC_ROOT_THEME_NAME` — currently `'honeycrisp'`)
+ * The FOUC-root theme (`FOUC_ROOT_THEME_NAME` — tracks `DEFAULT_THEME_NAME`)
  * additionally emits a `:root { ... }` block that mirrors its default
  * variant — the browser applies it before JS hydrates the `data-cp-*`
  * attributes on `<html>`.
@@ -870,17 +871,20 @@ export function themeToCss(theme: CiderpressTheme): string {
 }
 
 /**
- * The four first-party themes shipped with ciderpress.
+ * The first-party themes shipped with ciderpress.
  *
- *  - `honeycrisp` is the canonical brand — apple-red palette, ships both
- *    `dark` and `light` variants. The sun/moon toggle swaps between them.
- *    The legacy slug `'default'` aliases to this theme via
- *    `THEME_ALIASES` in `definitions.ts`.
+ *  - `mulled` is the canonical brand — deep cider burgundy palette,
+ *    ships both `dark` and `light` variants. Cream surfaces on light
+ *    and a near-black canvas on dark for an evening/premium read. The
+ *    legacy slug `'default'` aliases to this theme via `THEME_ALIASES`
+ *    in `definitions.ts`.
+ *  - `honeycrisp` is the bright apple-red counterpart — both variants
+ *    supported. The sun/moon toggle swaps between them.
  *  - `grannysmith` is the green dev-tool-native counterpart — both
  *    variants supported.
- *  - `mulled` is the deep cider burgundy counterpart — both variants
- *    supported, paired with cream surfaces on light and a near-black
- *    canvas on dark for an evening/premium read.
+ *  - `amber` is the warm apple-cider hearth palette — both variants
+ *    supported, parchment surfaces on light and the shared near-black
+ *    canvas on dark.
  *  - `midnight` is an opinionated near-black blue theme — dark only.
  *  - `arcade` is a neon green retro theme — dark only.
  *
@@ -914,6 +918,14 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>
     },
     defaultVariant: 'dark',
   }),
+  amber: defineBuiltInTheme({
+    name: 'amber',
+    variants: {
+      dark: buildAmberDarkTokens(),
+      light: buildAmberLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
   midnight: defineBuiltInTheme({
     name: 'midnight',
     variants: { dark: buildMidnightTokens() },
@@ -925,10 +937,6 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>
     defaultVariant: 'dark',
   }),
 })
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Schema-inferred output type — bridges `CiderpressTokens` (the strict surface
@@ -1117,9 +1125,9 @@ function buildTheme(envelope: ParsedEnvelope): CiderpressTheme {
  * Internal builder used to register the first-party themes in
  * {@link BUILT_IN_THEMES}. Bypasses the reserved-name refine on
  * `themeInputEnvelopeSchema` (which would reject `'honeycrisp'`,
- * `'grannysmith'`, `'midnight'`, and `'arcade'`) and goes through the
- * base envelope instead. Not exported — user code reaches the public
- * factory via `defineTheme`.
+ * `'grannysmith'`, `'mulled'`, `'amber'`, `'midnight'`, and `'arcade'`)
+ * and goes through the base envelope instead. Not exported — user code
+ * reaches the public factory via `defineTheme`.
  *
  * @private
  * @param input - Theme definition (name + variant token trees)
@@ -1662,6 +1670,175 @@ function buildMulledLightTokens(): ParsedTokens {
  */
 function buildMulledDarkTokens(): ParsedTokens {
   const brand = BRAND_PALETTES.mulled
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `light` variant of the `amber` theme — warm parchment surfaces
+ * with a hearth-amber brand. Leans into the "apple cider amber" mood by
+ * pairing a cream canvas (`#fffaf2`) with deep-roast brown ink.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildAmberLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.amber
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#fffaf2',
+        bgAlt: '#fdf4e1',
+        bgElv: '#f7ebd0',
+        bgSoft: '#f0dfb8',
+        bgIcon: '#caa97a',
+        homeBg: '#fffaf2',
+        overlayFaint: 'rgba(58, 31, 4, 0.08)',
+        gutter: '#fdf4e1',
+        codeBlockBg: '#fdf4e1',
+      },
+      text: {
+        text1: '#3a1f04',
+        text2: 'rgba(58, 31, 4, 0.72)',
+        text3: 'rgba(58, 31, 4, 0.48)',
+      },
+      border: {
+        border: '#d5c2a3',
+        divider: '#e6d8b8',
+        sidebarAltBorderDark: '#5a4020',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `amber` theme — shared near-black canvas
+ * paired with the hearth-amber brand. Mirrors the surface palette used by
+ * `honeycrisp` / `grannysmith` / `mulled` so the apple themes stay visually
+ * consistent at the chrome level on dark.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildAmberDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.amber
   return {
     colors: {
       brand: {

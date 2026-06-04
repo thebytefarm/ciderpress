@@ -5,10 +5,6 @@ import { Button, Disclosure, DisclosurePanel } from 'react-aria-components'
 
 import { Icon } from './icon'
 
-// ---------------------------------------------------------------------------
-// AccordionGroup
-// ---------------------------------------------------------------------------
-
 export interface AccordionGroupProps {
   /**
    * When true, only one accordion in the group can be open at a time.
@@ -47,10 +43,6 @@ export function AccordionGroup({
     </AccordionGroupContext.Provider>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Accordion
-// ---------------------------------------------------------------------------
 
 export interface AccordionProps {
   /**
@@ -109,14 +101,12 @@ export function Accordion({
 
   const [isExpanded, setIsExpanded] = useState(initialOpen)
 
-  // Seed exclusive group state from defaultOpen on initial render
   useEffect(() => {
     if (group !== null && group.exclusive && group.openId === null && initialOpen) {
       group.setOpenId(anchorId)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps -- seed once on mount
 
-  // Sync with group exclusive mode
   const expanded = match(group)
     .with(
       P.when((g): g is AccordionGroupContextValue => g !== null && g.exclusive),
@@ -138,7 +128,6 @@ export function Accordion({
           setIsExpanded(open)
         })
 
-      // Update URL hash on expand
       if (open && globalThis.history !== undefined) {
         globalThis.history.replaceState(null, '', `#${anchorId}`)
       }
@@ -146,7 +135,6 @@ export function Accordion({
     [group, anchorId]
   )
 
-  // Auto-expand on mount if URL hash matches
   useEffect(() => {
     if (isFirstRender.current && hashMatch) {
       isFirstRender.current = false
@@ -187,10 +175,6 @@ export function Accordion({
     </Disclosure>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Convert a title string to a URL-safe slug.

@@ -84,10 +84,6 @@ export function stringify(content: string, data: Readonly<Record<string, unknown
   return `---\n${yaml}\n---\n${content}`
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Strip a leading UTF-8 BOM (U+FEFF) from a string, if present.
  *

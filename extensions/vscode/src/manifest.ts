@@ -130,7 +130,6 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
     getPath: (fsPath: string): string | undefined => state.pathMap.get(fsPath),
     getSourceByUrlPath: (urlPath: string): string | undefined => {
       const normalized = urlPath.startsWith('/') ? urlPath : `/${urlPath}`
-      /* Try exact match first, then without trailing slash */
       const exact = state.urlToSourceMap.get(normalized)
       if (exact) {
         return exact

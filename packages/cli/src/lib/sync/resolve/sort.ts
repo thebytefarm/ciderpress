@@ -52,10 +52,6 @@ export function sortEntries(
     )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Default comparator: sections first, then pinned intro files, then alpha by title.
  *

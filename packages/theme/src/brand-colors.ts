@@ -65,6 +65,7 @@ export const BRAND_GRADIENT: Readonly<Record<BuiltInThemeName, readonly string[]
   honeycrisp: ['#f87171', '#dc2626', '#7f1d1d'],
   grannysmith: ['#a3e635', '#65a30d', '#365314'],
   mulled: ['#dc2626', '#991b1b', '#450a0a'],
+  amber: ['#fbbf24', '#d97706', '#78350f'],
   midnight: ['#3b82f6', '#1d4ed8', '#1e3a8a'],
   arcade: ['#86efac', '#00ff88', '#00994f'],
 })
@@ -89,10 +90,6 @@ export function resolveBrandGradient(theme: BuiltInThemeName): readonly string[]
   return BRAND_GRADIENT[theme]
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Extract a `BrandPalette` from a built-in theme's default variant token tree.
  * Used by `mapValues(BUILT_IN_THEMES, extractBrandPalette)` to derive
@@ -105,7 +102,6 @@ export function resolveBrandGradient(theme: BuiltInThemeName): readonly string[]
 function extractBrandPalette(theme: CiderpressTheme): BrandPalette {
   const defaultTokens = theme.variants[theme.defaultVariant]
   if (defaultTokens === undefined) {
-    // Unreachable — `defineTheme` guarantees `defaultVariant` is present.
     return Object.freeze({ primary: '', hover: '', active: '', fg: '', soft: '' })
   }
   const { primary, hover, active, fg, soft } = defaultTokens.colors.brand

@@ -39,10 +39,8 @@ export default command({
     fs.writeFileSync(configPath, buildConfigTemplate(title), 'utf8')
     ctx.log.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
 
-    // Ensure .ciderpress/ is gitignored
     await ensureGitignore(paths, ctx.log)
 
-    // Generate initial banner, logo, and icon assets
     await fsPromises.mkdir(paths.publicDir, { recursive: true })
     const [assetErr, written] = await generateAssets({
       config: { title, tagline: undefined },
@@ -61,10 +59,6 @@ export default command({
     ctx.log.outro('Done')
   },
 })
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Extract the repository name from the git remote origin URL.

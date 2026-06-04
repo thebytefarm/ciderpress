@@ -3,8 +3,6 @@ import { join } from 'node:path'
 
 import { lauf, z } from 'laufen'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface TechEntry {
   readonly key: string
   readonly icon: string
@@ -49,8 +47,6 @@ interface GeneratedFile {
   readonly path: string
   readonly content: string
 }
-
-// ── Constants ────────────────────────────────────────────────
 
 const HEADER = '{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}'
 
@@ -335,8 +331,6 @@ const PAGE_SPECS: readonly PageSpec[] = [
   },
 ]
 
-// ── Parsing ──────────────────────────────────────────────────
-
 function parseTechMap(source: string): readonly Category[] {
   const lines = source.split('\n')
 
@@ -381,8 +375,6 @@ function countEntries(categories: readonly Category[]): number {
   return categories.reduce((sum, c) => sum + c.entries.length, 0)
 }
 
-// ── Rendering — shared ──────────────────────────────────────
-
 const mdxImport = "import { Icon, TechIconTable } from '@ciderpress/ui/theme'"
 
 function frontmatter(title: string, description: string): string {
@@ -393,8 +385,6 @@ function iconTable(entries: readonly TechEntry[]): string {
   const json = JSON.stringify(entries.map((e) => ({ tag: e.key, icon: e.icon, label: e.label })))
   return `<TechIconTable entries={${json}} />`
 }
-
-// ── Rendering — tech pages ──────────────────────────────────
 
 function renderTechPage(spec: PageSpec, allCategories: readonly Category[]): string {
   const sections = spec.sections
@@ -427,8 +417,6 @@ function renderTechPage(spec: PageSpec, allCategories: readonly Category[]): str
     '',
   ].join('\n')
 }
-
-// ── Rendering — overview ────────────────────────────────────
 
 function renderOverview(): string {
   const setRows = ICON_SETS.map(
@@ -563,8 +551,6 @@ function renderOverview(): string {
   ].join('\n')
 }
 
-// ── Rendering — colors ──────────────────────────────────────
-
 function renderColors(): string {
   const colorRows = ICON_COLORS.map((c) =>
     [
@@ -660,8 +646,6 @@ function renderColors(): string {
   ].join('\n')
 }
 
-// ── Rendering — tech overview ───────────────────────────────
-
 function renderTechOverview(allCategories: readonly Category[]): string {
   const pageRows = PAGE_SPECS.map((spec) => {
     const cats = spec.sections.flatMap((s) => findCategories(allCategories, s.categoryNames))
@@ -734,8 +718,6 @@ function renderTechOverview(allCategories: readonly Category[]): string {
     '',
   ].join('\n')
 }
-
-// ── Script ───────────────────────────────────────────────────
 
 export default lauf({
   description: 'Generate icon reference docs from TECH_ICONS source of truth',

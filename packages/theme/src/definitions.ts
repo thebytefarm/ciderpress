@@ -91,9 +91,9 @@ export function resolveThemeModes(theme: BuiltInThemeName): readonly ThemeVarian
  * Legacy theme-name aliases resolved at lookup time.
  *
  * `'default'` predates the apple-named built-in palette and remains the most
- * common slug in user configs. Aliasing it to `'honeycrisp'` keeps existing
- * `theme: { name: 'default' }` configs rendering the canonical brand
- * palette without churn.
+ * common slug in user configs. Aliasing it to `DEFAULT_THEME_NAME` keeps
+ * existing `theme: { name: 'default' }` configs rendering the canonical
+ * brand palette without churn.
  */
 export const THEME_ALIASES: Readonly<Record<string, BuiltInThemeName>> = Object.freeze({
   default: DEFAULT_THEME_NAME,

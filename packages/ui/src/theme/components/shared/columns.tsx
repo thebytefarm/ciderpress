@@ -1,10 +1,6 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
-// ---------------------------------------------------------------------------
-// Columns
-// ---------------------------------------------------------------------------
-
 export interface ColumnsProps {
   /**
    * Number of grid columns (1–4). Defaults to 2.
@@ -34,10 +30,6 @@ export function Columns({ cols = 2, children }: ColumnsProps): React.ReactElemen
 
   return <div className={className}>{children}</div>
 }
-
-// ---------------------------------------------------------------------------
-// Column
-// ---------------------------------------------------------------------------
 
 export interface ColumnProps {
   /**

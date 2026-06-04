@@ -89,10 +89,6 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build a full URL from base URL and path.
  *

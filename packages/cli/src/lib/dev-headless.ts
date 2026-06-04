@@ -98,10 +98,6 @@ export async function runDevHeadless(options: RunDevHeadlessOptions): Promise<vo
   await waitForShutdown(log, server.close, watcher.close)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Block on SIGINT/SIGTERM and gracefully shut down the watcher and server.
  *

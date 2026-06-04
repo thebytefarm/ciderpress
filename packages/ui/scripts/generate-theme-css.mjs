@@ -4,8 +4,8 @@
  * Reads `BUILT_IN_THEMES` from `@ciderpress/theme` and renders each entry with
  * `themeToCss`, then writes the result to:
  *
- *   - packages/ui/src/theme/styles/themes/{honeycrisp,grannysmith,midnight,arcade}.css
- *   - packages/ui/src/head/css/themes/{honeycrisp,grannysmith,midnight,arcade}.css   (FOUC fallback)
+ *   - packages/ui/src/theme/styles/themes/{mulled,honeycrisp,grannysmith,amber,midnight,arcade}.css
+ *   - packages/ui/src/head/css/themes/{mulled,honeycrisp,grannysmith,amber,midnight,arcade}.css   (FOUC fallback)
  *
  * Both output paths receive the same byte-identical body — the FOUC mirror
  * exists so the head injector can ship the critical block inline before the
@@ -32,10 +32,6 @@ import { fileURLToPath } from 'node:url'
 
 import { BUILT_IN_THEMES, themeToCss } from '@ciderpress/theme'
 
-// ---------------------------------------------------------------------------
-// Module-level constants
-// ---------------------------------------------------------------------------
-
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 
 const THEME_STYLES_DIR = resolve(ROOT, 'src/theme/styles/themes')
@@ -48,14 +44,10 @@ const GENERATED_BANNER = '/* GENERATED — DO NOT EDIT — run scripts/generate-
 // hardcoded list to keep in sync.
 const THEME_NAMES = Object.freeze(Object.keys(BUILT_IN_THEMES))
 
-// ---------------------------------------------------------------------------
-// Pure helpers
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single theme to its final CSS string (banner + body).
  *
- * @param {string} name - Built-in theme name (`honeycrisp` | `grannysmith` | `midnight` | `arcade`)
+ * @param {string} name - Built-in theme name (`mulled` | `honeycrisp` | `grannysmith` | `amber` | `midnight` | `arcade`)
  * @returns {string} Banner-prefixed CSS source
  */
 const renderThemeCss = (name) => `${GENERATED_BANNER}\n${themeToCss(BUILT_IN_THEMES[name])}`
@@ -107,10 +99,6 @@ const writeFileEnsuringDir = async (path, contents) => {
   await writeFile(path, contents, 'utf8')
 }
 
-// ---------------------------------------------------------------------------
-// Modes
-// ---------------------------------------------------------------------------
-
 /**
  * Write every generated theme CSS file to disk.
  *
@@ -150,10 +138,6 @@ const runCheck = async () => {
   )
   process.exit(1)
 }
-
-// ---------------------------------------------------------------------------
-// Entrypoint
-// ---------------------------------------------------------------------------
 
 const isCheckMode = process.argv.includes('--check')
 const task = (() => {

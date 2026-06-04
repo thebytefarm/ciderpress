@@ -280,10 +280,6 @@ export function slugify(text: string): string {
   return kebabCase(text)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Check a single workspace item for include patterns that already start
  * with the basePath derived from `path`.

@@ -47,10 +47,6 @@ export function WorkspaceGrid({
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build an inline style object for the workspace grid column count.
  *

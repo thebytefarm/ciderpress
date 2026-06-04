@@ -544,7 +544,6 @@ export interface CiderpressTokens {
  * Path segments are joined with `.` and ordered from outer to inner key.
  */
 export type TokenPath =
-  // colors.brand
   | 'colors.brand.primary'
   | 'colors.brand.hover'
   | 'colors.brand.active'
@@ -826,7 +825,6 @@ export type TokenPath =
  * matches the `--cp-*` names proposed in `.snapshots/baseline/token-audit.txt`.
  */
 export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.freeze({
-  // colors.brand
   'colors.brand.primary': '--cp-c-brand-1',
   'colors.brand.hover': '--cp-c-brand-2',
   'colors.brand.active': '--cp-c-brand-3',
@@ -835,13 +833,11 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.brand.onBrand': '--cp-c-on-brand',
   'colors.brand.light': '--cp-c-brand-light',
   'colors.brand.lighter': '--cp-c-brand-lighter',
-  // colors.semantic
   'colors.semantic.success': '--cp-c-success',
   'colors.semantic.error': '--cp-c-error',
   'colors.semantic.warn': '--cp-c-warn',
   'colors.semantic.info': '--cp-c-info',
   'colors.semantic.muted': '--cp-c-muted',
-  // colors.surface
   'colors.surface.bg': '--cp-c-bg',
   'colors.surface.bgAlt': '--cp-c-bg-alt',
   'colors.surface.bgElv': '--cp-c-bg-elv',
@@ -851,15 +847,12 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.surface.overlayFaint': '--cp-c-overlay-faint',
   'colors.surface.gutter': '--cp-c-gutter',
   'colors.surface.codeBlockBg': '--cp-code-block-bg',
-  // colors.text
   'colors.text.text1': '--cp-c-text-1',
   'colors.text.text2': '--cp-c-text-2',
   'colors.text.text3': '--cp-c-text-3',
-  // colors.border
   'colors.border.border': '--cp-c-border',
   'colors.border.divider': '--cp-c-divider',
   'colors.border.sidebarAltBorderDark': '--cp-c-sidebar-alt-border-dark',
-  // colors.tint
   'colors.tint.purple.bg': '--cp-c-tint-purple-bg',
   'colors.tint.purple.fg': '--cp-c-tint-purple-fg',
   'colors.tint.blue.bg': '--cp-c-tint-blue-bg',
@@ -879,7 +872,6 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.tint.purpleBright.fg': '--cp-c-tint-purple-bright-fg',
   'colors.tint.amberBright.fg': '--cp-c-tint-amber-bright-fg',
   'colors.tint.purpleGlow': '--cp-c-tint-purple-glow',
-  // colors.terminal
   'colors.terminal.bg': '--cp-c-term-bg',
   'colors.terminal.titlebarBg': '--cp-c-term-titlebar-bg',
   'colors.terminal.border': '--cp-c-term-border',
@@ -902,12 +894,10 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.terminal.muted': '--cp-c-term-muted',
   'colors.terminal.bar': '--cp-c-term-bar',
   'colors.terminal.step': '--cp-c-term-step',
-  // colors.window
   'colors.window.dotClose': '--cp-c-window-dot-close',
   'colors.window.dotMinimize': '--cp-c-window-dot-minimize',
   'colors.window.dotMaximize': '--cp-c-window-dot-maximize',
   'colors.window.titleFallback': '--cp-c-window-title-fallback',
-  // colors.badge
   'colors.badge.info.bg': '--cp-c-badge-info-bg',
   'colors.badge.info.fg': '--cp-c-badge-info-fg',
   'colors.badge.success.bg': '--cp-c-badge-success-bg',
@@ -916,17 +906,13 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.badge.warning.fg': '--cp-c-badge-warning-fg',
   'colors.badge.error.bg': '--cp-c-badge-error-bg',
   'colors.badge.error.fg': '--cp-c-badge-error-fg',
-  // colors.scrollbar
   'colors.scrollbar.thumb': '--cp-c-scrollbar-thumb',
   'colors.scrollbar.thumbHover': '--cp-c-scrollbar-thumb-hover',
-  // colors.syntax
   'colors.syntax.kw': '--cp-c-syntax-kw',
   'colors.syntax.str': '--cp-c-syntax-str',
   'colors.syntax.fn': '--cp-c-syntax-fn',
-  // colors.gradient
   'colors.gradient.heroCyan': '--cp-c-gradient-hero-cyan',
   'colors.gradient.heroPurple': '--cp-c-gradient-hero-purple',
-  // colors.oas
   'colors.oas.get': '--cp-oas-get',
   'colors.oas.post': '--cp-oas-post',
   'colors.oas.put': '--cp-oas-put',
@@ -934,12 +920,10 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'colors.oas.delete': '--cp-oas-delete',
   'colors.oas.deprecated': '--cp-oas-deprecated',
   'colors.oas.required': '--cp-oas-required',
-  // colors.button
   'colors.button.brand.bg': '--cp-button-brand-bg',
   'colors.button.brand.hoverBg': '--cp-button-brand-hover-bg',
   'colors.button.brand.activeBg': '--cp-button-brand-active-bg',
   'colors.button.brand.text': '--cp-button-brand-text',
-  // spacing
   'spacing.s1': '--cp-s-1',
   'spacing.s2': '--cp-s-2',
   'spacing.s3': '--cp-s-3',
@@ -962,7 +946,6 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'spacing.s64': '--cp-s-64',
   'spacing.s72': '--cp-s-72',
   'spacing.s96': '--cp-s-96',
-  // radii
   'radii.xs': '--cp-radius-xs',
   'radii.xsSm': '--cp-radius-xs-sm',
   'radii.sm': '--cp-radius-sm',
@@ -971,15 +954,12 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'radii.lg': '--cp-radius-lg',
   'radii.mdLg': '--cp-radius-md-lg',
   'radii.pill': '--cp-radius-pill',
-  // fonts.family
   'fonts.family.sans': '--cp-ff-sans',
   'fonts.family.mono': '--cp-ff-mono',
-  // fonts.weight
   'fonts.weight.regular': '--cp-fw-regular',
   'fonts.weight.medium': '--cp-fw-medium',
   'fonts.weight.semibold': '--cp-fw-semibold',
   'fonts.weight.bold': '--cp-fw-bold',
-  // fonts.size
   'fonts.size.body': '--cp-fs-body',
   'fonts.size.btn': '--cp-fs-btn',
   'fonts.size.bullet': '--cp-fs-bullet',
@@ -1023,21 +1003,17 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'fonts.size.askAiMark': '--cp-fs-ask-ai-mark',
   'fonts.size.askAiShortcut': '--cp-fs-ask-ai-shortcut',
   'fonts.size.sidebarLink': '--cp-fs-sidebar-link',
-  // shadows
   'shadows.cardHover': '--cp-shadow-card-hover',
   'shadows.menu': '--cp-shadow-menu',
   'shadows.tooltip': '--cp-shadow-tooltip',
   'shadows.heroDemo': '--cp-shadow-hero-demo',
   'shadows.askAi': '--cp-shadow-ask-ai',
-  // motion
   'motion.duration.fast': '--cp-duration-fast',
   'motion.duration.base': '--cp-duration-base',
   'motion.easing.base': '--cp-ease-base',
-  // zIndex
   'zIndex.dropdown': '--cp-z-dropdown',
   'zIndex.floating': '--cp-z-floating',
   'zIndex.tooltip': '--cp-z-tooltip',
-  // lineHeights
   'lineHeights.display': '--cp-lh-display',
   'lineHeights.tight': '--cp-lh-tight',
   'lineHeights.tighter': '--cp-lh-tighter',
@@ -1047,16 +1023,13 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'lineHeights.demo': '--cp-lh-demo',
   'lineHeights.code': '--cp-lh-code',
   'lineHeights.sidebar': '--cp-lh-sidebar',
-  // letterSpacings
   'letterSpacings.wide': '--cp-letter-wide',
   'letterSpacings.eyebrow': '--cp-letter-eyebrow',
   'letterSpacings.display': '--cp-letter-display',
   'letterSpacings.hero': '--cp-letter-hero',
-  // opacities
   'opacities.muted': '--cp-opacity-muted',
   'opacities.deprecated': '--cp-opacity-deprecated',
   'opacities.hover': '--cp-opacity-hover',
-  // sizes
   'sizes.titlebar': '--cp-size-titlebar',
   'sizes.windowDot': '--cp-size-window-dot',
   'sizes.windowTabDot': '--cp-size-window-tab-dot',
@@ -1087,14 +1060,11 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'sizes.askAiIcon': '--cp-size-ask-ai-icon',
   'sizes.sidebarCircle': '--cp-size-sidebar-circle',
   'sizes.scrollbar': '--cp-size-scrollbar',
-  // breakpoints
   'breakpoints.sm': '--cp-bp-sm',
   'breakpoints.md': '--cp-bp-md',
   'breakpoints.mdLg': '--cp-bp-md-lg',
   'breakpoints.content': '--cp-bp-content',
-  // blurs
   'blurs.base': '--cp-blur-base',
-  // gradients
   'gradients.brand': '--cp-gradient-brand',
   'gradients.heroTitle': '--cp-gradient-hero-title',
 })

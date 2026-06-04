@@ -81,10 +81,6 @@ export async function syncAllOpenAPI(ctx: SyncContext): Promise<SyncOpenAPIResul
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * An operation extracted from an OpenAPI paths object.
  *
@@ -141,13 +137,11 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
   const specAbsPath = path.resolve(ctx.repoRoot, config.spec)
   const specRelPath = config.spec
 
-  // Stat the spec file to get mtime for caching
   const specStat = await fs.stat(specAbsPath).catch(() => null)
   const specMtime = match(specStat)
     .with(P.nonNullable, (s) => s.mtimeMs)
     .otherwise(() => null)
 
-  // Try to use cached dereferenced spec when mtime is unchanged
   const api = await (async () => {
     if (specMtime !== null && ctx.openapiCache) {
       const prevMtime = match(ctx.previousManifest)
@@ -173,7 +167,6 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
       }
       return null
     }
-    // Populate cache on successful parse
     if (ctx.openapiCache) {
       ctx.openapiCache.set(specRelPath, parsed)
     }
@@ -215,7 +208,6 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
     group.operations.map((op) => buildOperationPage(op, prefix, spec))
   )
 
-  // Validate slug uniqueness — duplicate slugs would overwrite pages
   const slugCounts = Map.groupBy(operationPages, (page) => page.outputPath)
   const duplicates = [...slugCounts.entries()].filter(([, pages]) => pages.length > 1)
   if (duplicates.length > 0) {

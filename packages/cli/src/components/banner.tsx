@@ -1,26 +1,15 @@
-/*
-|==========================================================================
-| Banner
-|==========================================================================
-|
-| Styled ciderpress logo banner using cfonts block font with the active
-| theme's brand gradient. Color stops come from `@ciderpress/theme` so the
-| TUI stays in sync with the docs site and SVG assets.
-|
-*/
-
-import { resolveBrandGradient } from '@ciderpress/theme'
+import { DEFAULT_THEME_NAME, resolveBrandGradient } from '@ciderpress/theme'
 import BigText from 'ink-big-text'
 import Gradient from 'ink-gradient'
 
 /**
- * Render the ciderpress logo banner with the canonical honeycrisp brand
- * gradient (the apple-red palette is the framework's default identity).
+ * Render the ciderpress logo banner with the framework's default brand
+ * gradient — currently mulled (deep cider burgundy).
  *
  * @returns React element with the styled ciderpress banner
  */
 export function Banner(): React.ReactElement {
-  const colors = resolveBrandGradient('honeycrisp')
+  const colors = resolveBrandGradient(DEFAULT_THEME_NAME)
   return (
     <Gradient colors={[...colors]}>
       <BigText text="ciderpress" font="block" />

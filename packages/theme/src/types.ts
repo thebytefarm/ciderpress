@@ -4,15 +4,16 @@ import type { LiteralUnion } from 'type-fest'
  * Theme name with autocomplete for built-in themes and support for custom themes.
  *
  * Built-in themes: 'honeycrisp' (apple red), 'grannysmith' (apple green),
- * 'mulled' (deep cider burgundy), 'midnight' (deep dark blue), 'arcade'
- * (neon green). The legacy slug `'default'` is kept in the autocomplete
- * union and is normalized to `'honeycrisp'` at resolve time via
- * {@link THEME_ALIASES} — existing configs continue to render unchanged.
+ * 'mulled' (deep cider burgundy), 'amber' (warm hearth amber), 'midnight'
+ * (deep dark blue), 'arcade' (neon green). The legacy slug `'default'` is
+ * kept in the autocomplete union and is normalized to `'honeycrisp'` at
+ * resolve time via {@link THEME_ALIASES} — existing configs continue to
+ * render unchanged.
  *
  * Custom themes: any string value.
  */
 export type ThemeName = LiteralUnion<
-  'default' | 'honeycrisp' | 'grannysmith' | 'mulled' | 'midnight' | 'arcade',
+  'default' | 'honeycrisp' | 'grannysmith' | 'mulled' | 'amber' | 'midnight' | 'arcade',
   string
 >
 
@@ -24,6 +25,7 @@ export type BuiltInThemeName =
   | 'honeycrisp'
   | 'grannysmith'
   | 'mulled'
+  | 'amber'
   | 'midnight'
   | 'arcade'
 

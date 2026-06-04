@@ -1,6 +1,6 @@
 # @ciderpress/theme
 
-Theme types, tokens, and built-in themes (`honeycrisp`, `grannysmith`, `midnight`, `arcade`). Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
+Theme types, tokens, and built-in themes (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`). Part of [ciderpress](https://www.npmjs.com/package/ciderpress), the docs framework for monorepos.
 
 <span class="cp-badge">
 

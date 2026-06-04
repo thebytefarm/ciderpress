@@ -32,10 +32,6 @@ export function ResponseList({ responses }: ResponseListProps): React.ReactEleme
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Determine the CSS class for a status code badge.
  *
@@ -60,7 +56,6 @@ function statusClass(code: string): string {
  * @returns Schema object or null
  */
 function extractSchema(response: Record<string, unknown>): Record<string, unknown> | null {
-  // OpenAPI 3.x: response.content[mediaType].schema
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
   const contentSchema = match(content)
     .with(P.nonNullable, (c) => {
@@ -81,7 +76,6 @@ function extractSchema(response: Record<string, unknown>): Record<string, unknow
     return contentSchema
   }
 
-  // Swagger 2.0: response.schema (no content wrapper)
   return match(response['schema'] as Record<string, unknown> | undefined)
     .with(P.nonNullable, (s) => s)
     .otherwise(() => null)

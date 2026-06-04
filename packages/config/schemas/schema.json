@@ -15,10 +15,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "default": "honeycrisp",
+          "default": "mulled",
+          "description": "Theme identifier. Built-in: \"mulled\" (deep cider burgundy, default), \"honeycrisp\" (apple red), \"grannysmith\" (apple green), \"amber\" (warm hearth), \"midnight\" (deep blue), \"arcade\" (neon green). Legacy alias \"default\" resolves to \"mulled\". Custom themes registered via `themes: [defineTheme(...)]` are also accepted.",
           "type": "string"
         },
         "variant": {
+          "description": "Initial render variant. \"dark\" or \"light\". Falls back to the theme's own `defaultVariant` when omitted. A persisted localStorage value overrides this on subsequent visits when it points at a still-registered variant.",
           "type": "string",
           "enum": [
             "dark",
@@ -26,9 +28,11 @@
           ]
         },
         "switcher": {
+          "description": "Show the theme switcher dropdown in the nav bar. Defaults to `false`.",
           "type": "boolean"
         },
         "colors": {
+          "description": "Partial color overrides applied to the active theme's **light** variant. Each key maps to one or more `--cp-c-*` / `--rp-c-*` CSS custom properties.",
           "type": "object",
           "properties": {
             "brand": {
@@ -91,6 +95,7 @@
           "additionalProperties": false
         },
         "darkColors": {
+          "description": "Partial color overrides applied to the active theme's **dark** variant.",
           "type": "object",
           "properties": {
             "brand": {
@@ -164,8 +169,7 @@
         "type": "object",
         "properties": {
           "name": {
-            "type": "string",
-            "pattern": "^[a-z0-9][a-z0-9-]*$"
+            "type": "string"
           },
           "variants": {
             "type": "object",
@@ -1006,6 +1010,7 @@
       }
     },
     "actions": {
+      "maxItems": 2,
       "type": "array",
       "items": {
         "type": "object",
@@ -1296,6 +1301,7 @@
               "type": "string"
             },
             "actions": {
+              "maxItems": 2,
               "type": "array",
               "items": {
                 "type": "object",
@@ -1514,10 +1520,12 @@
           "type": "object",
           "properties": {
             "text": {
-              "type": "string"
+              "type": "string",
+              "description": "Visible label on the topbar CTA button."
             },
             "href": {
-              "type": "string"
+              "type": "string",
+              "description": "Destination URL — relative path or absolute URL."
             }
           },
           "required": [

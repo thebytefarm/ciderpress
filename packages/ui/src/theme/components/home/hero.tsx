@@ -86,10 +86,6 @@ export function Hero(props: HeroProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single hero CTA action.
  *

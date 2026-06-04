@@ -35,10 +35,6 @@ const isHeadless = process.argv.includes('--headless')
  */
 export default defineDevCommand()
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build the command registration — headless path uses a plain handler,
  * default path uses the Ink TUI screen.

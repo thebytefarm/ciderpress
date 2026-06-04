@@ -38,7 +38,7 @@ export default stories<BannerPreviewProps>({
   stories: {
     Default: {
       props: {},
-      description: 'ciderpress logo banner with honeycrisp brand-red gradient',
+      description: 'ciderpress logo banner with mulled brand-burgundy gradient',
     },
   },
 })

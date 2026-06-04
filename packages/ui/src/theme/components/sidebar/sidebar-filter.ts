@@ -50,10 +50,6 @@ export function resolveScopedSidebar(
   return all.filter((item) => !scopes.some((scope) => belongsToScope(item, scope)))
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Check whether a sidebar item belongs to a given scope path.
  *

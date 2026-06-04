@@ -46,10 +46,6 @@ export function validateConfig(config: unknown): ConfigResult<CiderpressConfig> 
   return [null, validated]
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Run all semantic checks across the parsed config.
  *
@@ -666,7 +662,7 @@ function firstErrorOf<T>(
  *
  * @private
  * @param userThemeNames - Names of themes registered via `config.themes`
- * @returns Comma-separated, double-quoted list (e.g. `'"honeycrisp", "midnight"'`)
+ * @returns Comma-separated, double-quoted list (e.g. `'"mulled", "honeycrisp"'`)
  */
 function formatKnownThemeNames(userThemeNames: readonly string[]): string {
   return [...THEME_NAMES, ...userThemeNames].map((n) => `"${n}"`).join(', ')

@@ -1233,7 +1233,7 @@ export interface SiteConfig {
  */
 export interface LogoContext {
   /**
-   * Active theme name (e.g. `'honeycrisp'`, `'midnight'`, or a user-defined name).
+   * Active theme name (e.g. `'mulled'`, `'honeycrisp'`, or a user-defined name).
    */
   readonly name: string
   /**
@@ -1336,8 +1336,8 @@ export interface CiderpressConfig {
    * Each entry is a `CiderpressThemeInput` (the same shape accepted by
    * `defineTheme`). Registering a theme here makes its `name` selectable
    * via `theme.name` and via the theme switcher. Built-in themes
-   * (`honeycrisp`, `grannysmith`, `midnight`, `arcade`) remain available
-   * regardless of this field.
+   * (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`,
+   * `arcade`) remain available regardless of this field.
    *
    * @example
    * ```ts

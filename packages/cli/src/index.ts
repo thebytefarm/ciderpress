@@ -1,13 +1,3 @@
-/*
-|==========================================================================
-| ciderpress CLI
-|==========================================================================
-|
-| CLI for building and serving documentation.
-| Provides commands for sync, dev, build, and serve.
-|
-*/
-
 // oxlint-disable-next-line import/no-unassigned-import -- side-effect: installs globalThis.require for ESM compat
 import './shims/require.ts'
 import { cli } from '@kidd-cli/core'
@@ -26,10 +16,6 @@ import { reportCrash, writeFatalToStderr } from './lib/crash-reporter.ts'
 import { errorBoundary } from './middleware/error-boundary.ts'
 
 declare const __KIDD_VERSION__: string
-
-// ---------------------------------------------------------------------------
-// Process-level safety net — catches async blowups outside the middleware chain
-// ---------------------------------------------------------------------------
 
 // oxlint-disable-next-line jest/require-hook -- CLI entry point, not a test file
 process.on('uncaughtException', (error) => {
@@ -51,8 +37,6 @@ await cli({
     order: ['setup', 'dev', 'build', 'serve', 'sync', 'check', 'diff', 'draft', 'clean', 'dump'],
   },
 })
-
-// ---------------------------------------------------------------------------
 
 /**
  * Handle a process-level crash (uncaughtException / unhandledRejection).

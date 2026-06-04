@@ -62,10 +62,6 @@ export function Sidebar(): React.ReactElement {
   return <SidebarList sidebarData={sidebarData} setSidebarData={setSidebarData} />
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Walk the sidebar tree and uncollapse groups that contain the active path.
  *

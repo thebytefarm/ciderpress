@@ -41,10 +41,6 @@ export function SecurityBadges({ securities }: SecurityBadgesProps): React.React
     .otherwise(() => null)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Format security scheme names with optional OAuth scopes.
  *

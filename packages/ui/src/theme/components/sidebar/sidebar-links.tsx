@@ -41,10 +41,6 @@ export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | nul
     .otherwise(() => null)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render an icon from a sidebar link item's icon configuration.
  *

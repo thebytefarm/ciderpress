@@ -238,10 +238,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private hooks
-// ---------------------------------------------------------------------------
-
 const MAX_LOG_ENTRIES = 50
 
 /**
@@ -267,10 +263,6 @@ function useActivityLog(): {
 
   return { log, pushLog, clearLog }
 }
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
 
 /**
  * Wrap each setter so it becomes a no-op after disposal.

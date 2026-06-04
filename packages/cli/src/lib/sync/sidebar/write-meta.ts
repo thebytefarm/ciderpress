@@ -77,28 +77,20 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
     .map((item) => item.name)
 
   await Promise.all([
-    // Create directories referenced in root _meta.json
     ...rootDirNames.map((name) => fs.mkdir(path.resolve(contentDir, name), { recursive: true })),
-    // Write root _meta.json (unified sidebar for non-standalone sections)
     fs.writeFile(
       path.resolve(contentDir, '_meta.json'),
       JSON.stringify(mergedRootMeta, null, 2),
       'utf8'
     ),
-    // Write _meta.json for each subdirectory
     ...allDirectories.map(async (dir) => {
       const metaPath = path.resolve(contentDir, dir.dirPath, '_meta.json')
       await fs.mkdir(path.dirname(metaPath), { recursive: true })
       await fs.writeFile(metaPath, JSON.stringify(dir.items, null, 2), 'utf8')
     }),
-    // Write _nav.json at content root
     fs.writeFile(path.resolve(contentDir, '_nav.json'), JSON.stringify(nav, null, 2), 'utf8'),
   ])
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build root `_meta.json` dir items for root-level OpenAPI entries.
@@ -149,7 +141,6 @@ function mergeOpenapiParentEntries(
     return [...directories]
   }
 
-  // Build a mutable map of dirPath → items for merging
   const dirMap = new Map<string, MetaItem[]>(
     directories.map((dir) => [dir.dirPath, [...dir.items]])
   )

@@ -75,13 +75,11 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   await fs.mkdir(outDir, { recursive: true })
   await fs.mkdir(path.resolve(outDir, '.generated'), { recursive: true })
 
-  // Generate banner/logo/icon SVGs (skips user-customized files automatically)
   const assetConfig = buildAssetConfig(config)
   const assetConfigHash = createHash('sha256').update(JSON.stringify(assetConfig)).digest('hex')
 
   const previousManifest = await loadManifest(outDir)
 
-  // Skip asset generation entirely when config hasn't changed
   const assetConfigChanged =
     isNil(previousManifest) || previousManifest.assetConfigHash !== assetConfigHash
   if (assetConfigChanged) {
@@ -102,11 +100,9 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     openapiCache: options.openapiCache,
   }
 
-  // 0. Synthesize workspace sections from apps/packages/workspaces config
   const workspaceSections = synthesizeWorkspaceSections(config)
   const allSections: Section[] = [...config.sections, ...workspaceSections]
 
-  // 1. Resolve the section tree
   const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
   if (resolveErr) {
     return {
@@ -118,18 +114,14 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     }
   }
 
-  // 1.25 Enrich sections with workspace card metadata from workspaces config
   const enriched = enrichWorkspaceCards(rawResolved, config)
 
-  // 1.5 Inject auto-generated landing pages for sections with path but no page.
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
   const resolved = injectLandingPages(enriched, allSections, workspaces)
 
-  // 2. Collect all pages from the tree
   const sectionPages = collectPages(resolved)
 
-  // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
   const sectionScopePaths = collectStandaloneScopePaths(resolved)
   await fs.writeFile(
@@ -138,7 +130,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     'utf8'
   )
 
-  // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
   const homeResult = await match(hasExplicitHome)
     .with(true, () => Promise.resolve(null))
@@ -155,13 +146,10 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     ])
     .otherwise(() => sectionPages)
 
-  // 2.5 Discover planning pages (hidden — not in sidebar/nav)
   const planningPages = await discoverPlanningPages(ctx)
 
-  // 2.6 Sync OpenAPI specs
   const openapiResult = await syncAllOpenAPI(ctx)
 
-  // 2.7 Write scopes.json — section standalone scopes + root-level OpenAPI scopes
   const openapiScopePaths = collectOpenapiScopePaths(openapiResult.sidebar)
   const standaloneScopePaths = [...sectionScopePaths, ...openapiScopePaths]
   await fs.writeFile(
@@ -170,14 +158,11 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     'utf8'
   )
 
-  // 3. Copy/generate all pages (sections + home + planning + openapi)
   const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
-  // Detect structural changes — skip mtime optimization when page count changes
   const skipMtimeOptimization =
     isNotNil(previousManifest) && allPages.length !== previousManifest.resolvedCount
 
-  // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
   const copyCtx: SyncContext = { ...ctx, sourceMap, skipMtimeOptimization }
 
@@ -196,7 +181,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     })
   )
 
-  // Build manifest from collected results
   const manifestFiles = Object.fromEntries(
     pageResults.map(({ entry }) => [entry.outputPath, entry])
   )
@@ -213,8 +197,8 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     { written: 0, skipped: 0 }
   )
 
-  // 5. Clean stale files. `cleanStaleFiles` returns `{ attempted, removed, failed }`
-  // so we can surface per-path failures to the user without aborting the sync.
+  // `cleanStaleFiles` returns `{ attempted, removed, failed }` so we can
+  // surface per-path failures to the user without aborting the sync.
   const cleanResult = await match(previousManifest)
     .with(P.nonNullable, async (m) => await cleanStaleFiles(outDir, m, ctx.manifest))
     .otherwise(() => Promise.resolve({ attempted: 0, removed: 0, failed: [] as const }))
@@ -230,7 +214,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     })
   }
 
-  // 6. Generate nav + write Rspress-native _meta.json / _nav.json
   const nav = generateNav(config, resolved)
   await writeMetaFiles({
     contentDir: outDir,
@@ -239,9 +222,9 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     openapiEntries: openapiResult.sidebar,
   })
 
-  // 6.1 Write sidebar.json + nav.json snapshots for tooling / debugging.
-  // Rspress no longer reads these (sidebar/nav come from _meta.json/_nav.json),
-  // but they provide a single-file view of the resolved structure.
+  // Rspress no longer reads sidebar.json/nav.json (sidebar/nav come from
+  // _meta.json/_nav.json), but they provide a single-file view of the
+  // resolved structure for tooling and debugging.
   await Promise.all([
     fs.writeFile(
       path.resolve(outDir, '.generated/sidebar.json'),
@@ -251,7 +234,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     fs.writeFile(path.resolve(outDir, '.generated/nav.json'), JSON.stringify(nav, null, 2), 'utf8'),
   ])
 
-  // 7. Save manifest with incremental metadata
   const manifest = {
     ...ctx.manifest,
     assetConfigHash,
@@ -260,7 +242,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
   await saveManifest(outDir, manifest)
 
-  // 8. Write bare-bones README in .ciderpress/ root
   await writeCiderpressReadme(options.paths.outputRoot)
 
   const elapsed = performance.now() - start
@@ -272,10 +253,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Recursively collect all page data from a resolved entry tree.

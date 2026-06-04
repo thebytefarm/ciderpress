@@ -4,10 +4,6 @@ import type React from 'react'
 
 import './desktop-window.css'
 
-// ---------------------------------------------------------------------------
-// Shared types
-// ---------------------------------------------------------------------------
-
 export interface WindowTab {
   /**
    * Tab label text.
@@ -18,10 +14,6 @@ export interface WindowTab {
    */
   readonly active?: boolean
 }
-
-// ---------------------------------------------------------------------------
-// DesktopWindow — base window chrome
-// ---------------------------------------------------------------------------
 
 export interface DesktopWindowProps {
   /**
@@ -101,10 +93,6 @@ export function DesktopWindow({
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// BrowserWindow
-// ---------------------------------------------------------------------------
 
 export interface BrowserTab {
   /**
@@ -244,10 +232,6 @@ export function BrowserWindow({
   )
 }
 
-// ---------------------------------------------------------------------------
-// Browser chrome sub-components
-// ---------------------------------------------------------------------------
-
 /**
  * Back, forward, and refresh navigation buttons for the browser URL bar.
  *
@@ -311,10 +295,6 @@ function BrowserMenuButton(): React.ReactElement {
     </svg>
   )
 }
-
-// ---------------------------------------------------------------------------
-// IDEWindow
-// ---------------------------------------------------------------------------
 
 export interface IDEFileTab {
   /**
@@ -405,10 +385,6 @@ export function IDEWindow({
   )
 }
 
-// ---------------------------------------------------------------------------
-// TerminalWindow
-// ---------------------------------------------------------------------------
-
 export type TerminalColor =
   | 'red'
   | 'green'
@@ -467,10 +443,6 @@ export function TerminalWindow({ title, children }: TerminalWindowProps): React.
     </DesktopWindow>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Terminal child components
-// ---------------------------------------------------------------------------
 
 export interface CommandProps {
   /**

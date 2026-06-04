@@ -79,7 +79,6 @@ export function rewriteLinks(params: {
   readonly outputPath: string
   readonly sourceMap: SourceMap
 }): string {
-  // 1. Extract fenced code blocks to avoid rewriting links inside them
   const codeBlocks: string[] = []
   const withoutCode = params.content.replace(CODE_BLOCK_RE, (block) => {
     const idx = codeBlocks.length
@@ -87,7 +86,6 @@ export function rewriteLinks(params: {
     return `${PLACEHOLDER_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`
   })
 
-  // 2. Rewrite relative markdown links
   const sourceDir = path.dirname(params.sourcePath)
   const outputDir = path.dirname(params.outputPath)
 
@@ -99,13 +97,8 @@ export function rewriteLinks(params: {
     return fullMatch.replace(url, resolved)
   })
 
-  // 3. Restore code blocks
   return rewritten.replace(PLACEHOLDER_RE, (_, idx) => codeBlocks[Number(idx)])
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Attempt to resolve a single link URL to its correct output-relative path.
@@ -124,32 +117,25 @@ function resolveLink(params: {
   readonly outputDir: string
   readonly sourceMap: SourceMap
 }): string | null {
-  // Skip absolute URLs, protocol URLs, and anchor-only links
   if (isNonRewritableUrl(params.url)) {
     return null
   }
 
-  // Split URL into path and fragment
   const { linkPath, fragment } = splitFragment(params.url)
 
-  // Only rewrite links to markdown files
   if (!linkPath.endsWith('.md') && !linkPath.endsWith('.mdx')) {
     return null
   }
 
-  // Resolve relative to source directory to get repo-relative path
   const resolvedSource = path.normalize(path.join(params.sourceDir, linkPath))
 
-  // Look up the target in the source map
   const targetOutput = params.sourceMap.get(resolvedSource)
   if (targetOutput === undefined) {
     return null
   }
 
-  // Compute relative path from output directory to target output
   const relativePath = path.relative(params.outputDir, targetOutput)
 
-  // Normalize to forward slashes (for cross-platform safety)
   const normalized = relativePath.split(path.sep).join('/')
 
   return `${normalized}${fragment}`

@@ -1,3 +1,4 @@
+import { DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import { match, P } from 'massaman/match'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -23,7 +24,7 @@ const THEME_OPTIONS: readonly ThemeOption[] = parseThemeRegistry(__CIDERPRESS_TH
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
 
 const FALLBACK_THEME = match(THEME_OPTIONS[0])
-  .with(P.nullish, () => 'honeycrisp')
+  .with(P.nullish, () => DEFAULT_THEME_NAME as string)
   .otherwise((entry) => entry.name)
 
 /**
@@ -112,10 +113,6 @@ export function ThemeSwitcher(): React.ReactElement | null {
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Resolve the active theme name for first render. Reads

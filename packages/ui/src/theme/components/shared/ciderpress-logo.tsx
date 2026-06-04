@@ -1,3 +1,4 @@
+import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import type React from 'react'
 
 const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
@@ -9,7 +10,7 @@ const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospac
  * floating in extra empty space.
  */
 const LOGO_VIEWBOX = '-1 -1 588 101'
-const LOGO_FALLBACK_COLOR = '#dc2626'
+const LOGO_FALLBACK_COLOR = BRAND_COLORS[DEFAULT_THEME_NAME].primary
 const FONT_SIZE = 13
 const LINE_HEIGHT = 16
 const X_OFFSET = 0
@@ -55,9 +56,9 @@ export interface CiderpressLogoProps {
  * `ThemeProvider` — so the logo tints to whichever theme (and variant) is
  * active without any JS re-renders or theme subscriptions.
  *
- * Falls back to the honeycrisp primary (`#dc2626`) when `--rp-c-brand`
- * is not defined (e.g. when rendered outside the ciderpress theme
- * context).
+ * Falls back to the default theme's primary brand color when
+ * `--rp-c-brand` is not defined (e.g. when rendered outside the
+ * ciderpress theme context).
  *
  * @param props - Optional className, title, and explicit size overrides
  * @returns Inline SVG element

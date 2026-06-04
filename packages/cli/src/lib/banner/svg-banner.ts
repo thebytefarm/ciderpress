@@ -85,10 +85,6 @@ export function composeBanner(params: {
   return sections.filter((s) => s.length > 0).join('\n')
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Trim a tagline string, returning undefined if absent or empty.
  *

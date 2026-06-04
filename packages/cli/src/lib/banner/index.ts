@@ -140,10 +140,6 @@ export async function generateAssets(
   return [null, written]
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Determine whether a file should be (re)generated.
  *

@@ -3,10 +3,6 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedEntry } from '../types'
 import { buildMetaDirectories, buildRootMeta } from './meta'
 
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
-
 /**
  * Simulates the packages section from ciderpress.config.ts where each package
  * section has a landing page leaf that shares the same path as the parent.
@@ -107,10 +103,6 @@ const referenceRoot: ResolvedEntry = {
   ],
 }
 
-// ---------------------------------------------------------------------------
-// buildRootMeta
-// ---------------------------------------------------------------------------
-
 describe('buildRootMeta()', () => {
   it('should include visible top-level sections', () => {
     const entries: readonly ResolvedEntry[] = [
@@ -187,10 +179,6 @@ describe('buildRootMeta()', () => {
     expect(result).toStrictEqual([{ type: 'file', name: 'api', label: 'API' }])
   })
 })
-
-// ---------------------------------------------------------------------------
-// buildMetaDirectories
-// ---------------------------------------------------------------------------
 
 describe('buildMetaDirectories()', () => {
   it('should use the section title when a leaf and section share the same name', () => {

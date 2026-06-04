@@ -112,7 +112,6 @@ export function activate(context: ExtensionContext): void {
     RelativePattern,
   })
 
-  /* Empty tree view shown while the dev server is starting */
   const loadingView = window.createTreeView('ciderpress.loading', {
     treeDataProvider: { getTreeItem: () => ({ label: '' }), getChildren: () => [] },
   })
@@ -264,13 +263,10 @@ export function activate(context: ExtensionContext): void {
     },
   })
 
-  /* Update section visibility whenever sidebar.json changes */
   sidebar.onDidReload(refreshSectionViews)
 
-  /* Set initial section visibility from any existing sidebar.json */
   refreshSectionViews()
 
-  /* Set initial server status to stopped */
   setServerStatus('stopped')
   previewPanel.updateStatus('stopped')
 
@@ -285,7 +281,6 @@ export function activate(context: ExtensionContext): void {
     commands.executeCommand('setContext', 'ciderpress:isTrackedFile', isTracked)
   }
 
-  /* Re-evaluate tracked context whenever the manifest updates */
   manifestReader.onDidChange(() => {
     updateTrackedContext(window.activeTextEditor)
   })

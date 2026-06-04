@@ -17,11 +17,18 @@ import {
 
 describe('THEME_NAMES constant', () => {
   it('should contain exactly the built-in theme names', () => {
-    expect(THEME_NAMES).toStrictEqual(['honeycrisp', 'grannysmith', 'mulled', 'midnight', 'arcade'])
+    expect(THEME_NAMES).toStrictEqual([
+      'honeycrisp',
+      'grannysmith',
+      'mulled',
+      'amber',
+      'midnight',
+      'arcade',
+    ])
   })
 
-  it('should have exactly 5 entries', () => {
-    expect(THEME_NAMES).toHaveLength(5)
+  it('should have exactly 6 entries', () => {
+    expect(THEME_NAMES).toHaveLength(6)
   })
 })
 
@@ -55,18 +62,19 @@ describe('ICON_COLORS constant', () => {
 })
 
 describe('THEME_ALIASES constant', () => {
-  it('should map legacy default to honeycrisp', () => {
-    expect(THEME_ALIASES['default']).toBe('honeycrisp')
+  it('should map legacy default to mulled', () => {
+    expect(THEME_ALIASES['default']).toBe('mulled')
   })
 })
 
 describe('resolveThemeAlias()', () => {
-  it('should resolve default to honeycrisp', () => {
-    expect(resolveThemeAlias('default')).toBe('honeycrisp')
+  it('should resolve default to mulled', () => {
+    expect(resolveThemeAlias('default')).toBe('mulled')
   })
 
   it('should pass canonical names through unchanged', () => {
     expect(resolveThemeAlias('honeycrisp')).toBe('honeycrisp')
+    expect(resolveThemeAlias('mulled')).toBe('mulled')
     expect(resolveThemeAlias('midnight')).toBe('midnight')
   })
 
@@ -86,6 +94,10 @@ describe('isBuiltInTheme()', () => {
 
   it('should return true for mulled', () => {
     expect(isBuiltInTheme('mulled')).toBe(true)
+  })
+
+  it('should return true for amber', () => {
+    expect(isBuiltInTheme('amber')).toBe(true)
   })
 
   it('should return true for midnight', () => {
@@ -144,6 +156,10 @@ describe('resolveDefaultVariant()', () => {
     expect(resolveDefaultVariant('mulled')).toBe('dark')
   })
 
+  it('should return dark for amber', () => {
+    expect(resolveDefaultVariant('amber')).toBe('dark')
+  })
+
   it('should return dark for midnight', () => {
     expect(resolveDefaultVariant('midnight')).toBe('dark')
   })
@@ -168,6 +184,10 @@ describe('resolveThemeVariants()', () => {
 
   it('should return both variants for mulled', () => {
     expect(resolveThemeVariants('mulled')).toStrictEqual(['dark', 'light'])
+  })
+
+  it('should return both variants for amber', () => {
+    expect(resolveThemeVariants('amber')).toStrictEqual(['dark', 'light'])
   })
 
   it('should return only dark for midnight', () => {

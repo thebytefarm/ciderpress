@@ -14,6 +14,7 @@ import type {
 } from '@ciderpress/config'
 import {
   BUILT_IN_THEMES,
+  DEFAULT_THEME_NAME,
   defineTheme,
   isBuiltInTheme,
   resolveDefaultVariant,
@@ -277,10 +278,6 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Load a generated JSON file from the sync engine output, falling back
  * to a default value if the file does not exist yet.
@@ -326,7 +323,7 @@ function detectGitBranch(): string {
 }
 
 /**
- * Resolve the theme name from config, defaulting to `'honeycrisp'`.
+ * Resolve the theme name from config, defaulting to `DEFAULT_THEME_NAME`.
  *
  * The requested name is normalized through `resolveThemeAlias` so legacy
  * slugs (e.g. `'default'`) map to their canonical apple-named built-in
@@ -336,7 +333,7 @@ function detectGitBranch(): string {
  *
  * An unknown name — caused by a typo or by removing a custom theme without
  * updating `theme.name` — writes a warning to stderr and falls back to
- * `'honeycrisp'` so the build still produces working CSS.
+ * `DEFAULT_THEME_NAME` so the build still produces working CSS.
  *
  * @private
  * @param config - Ciderpress config object
@@ -350,14 +347,14 @@ function resolveThemeName(config: CiderpressConfig, override?: ThemeName): Theme
     return requested
   }
   process.stderr.write(
-    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to 'honeycrisp'.\n`
+    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to '${DEFAULT_THEME_NAME}'.\n`
   )
-  return 'honeycrisp'
+  return DEFAULT_THEME_NAME
 }
 
 /**
  * Pick the theme name the consumer asked for, in precedence order:
- * CLI override > `config.theme.name` > `'honeycrisp'`.
+ * CLI override > `config.theme.name` > `DEFAULT_THEME_NAME`.
  *
  * @private
  * @param config - Ciderpress config object
@@ -371,7 +368,7 @@ function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeNam
   if (config.theme && config.theme.name) {
     return config.theme.name
   }
-  return 'honeycrisp'
+  return DEFAULT_THEME_NAME
 }
 
 /**

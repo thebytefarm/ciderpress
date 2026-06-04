@@ -47,10 +47,6 @@ export function Frame({ caption, hint, children }: FrameProps): React.ReactEleme
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Clone video elements with autoPlay to inject playsInline, loop, and muted.
  *

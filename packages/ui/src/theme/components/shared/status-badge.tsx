@@ -47,10 +47,6 @@ export function Badge({ variant = 'info', color, children }: BadgeProps): React.
     })
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Convert a hex color to an rgba tint at 12% opacity for the badge background.
  * Falls back to a simple rgba wrapper for non-hex values.

@@ -2,6 +2,7 @@
 import type { LogoContext, LogoFn, LogoImage, CiderpressConfig } from '@ciderpress/config'
 // oxlint-disable-next-line import/no-unresolved -- alias provided by createRspressConfig's resolve.alias
 import userConfigModule from '@ciderpress/internal/user-config'
+import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -26,10 +27,11 @@ const COLOR_VARS = Object.freeze({
  * Fallback colors used during SSR / before the first paint, where
  * `getComputedStyle` is unavailable or returns empty strings.
  */
+const DEFAULT_BRAND = BRAND_COLORS[DEFAULT_THEME_NAME]
 const FALLBACK_COLORS = Object.freeze({
-  brand: '#d97706',
-  brandHover: '#b45309',
-  brandSoft: '#ede9fe',
+  brand: DEFAULT_BRAND.primary,
+  brandHover: DEFAULT_BRAND.hover,
+  brandSoft: DEFAULT_BRAND.soft,
   bg: '#ffffff',
   text: '#1f2937',
 })
@@ -141,10 +143,6 @@ export function NavLogo(): React.ReactElement | null {
 
 export { NavLogo as default }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Extract the `logo` field from the bundled user config module. Tolerates
  * default-exports, named-exports, and the empty stub fallback.
@@ -238,7 +236,7 @@ function isLogoImage(value: unknown): value is LogoImage {
  */
 function readThemeContext(html: HTMLElement): LogoContext {
   const variant: 'light' | 'dark' = html.dataset.cpVariant === 'light' ? 'light' : 'dark'
-  const name = typeof html.dataset.cpTheme === 'string' ? html.dataset.cpTheme : 'honeycrisp'
+  const name = typeof html.dataset.cpTheme === 'string' ? html.dataset.cpTheme : DEFAULT_THEME_NAME
 
   const styles = globalThis.window.getComputedStyle(html)
   function read(cssVar: string, fallback: string): string {

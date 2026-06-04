@@ -131,10 +131,6 @@ export function OpenAPIOperation({
     .otherwise(() => <NotFound method={method} path={path} />)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render the operation header with method badge, path, and optional deprecation tag.
  *

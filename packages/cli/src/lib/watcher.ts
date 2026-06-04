@@ -186,10 +186,6 @@ export function createWatcher(params: {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Check whether a file path has a markdown extension.
  *

@@ -159,7 +159,6 @@ function createDevServer(deps: DevServerDeps): DevServer {
     }
 
     child.on('close', (code) => {
-      /* Guard against stale close events from a previously killed child */
       if (state.process !== child) {
         return
       }

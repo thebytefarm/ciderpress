@@ -126,7 +126,6 @@ export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildC
       return { status: 'failed', deadlinks }
     }
 
-    // Non-deadlink build error — surface as a generic failure
     return { status: 'error', message: error.message }
   }
 
@@ -177,10 +176,6 @@ export function presentResults(params: PresentResultsParams): boolean {
 
   return configResult.passed && buildResult.status === 'passed'
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Run the build check without capturing output, letting Rspress/Rspack
@@ -245,7 +240,6 @@ function createInterceptor(chunks: string[]): typeof process.stdout.write {
     const text = chunkToString(chunk)
     // oxlint-disable-next-line functional/immutable-data -- accumulating captured output
     chunks.push(text)
-    // Invoke callback if provided (matches Node's write signature overloads)
     if (typeof encodingOrCb === 'function') {
       // oxlint-disable-next-line eslint-plugin-promise/prefer-await-to-callbacks -- invoking Node's write callback, not an async pattern
       encodingOrCb()

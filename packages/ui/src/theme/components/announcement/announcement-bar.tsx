@@ -104,10 +104,6 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
     ))
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Read the dismissed flag from localStorage.
  *

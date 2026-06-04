@@ -54,10 +54,6 @@ export function FloatingBranchIndicator(): React.ReactElement | null {
 
 export { FloatingBranchIndicator as default }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Resolves the current git branch name from the build-time global,
  * returning an empty string when undefined.

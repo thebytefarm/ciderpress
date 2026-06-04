@@ -4,10 +4,6 @@ import { useState } from 'react'
 
 import { Icon } from './icon'
 
-// ---------------------------------------------------------------------------
-// Field
-// ---------------------------------------------------------------------------
-
 export interface FieldProps {
   /**
    * Field name, rendered in monospace bold.
@@ -96,10 +92,6 @@ export function Field({
   )
 }
 
-// ---------------------------------------------------------------------------
-// FieldGroup
-// ---------------------------------------------------------------------------
-
 export interface FieldGroupProps {
   /**
    * Group label displayed as a header or trigger text.
@@ -148,10 +140,6 @@ export function FieldGroup({
       </div>
     ))
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 const DATA_OPEN = { 'data-open': '' } as const
 const DATA_CLOSED = {} as const

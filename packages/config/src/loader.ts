@@ -40,10 +40,6 @@ export async function loadConfig(
   return await loadAndValidateConfig({ cwd, configFile })
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Internal helper to load and validate config with proper error handling.
  *

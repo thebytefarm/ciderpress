@@ -32,10 +32,6 @@ export function generateNav(
     .filter((item) => item.link !== undefined)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build a NavItem from a resolved entry.
  *

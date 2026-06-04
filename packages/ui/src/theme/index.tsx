@@ -8,18 +8,18 @@
  * in the site bundle when this theme entry is loaded.
  */
 
-// ── Global styles (side-effect imports) ──────────────────────────────
-// Cascade layer order — MUST be imported first so every following stylesheet
-// resolves into the correct layer. The final `user` layer is the public
-// override slot for downstream consumers (see styles/layers.css).
 import './styles/layers.css'
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
 import './styles/overrides/rspress.css'
-// Theme color palettes — scoped via [data-cp-theme][data-cp-variant] selectors
+// Theme color palettes — scoped via [data-cp-theme][data-cp-variant] selectors.
+// `mulled.css` ships first because it is `DEFAULT_THEME_NAME` — its rules emit
+// the `:root { ... }` FOUC fallback that paints before JS hydrates the
+// `data-cp-theme` attribute on `<html>`.
+import './styles/themes/mulled.css'
 import './styles/themes/honeycrisp.css'
 import './styles/themes/grannysmith.css'
-import './styles/themes/mulled.css'
+import './styles/themes/amber.css'
 import './styles/themes/midnight.css'
 import './styles/themes/arcade.css'
 // arcade-fx.css is intentionally separate from arcade.css:
@@ -36,7 +36,6 @@ import './styles/overrides/home-card.css'
 import './styles/overrides/section-card.css'
 import './styles/overrides/vscode.css'
 import './styles/overrides/badge.css'
-// Component styles
 import './components/announcement/announcement-bar.css'
 import './components/ask-ai/ask-ai-button.css'
 import './components/content-footer/feedback.css'
@@ -65,11 +64,7 @@ import './components/shared/color.css'
 import './components/shared/steps.css'
 import './components/shared/field.css'
 
-// ── Rspress theme re-export ──────────────────────────────────────────
-// (theme-original avoids circular resolution when used inside a themeDir)
 export * from '@rspress/core/theme-original'
-
-// ── Layout overrides (@internal — required by Rspress theme resolution) ──
 
 /** @internal Rspress layout override — injects ciderpress nav components via layout slots */
 export { Layout } from './components/nav/layout'
@@ -79,8 +74,6 @@ export { HomeFeature } from './components/home/feature'
 export { HomeLayout } from './components/home/layout'
 /** @internal Sidebar override — multi-scope filtering for standalone sections */
 export { Sidebar } from './components/sidebar/sidebar-scope'
-
-// ── Cards & Grids ────────────────────────────────────────────────────
 
 export { FeatureCard, FeatureGrid } from './components/home/feature-card'
 export type { FeatureCardProps, FeatureItem } from './components/home/feature-card'
@@ -104,8 +97,6 @@ export type { SectionCardProps } from './components/shared/section-card'
 export { SectionGrid } from './components/shared/section-grid'
 export type { SectionGridProps } from './components/shared/section-grid'
 
-// ── Window Chrome ────────────────────────────────────────────────────
-
 export { DesktopWindow } from './components/shared/desktop-window'
 export type { DesktopWindowProps, WindowTab } from './components/shared/desktop-window'
 export { BrowserWindow } from './components/shared/desktop-window'
@@ -121,8 +112,6 @@ export type {
   OutputProps,
   LineProps,
 } from './components/shared/desktop-window'
-
-// ── Content Components ───────────────────────────────────────────────
 
 export { Accordion, AccordionGroup } from './components/shared/accordion'
 export type { AccordionProps, AccordionGroupProps } from './components/shared/accordion'
@@ -143,16 +132,12 @@ export type { StepsProps, StepProps } from './components/shared/steps'
 export { Field, FieldGroup } from './components/shared/field'
 export type { FieldProps, FieldGroupProps } from './components/shared/field'
 
-// ── OpenAPI (framework-generated — advanced use only) ────────────────
-
 export { CopyMarkdownButton } from './components/openapi'
 export type { CopyMarkdownButtonProps } from './components/openapi'
 export { OpenAPIOperation } from './components/openapi'
 export type { OpenAPIOperationProps } from './components/openapi'
 export { OpenAPIOverview } from './components/openapi'
 export type { OpenAPIOverviewProps } from './components/openapi'
-
-// ── Chrome Components ────────────────────────────────────────────────
 
 export { AnnouncementBar } from './components/announcement/announcement-bar'
 export type { AnnouncementBarProps } from './components/announcement/announcement-bar'
@@ -169,8 +154,6 @@ export type { FrameworkPickerProps } from './components/sidebar/framework-picker
 export { SidebarPromo } from './components/sidebar/sidebar-promo'
 export type { SidebarPromoProps } from './components/sidebar/sidebar-promo'
 export { SidebarToggle } from './components/sidebar/sidebar-toggle'
-
-// ── Utilities ────────────────────────────────────────────────────────
 
 export { Icon } from './components/shared/icon'
 export { TechTag } from './components/shared/tech-tag'

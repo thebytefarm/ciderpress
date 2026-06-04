@@ -33,7 +33,6 @@ describe('injectLandingPages()', () => {
 
     expect(result.page).toBeDefined()
     expect(result.page!.outputPath).toMatch(/\.mdx$/)
-    // Source tree is untouched (immutable result)
     expect(section.page).toBeUndefined()
   })
 
@@ -78,7 +77,6 @@ describe('injectLandingPages()', () => {
     const [rebuiltNested] = result.items!
     expect(rebuiltNested.page).toBeDefined()
     expect(rebuiltNested.page!.outputPath).toMatch(/\.mdx$/)
-    // Source nested entry is untouched (immutable result)
     expect(nested.page).toBeUndefined()
   })
 })

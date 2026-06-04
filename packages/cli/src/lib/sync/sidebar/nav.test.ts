@@ -4,15 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedEntry } from '../types.ts'
 import { generateNav } from './index.ts'
 
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
-
 const autoConfig = { nav: 'auto' } as CiderpressConfig
-
-// ---------------------------------------------------------------------------
-// generateNav — root sections
-// ---------------------------------------------------------------------------
 
 describe('generateNav()', () => {
   it('should exclude root sections from non-standalone nav items', () => {
@@ -77,7 +69,6 @@ describe('generateNav()', () => {
     const nav = generateNav(autoConfig, entries)
     const texts = nav.map((item) => item.text)
 
-    // First 3 non-standalone + root section
     expect(texts).toStrictEqual(['A', 'B', 'C', 'Ref'])
     expect(texts).not.toContain('D')
   })

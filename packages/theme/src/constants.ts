@@ -19,13 +19,13 @@
  * Re-exported via `index.ts` so external consumers can reach it through
  * `@ciderpress/theme`.
  */
-export const DEFAULT_THEME_NAME = 'honeycrisp' as const
+export const DEFAULT_THEME_NAME = 'mulled' as const
 
 /**
  * Frozen list of every built-in theme name. Used by `themeInputEnvelopeSchema`
  * to reject `defineTheme({ name: 'honeycrisp' | 'grannysmith' | 'mulled' |
- * 'midnight' | 'arcade' })` calls from user code — these slugs are reserved
- * for first-party themes.
+ * 'amber' | 'midnight' | 'arcade' })` calls from user code — these slugs are
+ * reserved for first-party themes.
  *
  * Declared as a static literal list rather than `Object.keys(BUILT_IN_THEMES)`
  * because `BUILT_IN_THEMES` itself is built by calling `defineTheme` at module
@@ -37,6 +37,7 @@ export const RESERVED_THEME_NAMES: readonly string[] = Object.freeze([
   'honeycrisp',
   'grannysmith',
   'mulled',
+  'amber',
   'midnight',
   'arcade',
 ])

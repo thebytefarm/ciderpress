@@ -98,7 +98,6 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
   fs.mkdirSync(fixturesDir, { recursive: true })
   const dir = fs.mkdtempSync(path.join(fixturesDir, 'bench-'))
 
-  // Build unique section names
   const sectionNames = Array.from({ length: sectionCount }, (_, i) => {
     const base = DIRECTORY_NAMES[i % DIRECTORY_NAMES.length]
     if (i < DIRECTORY_NAMES.length) {
@@ -107,7 +106,6 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
     return `${base}-${Math.floor(i / DIRECTORY_NAMES.length) + 1}`
   })
 
-  // Write ciderpress.config.ts
   const sectionConfigs = sectionNames
     .map(
       (name) => `    {
@@ -133,7 +131,6 @@ ${sectionConfigs}
     'utf8'
   )
 
-  // Write package.json so workspace deps resolve
   fs.writeFileSync(
     path.join(dir, 'package.json'),
     JSON.stringify(
@@ -158,7 +155,6 @@ ${sectionConfigs}
     const sectionFiles = Math.ceil(remaining / sectionsLeft)
     remaining -= sectionFiles
 
-    // Distribute this section's files across directories
     let sectionRemaining = sectionFiles
     const dirNames = Array.from(
       { length: dirsPerSection },

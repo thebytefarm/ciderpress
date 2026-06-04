@@ -64,10 +64,6 @@ export function OpenAPIOverview({ spec, markdown }: OpenAPIOverviewProps): React
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Collect all tags from the spec and count their operations.
  *

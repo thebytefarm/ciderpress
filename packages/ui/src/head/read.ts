@@ -42,10 +42,6 @@ export function readJs(relativePath: string): string {
   return content
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Resolve path relative to dist/head/.
  *

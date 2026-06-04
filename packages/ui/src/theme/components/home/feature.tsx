@@ -47,10 +47,6 @@ export function HomeFeature(): React.ReactElement | null {
     .otherwise(() => null)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single feature as a FeatureCard element.
  * Accepts the array index from `.map()` to guarantee unique keys.

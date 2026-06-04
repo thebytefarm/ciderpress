@@ -66,5 +66,4 @@ export type { CiderpressTokens } from './tokens.ts'
 // in user code.
 // @internal
 export type { TokenPath } from './tokens.ts'
-// @internal
 export { TOKEN_TO_CSS_VAR } from './tokens.ts'

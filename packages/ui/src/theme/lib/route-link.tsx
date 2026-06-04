@@ -83,10 +83,6 @@ export function RouteLink(props: RouteLinkProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Decide whether `href` points at an in-app route. Internal URLs are
  * absolute paths (`/foo`) or anchors (`#bar`). Everything else — full

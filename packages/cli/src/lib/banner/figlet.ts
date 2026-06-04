@@ -71,10 +71,6 @@ export function renderPixelText(text: string): FigletResult {
   })
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 interface RenderGlyphsParams {
   readonly text: string
   readonly chars: Readonly<Record<string, readonly string[]>>

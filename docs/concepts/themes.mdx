@@ -11,7 +11,7 @@ How the visual identity of your documentation site is controlled through built-i
 
 ## Overview
 
-A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with five built-in themes — Honeycrisp, Granny Smith, Mulled, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
+A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with six built-in themes — Mulled, Honeycrisp, Granny Smith, Amber, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
 
 | UI                | Job                                                                                                  |
 | ----------------- | ---------------------------------------------------------------------------------------------------- |
@@ -20,15 +20,21 @@ A theme in ciderpress is a **brand identity** with one or more **variants**. Eac
 
 ## Built-in Themes
 
-### Honeycrisp
+### Mulled
 
-The canonical brand. Apple-red identity (primary `#dc2626`) with both `dark` and `light` variants — the sun/moon toggle is enabled. This is the default when `theme.name` is omitted. The legacy slug `'default'` is preserved as an alias and resolves to `'honeycrisp'`, so existing `theme: { name: 'default' }` configs continue to render the canonical palette without churn.
+The canonical brand. Deep cider burgundy — the "evening / premium" branch of the apple family. Primary `#991b1b` with both `dark` and `light` variants. The light variant pairs warm cream surfaces (`#fbf6f4`) with deep burgundy ink for a parchment read; the dark variant uses the same near-black canvas as the other apple themes. This is the default when `theme.name` is omitted. The legacy slug `'default'` is preserved as an alias and resolves to `'mulled'`, so existing `theme: { name: 'default' }` configs continue to render the canonical palette without churn.
 
 **Variants:** `dark` (default) · `light`
 
 <BrowserWindow url="https://docs.example.com">
-  ![Honeycrisp theme — dark](../.assets/theme-base.png)
+  ![Mulled theme — dark](../.assets/theme-base.png)
 </BrowserWindow>
+
+### Honeycrisp
+
+Bright apple-red identity (primary `#dc2626`) with both `dark` and `light` variants — the sun/moon toggle is enabled.
+
+**Variants:** `dark` (default) · `light`
 
 ### Granny Smith
 
@@ -36,9 +42,9 @@ Apple-green identity (primary `#65a30d`) with both `dark` and `light` variants �
 
 **Variants:** `dark` (default) · `light`
 
-### Mulled
+### Amber
 
-Deep cider burgundy — the "evening / premium" branch of the apple family. Primary `#991b1b` with both `dark` and `light` variants. The light variant pairs warm cream surfaces (`#fbf6f4`) with deep burgundy ink for a parchment read; the dark variant uses the same near-black canvas as Honeycrisp / Granny Smith so the apple themes stay visually consistent at the chrome level on dark.
+Warm hearth amber identity (primary `#d97706`) with both `dark` and `light` variants. The light variant pairs parchment surfaces (`#fffaf2`) with deep-roast brown ink; the dark variant shares the apple-family near-black canvas.
 
 **Variants:** `dark` (default) · `light`
 
@@ -80,17 +86,17 @@ export default defineConfig({
 })
 ```
 
-The `name` accepts any built-in theme (`honeycrisp`, `grannysmith`, `mulled`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. The legacy slug `'default'` is preserved as an alias for `'honeycrisp'`. An unknown name writes a build-time warning to stderr and falls back to `honeycrisp`.
+The `name` accepts any built-in theme (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. The legacy slug `'default'` is preserved as an alias for `'mulled'`. An unknown name writes a build-time warning to stderr and falls back to `mulled`.
 
 ### Options
 
-| Property     | Type                                                      | Default         | Description                                                                                                |
-| ------------ | --------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| `name`       | `'honeycrisp' \| 'grannysmith' \| 'mulled' \| 'midnight' \| 'arcade'` | `'honeycrisp'`  | Built-in or registered theme to use. `'default'` is accepted as an alias for `'honeycrisp'`                |
-| `variant`    | `'dark' \| 'light'`                                       | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
-| `switcher`   | `boolean`                                                 | `false`         | Show the theme switcher dropdown in the site footer                                                        |
-| `colors`     | `ThemeColors`                                             | —               | Color overrides applied to the `light` variant                                                             |
-| `darkColors` | `ThemeColors`                                             | —               | Color overrides applied to the `dark` variant                                                              |
+| Property     | Type                                                                             | Default         | Description                                                                                                |
+| ------------ | -------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`       | `'mulled' \| 'honeycrisp' \| 'grannysmith' \| 'amber' \| 'midnight' \| 'arcade'` | `'mulled'`      | Built-in or registered theme to use. `'default'` is accepted as an alias for `'mulled'`                    |
+| `variant`    | `'dark' \| 'light'`                                                              | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
+| `switcher`   | `boolean`                                                                        | `false`         | Show the theme switcher dropdown in the site footer                                                        |
+| `colors`     | `ThemeColors`                                                                    | —               | Color overrides applied to the `light` variant                                                             |
+| `darkColors` | `ThemeColors`                                                                    | —               | Color overrides applied to the `dark` variant                                                              |
 
 ### Forcing a starting variant
 
@@ -225,13 +231,14 @@ defineTheme({
 
 ## Comparing Approaches
 
-| Theme        | Best For                          | Variants    | Default variant |
-| ------------ | --------------------------------- | ----------- | --------------- |
-| Honeycrisp   | General-purpose docs (canonical)  | dark, light | `dark`          |
-| Granny Smith | Green-branded, accessible docs    | dark, light | `dark`          |
-| Mulled       | Premium / evening reads, warm-tone | dark, light | `dark`          |
-| Midnight     | Developer tools, dark-first sites | dark        | `dark`          |
-| Arcade       | Playful branding, creative tools  | dark        | `dark`          |
+| Theme        | Best For                                | Variants    | Default variant |
+| ------------ | --------------------------------------- | ----------- | --------------- |
+| Mulled       | Premium / evening reads (canonical)     | dark, light | `dark`          |
+| Honeycrisp   | Bright apple-red, general-purpose docs  | dark, light | `dark`          |
+| Granny Smith | Green-branded, accessible docs          | dark, light | `dark`          |
+| Amber        | Warm hearth / parchment cider aesthetic | dark, light | `dark`          |
+| Midnight     | Developer tools, dark-first sites       | dark        | `dark`          |
+| Arcade       | Playful branding, creative tools        | dark        | `dark`          |
 
 ## Design Decisions
 

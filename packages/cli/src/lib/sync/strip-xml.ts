@@ -5,11 +5,9 @@
  * appear in the final output (e.g. `<details>` accordions).
  */
 const PRESERVED_HTML_TAGS: ReadonlySet<string> = new Set([
-  // Interactive / sectioning
   'details',
   'summary',
   'dialog',
-  // Block-level
   'div',
   'p',
   'blockquote',
@@ -18,14 +16,12 @@ const PRESERVED_HTML_TAGS: ReadonlySet<string> = new Set([
   'figcaption',
   'hr',
   'br',
-  // Headings
   'h1',
   'h2',
   'h3',
   'h4',
   'h5',
   'h6',
-  // Inline formatting
   'span',
   'a',
   'em',
@@ -39,13 +35,11 @@ const PRESERVED_HTML_TAGS: ReadonlySet<string> = new Set([
   'kbd',
   'abbr',
   'small',
-  // Media
   'img',
   'video',
   'audio',
   'source',
   'picture',
-  // Tables
   'table',
   'thead',
   'tbody',
@@ -56,7 +50,6 @@ const PRESERVED_HTML_TAGS: ReadonlySet<string> = new Set([
   'caption',
   'colgroup',
   'col',
-  // Lists
   'ul',
   'ol',
   'li',
@@ -79,7 +72,6 @@ const PRESERVED_HTML_TAGS: ReadonlySet<string> = new Set([
  * @returns Cleaned markdown with custom XML tags removed
  */
 export function stripXmlTags(markdown: string): string {
-  // Split on fenced code blocks — odd indices are code blocks
   const parts = markdown.split(/(```[\s\S]*?```)/g)
 
   const stripped = parts
@@ -96,6 +88,5 @@ export function stripXmlTags(markdown: string): string {
     })
     .join('')
 
-  // Collapse runs of 3+ blank lines left behind by removed container tags
   return stripped.replaceAll(/\n{3,}/g, '\n\n')
 }

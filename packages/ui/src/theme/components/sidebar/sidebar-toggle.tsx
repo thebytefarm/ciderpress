@@ -68,10 +68,6 @@ export function SidebarToggle(): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Read the persisted collapsed state from localStorage.
  *

@@ -3,10 +3,6 @@ import React from 'react'
 
 import { Icon } from './icon'
 
-// ---------------------------------------------------------------------------
-// Steps
-// ---------------------------------------------------------------------------
-
 export interface StepsProps {
   /**
    * Heading level for step titles.
@@ -37,10 +33,6 @@ export function Steps({ titleSize = 'h3', children }: StepsProps): React.ReactEl
 
   return <div className="cp-steps">{mapped}</div>
 }
-
-// ---------------------------------------------------------------------------
-// Step
-// ---------------------------------------------------------------------------
 
 export interface StepProps {
   /**

@@ -58,7 +58,6 @@ export async function resolveRecursiveGlob(
   const baseDir = extractBaseDir(patterns[0])
   const prefix = section.path ?? ''
 
-  // Extract titleFrom and titleTransform from title object config
   const titleConfig = match(section.title)
     .when(
       (
@@ -91,10 +90,6 @@ export async function resolveRecursiveGlob(
     depth,
   })
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * A node in the directory tree built from glob results.
@@ -203,7 +198,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
     depth,
   } = params
 
-  // 1. Files at this level — exclude the entry file (it becomes the section header)
+  // Files at this level — exclude the entry file (it becomes the section header)
   const nonIndexFiles = node.files.filter(
     (file) => path.basename(file, path.extname(file)) !== entryFile
   )
@@ -231,12 +226,10 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
     })
   )
 
-  // 2. Subdirectories become nested sections
   const subdirEntries = await Promise.all(
     [...node.subdirs].map(async ([dirName, subNode]) => {
       const subPrefix = `${prefix}/${dirName}`
 
-      // Check for entry file in this subdirectory (.md or .mdx)
       const entryFilePath = subNode.files.find(
         (f) => path.basename(f, path.extname(f)) === entryFile
       )

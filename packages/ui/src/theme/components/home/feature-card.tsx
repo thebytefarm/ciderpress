@@ -101,10 +101,6 @@ export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement 
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build a className string with optional `cp-clamp` suffix.
  *

@@ -54,7 +54,6 @@ function hashStr(s) {
   return s.split('').reduce((a, c) => ((a << 5) - a + c.charCodeAt(0)) | 0, 0)
 }
 
-// Apps — 8 apps, ~20 docs each = 160
 const apps = [
   'api',
   'console',
@@ -93,7 +92,6 @@ apps.forEach((app) => {
   })
 })
 
-// Packages — 10 packages, ~15 docs each = 150
 const packages = [
   'database',
   'ai',
@@ -280,7 +278,6 @@ Object.entries(sectionDocs).forEach(([dir, files]) => {
   })
 })
 
-// Top-level docs
 writeMd('docs/README.md', 'Introduction')
 writeMd('docs/architecture.md', 'Architecture')
 writeMd('docs/structure.md', 'Repository Structure')
@@ -291,7 +288,6 @@ writeMd('contributing/README.md', 'Contributing')
 writeMd('contributing/guides/pull-requests.md', 'Pull Requests')
 writeMd('contributing/guides/code-style.md', 'Code Style')
 
-// Count total
 let count = 0
 function countMd(dir) {
   const entries = fs.readdirSync(dir, { withFileTypes: true })

@@ -25,10 +25,6 @@ export default function EditSourceButton(): React.ReactElement | null {
     .otherwise(() => null)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Inner component that performs DOM injection. Only mounted in VS Code mode.
  *
@@ -40,7 +36,6 @@ function EditSourceButtonInner(): React.ReactElement | null {
 
   useEffect(() => {
     function inject(): void {
-      /* Remove previous button if it exists (SPA navigation) */
       if (buttonRef.current) {
         buttonRef.current.remove()
         buttonRef.current = null
@@ -78,7 +73,6 @@ function EditSourceButtonInner(): React.ReactElement | null {
 
     inject()
 
-    /* Re-inject on SPA navigation (title change = route change) */
     const titleEl = document.querySelector('title')
     const observer = match(titleEl)
       .with(null, () => null)

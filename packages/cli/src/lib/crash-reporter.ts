@@ -62,8 +62,6 @@ export function reportCrash(options: CrashReportOptions): CrashResult {
   return writeCrashLog({ report, message: normalized.message })
 }
 
-// ---------------------------------------------------------------------------
-
 /**
  * Structured crash report written to disk as JSON.
  *

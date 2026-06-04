@@ -693,7 +693,7 @@ export const themeConfigSchema = z
       .string()
       .default(DEFAULT_THEME_NAME)
       .describe(
-        'Theme identifier. Built-in: "honeycrisp" (red, default), "grannysmith" (green), "midnight" (deep blue), "arcade" (neon green). Legacy alias "default" resolves to "honeycrisp". Custom themes registered via `themes: [defineTheme(...)]` are also accepted.'
+        'Theme identifier. Built-in: "mulled" (deep cider burgundy, default), "honeycrisp" (apple red), "grannysmith" (apple green), "amber" (warm hearth), "midnight" (deep blue), "arcade" (neon green). Legacy alias "default" resolves to "mulled". Custom themes registered via `themes: [defineTheme(...)]` are also accepted.'
       ),
     variant: themeVariantSchema
       .optional()
@@ -753,10 +753,6 @@ export const tokensSchema = z
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardTokens: z.ZodType<CiderpressTokens> =
   tokensSchema as unknown as z.ZodType<CiderpressTokens>
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Returns `true` for any non-hex CSS color string or for a hex string that

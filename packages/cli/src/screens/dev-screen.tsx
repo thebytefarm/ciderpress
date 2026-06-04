@@ -243,10 +243,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single line in the activity log.
  *

@@ -128,10 +128,6 @@ export default command({
   },
 })
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Collect unique directory paths from all section `include` fields in the config.
  *

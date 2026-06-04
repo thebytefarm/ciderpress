@@ -264,10 +264,6 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
 
 export { CiderpressNavMenu as default }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Walk the per-item widths left-to-right, accumulating until we'd
  * exceed the available width. When the accumulator already exceeds the
@@ -290,7 +286,6 @@ function computeVisibleCount(params: {
     return widths.length
   }
 
-  // First pass: does the full set fit without any overflow toggle?
   const fullTotal = widths.reduce((acc, w, i) => acc + w + (i > 0 ? gap : 0), 0)
   if (fullTotal <= available) {
     return widths.length

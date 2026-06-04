@@ -438,10 +438,6 @@ const _guardSiteConfig: z.ZodType<SiteConfig> = siteConfigSchema
 // downstream consumers and JSON Schema generation tooling.
 export { themeColorsSchema, themeConfigSchema }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Runtime check for function values. Used by z.custom<T> to validate
  * function-typed config fields while preserving their exact TypeScript signature.

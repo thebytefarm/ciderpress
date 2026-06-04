@@ -79,7 +79,6 @@ export interface DevServerResult {
  */
 export async function startDevServer(options: ServerOptions): Promise<DevServerResult> {
   const { paths } = options
-  // Resolve port once so restarts reuse the same port
   const preferred = options.port ?? DEV_PORT
   const port = await getPort({ port: portNumbers(preferred, preferred + DEV_PORT_RANGE) })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
@@ -109,7 +108,6 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
             strictPort: true,
           },
           dev: {
-            // Suppress Rsbuild's progress bar — ciderpress TUI renders its own status
             progressBar: false,
           },
           // Disable persistent build cache on config-reload restarts.
@@ -126,17 +124,14 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
     }
   }
 
-  // Start initial server — exit if it fails on first boot
   const started = await startServer(options.config, { skipBuildCache: false })
   if (!started) {
     process.exit(1)
   }
 
-  // Return resolved port and callback that restarts server with new config
   async function handleConfigReload(newConfig: CiderpressConfig): Promise<void> {
     process.stdout.write('\n🔄 Config changed — restarting dev server...\n')
 
-    // Close existing server and wait for port release
     if (serverInstance) {
       const httpServer = getHttpServer(serverInstance)
       // Register the close listener before close() so we don't miss the
@@ -168,7 +163,6 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
       await new Promise((resolve) => setTimeout(resolve, RSPACK_SETTLE_MS))
     }
 
-    // Start new server with fresh config (bypass persistent cache)
     const restarted = await startServer(newConfig, { skipBuildCache: true })
     if (restarted) {
       process.stdout.write('✅ Dev server restarted\n\n')
@@ -263,8 +257,6 @@ export function openBrowser(url: string): void {
     .otherwise(() => ({ cmd: 'xdg-open', args: [url] }))
   spawn(cmd, args, { stdio: 'ignore', detached: true }).unref()
 }
-
-// ---------------------------------------------------------------------------
 
 /**
  * Create a close event promise if the server is actively listening.

@@ -1,14 +1,17 @@
+import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
+
 /**
  * Sync the document favicon with the active theme's brand color.
  *
  * Browsers cache favicons aggressively and don't honour CSS custom
  * properties inside referenced SVGs, so a static `/icon.svg` always
  * paints with whatever colour the asset shipped with. To keep the tab
- * mark in lockstep with the active theme (honeycrisp red, grannysmith
- * green, midnight blue, arcade neon, …), we read the resolved
- * `--cp-c-brand-1` value off `<html>`, bake it into a fresh SVG, and
- * point `<link rel="icon">` at the resulting data URI. Browsers treat a
- * new data URI as a new icon resource and repaint the tab.
+ * mark in lockstep with the active theme (mulled burgundy, honeycrisp
+ * red, grannysmith green, amber hearth, midnight blue, arcade neon, …),
+ * we read the resolved `--cp-c-brand-1` value off `<html>`, bake it
+ * into a fresh SVG, and point `<link rel="icon">` at the resulting data
+ * URI. Browsers treat a new data URI as a new icon resource and repaint
+ * the tab.
  *
  * Safe to call as often as needed — idempotent and inexpensive.
  *
@@ -25,18 +28,14 @@ export function syncThemeFavicon(html: HTMLElement): void {
   link.href = dataUri
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
-const FALLBACK_BRAND = '#dc2626'
+const FALLBACK_BRAND = BRAND_COLORS[DEFAULT_THEME_NAME].primary
 const FALLBACK_SURFACE = '#0a0a0a'
 
 /**
  * Read the resolved `--cp-c-brand-1` CSS custom property off the root
- * element, falling back to the honeycrisp primary when the var is empty
- * (which happens during the brief window before the theme stylesheet
- * loads).
+ * element, falling back to the default theme's primary when the var is
+ * empty (which happens during the brief window before the theme
+ * stylesheet loads).
  *
  * @private
  * @param html - Document root element
@@ -52,7 +51,7 @@ function resolveBrandColor(html: HTMLElement): string {
 
 /**
  * Read the resolved canvas colour off the root element, falling back to
- * the honeycrisp dark surface when the var is empty.
+ * the shared dark-surface canvas (`#0a0a0a`) when the var is empty.
  *
  * @private
  * @param html - Document root element

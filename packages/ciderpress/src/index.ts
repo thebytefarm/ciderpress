@@ -2,7 +2,6 @@ export { defineConfig, defineTheme, hasGlobChars } from '@ciderpress/config'
 export { CiderpressLogo } from '@ciderpress/ui'
 export type { CiderpressLogoProps } from '@ciderpress/ui'
 
-// Config types — what consumers fill in when writing `ciderpress.config.ts`.
 export type {
   CiderpressConfig,
   Section,
@@ -46,7 +45,6 @@ export type {
   LogoImage,
 } from '@ciderpress/config'
 
-// Theme types — what `defineTheme` accepts and returns.
 export type {
   CiderpressTheme,
   CiderpressThemeInput,
@@ -61,5 +59,4 @@ export type {
   BuiltInIconColor,
 } from '@ciderpress/theme'
 
-// Config loader option types.
 export type { LoadConfigOptions } from '@ciderpress/config'

@@ -49,10 +49,6 @@ export function createRegistry(templates?: readonly Template[]): TemplateRegistr
   return createFromMap(entries)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Resolve template entries from optional input, defaulting to built-in templates.
  *

@@ -64,10 +64,6 @@ export function Feedback(props: FeedbackProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 interface ThumbIconProps {
   readonly flipped?: boolean
 }

@@ -29,7 +29,6 @@ export default command({
       process.exit(1)
     }
 
-    // Sync content (quiet — no per-file output)
     ctx.log.step('Syncing content...')
     const syncResult = await sync(config, { paths, quiet: true })
     if (syncResult.error) {
@@ -40,11 +39,9 @@ export default command({
       `Synced (${syncResult.pagesWritten} written, ${syncResult.pagesSkipped} unchanged)`
     )
 
-    // Deadlink detection via build
     ctx.log.step('Checking for broken links...')
     const buildResult = await runBuildCheck({ config, paths })
 
-    // Present results
     const passed = presentResults({ configResult, buildResult, logger: ctx.log })
 
     if (passed) {

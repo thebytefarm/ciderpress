@@ -10,12 +10,20 @@ const { getThemeCss } = await import('./css.ts')
 const LOADER_CSS = '/* mock css/loader-backdrop.css *//* mock css/loader-dots.css */'
 
 describe('getThemeCss()', () => {
+  it('should return a string for built-in theme mulled', () => {
+    expect(getThemeCss('mulled')).toStrictEqual(expect.any(String))
+  })
+
   it('should return a string for built-in theme honeycrisp', () => {
     expect(getThemeCss('honeycrisp')).toStrictEqual(expect.any(String))
   })
 
   it('should return a string for built-in theme grannysmith', () => {
     expect(getThemeCss('grannysmith')).toStrictEqual(expect.any(String))
+  })
+
+  it('should return a string for built-in theme amber', () => {
+    expect(getThemeCss('amber')).toStrictEqual(expect.any(String))
   })
 
   it('should return a string for built-in theme midnight', () => {
@@ -26,8 +34,8 @@ describe('getThemeCss()', () => {
     expect(getThemeCss('arcade')).toStrictEqual(expect.any(String))
   })
 
-  it('should alias legacy theme name default to honeycrisp', () => {
-    expect(getThemeCss('default')).toContain('/* mock css/themes/honeycrisp.css */')
+  it('should alias legacy theme name default to mulled', () => {
+    expect(getThemeCss('default')).toContain('/* mock css/themes/mulled.css */')
   })
 
   it('should return loader CSS for unknown theme name', () => {

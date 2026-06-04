@@ -175,11 +175,10 @@ export function ThemeProvider(): React.ReactElement | null {
     const hasColors = Object.keys(colors).length > 0
     const hasDarkColors = Object.keys(darkColors).length > 0
 
-    // 1. Set theme attribute
     html.dataset.cpTheme = themeName
 
-    // 2. Set supported variants — CSS hides the appearance toggle for
-    //    themes that only declare one variant.
+    // Set supported variants — CSS hides the appearance toggle for themes
+    // that only declare one variant.
     const variants = VARIANTS_BY_THEME[themeName]
     if (variants) {
       html.dataset.cpVariants = variants
@@ -187,34 +186,32 @@ export function ThemeProvider(): React.ReactElement | null {
       html.dataset.cpVariants = 'dark'
     }
 
-    // 3. Apply the resolved variant — both as `data-cp-variant` (our
-    //    canonical attribute used by emitted theme CSS) and by mirroring
-    //    to Rspress's `.rp-dark` class so its components stay aligned.
+    // Apply the resolved variant — both as `data-cp-variant` (our canonical
+    // attribute used by emitted theme CSS) and by mirroring to Rspress's
+    // `.rp-dark` class so its components stay aligned.
     applyVariant(html, variant)
 
-    // 4. Apply light-mode color overrides immediately.
     if (hasColors) {
       applyColorOverrides(html, colors)
     }
 
-    // 5. Apply dark-mode color overrides when starting in dark.
     if (variant === 'dark' && hasDarkColors) {
       applyColorOverrides(html, darkColors)
     }
 
-    // 5b. Sync the document favicon with the active theme's brand colour.
-    //     Browsers cache static icon assets and ignore CSS, so the only
-    //     way to keep the tab mark in lockstep with the chosen theme is
-    //     to swap `<link rel="icon">` to a data-URI SVG carrying the
-    //     resolved `--cp-c-brand-1`.
+    // Sync the document favicon with the active theme's brand colour.
+    // Browsers cache static icon assets and ignore CSS, so the only way to
+    // keep the tab mark in lockstep with the chosen theme is to swap
+    // `<link rel="icon">` to a data-URI SVG carrying the resolved
+    // `--cp-c-brand-1`.
     syncThemeFavicon(html)
 
-    // 6. Observe `.rp-dark` class changes so Rspress's built-in dark
-    //    toggle stays the single source of truth for variant flips. The
-    //    new variant must be present in the active theme's supported
-    //    set; if it isn't (e.g. a devtools tinkerer flips `.rp-dark` off
-    //    on `midnight`, which is dark-only), snap the class back rather
-    //    than persisting an unsupported variant.
+    // Observe `.rp-dark` class changes so Rspress's built-in dark toggle
+    // stays the single source of truth for variant flips. The new variant
+    // must be present in the active theme's supported set; if it isn't
+    // (e.g. a devtools tinkerer flips `.rp-dark` off on `midnight`, which
+    // is dark-only), snap the class back rather than persisting an
+    // unsupported variant.
     const supportedSet = new Set((VARIANTS_BY_THEME[themeName] ?? 'dark').split(' '))
     const observer = new MutationObserver((mutations) => {
       const classChanged = mutations.some((m) => m.attributeName === 'class')
@@ -261,7 +258,6 @@ export function ThemeProvider(): React.ReactElement | null {
     })
     observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
-    // 7. Dismiss loading overlay
     const cancelLoader = dismissLoader(html)
 
     return () => {
@@ -274,10 +270,6 @@ export function ThemeProvider(): React.ReactElement | null {
 }
 
 export { ThemeProvider as default }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Resolve the theme name to apply for this render.

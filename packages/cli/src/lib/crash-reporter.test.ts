@@ -4,7 +4,6 @@ import { join } from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-// We need to mock os.tmpdir() to control the log directory
 vi.mock(import('node:os'), async (importOriginal) => {
   const original = await importOriginal()
   return { ...original, tmpdir: vi.fn<typeof original.tmpdir>(original.tmpdir) }
@@ -109,7 +108,6 @@ describe('reportCrash()', () => {
   })
 
   it('should return ok: false when write fails', () => {
-    // Point tmpdir at a path that cannot be written to
     vi.mocked(os.tmpdir).mockReturnValue('/nonexistent/readonly/path')
 
     const result = reportCrash({

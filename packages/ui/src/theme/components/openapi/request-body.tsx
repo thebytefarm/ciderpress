@@ -62,10 +62,6 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Extract the first content type entry from a request body.
  *

@@ -67,10 +67,6 @@ export function kebabToTitle(slug: string): string {
   return words(slug).map(capitalize).join(' ')
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Derive text from YAML frontmatter `title` field, falling back to first heading,
  * then to filename. Reads the file once and reuses the content for heading extraction.

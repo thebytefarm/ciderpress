@@ -53,7 +53,6 @@ export default command({
     }
 
     if (check) {
-      // Checked build: validate config, sync, generate assets, then build+check
       ctx.log.step('Validating config...')
       const configResult = runConfigCheck({ config, loadError: configErr })
 
@@ -77,7 +76,6 @@ export default command({
 
       ctx.log.outro('Done')
     } else {
-      // Unchecked build: sync + assets + build (no validation, noisy output)
       const uncheckedSyncResult = await sync(config, { paths, quiet })
       if (uncheckedSyncResult.error) {
         ctx.log.error(uncheckedSyncResult.error)
@@ -89,10 +87,6 @@ export default command({
     }
   },
 })
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build an `AssetConfig` from the loaded ciderpress config.
@@ -141,7 +135,6 @@ async function runAssetGeneration(params: RunAssetGenerationParams): Promise<voi
   })
 
   if (assetErr) {
-    // Asset generation is non-fatal — log and continue
     params.log.info(`Asset generation skipped: ${assetErr.message}`)
     return
   }

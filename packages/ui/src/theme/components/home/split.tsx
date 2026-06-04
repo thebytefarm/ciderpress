@@ -106,10 +106,6 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build the CSS class for a split action button.
  *

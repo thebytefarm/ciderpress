@@ -142,16 +142,12 @@ function ConfigPreview(): React.ReactElement {
       {' },\n'}
       {'  ],\n'}
       {'  theme: { name: '}
-      <span className="tok-str">'honeycrisp'</span>
+      <span className="tok-str">'mulled'</span>
       {' },\n'}
       {'})'}
     </pre>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Render a hero title with the trailing segment styled as a gradient.

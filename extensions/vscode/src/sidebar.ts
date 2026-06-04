@@ -324,7 +324,6 @@ function parseSidebarSections(sidebar: SidebarJson): readonly SidebarSection[] {
     { key: 'workspaces', title: 'Workspaces', items: [] },
   ]
 
-  /* Build workspace nodes from all non-fixed sections */
   const workspaceNodes = entries
     .filter((entry) => FIXED_KEYS[entry.key] === undefined)
     // oxlint-disable-next-line no-array-sort -- intermediate array from .filter(), not mutating original
@@ -340,7 +339,6 @@ function parseSidebarSections(sidebar: SidebarJson): readonly SidebarSection[] {
       } satisfies SidebarNode
     })
 
-  /* Resolve items for each fixed section */
   const resolvedItems: readonly (readonly SidebarNode[])[] = fixedSections.map((section) => {
     if (section.key === 'workspaces') {
       return workspaceNodes

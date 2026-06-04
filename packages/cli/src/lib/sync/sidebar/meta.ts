@@ -142,10 +142,6 @@ export function buildMetaDirectories(entries: readonly ResolvedEntry[]): readonl
   return groupPlacementsByDir(placements).filter((dir) => !rootParentDirs.has(dir.dirPath))
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * A placement instruction: which directory a meta item belongs to.
  *
@@ -228,14 +224,12 @@ function flattenSection(entry: ResolvedEntry, acc: FlattenResult): FlattenResult
   }
 
   const parentDir = dirname(dirPath)
-  // dirname returns '.' for top-level paths like "concepts"
   const targetDir = resolveTargetDir(parentDir)
 
   // Only place the dir item if it has a real parent directory.
   // Top-level sections (targetDir === '') are discovered by Rspress automatically.
   const dirPlacement: readonly MetaPlacement[] = buildDirPlacement(targetDir, entry, acc.nextOrder)
 
-  // Recurse into children
   const childResult = flattenToPlacements(entry.items ?? [], acc.nextOrder + 1)
 
   return {
@@ -353,7 +347,6 @@ function groupPlacementsByDir(placements: readonly MetaPlacement[]): readonly Me
       const mergedNames = new Set(mergedByName.keys())
       const orderedLeaves = leaves.filter((p) => {
         const name = extractItemName(p.item)
-        // Exclude leaves that were merged into a section (they'll appear below)
         return name === null || !mergedNames.has(name)
       })
       const orderedSections = sections.map((s) => {
@@ -400,7 +393,6 @@ function mergeWithLeaf(params: MergeWithLeafParams): MetaPlacement {
   if (sectionName === null) {
     return section
   }
-  // If the subdirectory has its own placements, keep as dir
   const subDirPath = resolveSubDirPath(dirPath, sectionName)
   if (allDirPaths.has(subDirPath)) {
     return section

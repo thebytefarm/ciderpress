@@ -115,10 +115,6 @@ export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
   return `  <WorkspaceCard ${props.join(' ')} />`
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build a workspace card JSX string from a resolved entry with card metadata.
  *
@@ -183,7 +179,6 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
  * @returns Description string, or undefined if none found
  */
 async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
-  // 1. Source file frontmatter is the primary source of truth
   if (isNotNil(entry.page) && entry.page.source) {
     try {
       const desc = await extractDescription(entry.page.source)
@@ -195,7 +190,7 @@ async function resolveDescription(entry: ResolvedEntry): Promise<string | undefi
     }
   }
 
-  // 2. Config-level description as fallback (no file, or file has no description)
+  // Config-level description as fallback (no file, or file has no description)
   if (entry.description) {
     return entry.description
   }
@@ -219,7 +214,6 @@ async function extractDescription(sourcePath: string): Promise<string | undefine
     return String(data.description)
   }
 
-  // First non-empty paragraph after the first heading
   const lines = content.split('\n')
   const headingIdx = lines.findIndex((l) => l.startsWith('#'))
   const para: readonly string[] = resolveParagraph(lines, headingIdx)
@@ -271,7 +265,6 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
         if (trimmed === '') {
           return acc
         }
-        // Skip raw HTML / dividers
         if (trimmed.startsWith('<') || trimmed.startsWith('---')) {
           return acc
         }

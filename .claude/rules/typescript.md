@@ -44,12 +44,12 @@ Organize each source file in this order:
 1. **Imports** — node builtins > external packages > internal (farthest-to-closest)
 2. **Module-level constants** — `const` bindings used throughout the file
 3. **Exported declarations** (functions, constants, types, interfaces, components) — the public API, each with full JSDoc
-4. **Section separator** — `// ---------------------------------------------------------------------------`
-5. **Private helpers** — non-exported functions, each with JSDoc including `@private`
+4. **Private helpers** — non-exported functions, each with JSDoc including `@private`
 
 - Every exported function must have full JSDoc (description, `@param`, `@returns`)
 - Every private helper must have JSDoc with `@private` tag
 - Exported functions appear first so readers see the public API without scrolling
+- No banner or divider comments between sections — the `export` keyword and JSDoc are the separators
 
 ## Formatting (OXFmt)
 

@@ -37,10 +37,6 @@ export function injectLandingPages(
   return result
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Recursion frame for `injectMany` / `injectOne`. Threads the current
  * `colorIndex` through the tree so cycling icon colors stay deterministic
@@ -155,7 +151,6 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
   const hasSelfLinkedChild = checkHasSelfLinkedChild(rebuiltItems, link)
 
   if (rebuiltItems && rebuiltItems.length > 0 && !hasSelfLinkedChild) {
-    // Generate landing page from child entries (MDX — has React components)
     const color: IconColor = ICON_COLORS[childResult.nextColorIndex % ICON_COLORS.length]
     const children = rebuiltItems
     const page: ResolvedEntry['page'] = {
@@ -170,7 +165,6 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
   }
 
   if (!rebuiltItems || rebuiltItems.length === 0) {
-    // Check for workspace items matching this section's link prefix
     const matching = workspaces.filter((item) => item.path.startsWith(`${link}/`))
     if (matching.length > 0) {
       const segments = link.split('/')
@@ -189,7 +183,6 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
       const titleStr = match(exact.title)
         .with(P.string, (t) => t)
         .otherwise(String)
-      // Simple text page — no React components, stays as .md
       const page: ResolvedEntry['page'] = {
         content: () => `# ${titleStr}\n\n${exact.description}\n`,
         outputPath: linkToOutputPath(link),
