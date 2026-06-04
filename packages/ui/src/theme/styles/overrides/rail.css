@@ -156,10 +156,19 @@ html .rp-doc-layout__doc {
 
 /* Cap the prose reading width INSIDE the doc-container — sidebar and
    outline stay pinned to the rail edges; the gutter lives here as
-   centered whitespace around the article body. */
+   centered whitespace around the article body.
+
+   `width: 100%` + `min-width: 0` pin the container to its parent's
+   cross-axis size and break the flex `min-content` calculation so
+   wide inner elements (Shiki code blocks, ASCII trees) scroll inside
+   themselves (their own `overflow-x: auto`) instead of pushing the
+   container past `.rp-doc-layout__doc`'s width, which otherwise
+   clips prose at the viewport edge. */
 html .rp-doc-layout__doc-container {
+  width: 100%;
   max-width: var(--cp-content-reading-max, 1000px);
   margin: 0 auto;
+  min-width: 0;
 }
 
 /* ── H1 — match mockup (36px / weight 600 / tight line-height) ── */
