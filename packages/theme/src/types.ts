@@ -3,15 +3,16 @@ import type { LiteralUnion } from 'type-fest'
 /**
  * Theme name with autocomplete for built-in themes and support for custom themes.
  *
- * Built-in themes: 'honeycrisp' (red), 'grannysmith' (green), 'midnight' (deep
- * dark blue), 'arcade' (neon green). The legacy slug `'default'` is kept in
- * the autocomplete union and is normalized to `'honeycrisp'` at resolve time
- * via {@link THEME_ALIASES} — existing configs continue to render unchanged.
+ * Built-in themes: 'honeycrisp' (apple red), 'grannysmith' (apple green),
+ * 'mulled' (deep cider burgundy), 'midnight' (deep dark blue), 'arcade'
+ * (neon green). The legacy slug `'default'` is kept in the autocomplete
+ * union and is normalized to `'honeycrisp'` at resolve time via
+ * {@link THEME_ALIASES} — existing configs continue to render unchanged.
  *
  * Custom themes: any string value.
  */
 export type ThemeName = LiteralUnion<
-  'default' | 'honeycrisp' | 'grannysmith' | 'midnight' | 'arcade',
+  'default' | 'honeycrisp' | 'grannysmith' | 'mulled' | 'midnight' | 'arcade',
   string
 >
 
@@ -19,7 +20,12 @@ export type ThemeName = LiteralUnion<
  * Built-in theme names for validation and iteration. `'default'` is *not*
  * a built-in — it's an alias that resolves to `'honeycrisp'`.
  */
-export type BuiltInThemeName = 'honeycrisp' | 'grannysmith' | 'midnight' | 'arcade'
+export type BuiltInThemeName =
+  | 'honeycrisp'
+  | 'grannysmith'
+  | 'mulled'
+  | 'midnight'
+  | 'arcade'
 
 /**
  * The set of variants a theme can render in. A theme registers tokens

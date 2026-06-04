@@ -19,6 +19,7 @@ import './styles/overrides/rspress.css'
 // Theme color palettes — scoped via [data-cp-theme][data-cp-variant] selectors
 import './styles/themes/honeycrisp.css'
 import './styles/themes/grannysmith.css'
+import './styles/themes/mulled.css'
 import './styles/themes/midnight.css'
 import './styles/themes/arcade.css'
 // arcade-fx.css is intentionally separate from arcade.css:

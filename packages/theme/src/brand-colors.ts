@@ -64,6 +64,7 @@ export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Ob
 export const BRAND_GRADIENT: Readonly<Record<BuiltInThemeName, readonly string[]>> = Object.freeze({
   honeycrisp: ['#f87171', '#dc2626', '#7f1d1d'],
   grannysmith: ['#a3e635', '#65a30d', '#365314'],
+  mulled: ['#dc2626', '#991b1b', '#450a0a'],
   midnight: ['#3b82f6', '#1d4ed8', '#1e3a8a'],
   arcade: ['#86efac', '#00ff88', '#00994f'],
 })

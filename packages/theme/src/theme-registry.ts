@@ -175,6 +175,15 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     light: '#a3e635',
     lighter: '#bef264',
   },
+  mulled: {
+    primary: '#991b1b',
+    hover: '#7f1d1d',
+    active: '#450a0a',
+    fg: '#ffffff',
+    soft: 'rgba(153, 27, 27, 0.14)',
+    light: '#dc2626',
+    lighter: '#f87171',
+  },
   midnight: {
     primary: '#60a5fa',
     hover: '#3b82f6',
@@ -869,6 +878,9 @@ export function themeToCss(theme: CiderpressTheme): string {
  *    `THEME_ALIASES` in `definitions.ts`.
  *  - `grannysmith` is the green dev-tool-native counterpart — both
  *    variants supported.
+ *  - `mulled` is the deep cider burgundy counterpart — both variants
+ *    supported, paired with cream surfaces on light and a near-black
+ *    canvas on dark for an evening/premium read.
  *  - `midnight` is an opinionated near-black blue theme — dark only.
  *  - `arcade` is a neon green retro theme — dark only.
  *
@@ -891,6 +903,14 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>
     variants: {
       dark: buildGrannysmithDarkTokens(),
       light: buildGrannysmithLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
+  mulled: defineBuiltInTheme({
+    name: 'mulled',
+    variants: {
+      dark: buildMulledDarkTokens(),
+      light: buildMulledLightTokens(),
     },
     defaultVariant: 'dark',
   }),
@@ -1472,6 +1492,176 @@ function buildGrannysmithLightTokens(): ParsedTokens {
  */
 function buildGrannysmithDarkTokens(): ParsedTokens {
   const brand = BRAND_PALETTES.grannysmith
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `light` variant of the `mulled` theme — warm cream surfaces
+ * with a deep burgundy brand. The light variant leans into the
+ * mulled-cider "evening / premium" mood by pairing parchment canvas
+ * (`#fbf6f4`) with deep red accents.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildMulledLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.mulled
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#fbf6f4',
+        bgAlt: '#f5edea',
+        bgElv: '#f0e4e0',
+        bgSoft: '#ead9d4',
+        bgIcon: '#caa2a2',
+        homeBg: '#fbf6f4',
+        overlayFaint: 'rgba(42, 6, 6, 0.08)',
+        gutter: '#f5edea',
+        codeBlockBg: '#f5edea',
+      },
+      text: {
+        text1: '#2a0606',
+        text2: 'rgba(42, 6, 6, 0.72)',
+        text3: 'rgba(42, 6, 6, 0.48)',
+      },
+      border: {
+        border: '#d5b8b8',
+        divider: '#e6d2d2',
+        sidebarAltBorderDark: '#5a3030',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `mulled` theme — near-black canvas
+ * with the deep burgundy brand. The dark variant mirrors the surface
+ * palette used by `honeycrisp` / `grannysmith` so the apple themes
+ * stay visually consistent at the chrome level on dark.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildMulledDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.mulled
   return {
     colors: {
       brand: {

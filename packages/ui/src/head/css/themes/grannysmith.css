@@ -182,9 +182,7 @@ html[data-cp-theme='grannysmith'][data-cp-variant='dark'] {
   --cp-shadow-card-hover: 0 2px 12px var(--cp-c-tint-purple-glow);
   --cp-shadow-menu: 0 8px 24px rgba(0, 0, 0, 0.12);
   --cp-shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --cp-shadow-hero-demo:
-    0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6),
-    0 0 80px var(--cp-c-brand-soft);
+  --cp-shadow-hero-demo: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--cp-c-brand-soft);
   --cp-shadow-ask-ai: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(0, 0, 0, 0.5);
   --cp-duration-fast: 0.15s;
   --cp-duration-base: 0.2s;
@@ -454,9 +452,7 @@ html[data-cp-theme='grannysmith'][data-cp-variant='light'] {
   --cp-shadow-card-hover: 0 2px 12px var(--cp-c-tint-purple-glow);
   --cp-shadow-menu: 0 8px 24px rgba(0, 0, 0, 0.12);
   --cp-shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --cp-shadow-hero-demo:
-    0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6),
-    0 0 80px var(--cp-c-brand-soft);
+  --cp-shadow-hero-demo: 0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--cp-c-brand-soft);
   --cp-shadow-ask-ai: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(0, 0, 0, 0.5);
   --cp-duration-fast: 0.15s;
   --cp-duration-base: 0.2s;
