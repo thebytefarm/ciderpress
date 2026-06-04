@@ -1,14 +1,16 @@
-# Agent Instructions
+# Ciderpress Instructions
 
 <intro>
-Guidance for coding agents working in this repository. Detailed rules live in `.claude/rules/*.md` — this file orients agents and points to them. Every section is wrapped in an XML tag (`<boundaries>`, `<git>`, etc.) so you can pull just one with `grep -A 30 '<tag>' AGENTS.md`.
+
+**Ciderpress** is a documentation framework for monorepos. Point it at your existing markdown — get a full site. It wraps Rspress with a config layer, sync engine, and Rspress plugin that handle sidebar/nav generation, workspace cards, OpenAPI integration, Liquid templates, and four built-in themes.
+
+**Goal of this repo:** ship a polished, opinionated docs framework that conforms to a repo's existing structure rather than forcing a layout on it. The public package is `ciderpress`; internals are split across `@ciderpress/cli`, `@ciderpress/core`, and `@ciderpress/ui`.
+
 </intro>
 
 ## Boundaries
 
 <boundaries>
-
-Three behavioral tiers plus a `<rules>` pointer block. Each tier has its own grep-anchor tag so an agent can pull just one (e.g. `grep -A 50 '<never>' AGENTS.md`) without scanning the whole file.
 
 ### Always
 
@@ -73,12 +75,35 @@ Three behavioral tiers plus a `<rules>` pointer block. Each tier has its own gre
 
 ```
 .
-├── packages/
+├── packages/             # source packages — see below
 │   ├── cli/              # @ciderpress/cli — CLI commands, watcher, Rspress integration
 │   ├── core/             # @ciderpress/core — config loading, sync engine, sidebar/nav generation
 │   ├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
 │   └── ciderpress/       # ciderpress — public wrapper package (CLI + config re-exports)
+├── docs/                 # the user-facing documentation site (concepts, guides, references, examples, framework, getting-started) — built with Ciderpress itself
+├── contributing/         # internal contributor docs (concepts, guides, references, standards)
+├── examples/             # working example sites: simple, kitchen-sink, large
+├── extensions/           # editor/IDE integrations (vscode)
+├── benchmarks/           # vitest benchmark suite
+├── scripts/              # one-off scripts — *.lauf.ts run via `lauf run <name>`, plus shell utilities
+├── assets/               # branding (banner.svg, logo, etc.)
+├── patches/              # pnpm patches for upstream deps
+├── .changeset/           # changeset configs and pending changesets
+├── .github/              # workflows and PR templates
+└── .claude/rules/        # canonical rule files referenced from <rules>
 ```
+
+Important top-level configs:
+
+- **`ciderpress.config.ts`** — Ciderpress eats its own dogfood; this drives the live docs site
+- **`package.json`** — root workspace scripts (`dev`, `build`, `test`, `check`, `docs:dev`, `bench`, etc.)
+- **`pnpm-workspace.yaml`** — pnpm workspace definition
+- **`turbo.json`** — Turbo task graph
+- **`tsconfig.json`** — root TS config; packages extend this
+- **`.oxlintrc.json`** · **`.oxfmtrc.json`** — OXC lint/format rules (enforce the `<never>` list)
+- **`vitest.workspace.ts`** — vitest workspace
+- **`lauf.config.ts`** — script runner config for `scripts/*.lauf.ts`
+- **`vercel.json`** — deploy config for the docs site
 
 </structure>
 

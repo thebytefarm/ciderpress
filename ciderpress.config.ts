@@ -209,6 +209,12 @@ export default defineConfig({
   },
   sections: [
     {
+      title: 'Changelog',
+      path: '/changelog',
+      include: 'CHANGELOG.md',
+      hidden: true,
+    },
+    {
       title: 'Getting Started',
       description: 'Set up ciderpress and ship your first documentation site in minutes.',
       icon: 'pixelarticons:speed-fast',
