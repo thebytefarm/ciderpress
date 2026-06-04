@@ -49,6 +49,8 @@
     "postbuild": "node scripts/generate-theme-css.mjs && oxfmt --write src/theme/styles/themes src/head/css/themes && node scripts/minify-head.mjs",
     "dev": "rslib build --watch --no-clean",
     "generate:theme-css": "node scripts/generate-theme-css.mjs",
+    "ladle": "ladle serve",
+    "ladle:build": "ladle build",
     "test": "vitest run",
     "typecheck": "tsgo --noEmit"
   },
@@ -74,6 +76,7 @@
     "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
+    "@ladle/react": "^5.1.1",
     "@rslib/core": "catalog:",
     "@rspress/core": "catalog:",
     "@types/react": "^19.2.15",
