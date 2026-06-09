@@ -57,8 +57,8 @@ export default defineConfig({
   title: 'My Project',
   tagline: 'Documentation for my project',
   sections: [
-    { text: 'Getting Started', link: '/getting-started', from: 'docs/getting-started.md' },
-    { text: 'Guides', prefix: '/guides', from: 'docs/guides/*.md' },
+    { title: 'Getting Started', path: '/getting-started', include: 'docs/getting-started/*.md' },
+    { title: 'Guides', path: '/guides', include: 'docs/guides/*.md' },
   ],
 })
 ```

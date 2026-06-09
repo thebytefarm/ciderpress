@@ -178,10 +178,20 @@ Prefer small, focused functions that can be composed together. Use early returns
 #### Correct
 
 ```ts
-// Small, focused functions
-const normalize = (s: string) => s.trim().toLowerCase()
-const validate = (s: string) => s.length > 0
-const format = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+// Small, focused functions — top-level bindings must be declarations
+// (oxlint `func-style: ["error", "declaration"]`). Inline arrows inside
+// `map`/`filter`/etc. are fine; only top-level `const = (...) => ...` is banned.
+function normalize(s: string): string {
+  return s.trim().toLowerCase()
+}
+
+function validate(s: string): boolean {
+  return s.length > 0
+}
+
+function format(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
 
 // Composed together
 function processName(input: string): string | null {

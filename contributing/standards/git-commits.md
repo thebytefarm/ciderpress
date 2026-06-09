@@ -56,9 +56,12 @@ Scopes identify what part of the codebase changed. Use directory-style paths for
 | `packages/templates`  | The Liquid template registry package       |
 | `packages/theme`      | The theme definitions and schema package   |
 | `packages/ciderpress` | The public-facing wrapper package          |
+| `extensions/vscode`   | The VS Code extension                      |
 | `deps`                | Dependency updates                         |
 | `ci`                  | CI/CD workflow changes                     |
 | `repo`                | Workspace/monorepo config                  |
+
+Recent history (`git log -50`) shows the team also uses bare-name shorthand: `feat(ui)` for `packages/ui`, `feat(theme)` for `packages/theme`, `chore(extensions/vscode)` for the extension. Treat the shorthand as a legitimate alias for the corresponding `packages/<name>` row above. The directory-style form is preferred for readability.
 
 #### Correct
 
@@ -67,19 +70,32 @@ git commit -m "feat(packages/cli): add parallel script execution"
 git commit -m "chore(deps): update typescript to 5.7.0"
 git commit -m "chore(ci): add security audit workflow"
 git commit -m "chore(repo): update turbo.json pipeline"
+git commit -m "chore(extensions/vscode): bump engines.vscode"
 ```
 
 ### Mark Breaking Changes
 
-Breaking changes must include `!` after the scope and a `BREAKING CHANGE:` footer. Mark as breaking when removing or renaming public APIs, changing config schema, or modifying CLI flags.
+Breaking changes must include `!` after the scope and a `BREAKING CHANGE:` footer per the [Conventional Commits spec](https://www.conventionalcommits.org/en/v1.0.0/#specification). Mark as breaking when removing or renaming public APIs, changing config schema, or modifying CLI flags.
+
+The `BREAKING CHANGE:` line is a **footer**, separated from the body by a blank line — not part of the body. Tooling (changesets, semantic-release) greps for footer-shaped lines, so placement matters.
 
 #### Correct
 
 ```bash
 git commit -m "feat(packages/config)!: change config schema
 
+Renames the top-level scripts field so it matches the CLI flag naming.
+
 BREAKING CHANGE: scripts field renamed from 'tasks' to 'scripts'"
 ```
+
+The structure is:
+
+1. Subject — `type(scope)!: description`
+2. Blank line
+3. Body — optional explanation (what / why)
+4. Blank line
+5. Footer — `BREAKING CHANGE: <description>` (uppercase, with colon)
 
 ### Include Body and Footer When Needed
 
@@ -115,9 +131,22 @@ git commit -m "docs: document script tree command"
 git commit -m "feat: add script tree and fix config bug and update docs"
 ```
 
+### Include a Changeset for Version-Bumping Changes
+
+The repo uses [Changesets](https://github.com/changesets/changesets) for versioning and changelog generation. CI runs `pnpm changeset status --since=origin/main` (`.github/workflows/ci.yml`) — a feature, fix, or breaking-change commit that ships to a published package without a changeset will fail.
+
+Create one with:
+
+```bash
+pnpm changeset
+```
+
+Commit the generated file under `.changeset/` alongside the change. Doc-only or internal-tooling commits that don't ship to npm can skip this.
+
 ## Resources
 
 - [Conventional Commits](https://www.conventionalcommits.org/)
+- [Changesets](https://github.com/changesets/changesets)
 
 ## References
 

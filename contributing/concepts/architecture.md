@@ -33,10 +33,10 @@ packages/
 
 The public-facing package. Two entry points and a CLI bin:
 
-| Entry      | Purpose                                                          |
-| ---------- | ---------------------------------------------------------------- |
-| `.`        | Public API: `defineConfig`, `defineTheme`, UI components + types |
-| `./config` | Lightweight: just `defineConfig` + types                         |
+| Entry      | Purpose                                                                     |
+| ---------- | --------------------------------------------------------------------------- |
+| `.`        | Public API: `defineConfig`, `defineTheme`, `hasGlobChars`, `CiderpressLogo` |
+| `./config` | Lightweight: just `defineConfig` + types                                    |
 
 The `ciderpress` CLI bin is provided by this package and delegates to `@ciderpress/cli`. Users import `defineConfig` from `ciderpress` (or `ciderpress/config`) in their config file.
 
@@ -70,6 +70,7 @@ flowchart TB
         CLEAN(["clean"])
         SETUP(["setup"])
         DUMP(["dump"])
+        SYNC(["sync"])
     end
 
     subgraph core ["Core Layer"]
@@ -94,7 +95,7 @@ flowchart TB
         DIST(["dist/"])
     end
 
-    DEV & BUILD --> CONFIG
+    DEV & BUILD & SYNC --> CONFIG
     CONFIG --> RESOLVE --> COPY --> CONTENT
     RESOLVE --> SIDEBAR & NAV & HOME --> GENERATED
     RSPRESS_CFG --> GENERATED
@@ -104,7 +105,7 @@ flowchart TB
     classDef agent fill:#313244,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
     classDef external fill:#313244,stroke:#f5c2e7,stroke-width:2px,color:#cdd6f4
 
-    class DEV,BUILD,SERVE,CHECK,DIFF,DRAFT,CLEAN,SETUP,DUMP external
+    class DEV,BUILD,SERVE,CHECK,DIFF,DRAFT,CLEAN,SETUP,DUMP,SYNC external
     class CONFIG,RESOLVE,COPY,SIDEBAR,NAV,HOME,MANIFEST core
     class PLUGIN,THEME,RSPRESS_CFG agent
     class CONTENT,GENERATED,DIST agent
@@ -119,7 +120,7 @@ flowchart TB
 
 **Package:** `@ciderpress/cli`
 
-The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. Commands orchestrate the core sync engine and Rspress build APIs. See [CLI Reference](../references/cli.md) for command details.
+The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing. Styled terminal output goes through [`@clack/prompts`](https://www.clack.cc) (see `packages/cli/src/lib/sync/index.ts:7`). Commands orchestrate the core sync engine and Rspress build APIs. See [CLI Reference](../references/cli.md) for command details.
 
 ### Core Layer
 
@@ -127,35 +128,35 @@ The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-fram
 
 The sync engine. Config loading lives separately in `@ciderpress/config`. See [Engine](./engine/overview.md) for pipeline details.
 
-| Module                           | Purpose                                                   |
-| -------------------------------- | --------------------------------------------------------- |
-| `lib/paths.ts`                   | Path constants for `.ciderpress/` output structure        |
-| `lib/sync/index.ts`              | Main sync pipeline orchestrator                           |
-| `lib/sync/errors.ts`             | SyncError and ConfigError definitions                     |
-| `lib/sync/types.ts`              | Sync-specific type definitions                            |
-| `lib/sync/copy.ts`               | Page writing with frontmatter injection and hash tracking |
-| `lib/sync/home.ts`               | Default home page generation                              |
-| `lib/sync/manifest.ts`           | Incremental sync tracking via content hashes              |
-| `lib/sync/openapi.ts`            | OpenAPI spec sync (dereference, MDX generation)           |
-| `lib/sync/openapi-spec.ts`       | OpenAPI spec loading and dereferencing                    |
-| `lib/sync/openapi-markdown.ts`   | OpenAPI operation MDX generation                          |
-| `lib/sync/images.ts`             | Image discovery, copy, and path rewriting                 |
-| `lib/sync/planning.ts`           | Planning page discovery from `.planning/` directory       |
-| `lib/sync/rewrite-links.ts`      | Relative link rewriting during copy                       |
-| `lib/sync/strip-xml.ts`          | XML tag stripping for planning documents                  |
-| `lib/sync/workspace.ts`          | Workspace item synthesis and card enrichment              |
-| `lib/sync/frontmatter.ts`        | Frontmatter merge and hash logic                          |
-| `lib/sync/resolve/index.ts`      | Entry tree resolution (globs, text derivation, sorting)   |
-| `lib/sync/resolve/path.ts`       | Path resolution utilities                                 |
-| `lib/sync/resolve/recursive.ts`  | Recursive directory resolution                            |
-| `lib/sync/resolve/sort.ts`       | Entry sorting strategies                                  |
-| `lib/sync/resolve/text.ts`       | Text derivation from filename/heading/frontmatter         |
-| `lib/sync/sidebar/index.ts`      | Sidebar and nav JSON generation                           |
-| `lib/sync/sidebar/inject.ts`     | Virtual landing page generation (MDX)                     |
-| `lib/sync/sidebar/landing.ts`    | Landing page MDX generation                               |
-| `lib/sync/sidebar/meta.ts`       | Sidebar meta resolution                                   |
-| `lib/sync/sidebar/write-meta.ts` | Sidebar meta serialization                                |
-| `lib/banner/index.ts`            | SVG asset generation (banner, logo, icon)                 |
+| Module                           | Purpose                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `lib/paths.ts`                   | Path constants for `.ciderpress/` output structure                                       |
+| `lib/sync/index.ts`              | Main sync pipeline orchestrator                                                          |
+| `lib/sync/errors.ts`             | SyncError and ConfigError definitions                                                    |
+| `lib/sync/types.ts`              | Sync-specific type definitions                                                           |
+| `lib/sync/copy.ts`               | Page writing with frontmatter injection and hash tracking                                |
+| `lib/sync/home.ts`               | Default home page generation                                                             |
+| `lib/sync/manifest.ts`           | Incremental sync tracking via content hashes                                             |
+| `lib/sync/openapi.ts`            | OpenAPI spec sync (dereference, MDX generation)                                          |
+| `lib/sync/openapi-spec.ts`       | OpenAPI spec loading and dereferencing                                                   |
+| `lib/sync/openapi-markdown.ts`   | OpenAPI operation MDX generation                                                         |
+| `lib/sync/images.ts`             | Image discovery, copy, and path rewriting                                                |
+| `lib/sync/planning.ts`           | Planning page discovery from `.planning/` directory                                      |
+| `lib/sync/rewrite-links.ts`      | Relative link rewriting during copy                                                      |
+| `lib/sync/strip-xml.ts`          | XML tag stripping for planning documents                                                 |
+| `lib/sync/workspace.ts`          | Workspace item synthesis and card enrichment                                             |
+| `lib/sync/frontmatter.ts`        | Frontmatter `parse(raw)` and `stringify(content, data)` (merge + hash live in `copy.ts`) |
+| `lib/sync/resolve/index.ts`      | Entry tree resolution (globs, text derivation, sorting)                                  |
+| `lib/sync/resolve/path.ts`       | Path resolution utilities                                                                |
+| `lib/sync/resolve/recursive.ts`  | Recursive directory resolution                                                           |
+| `lib/sync/resolve/sort.ts`       | Entry sorting strategies                                                                 |
+| `lib/sync/resolve/text.ts`       | Text derivation from filename/heading/frontmatter                                        |
+| `lib/sync/sidebar/index.ts`      | Sidebar and nav JSON generation                                                          |
+| `lib/sync/sidebar/inject.ts`     | Virtual landing page generation (MDX)                                                    |
+| `lib/sync/sidebar/landing.ts`    | Landing page MDX generation                                                              |
+| `lib/sync/sidebar/meta.ts`       | Sidebar meta resolution                                                                  |
+| `lib/sync/sidebar/write-meta.ts` | Sidebar meta serialization                                                               |
+| `lib/banner/index.ts`            | SVG asset generation (banner, logo, icon)                                                |
 
 ### UI Layer
 
@@ -207,16 +208,19 @@ sequenceDiagram
     rect rgb(49, 50, 68)
         Note over CLI,FS: Sync
         CLI->>Sync: sync(config, paths)
+        Sync->>Sync: Discover planning pages
+        Sync->>Sync: Sync OpenAPI specs (dereference, MDX gen)
         Sync->>Sync: Resolve entries (globs, text, frontmatter)
-        Sync->>Sync: Generate sidebar + nav JSON
-        Sync->>Sync: Inject landing pages (MDX)
-        Sync->>FS: Write content/ + .generated/
+        Sync->>FS: Write content/ pages (incremental)
+        Sync->>FS: Write _meta.json per dir + _nav.json (Rspress-consumed)
+        Sync->>FS: Write .generated/workspaces.json + scopes.json (UI-consumed)
+        Sync->>FS: Write .generated/sidebar.json + nav.json (debug snapshots)
     end
 
     rect rgb(49, 50, 68)
         Note over FS,Rspress: Build
         CLI->>Rspress: build() or dev()
-        Rspress->>FS: Read content + sidebar + nav
+        Rspress->>FS: Read content/ + _meta.json + _nav.json
         Rspress->>Rspress: Render with ciderpress theme
         Rspress-->>FS: Write dist/ (static site)
     end
@@ -226,11 +230,11 @@ sequenceDiagram
 
 ciderpress uses the `Result<T, E>` tuple pattern for expected failures:
 
-| Layer     | Strategy                      | Type                                  |
-| --------- | ----------------------------- | ------------------------------------- |
-| Core/sync | `Result<T, E>` tuples         | `[error, null]` or `[null, value]`    |
-| Config    | Validate-and-exit at boundary | `process.exit(1)` with message        |
-| CLI       | Catch and report              | `@kidd-cli/core/logger` error display |
+| Layer     | Strategy                                                                      | Type                                                           |
+| --------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Core/sync | `Result<T, E>` tuples                                                         | `[error, null]` or `[null, value]`                             |
+| Config    | Returns `Result<T, ConfigError>` at boundary; CLI consumes and exits          | `[ConfigError, null]` or `[null, CiderpressConfig]`            |
+| CLI       | Consumes Result tuples, reports via `@clack/prompts`, calls `process.exit(1)` | `process.exit(1)` after logging (e.g. `dev-headless.ts:43-46`) |
 
 ## Design Decisions
 

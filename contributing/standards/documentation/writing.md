@@ -117,6 +117,10 @@ solution-command
 ## References
 
 - [Related Doc 1](../path/to/doc.md)
+- [Related Doc 2](../path/to/another.md)
+
+## Resources
+
 - [External Resource](https://example.com)
 ````
 
@@ -201,7 +205,7 @@ solution-command
 
 When you see this error:
 
-```
+```text
 Error: Something went wrong
 ```
 

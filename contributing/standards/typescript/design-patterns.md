@@ -20,6 +20,7 @@ interface Runner {
 }
 
 function createRunner(config: RunnerConfig): Runner {
+  // oxlint-disable-next-line functional/no-let -- mutable run-state held by the factory closure
   let running = false
 
   return {
@@ -126,22 +127,28 @@ interface Runnable {
   run: () => Promise<void>
 }
 
-interface Configurable {
-  configure: (config: Record<string, unknown>) => void
+interface Configurable<T extends Runnable> {
+  configure: (config: Record<string, unknown>) => T
 }
 
-function createTask(name: string): Runnable & Configurable {
-  let taskConfig: Record<string, unknown> = {}
-
+// `configure` returns a new Runnable bound to the new config — nothing is
+// reassigned, every call produces a fresh value.
+function createTask(
+  name: string,
+  taskConfig: Record<string, unknown> = {}
+): Runnable & Configurable<Runnable> {
   return {
     run: async () => {
       await execute(name, taskConfig)
     },
-    configure: (config) => {
-      taskConfig = { ...config }
-    },
+    configure: (config) => createTask(name, { ...taskConfig, ...config }),
   }
 }
+
+// Usage
+const task = createTask('build')
+const configured = task.configure({ parallel: true })
+await configured.run()
 ```
 
 #### Incorrect

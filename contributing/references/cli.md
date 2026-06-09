@@ -4,21 +4,22 @@ Command syntax, flags, and Rspress integration for the `ciderpress` CLI.
 
 ## Overview
 
-ciderpress uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. The CLI entry point is in `packages/cli/src/`, which registers all commands. Each command is a standalone module that orchestrates the engine and Rspress build APIs.
+ciderpress uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing. Styled terminal output goes through [`@clack/prompts`](https://www.clack.cc). The CLI entry point is `packages/cli/src/index.ts`, which registers all commands. Each command is a standalone module that orchestrates the engine and Rspress build APIs.
 
 ## Commands
 
-| Command | Description                                          |
-| ------- | ---------------------------------------------------- |
-| `setup` | Create a starter `ciderpress.config.ts`              |
-| `dev`   | Sync + Rspress dev server + file watcher             |
-| `build` | Sync + Rspress static build                          |
-| `serve` | Preview a built site from `.ciderpress/dist/`        |
-| `check` | Validate config and check for broken links           |
-| `diff`  | Show changed files in configured source directories  |
-| `draft` | Scaffold a new documentation file from a template    |
-| `clean` | Remove `.ciderpress/cache/`, `content/`, and `dist/` |
-| `dump`  | Resolve the full entry tree and print as JSON        |
+| Command | Description                                                              |
+| ------- | ------------------------------------------------------------------------ |
+| `setup` | Create a starter `ciderpress.config.ts`                                  |
+| `dev`   | Sync + Rspress dev server + file watcher                                 |
+| `build` | Sync + Rspress static build                                              |
+| `serve` | Preview a built site from `.ciderpress/dist/`                            |
+| `sync`  | Run the sync engine only — no dev server, no build                       |
+| `check` | Validate config and check for broken links                               |
+| `diff`  | Show changed files in configured source directories                      |
+| `draft` | Scaffold a new documentation file from a template                        |
+| `clean` | Remove `.ciderpress/cache/`, `.ciderpress/content/`, `.ciderpress/dist/` |
+| `dump`  | Resolve the full entry tree and print as JSON                            |
 
 ### `setup`
 
@@ -31,10 +32,12 @@ Creates a starter `ciderpress.config.ts` in the current directory if one does no
 ### `dev`
 
 ```bash
-ciderpress dev [--quiet] [--clean] [--port <port>] [--theme <name>] [--colorMode <mode>] [--vscode]
+ciderpress dev [--quiet] [--clean] [--port <port>] [--theme <name>] [--colorMode <mode>] [--vscode] [--headless]
 ```
 
 The primary development workflow. Combines initial sync, file watcher, and Rspress dev server on `http://localhost:6174`. The `--clean` flag removes cache, content, and dist before starting.
+
+Use `--headless` to skip the Ink TUI and emit plain log output. Required when running from a non-TTY shell (tmux without a real PTY, background agent tasks, CI). Note that the headless runner does not construct the shared OpenAPI cache, so OpenAPI dereferencing repeats on every sync — see [Dev Mode](../concepts/engine/dev.md).
 
 See [Dev Mode](../concepts/engine/dev.md) for how the watch loop, HMR, and config reload work.
 
@@ -59,6 +62,14 @@ ciderpress serve [--no-open] [--port <port>] [--theme <name>] [--colorMode <mode
 
 Starts a static file server pointing at `.ciderpress/dist/` on `http://localhost:8080`. The browser opens automatically; use `--no-open` to disable.
 
+### `sync`
+
+```bash
+ciderpress sync [--quiet]
+```
+
+Runs the sync engine and exits — no dev server, no Rspress build. Loads config, syncs all content into `.ciderpress/content/`, reports pages written / skipped / removed and elapsed ms. Useful for CI pipelines, benchmarking the sync pipeline in isolation, and pre-warming `.ciderpress/` before a separate build step.
+
 ### `check`
 
 ```bash
@@ -70,12 +81,15 @@ Validates the config and runs a build to detect broken links. Reports config err
 ### `diff`
 
 ```bash
-ciderpress diff [--ref <ref>]
+ciderpress diff [--ref <ref>] [--pretty]
 ```
 
-Shows changed files in configured source directories. By default uses `git status` to detect uncommitted changes and outputs a space-separated file list to stdout (suitable for scripts and piping).
+Shows changed files in configured source directories. Two modes:
 
-Use `--ref <ref>` to compare between commits (`git diff --name-only <ref> HEAD`). Exits with code 1 when changes are detected -- matching the Vercel `ignoreCommand` convention (exit 1 = proceed with build, exit 0 = skip).
+- **Without `--ref` (default):** uses `git status` to detect uncommitted changes in the working tree.
+- **With `--ref <ref>`:** uses `git diff --name-only <ref> HEAD` to compare commits. Exits with code `1` when changes are detected — matching the Vercel `ignoreCommand` convention (exit 1 = proceed with build, exit 0 = skip).
+
+By default, output is a space-separated file list on stdout (suitable for scripts and piping). Pass `--pretty` to emit intro/note/outro formatting via `@clack/prompts` — not pipeable, but human-readable.
 
 ### `draft`
 
@@ -91,7 +105,7 @@ Scaffolds a new documentation file from a template. Prompts for doc type and tit
 ciderpress clean
 ```
 
-Removes `.ciderpress/cache/`, `content/`, and `dist/`. Safe to run at any time -- all content is regenerated by sync/build.
+Removes `.ciderpress/cache/`, `.ciderpress/content/`, and `.ciderpress/dist/` (all three targets live under `.ciderpress/`). Safe to run at any time -- all content is regenerated by sync/build.
 
 ### `dump`
 
@@ -113,13 +127,13 @@ The CLI communicates with Rspress through `packages/cli/src/lib/rspress.ts`:
 | `serveSite()`         | Start static file server for `.ciderpress/dist/` |
 | `openBrowser()`       | Cross-platform browser launcher                  |
 
-All functions receive a Rspress config object built by `createRspressConfig()` from `@ciderpress/ui`. This config loads the generated JSON files (sidebar, nav, workspaces) from `.ciderpress/content/.generated/` and wires up the ciderpress theme.
+All functions receive a Rspress config object built by `createRspressConfig()` from `@ciderpress/ui`. Sidebar and nav are loaded by Rspress from `_meta.json` / `_nav.json` in the content tree; the UI config additionally loads `workspaces.json` and `scopes.json` from `.ciderpress/content/.generated/` and wires up the ciderpress theme.
 
 ## Error Handling
 
 CLI errors are handled at the command boundary:
 
-- **Config errors** -- `loadConfig()` returns a Result tuple; commands report errors via `@kidd-cli/core/logger` and call `process.exit(1)`
+- **Config errors** -- `loadConfig()` returns a `Result<T, ConfigError>` tuple; commands report errors via `@clack/prompts` and call `process.exit(1)`
 - **Sync errors** -- Result tuples propagate up; the CLI reports them and exits
 - **Rspress errors** -- Build/dev failures are caught and reported
 

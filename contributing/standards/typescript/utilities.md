@@ -1,8 +1,22 @@
-# Utilities (es-toolkit)
+# Utilities (`massaman/*`)
 
 ## Overview
 
-Check [es-toolkit](https://es-toolkit.sh) before writing any utility function. It likely already exists with better edge-case handling, tree-shaking, and type safety. These rules cover which es-toolkit functions to reach for and when to write your own instead.
+Check [es-toolkit](https://es-toolkit.sh) before writing any utility function. It likely already exists with better edge-case handling, tree-shaking, and type safety. In this project, import es-toolkit through `massaman/*` subpaths — `massaman` is the umbrella package the codebase uses for both `es-toolkit` and `ts-pattern`. Subpath mapping:
+
+| Concern         | Import path           |
+| --------------- | --------------------- |
+| Predicates      | `massaman/predicate`  |
+| Object utils    | `massaman/object`     |
+| Array utils     | `massaman/array`      |
+| String utils    | `massaman/string`     |
+| Math utils      | `massaman/math`       |
+| Function utils  | `massaman/function`   |
+| Pattern match   | `massaman/match`      |
+| Control flow    | `massaman/control`    |
+| Type conversion | `massaman/conversion` |
+
+These rules cover which utilities to reach for and when to write your own instead. Examples below use the project import form.
 
 ## Rules
 
@@ -25,10 +39,10 @@ Functions for runtime type checking. Prefer these over manual `typeof` chains.
 #### Correct
 
 ```ts
-import { isNil, isPlainObject, isString } from 'es-toolkit'
+import { isNotNil, isPlainObject, isString } from 'massaman/predicate'
 
 // Filter out nil values
-if (!isNil(value)) {
+if (isNotNil(value)) {
   // value is not null or undefined
 }
 
@@ -57,7 +71,8 @@ Functions for picking, omitting, and transforming object properties without muta
 #### Correct
 
 ```ts
-import { pick, omit, omitBy, isNil } from 'es-toolkit'
+import { omitBy, pick, omit } from 'massaman/object'
+import { isNil } from 'massaman/predicate'
 
 // Select specific fields for display
 const summary = pick(config, ['name', 'root', 'scripts'])
@@ -89,7 +104,7 @@ Functions for grouping, deduplicating, and batching arrays.
 #### Correct
 
 ```ts
-import { groupBy, keyBy, chunk, uniqBy } from 'es-toolkit'
+import { chunk, groupBy, keyBy, uniqBy } from 'massaman/array'
 
 // Group scripts by workspace
 const scriptsByWorkspace = groupBy(scripts, 'workspace')
@@ -123,7 +138,7 @@ Functions for controlling execution timing and caching results.
 #### Correct
 
 ```ts
-import { debounce, throttle, memoize } from 'es-toolkit'
+import { debounce, memoize, throttle } from 'massaman/function'
 
 // Debounce file watcher callback to avoid redundant rebuilds
 const onFileChange = debounce((path: string) => {
@@ -156,7 +171,7 @@ Functions for converting between naming conventions.
 #### Correct
 
 ```ts
-import { camelCase, kebabCase } from 'es-toolkit'
+import { camelCase, kebabCase } from 'massaman/string'
 
 // Convert config keys from snake_case
 const configKey = 'script_timeout'
@@ -167,9 +182,9 @@ const moduleName = 'ConfigLoader'
 const fileName = kebabCase(moduleName) // 'config-loader'
 ```
 
-### Avoid es-toolkit for Trivial Operations
+### Avoid `massaman/predicate` for Trivial Operations
 
-For standalone null checks, prefer inline comparison over importing `isNil`. Reserve es-toolkit type guards for composed or predicate contexts where they add clarity, such as callbacks to `omitBy`, `filter`, or other higher-order functions.
+For standalone null checks, prefer inline comparison over importing `isNil`. Reserve predicate helpers for composed or higher-order contexts where they add clarity, such as callbacks to `omitBy`, `filter`, or other higher-order functions.
 
 #### Correct
 
@@ -183,7 +198,7 @@ if (x != null) {
 const cleanConfig = omitBy(rawConfig, isNil)
 const validItems = items.filter((item) => !isNil(item.value))
 
-// Complex grouping - use es-toolkit
+// Complex grouping - use the utility
 const grouped = groupBy(scripts, 'workspace')
 const batches = chunk(workspaces, 100)
 ```
@@ -191,7 +206,7 @@ const batches = chunk(workspaces, 100)
 #### Incorrect
 
 ```ts
-import { isNil } from 'es-toolkit'
+import { isNil } from 'massaman/predicate'
 
 // For standalone null checks, prefer inline comparison
 if (!isNil(x)) {

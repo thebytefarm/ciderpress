@@ -1,8 +1,19 @@
 # Coding Style
 
-## Overview
+High-level constraints that govern all TypeScript in the monorepo. Enforced by OXLint and OXFmt.
 
-High-level constraints that govern all TypeScript in the monorepo. These rules are enforced by OXLint and OXFmt — code that violates them will not pass CI. The goal is a strict functional style: pure, immutable, declarative, with side effects pushed to the edges.
+## Import paths: `massaman` umbrella
+
+The project imports `match`, `P`, `isPlainObject`, `debounce`, etc. through `massaman/*` subpaths — never directly from `ts-pattern` or `es-toolkit`. `massaman` re-exports both libraries under predictable subpaths:
+
+| Concern          | Import                                                    |
+| ---------------- | --------------------------------------------------------- |
+| Pattern matching | `import { match, P } from 'massaman/match'`               |
+| Predicates       | `import { isString, isNotNil } from 'massaman/predicate'` |
+| Conversion       | `import { toError } from 'massaman/conversion'`           |
+| Function helpers | `import { debounce, throttle } from 'massaman/function'`  |
+
+Standards examples in this repo show the project import form. Upstream package names (`ts-pattern`, `es-toolkit`) appear only for discoverability.
 
 ## Rules
 
@@ -29,7 +40,7 @@ scripts.push(newScript)
 
 ### No Loops
 
-Use `map`, `filter`, `reduce`, `flatMap`, and `es-toolkit` utilities instead of `for`, `while`, `do...while`, `for...in`, or `for...of`.
+Use `map`, `filter`, `reduce`, `flatMap`, and `massaman/*` utilities instead of `for`, `while`, `do...while`, `for...in`, or `for...of`.
 
 #### Correct
 
@@ -155,14 +166,14 @@ Use explicit `if`/`else` or pattern matching instead of `?.`.
 
 ```ts
 if (config.scripts) {
-  runAll(config.scripts)
+  config.scripts.map(run)
 }
 ```
 
 #### Incorrect
 
 ```ts
-config.scripts?.forEach(run)
+config.scripts?.map(run)
 ```
 
 ### No `any`
@@ -269,8 +280,8 @@ Organize imports into three groups separated by blank lines, sorted alphabetical
 import { readdir } from 'node:fs/promises'
 import { basename, resolve } from 'node:path'
 
-import { isPlainObject } from 'es-toolkit'
-import { match } from 'ts-pattern'
+import { match } from 'massaman/match'
+import { isPlainObject } from 'massaman/predicate'
 
 import type { Command } from '../types.js'
 import { createLogger } from '../lib/logger.js'
@@ -281,11 +292,11 @@ import type { ResolvedRef } from './register.js'
 #### Incorrect
 
 ```ts
-import { match } from 'ts-pattern'
+import { match } from 'massaman/match'
 import { readdir } from 'node:fs/promises' // node: should be first
 import { registerCommandArgs } from './args.js'
 import type { Command } from '../types.js' // ../ should come before ./
-import { isPlainObject } from 'es-toolkit'
+import { isPlainObject } from 'massaman/predicate'
 import { createLogger, type Logger } from '../lib/logger.js' // no inline type specifiers
 ```
 
@@ -295,16 +306,15 @@ Organize each source file in this order:
 
 1. **Imports** — ordered per import rules above
 2. **Module-level constants** — `const` bindings used throughout the file
-3. **Exported functions** — the public API, each with full JSDoc
-4. **Section separator** — `// ---------------------------------------------------------------------------`
-5. **Private helpers** — non-exported functions, each with JSDoc including `@private`
+3. **Exported declarations** — the public API, each with full JSDoc
+4. **Private helpers** — each with `@private` JSDoc tag; no divider comments between sections
 
-Exported functions appear first so readers see the public API without scrolling. Private helpers are implementation details pushed to the bottom. Function declarations are hoisted, so calling order does not matter.
+The `export` keyword and JSDoc are the separators — never add banner or divider comments. Exported functions appear first so readers see the public API without scrolling. Function declarations are hoisted, so calling order does not matter.
 
 #### Correct
 
 ```ts
-import type { Config } from '../types.js'
+import type { Config, ConfigError, ConfigResult } from '@ciderpress/config'
 
 const DEFAULT_NAME = 'untitled'
 
@@ -312,25 +322,26 @@ const DEFAULT_NAME = 'untitled'
  * Load and validate a configuration file.
  *
  * @param path - Absolute path to the config file.
- * @returns The validated configuration record.
+ * @returns A `ConfigResult` tuple — `[error, null]` on failure or `[null, config]` on success.
  */
-export function loadConfig(path: string): Config {
-  const raw = readRawConfig(path)
-  return validateConfig(raw)
-}
+export function loadConfig(path: string): ConfigResult<Config> {
+  const [readError, raw] = readRawConfig(path)
+  if (readError) return [readError, null]
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
+  const [validateError, validated] = validateConfig(raw)
+  if (validateError) return [validateError, null]
+
+  return [null, validated]
+}
 
 /**
  * Read the raw config file from disk.
  *
  * @private
  * @param path - Absolute path to read.
- * @returns The raw config string.
+ * @returns A `ConfigResult` tuple wrapping the raw config string.
  */
-function readRawConfig(path: string): string {
+function readRawConfig(path: string): ConfigResult<string> {
   // ...
 }
 
@@ -339,9 +350,9 @@ function readRawConfig(path: string): string {
  *
  * @private
  * @param raw - Unvalidated config string.
- * @returns A validated Config object.
+ * @returns A `ConfigResult` tuple wrapping the validated `Config`.
  */
-function validateConfig(raw: string): Config {
+function validateConfig(raw: string): ConfigResult<Config> {
   // ...
 }
 ```
@@ -350,17 +361,40 @@ function validateConfig(raw: string): Config {
 
 ```ts
 // Private helper defined before exports — reader must scroll to find the API
-function readRawConfig(path: string): string {
+function readRawConfig(path: string): ConfigResult<string> {
   /* ... */
 }
-function validateConfig(raw: string): Config {
+function validateConfig(raw: string): ConfigResult<Config> {
   /* ... */
 }
 
-export function loadConfig(path: string): Config {
-  const raw = readRawConfig(path)
-  return validateConfig(raw)
+export function loadConfig(path: string): ConfigResult<Config> {
+  // ...
 }
+```
+
+### Disabling Lint Rules
+
+Use `// oxlint-disable-next-line <rule> -- <reason>` to opt a single line out of a rule. Always include the `-- <reason>` justification — bare disables are rejected on review.
+
+Acceptable cases:
+
+- Stateful factory internals where `functional/no-let` blocks a closure-held mutable binding.
+- Boundary code that must call into an external API with a banned shape (e.g., a `process.exit` wrapper, raw event emitters).
+- Generated code where rewriting the rule violation isn't practical.
+
+#### Correct
+
+```ts
+// oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
+let config = initialConfig
+```
+
+#### Incorrect
+
+```ts
+// oxlint-disable-next-line functional/no-let
+let config = initialConfig
 ```
 
 ## References
