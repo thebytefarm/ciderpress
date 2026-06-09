@@ -42,6 +42,7 @@ export default defineConfig({
         ['html', { open: 'never', outputFolder: './.playwright/report' }],
         ['blob', { outputDir: './.playwright/blob-report' }],
         ['github'],
+        ['@argos-ci/playwright/reporter'],
       ]
     : [['html', { open: 'on-failure', outputFolder: './.playwright/report' }], ['list']],
   expect: {
