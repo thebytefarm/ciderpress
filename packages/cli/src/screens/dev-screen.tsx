@@ -25,6 +25,15 @@ export type { LogEntry } from '../lib/dev-types.ts'
 const isTTY = Boolean(process.stdin.isTTY)
 
 /**
+ * Maximum width (in columns) of the dev TUI. Sized to fit the
+ * `ciderpress` banner rendered by `<Banner />` (ink-big-text's "block"
+ * font is ~88-90 cols wide for this string) with a few columns of
+ * breathing room. On wider terminals the layout stays at this width
+ * for a compact feel; on narrower terminals everything shrinks to fit.
+ */
+const MAX_TUI_WIDTH = 100
+
+/**
  * Props passed to the DevScreen component by the screen() runtime.
  * These correspond to the parsed CLI options.
  */
@@ -84,7 +93,15 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     { isActive: isTTY && state.phase !== 'error' }
   )
 
-  const width = Math.max(Math.min(columns, 80), 2)
+  // Cap the TUI at MAX_TUI_WIDTH columns and pin the outer
+  // <Box width={width}/> so children that use <Spacer /> (e.g. the URL
+  // row pushing "Ready" right) align with the separator hairlines
+  // instead of extending past them on wide terminals.
+  // `separatorWidth = width - 2` accounts for the outer padding={1} on
+  // each side. The cap is sized to fit the "ciderpress" banner in
+  // ink-big-text's "block" font (~88-90 cols), with a small buffer so
+  // the dividers extend a few chars past the banner's right edge.
+  const width = Math.max(Math.min(columns, MAX_TUI_WIDTH), 2)
   const separatorWidth = Math.max(width - 2, 0)
 
   const [copied, setCopied] = useState(false)
@@ -131,7 +148,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   if (state.phase === 'error') {
     return (
-      <Box flexDirection="column" padding={1}>
+      <Box flexDirection="column" padding={1} width={width}>
         <Banner />
         <Box marginTop={1}>
           <Alert variant="error" title="Fatal Error" width={width}>
@@ -164,7 +181,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
 
   if (state.phase === 'loading') {
     return (
-      <Box flexDirection="column" padding={1}>
+      <Box flexDirection="column" padding={1} width={width}>
         <Banner />
         <Box marginTop={1}>
           <Spinner label="Starting dev server..." type="dots" />
@@ -174,7 +191,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   }
 
   return (
-    <Box flexDirection="column" padding={1}>
+    <Box flexDirection="column" padding={1} width={width}>
       {/* Banner + URL */}
       <Banner />
       <Box marginTop={1}>

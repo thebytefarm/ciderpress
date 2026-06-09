@@ -43,11 +43,10 @@ export async function prepareForSnapshot(page: Page): Promise<void> {
 
 /**
  * Selectors for elements that change between runs and should be masked from
- * snapshots (timestamps, build hashes, random IDs, animated FX layers).
+ * snapshots (timestamps, build hashes, random IDs).
+ *
+ * Note: Playwright's mask option resolves selectors via `page.locator()`,
+ * which does not accept CSS pseudo-elements (`::before`, `::after`). If you
+ * need to hide an animated pseudo-element, target the host element itself.
  */
-export const DYNAMIC_MASKS = [
-  '[data-cp-mask]',
-  '[data-cp-build-hash]',
-  // Arcade theme has CRT scanlines / neon pulse that animate continuously.
-  '[data-cp-theme="arcade"] .cp-card::before',
-]
+export const DYNAMIC_MASKS = ['[data-cp-mask]', '[data-cp-build-hash]']

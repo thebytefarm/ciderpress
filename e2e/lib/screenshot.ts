@@ -3,6 +3,14 @@ import type { Locator, Page } from '@playwright/test'
 
 import { DYNAMIC_MASKS, prepareForSnapshot } from './stabilize.ts'
 
+/**
+ * Where Argos writes its local screenshot copies. Argos defaults to
+ * `./screenshots` (relative to CWD) which would land in `e2e/screenshots/`
+ * and get picked up by Ciderpress's dev watcher. Routing through
+ * `.playwright/` keeps everything under one dot-prefixed dir.
+ */
+const ARGOS_ROOT = './.playwright/screenshots'
+
 interface SnapshotOptions {
   /** Stable name. Argos will namespace by project (desktop/tablet/mobile) automatically. */
   name: string
@@ -21,6 +29,7 @@ export async function snapshot(page: Page, options: SnapshotOptions): Promise<vo
   await prepareForSnapshot(page)
   const maskSelectors = [...DYNAMIC_MASKS, ...(options.mask ?? [])]
   await argosScreenshot(page, options.name, {
+    root: ARGOS_ROOT,
     fullPage: options.fullPage ?? true,
     mask: maskSelectors.map((selector) => page.locator(selector)),
   })
@@ -36,5 +45,8 @@ export async function snapshotElement(
   name: string
 ): Promise<void> {
   await prepareForSnapshot(page)
-  await argosScreenshot(page, name, { element: locator })
+  await argosScreenshot(page, name, {
+    root: ARGOS_ROOT,
+    element: locator,
+  })
 }

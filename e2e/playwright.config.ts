@@ -11,19 +11,32 @@ import { defineConfig, devices } from '@playwright/test'
  *   @desktop-only — runs on desktop project only (hover/focus, large layouts)
  *   @mobile-only  — runs on mobile project only (hamburger, drawer, ToC)
  *   (untagged)    — runs on all viewport projects
+ *
+ * All Playwright outputs are consolidated under `.playwright/` so the
+ * dot-prefix keeps them out of Ciderpress's sync watcher (which scans the
+ * tree for markdown content and would otherwise pick up `error-context.md`
+ * files generated per failed test).
  */
-const BASE_URL = process.env.BASE_URL ?? 'http://localhost:3000'
+const BASE_URL = process.env.BASE_URL ?? 'http://localhost:8080'
 const IS_CI = Boolean(process.env.CI)
 
 export default defineConfig({
   testDir: './tests',
+  outputDir: './.playwright/test-results',
   fullyParallel: true,
   forbidOnly: IS_CI,
   retries: IS_CI ? 2 : 0,
   workers: IS_CI ? 2 : undefined,
   reporter: IS_CI
-    ? [['html', { open: 'never' }], ['github']]
-    : [['html', { open: 'on-failure' }], ['list']],
+    ? [
+        ['html', { open: 'never', outputFolder: './.playwright/report' }],
+        ['blob', { outputDir: './.playwright/blob-report' }],
+        ['github'],
+      ]
+    : [
+        ['html', { open: 'on-failure', outputFolder: './.playwright/report' }],
+        ['list'],
+      ],
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.01,
@@ -57,9 +70,13 @@ export default defineConfig({
   webServer: process.env.SKIP_WEB_SERVER
     ? undefined
     : {
-        command: 'pnpm --dir .. docs:serve',
+        command: 'pnpm -C .. docs:serve --no-open',
         url: BASE_URL,
         reuseExistingServer: !IS_CI,
         timeout: 120_000,
+        // Stream the server's output so you see build/serve errors as they happen
+        // instead of staring at silence until the 2-minute timeout fires.
+        stdout: 'pipe',
+        stderr: 'pipe',
       },
 })
