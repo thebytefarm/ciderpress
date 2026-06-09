@@ -159,7 +159,7 @@ function LoaderHarness({
 
     const interval = setInterval(() => {
       frameRef.current = (frameRef.current + 1) % FRAMES.length
-      const current = previewRef.current
+      const { current } = previewRef
       if (current !== null) {
         current.dataset.cpLoaderText = FRAMES[frameRef.current] as string
       }

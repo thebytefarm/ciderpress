@@ -24,7 +24,7 @@ import {
 } from '@ciderpress/theme'
 import type { ThemeVariant, CiderpressTheme } from '@ciderpress/theme'
 import type { UserConfig } from '@rspress/core'
-import { match, P } from 'massaman/match'
+import { match } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
 import supersub from 'rspress-plugin-supersub'
@@ -147,10 +147,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   //   writes this at sync time). The portal pattern proved unreliable for
   //   the default case, so we now ship a static SVG that Rspress renders
   //   directly. Theme-aware function logos still go through NavLogo.
-  const resolvedLogo = match(config.logo)
-    .with(P.string, (s) => s)
-    .with(P.nullish, () => '/logo.svg')
-    .otherwise(() => undefined)
+  const resolvedLogo = resolveLogo(config.logo)
 
   return {
     root: paths.contentDir,
@@ -294,6 +291,25 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
  * @param params - Content directory, file name, and fallback value
  * @returns Parsed JSON content or the fallback value
  */
+/**
+ * Resolve the Rspress `logo` field from the ciderpress config. String
+ * passes through; nullish defaults to the synced `/logo.svg`; anything
+ * else (e.g. a theme-aware function) signals "let `<NavLogo />` render
+ * the brand mark via portal".
+ *
+ * @private
+ * @param logo - Raw `config.logo` value (string, nullish, or function).
+ * @returns Path string, or an absent value when a portal-driven logo is in play.
+ */
+function resolveLogo(logo: unknown): string | undefined {
+  if (typeof logo === 'string') {
+    return logo
+  }
+  if (logo === null || logo === undefined) {
+    return '/logo.svg'
+  }
+}
+
 function loadGenerated<T>(params: {
   readonly contentDir: string
   readonly name: string

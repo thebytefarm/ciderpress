@@ -1,3 +1,4 @@
+import { match } from 'massaman/match'
 import type React from 'react'
 
 const MARK_FALLBACK_COLOR = '#dc2626'
@@ -33,7 +34,10 @@ export interface CiderpressMarkProps {
  */
 export function CiderpressMark(props: CiderpressMarkProps): React.ReactElement {
   const decorative = props.title === ''
-  const label = decorative ? undefined : (props.title ?? 'ciderpress')
+  const label = props.title ?? 'ciderpress'
+  const a11yProps = match(decorative)
+    .with(true, () => ({ role: 'presentation' as const, 'aria-hidden': true as const }))
+    .otherwise(() => ({ role: 'img' as const, 'aria-label': label }))
 
   return (
     <svg
@@ -44,11 +48,9 @@ export function CiderpressMark(props: CiderpressMarkProps): React.ReactElement {
       width={props.size}
       height={props.size}
       style={{ color: `var(--rp-c-brand, ${MARK_FALLBACK_COLOR})` }}
-      role={decorative ? 'presentation' : 'img'}
-      aria-hidden={decorative ? true : undefined}
-      aria-label={label}
+      {...a11yProps}
     >
-      {decorative ? null : <title>{label}</title>}
+      {!decorative && <title>{label}</title>}
       <rect width="64" height="64" rx="12" fill="var(--cp-c-bg, #0a0a0a)" />
       {/* Apple source content lives in (60..250, 40..260). scale(0.25)
           places a 47.5x55 apple centred in the 64x64 chip. */}

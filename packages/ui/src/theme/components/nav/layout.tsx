@@ -55,7 +55,9 @@ export function Layout(): React.ReactElement {
   const { site: rspressSite } = useSite()
   const configNavItems = readNavItems(rspressSite)
   const scrapedNavItems = useNavItems()
-  const navItems = configNavItems.length > 0 ? configNavItems : scrapedNavItems
+  const navItems = match(configNavItems.length > 0)
+    .with(true, () => configNavItems)
+    .otherwise(() => scrapedNavItems)
   const socialLinks = readSocialLinks(rspressSite)
   const { announcement, topbarCta, sidebarPromo: sidebarPromoConfig, edit, report } = site ?? {}
   const { frontmatter } = useFrontmatter()

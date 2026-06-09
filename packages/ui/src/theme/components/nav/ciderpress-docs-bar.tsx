@@ -115,9 +115,7 @@ export function CiderpressDocsBar(): React.ReactElement | null {
   const isHome = fmRecord.pageType === 'home'
   const isBlank = fmRecord.pageType === 'blank'
 
-  const pageTitle = match(fmRecord.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => undefined)
+  const pageTitle = readStringField(fmRecord.title)
 
   const breadcrumbs = buildBreadcrumbs(pathname, pageTitle)
   const outlineEnabled = match(fmRecord.outline)
@@ -280,7 +278,7 @@ function buildBreadcrumbs(pathname: string, pageTitle: string | undefined): read
     .with(P.string, (t) => t)
     .otherwise(() =>
       match(segments.length > 1)
-        .with(true, () => titleCase(segments[segments.length - 1]))
+        .with(true, () => titleCase(segments.at(-1) ?? ''))
         .otherwise(() => '')
     )
   return match(pageLabel === '' || pageLabel === section)
@@ -329,6 +327,22 @@ function titleCase(segment: string): string {
     .split('-')
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
+}
+
+/**
+ * Narrow an `unknown` frontmatter field to `string`, returning a bare
+ * (no explicit `undefined`) absent value when the field is missing or
+ * non-string. Used to coerce gray-matter's loose typing into the
+ * `string | undefined` shape downstream helpers expect.
+ *
+ * @private
+ * @param value - Frontmatter field value.
+ * @returns The string when typed as such, otherwise an absent value.
+ */
+function readStringField(value: unknown): string | undefined {
+  if (typeof value === 'string') {
+    return value
+  }
 }
 
 /**

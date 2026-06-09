@@ -1,4 +1,6 @@
 import { useLocation } from '@rspress/core/runtime'
+import { clsx } from 'clsx'
+import { match } from 'massaman/match'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type React from 'react'
 
@@ -59,27 +61,13 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
     if (props.items.length > 0) {
       return
     }
-    const scrape = (): readonly CiderpressNavMenuItem[] => {
-      const anchors = document.querySelectorAll<HTMLAnchorElement>(
-        '.rp-nav-menu .rp-nav-menu__item a'
-      )
-      const result: CiderpressNavMenuItem[] = []
-      for (const anchor of anchors) {
-        const text = anchor.textContent?.trim() ?? ''
-        const link = anchor.getAttribute('href') ?? ''
-        if (text !== '' && link !== '') {
-          result.push({ text, link })
-        }
-      }
-      return result
-    }
-    const initial = scrape()
+    const initial = scrapeNavItems()
     if (initial.length > 0) {
       setScrapedItems(initial)
       return
     }
     const observer = new MutationObserver(() => {
-      const fresh = scrape()
+      const fresh = scrapeNavItems()
       if (fresh.length > 0) {
         setScrapedItems(fresh)
         observer.disconnect()
@@ -91,7 +79,10 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
     }
   }, [props.items])
   const items = useMemo<readonly CiderpressNavMenuItem[]>(
-    () => (props.items.length > 0 ? props.items : scrapedItems),
+    () =>
+      match(props.items.length > 0)
+        .with(true, () => props.items)
+        .otherwise(() => scrapedItems),
     [props.items, scrapedItems]
   )
 
@@ -119,57 +110,15 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
       return
     }
 
-    const inLayoutFlow = (child: Element): boolean => {
-      // Exclude elements removed from the layout (the hidden measure
-      // layer is `position: absolute`, anything `display: none` is
-      // gone, anything `visibility: hidden` still occupies space so
-      // it stays counted). We only want flex-contributing siblings.
-      const cs = window.getComputedStyle(child)
-      return cs.display !== 'none' && cs.position !== 'absolute' && cs.position !== 'fixed'
-    }
-
-    const recompute = (): void => {
-      const itemElements = measure.querySelectorAll<HTMLElement>('[data-cp-menu-item]')
-      const widths = Array.from(itemElements).map((el) => el.getBoundingClientRect().width)
-      // Available room for the menu = parent width minus every layout
-      // sibling's width minus the parent's flex gap between them.
-      const parentWidth = parent.clientWidth
-      const parentGap = parseFloat(getComputedStyle(parent).columnGap || '0') || 0
-      const layoutSiblings: Element[] = []
-      for (const child of parent.children) {
-        if (child === container) {
-          continue
-        }
-        if (!inLayoutFlow(child)) {
-          continue
-        }
-        layoutSiblings.push(child)
-      }
-      const siblingsWidth = layoutSiblings.reduce(
-        (sum, child) => sum + child.getBoundingClientRect().width,
-        0
-      )
-      // gap × (layout-children count − 1), where layout-children includes
-      // the menu container itself plus every layout sibling.
-      const gapCount = Math.max(0, layoutSiblings.length + 1 - 1)
-      const available = Math.max(0, parentWidth - siblingsWidth - gapCount * parentGap)
-      const totals = computeVisibleCount({
-        widths,
-        available,
-        gap: DEFAULT_GAP_PX,
-        overflowReserve: OVERFLOW_TOGGLE_WIDTH,
-      })
-      setVisibleCount(totals)
-    }
-
-    const observer = new ResizeObserver(recompute)
+    const observer = new ResizeObserver(() => {
+      setVisibleCount(computeMenuFit({ measure, parent, container }))
+    })
     observer.observe(parent)
-    for (const child of parent.children) {
-      if (child !== container && inLayoutFlow(child)) {
-        observer.observe(child)
-      }
-    }
-    recompute()
+    const observedChildren = [...parent.children].filter(
+      (child) => child !== container && inLayoutFlow(child)
+    )
+    observedChildren.map((child) => observer.observe(child))
+    setVisibleCount(computeMenuFit({ measure, parent, container }))
     return () => {
       observer.disconnect()
     }
@@ -179,7 +128,7 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
     if (!overflowOpen) {
       return
     }
-    const onDocClick = (event: MouseEvent): void => {
+    function onDocClick(event: MouseEvent): void {
       const target = event.target as Node | null
       if (
         target !== null &&
@@ -214,16 +163,14 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
           <RouteLink
             key={item.link}
             href={item.link}
-            className={
-              isActive(pathname, item.link)
-                ? 'cp-nav-menu__item cp-nav-menu__item--active'
-                : 'cp-nav-menu__item'
-            }
+            className={clsx('cp-nav-menu__item', {
+              'cp-nav-menu__item--active': isActive(pathname, item.link),
+            })}
           >
             {item.text}
           </RouteLink>
         ))}
-        {hasOverflow ? (
+        {hasOverflow && (
           <div ref={overflowRef} className="cp-nav-menu__overflow">
             <button
               type="button"
@@ -235,18 +182,16 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
               <span>More</span>
               <Icon icon="pixelarticons:chevron-down" width={12} height={12} />
             </button>
-            {overflowOpen ? (
+            {overflowOpen && (
               <ul className="cp-nav-menu__overflow-popover" role="menu">
                 {overflow.map((item) => (
                   <li key={item.link} role="none">
                     <RouteLink
                       href={item.link}
                       role="menuitem"
-                      className={
-                        isActive(pathname, item.link)
-                          ? 'cp-nav-menu__overflow-item cp-nav-menu__overflow-item--active'
-                          : 'cp-nav-menu__overflow-item'
-                      }
+                      className={clsx('cp-nav-menu__overflow-item', {
+                        'cp-nav-menu__overflow-item--active': isActive(pathname, item.link),
+                      })}
                       onClick={() => setOverflowOpen(false)}
                     >
                       {item.text}
@@ -254,9 +199,9 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
                   </li>
                 ))}
               </ul>
-            ) : null}
+            )}
           </div>
-        ) : null}
+        )}
       </nav>
     </>
   )
@@ -286,26 +231,134 @@ function computeVisibleCount(params: {
     return widths.length
   }
 
-  const fullTotal = widths.reduce((acc, w, i) => acc + w + (i > 0 ? gap : 0), 0)
+  const fullTotal = widths.reduce((acc, w, i) => acc + w + gapAt(i, gap), 0)
   if (fullTotal <= available) {
     return widths.length
   }
 
   // Otherwise we know we need overflow; reserve space for the toggle.
   const budget = available - overflowReserve
-  // oxlint-disable-next-line functional/no-let -- accumulator for budget walk
-  let running = 0
-  // oxlint-disable-next-line functional/no-let -- counter for fit walk
-  let count = 0
-  for (const [index, width] of widths.entries()) {
-    const next = running + width + (index > 0 ? gap : 0)
-    if (next > budget) {
-      break
-    }
-    running = next
-    count += 1
+  const walked = widths.reduce<{
+    readonly running: number
+    readonly count: number
+    readonly done: boolean
+  }>(
+    (state, width, index) => {
+      if (state.done) {
+        return state
+      }
+      const next = state.running + width + gapAt(index, gap)
+      if (next > budget) {
+        return { ...state, done: true }
+      }
+      return { running: next, count: state.count + 1, done: false }
+    },
+    { running: 0, count: 0, done: false }
+  )
+  return walked.count
+}
+
+/**
+ * Gap to add before the item at `index` when summing widths. Index 0
+ * has no leading gap; subsequent items get the menu's inter-item gap.
+ *
+ * @private
+ * @param index - Position of the item in the width array.
+ * @param gap - Inter-item gap in pixels.
+ * @returns Leading gap to add before this item.
+ */
+function gapAt(index: number, gap: number): number {
+  if (index === 0) {
+    return 0
   }
-  return count
+  return gap
+}
+
+/**
+ * Read every anchor under Rspress's hidden `.rp-nav-menu` and project
+ * it into a `{ text, link }` item. Anchors with empty text or `href`
+ * are dropped so we never surface a placeholder entry.
+ *
+ * @private
+ * @returns Nav items currently in the DOM (empty array when not mounted).
+ */
+function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
+  const anchors = document.querySelectorAll<HTMLAnchorElement>('.rp-nav-menu .rp-nav-menu__item a')
+  return [...anchors]
+    .map((anchor) => ({
+      text: readAnchorText(anchor),
+      link: anchor.getAttribute('href') ?? '',
+    }))
+    .filter((item) => item.text !== '' && item.link !== '')
+}
+
+/**
+ * Pull the trimmed text content from an anchor. Returns an empty
+ * string when `textContent` is missing — callers treat empty as "skip
+ * this anchor".
+ *
+ * @private
+ * @param anchor - Anchor element to read.
+ * @returns Trimmed inner text, or empty string when absent.
+ */
+function readAnchorText(anchor: HTMLAnchorElement): string {
+  const text = anchor.textContent
+  if (text === null) {
+    return ''
+  }
+  return text.trim()
+}
+
+/**
+ * Exclude elements removed from the layout — the hidden measure layer
+ * is `position: absolute`, anything `display: none` is gone, anything
+ * `visibility: hidden` still occupies space so it stays counted. We
+ * only want flex-contributing siblings.
+ *
+ * @private
+ * @param child - Sibling element to test.
+ * @returns True when the element contributes to the parent's flex layout.
+ */
+function inLayoutFlow(child: Element): boolean {
+  const cs = globalThis.getComputedStyle(child)
+  return cs.display !== 'none' && cs.position !== 'absolute' && cs.position !== 'fixed'
+}
+
+/**
+ * Compute how many items fit inline given the live layout. Measures
+ * each item's full-width footprint from the hidden measure row, then
+ * subtracts every layout sibling's width (plus inter-flex gaps) from
+ * the parent's clientWidth to derive the budget for the menu strip.
+ *
+ * @private
+ * @param params - Refs to the measure row, container, and parent.
+ * @returns Number of items that fit inline.
+ */
+function computeMenuFit(params: {
+  readonly measure: HTMLDivElement
+  readonly parent: HTMLElement
+  readonly container: HTMLDivElement
+}): number {
+  const { measure, parent, container } = params
+  const itemElements = measure.querySelectorAll<HTMLElement>('[data-cp-menu-item]')
+  const widths = [...itemElements].map((el) => el.getBoundingClientRect().width)
+  const parentWidth = parent.clientWidth
+  const parentGap = parseFloat(globalThis.getComputedStyle(parent).columnGap || '0') || 0
+  const layoutSiblings = [...parent.children].filter(
+    (child) => child !== container && inLayoutFlow(child)
+  )
+  const siblingsWidth = layoutSiblings.reduce(
+    (sum, child) => sum + child.getBoundingClientRect().width,
+    0
+  )
+  const gapCount = Math.max(0, layoutSiblings.length + 1 - 1)
+  const available = Math.max(0, parentWidth - siblingsWidth - gapCount * parentGap)
+  return computeVisibleCount({
+    widths,
+    available,
+    gap: DEFAULT_GAP_PX,
+    overflowReserve: OVERFLOW_TOGGLE_WIDTH,
+  })
 }
 
 /**

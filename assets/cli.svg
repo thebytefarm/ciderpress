@@ -1,67 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 510">
-  <defs>
-    <style>
-      .terminal-bg { fill: #1e1e2e; }
-      .terminal-border { fill: #313244; }
-      .title-bar { fill: #181825; }
-      .btn-red { fill: #f38ba8; }
-      .btn-yellow { fill: #f9e2af; }
-      .btn-green { fill: #a6e3a1; }
-      .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .command { fill: #cdd6f4; }
-      .brand { fill: #991b1b; }
-      .green { fill: #a6e3a1; }
-      .dim { fill: #6c7086; }
-      .white { fill: #cdd6f4; }
-      .prompt { fill: #89b4fa; }
-    </style>
-  </defs>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 510" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace">
   <!-- Window frame -->
-  <rect class="terminal-border" width="1120" height="510" rx="12"/>
-  <rect class="terminal-bg" x="1" y="1" width="1118" height="508" rx="11"/>
+  <rect width="1120" height="510" rx="12" fill="#313244"/>
+  <rect x="1" y="1" width="1118" height="508" rx="11" fill="#1e1e2e"/>
 
   <!-- Title bar -->
-  <rect class="title-bar" x="1" y="1" width="1118" height="48" rx="11"/>
+  <rect x="1" y="1" width="1118" height="48" rx="11" fill="#181825"/>
 
   <!-- Window buttons -->
-  <circle class="btn-red" cx="28" cy="25" r="7"/>
-  <circle class="btn-yellow" cx="52" cy="25" r="7"/>
-  <circle class="btn-green" cx="76" cy="25" r="7"/>
+  <circle cx="28" cy="25" r="7" fill="#f38ba8"/>
+  <circle cx="52" cy="25" r="7" fill="#f9e2af"/>
+  <circle cx="76" cy="25" r="7" fill="#a6e3a1"/>
 
   <!-- Title -->
-  <text x="560" y="25" text-anchor="middle" dominant-baseline="central" class="text dim" font-size="13">ciderpress</text>
+  <text x="560" y="25" text-anchor="middle" dominant-baseline="central" font-size="13" fill="#6c7086">ciderpress</text>
 
   <!-- Content area -->
   <g transform="translate(32, 88)">
     <!-- Prompt line -->
-    <text class="text prompt" font-size="15" y="0">~</text>
-    <text class="text dim" font-size="15" x="16" y="0">$</text>
-    <text class="text command" font-size="15" x="36" y="0">ciderpress build</text>
+    <text font-size="15" y="0" fill="#89b4fa">~</text>
+    <text font-size="15" x="16" y="0" fill="#6c7086">$</text>
+    <text font-size="15" x="36" y="0" fill="#cdd6f4">ciderpress build</text>
 
     <!-- CIDERPRESS ASCII art -->
-    <text class="text brand" font-size="13" y="40" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="56" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text class="text brand" font-size="13" y="72" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text class="text brand" font-size="13" y="88" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text class="text brand" font-size="13" y="104" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
-    <text class="text brand" font-size="13" y="120" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+    <text font-size="13" y="40" fill="#991b1b" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
+    <text font-size="13" y="56" fill="#991b1b" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
+    <text font-size="13" y="72" fill="#991b1b" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
+    <text font-size="13" y="88" fill="#991b1b" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
+    <text font-size="13" y="104" fill="#991b1b" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
+    <text font-size="13" y="120" fill="#991b1b" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
 
     <!-- Version and description -->
-    <text class="text white" font-size="15" y="156">  ciderpress <tspan class="dim">v0.1.0</tspan></text>
-    <text class="text white" font-size="15" y="180">  Making "I vibe-coded it and it works on my machine" look professional.</text>
+    <text font-size="15" y="156" fill="#cdd6f4">  ciderpress <tspan fill="#6c7086">v0.1.0</tspan></text>
+    <text font-size="15" y="180" fill="#cdd6f4">  Making "I vibe-coded it and it works on my machine" look professional.</text>
 
     <!-- Build output -->
-    <text class="text" font-size="15" y="220"><tspan class="green">  &#x2713;</tspan><tspan class="white"> Loaded config</tspan></text>
-    <text class="text" font-size="15" y="244"><tspan class="green">  &#x2713;</tspan><tspan class="white"> Synced documents</tspan></text>
-    <text class="text" font-size="15" y="268"><tspan class="green">  &#x2713;</tspan><tspan class="white"> Generated sidebar &amp; nav</tspan></text>
+    <text font-size="15" y="220"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Loaded config</tspan></text>
+    <text font-size="15" y="244"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Synced documents</tspan></text>
+    <text font-size="15" y="268"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Generated sidebar &amp; nav</tspan></text>
 
     <!-- Done message -->
-    <text class="text" font-size="15" y="304"><tspan class="green">  Done!</tspan><tspan class="white"> Run </tspan><tspan class="brand">ciderpress --help</tspan><tspan class="white"> to learn more.</tspan></text>
+    <text font-size="15" y="304"><tspan fill="#a6e3a1">  Done!</tspan><tspan fill="#cdd6f4"> Run </tspan><tspan fill="#991b1b">ciderpress --help</tspan><tspan fill="#cdd6f4"> to learn more.</tspan></text>
 
     <!-- New prompt -->
-    <text class="text prompt" font-size="15" y="344">~</text>
-    <text class="text dim" font-size="15" x="16" y="344">$</text>
-    <text class="text white" font-size="15" x="36" y="344">&#x2588;</text>
+    <text font-size="15" y="344" fill="#89b4fa">~</text>
+    <text font-size="15" x="16" y="344" fill="#6c7086">$</text>
+    <text font-size="15" x="36" y="344" fill="#cdd6f4">&#x2588;</text>
   </g>
 </svg>

@@ -73,8 +73,6 @@ export default command({
         ctx.log.outro('Build failed')
         process.exit(1)
       }
-
-      ctx.log.outro('Done')
     } else {
       const uncheckedSyncResult = await sync(config, { paths, quiet })
       if (uncheckedSyncResult.error) {
@@ -83,8 +81,9 @@ export default command({
       }
       await runAssetGeneration({ config, paths, log: ctx.log, quiet })
       await buildSite({ config, paths })
-      ctx.log.outro('Done')
     }
+
+    ctx.log.outro('Done')
   },
 })
 

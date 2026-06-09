@@ -90,14 +90,14 @@ export function CiderpressNavHamburger(props: CiderpressNavHamburgerProps): Reac
               <VariantToggle />
             </div>
 
-            {props.socialLinks.length > 0 ? (
+            {props.socialLinks.length > 0 && (
               <div className="cp-nav-drawer__row">
                 <span className="cp-nav-drawer__row-label">Links</span>
                 <CiderpressNavSocialLinks links={props.socialLinks} />
               </div>
-            ) : null}
+            )}
 
-            {props.topbarCta === undefined ? null : (
+            {props.topbarCta !== undefined && (
               <div className="cp-nav-drawer__footer">
                 <TopbarCTA text={props.topbarCta.text} href={props.topbarCta.href} />
               </div>

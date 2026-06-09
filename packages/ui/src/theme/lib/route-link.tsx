@@ -13,21 +13,37 @@ export interface RouteLinkProps {
    * rendered as a plain anchor.
    */
   readonly href: string
-  /** Optional class applied to the rendered element. */
+  /**
+   * Optional class applied to the rendered element.
+   */
   readonly className?: string
-  /** Optional inline ARIA label. */
+  /**
+   * Optional inline ARIA label.
+   */
   readonly 'aria-label'?: string
-  /** Optional ARIA current marker (e.g. `'page'`). */
+  /**
+   * Optional ARIA current marker (e.g. `'page'`).
+   */
   readonly 'aria-current'?: React.AriaAttributes['aria-current']
-  /** Optional `role` attribute (e.g. `'menuitem'`). */
+  /**
+   * Optional `role` attribute (e.g. `'menuitem'`).
+   */
   readonly role?: string
-  /** Optional title attribute. */
+  /**
+   * Optional title attribute.
+   */
   readonly title?: string
-  /** Optional click handler (closing dropdowns, etc.). */
+  /**
+   * Optional click handler (closing dropdowns, etc.).
+   */
   readonly onClick?: React.MouseEventHandler<HTMLElement>
-  /** Optional data-* attribute used by the nav menu measure layer. */
+  /**
+   * Optional data-* attribute used by the nav menu measure layer.
+   */
   readonly 'data-cp-menu-item'?: boolean | string
-  /** Rendered children. */
+  /**
+   * Rendered children.
+   */
   readonly children: React.ReactNode
 }
 

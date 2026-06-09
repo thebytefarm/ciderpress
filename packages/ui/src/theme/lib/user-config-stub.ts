@@ -8,4 +8,5 @@
  * this stub just provides the import target.
  */
 
-export default {}
+const userConfigStub = {}
+export default userConfigStub

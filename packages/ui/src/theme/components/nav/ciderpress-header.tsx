@@ -1,3 +1,4 @@
+import { clsx } from 'clsx'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
@@ -59,10 +60,13 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
   // Landing / home pages live inside a constrained max-width container;
   // doc pages stretch full-width (sidebar + article). The header mirrors
   // the content shell so it never floats outside the page rhythm.
-  const variantClass = props.isHome ? 'cp-header--landing' : 'cp-header--docs'
-
   return (
-    <header className={`cp-header ${variantClass}`}>
+    <header
+      className={clsx('cp-header', {
+        'cp-header--landing': props.isHome,
+        'cp-header--docs': !props.isHome,
+      })}
+    >
       {props.announcement}
       <div className="cp-header-inner">
         {/* Left: hamburger (mobile primary-nav drawer) + logo. Sidebar
@@ -95,7 +99,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
         <NavDivider />
         <VariantToggle />
         <CiderpressNavSocialLinks links={props.socialLinks} />
-        {props.topbarCta === undefined ? null : (
+        {props.topbarCta !== undefined && (
           <>
             <NavDivider />
             <TopbarCTA text={props.topbarCta.text} href={props.topbarCta.href} />

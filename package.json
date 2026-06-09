@@ -11,7 +11,7 @@
     "format:fix": "oxfmt --write",
     "lint": "oxlint --ignore-pattern node_modules --ignore-pattern benchmarks --ignore-pattern examples",
     "lint:fix": "oxlint --fix --ignore-pattern node_modules --ignore-pattern benchmarks --ignore-pattern examples",
-    "test": "turbo run test",
+    "test": "turbo run test --filter='./packages/*'",
     "check": "turbo run typecheck //#lint //#format",
     "validate": "turbo run typecheck //#lint //#format --ui=stream",
     "changeset": "changeset",

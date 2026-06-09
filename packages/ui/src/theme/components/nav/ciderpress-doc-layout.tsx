@@ -1,6 +1,7 @@
 import { useFrontmatter, useLocation } from '@rspress/core/runtime'
 import { DocContent, DocFooter, Outline, Overview, Sidebar, useWatchToc } from '@rspress/core/theme'
 import type { DocLayoutProps } from '@rspress/core/theme'
+import { clsx } from 'clsx'
 import { match } from 'massaman/match'
 import { useEffect, useMemo, useState } from 'react'
 import type React from 'react'
@@ -123,7 +124,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
   const sidebarSlot = match({ showSidebar, showSidebarPlaceholder })
     .with({ showSidebar: true }, () => (
       <aside
-        className={joinClasses(
+        className={clsx(
           'rp-doc-layout__sidebar',
           isSidebarOpen && 'rp-doc-layout__sidebar--open',
           'rp-scrollbar'
@@ -136,7 +137,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
     ))
     .with({ showSidebarPlaceholder: true }, () => (
       <aside
-        className={joinClasses(
+        className={clsx(
           'rp-doc-layout__sidebar-placeholder',
           isLegacyPlaceholder && 'rp-doc-layout__sidebar-placeholder--legacy'
         )}
@@ -154,7 +155,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
       </main>
     ))
     .otherwise(() => (
-      <div className={joinClasses('rp-doc-layout__doc', isDocWide && 'rp-doc-layout__doc--wide')}>
+      <div className={clsx('rp-doc-layout__doc', isDocWide && 'rp-doc-layout__doc--wide')}>
         <main className="rp-doc-layout__doc-container">
           {beforeDocContent}
           <div className="rp-doc rspress-doc" ref={rspressDocRef}>
@@ -177,7 +178,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
   const outlineSlot = match({ isOverviewPage, showOutline })
     .with({ isOverviewPage: true }, () => null)
     .with({ showOutline: true }, () => (
-      <aside className={joinClasses('rp-doc-layout__outline', 'rp-scrollbar')}>
+      <aside className={clsx('rp-doc-layout__outline', 'rp-scrollbar')}>
         {beforeOutline}
         <Outline />
         {afterOutline}
@@ -212,18 +213,6 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
 }
 
 /**
- * Join className tokens, dropping anything falsy. Avoids pulling in
- * `clsx` (Rspress depends on it but Ciderpress doesn't).
- *
- * @private
- * @param parts - className tokens; false / null / undefined are skipped.
- * @returns Space-joined className string.
- */
-function joinClasses(...parts: readonly (string | false | null | undefined)[]): string {
-  return parts.filter((p): p is string => typeof p === 'string').join(' ')
-}
-
-/**
  * Produce the inline style for the placeholder rails when the page is
  * `doc-wide` (zero-width placeholders so the prose can claim the space).
  *
@@ -232,9 +221,9 @@ function joinClasses(...parts: readonly (string | false | null | undefined)[]): 
  * @returns Style object or undefined when no override is needed.
  */
 function docWideStyle(isDocWide: boolean): React.CSSProperties | undefined {
-  return match(isDocWide)
-    .with(true, () => ({ width: '0' }) as React.CSSProperties)
-    .otherwise(() => undefined)
+  if (isDocWide) {
+    return { width: '0' }
+  }
 }
 
 /**
