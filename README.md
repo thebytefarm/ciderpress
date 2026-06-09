@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.svg" alt="ciderpress" width="90%" />
+  <img src="https://raw.githubusercontent.com/thebytefarm/ciderpress/refs/heads/main/assets/banner.svg" alt="ciderpress" width="90%" />
   <p><strong>Press your docs.</strong></p>
   <p>A documentation framework for monorepos. Point it at your existing markdown — get a full site.</p>
 
