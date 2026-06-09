@@ -58,7 +58,9 @@ function parseChangelog(text: string): PackageChangelog {
 
 function parseVersionBlock(block: string): VersionBlock | null {
   const match = /^##\s+(\S.*)$/m.exec(block)
-  if (!match) return null
+  if (!match) {
+    return null
+  }
   const version = match[1].trim()
   const remainder = block.slice(block.indexOf('\n') + 1)
   const subBlocks = remainder.split(/\n(?=### )/g).filter((b) => b.trim().length > 0)
@@ -72,9 +74,13 @@ function parseVersionBlock(block: string): VersionBlock | null {
 
 function parseSectionBlock(block: string): readonly [BumpType, readonly Entry[]] | null {
   const match = /^###\s+(.+)$/m.exec(block)
-  if (!match) return null
+  if (!match) {
+    return null
+  }
   const heading = match[1].trim()
-  if (!isBumpType(heading)) return null
+  if (!isBumpType(heading)) {
+    return null
+  }
   const remainder = block.slice(block.indexOf('\n') + 1)
   return [heading, splitEntries(remainder)]
 }
@@ -83,13 +89,22 @@ function isBumpType(s: string): s is BumpType {
   return s === 'Major Changes' || s === 'Minor Changes' || s === 'Patch Changes'
 }
 
+function boundaryIndex(line: string, index: number): readonly number[] {
+  if (line.startsWith('- ')) {
+    return [index]
+  }
+  return []
+}
+
 function splitEntries(text: string): readonly Entry[] {
   const lines = text.split('\n')
-  const boundaries = lines.flatMap((l, i) => (l.startsWith('- ') ? [i] : []))
-  if (boundaries.length === 0) return []
+  const boundaries = lines.flatMap(boundaryIndex)
+  if (boundaries.length === 0) {
+    return []
+  }
   return boundaries
     .map((start, idx) => {
-      const end = idx + 1 < boundaries.length ? boundaries[idx + 1] : lines.length
+      const end = boundaries[idx + 1] ?? lines.length
       return { body: lines.slice(start, end).join('\n').trimEnd() }
     })
     .filter((e) => !isInternalDepBump(e))
@@ -106,35 +121,56 @@ function discoverChangelogs(packagesDir: string): readonly string[] {
     .filter((p) => existsSync(p) && statSync(p).isFile())
 }
 
+function splitCoreAndPre(v: string): { readonly core: string; readonly pre: string | null } {
+  const dashIdx = v.indexOf('-')
+  if (dashIdx === -1) {
+    return { core: v, pre: null }
+  }
+  return { core: v.slice(0, dashIdx), pre: v.slice(dashIdx + 1) }
+}
+
 function parseSemver(v: string): ParsedSemver {
-  const match = /^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/.exec(v)
-  if (!match) return { major: 0, minor: 0, patch: 0, pre: v }
+  const { core, pre } = splitCoreAndPre(v)
+  const match = /^(\d+)\.(\d+)\.(\d+)$/.exec(core)
+  if (!match) {
+    return { major: 0, minor: 0, patch: 0, pre: v }
+  }
   return {
     major: Number(match[1]),
     minor: Number(match[2]),
     patch: Number(match[3]),
-    pre: match[4] ?? null,
+    pre,
   }
 }
 
 function compareSemverDesc(a: string, b: string): number {
   const pa = parseSemver(a)
   const pb = parseSemver(b)
-  if (pa.major !== pb.major) return pb.major - pa.major
-  if (pa.minor !== pb.minor) return pb.minor - pa.minor
-  if (pa.patch !== pb.patch) return pb.patch - pa.patch
-  if (pa.pre === null && pb.pre !== null) return -1
-  if (pa.pre !== null && pb.pre === null) return 1
-  if (pa.pre === null && pb.pre === null) return 0
+  if (pa.major !== pb.major) {
+    return pb.major - pa.major
+  }
+  if (pa.minor !== pb.minor) {
+    return pb.minor - pa.minor
+  }
+  if (pa.patch !== pb.patch) {
+    return pb.patch - pa.patch
+  }
+  if (pa.pre === null && pb.pre !== null) {
+    return -1
+  }
+  if (pa.pre !== null && pb.pre === null) {
+    return 1
+  }
+  if (pa.pre === null && pb.pre === null) {
+    return 0
+  }
   return (pb.pre ?? '').localeCompare(pa.pre ?? '')
 }
 
 function aggregate(changelogs: readonly PackageChangelog[]): readonly AggregatedVersion[] {
-  const allVersions = Array.from(
-    new Set(changelogs.flatMap((c) => c.versions.map((v) => v.version)))
-  )
+  const allVersions = [...new Set(changelogs.flatMap((c) => c.versions.map((v) => v.version)))]
     .filter((v) => compareSemverDesc(v, MIN_VERSION) <= 0)
-    .sort(compareSemverDesc)
+    .toSorted(compareSemverDesc)
 
   return allVersions
     .map((version) => {
@@ -154,25 +190,25 @@ function aggregateSection(
 ): readonly AggregatedEntry[] {
   const allEntries = changelogs.flatMap((cl) => {
     const v = cl.versions.find((vs) => vs.version === version)
-    if (!v) return []
+    if (!v) {
+      return []
+    }
     const entries = v.sections.get(type)
-    if (!entries) return []
+    if (!entries) {
+      return []
+    }
     return entries.map((e) => ({ body: e.body, pkg: cl.name }))
   })
 
-  const grouped = new Map<string, string[]>()
-  allEntries.forEach(({ body, pkg }) => {
-    const existing = grouped.get(body)
-    if (existing) {
-      existing.push(pkg)
-    } else {
-      grouped.set(body, [pkg])
-    }
-  })
+  const grouped = allEntries.reduce<Map<string, readonly string[]>>((acc, { body, pkg }) => {
+    const existing = acc.get(body) ?? []
+    acc.set(body, [...existing, pkg])
+    return acc
+  }, new Map())
 
-  return Array.from(grouped.entries()).map(([body, packages]) => ({
+  return [...grouped.entries()].map(([body, packages]) => ({
     body,
-    packages: Array.from(new Set(packages)).sort(),
+    packages: [...new Set(packages)].toSorted(),
   }))
 }
 
@@ -182,7 +218,7 @@ function render(versions: readonly AggregatedVersion[]): string {
 }
 
 function renderVersion(v: AggregatedVersion): string {
-  const bumpSections = Array.from(v.sections.entries()).map(([type, entries]) =>
+  const bumpSections = [...v.sections.entries()].map(([type, entries]) =>
     renderBumpSection(type, entries)
   )
   return `## ${v.version}\n\n${bumpSections.join('\n\n')}`
@@ -211,8 +247,8 @@ export default lauf({
     const parsed = paths.map((p) => parseChangelog(readFileSync(p, 'utf8')))
 
     if (ctx.args.verbose) {
-      ctx.logger.info(`Discovered ${paths.length} package changelogs`)
-      parsed.forEach((p) => ctx.logger.info(`  ${p.name}: ${p.versions.length} versions`))
+      const summary = parsed.map((p) => `  ${p.name}: ${p.versions.length} versions`).join('\n')
+      ctx.logger.info(`Discovered ${paths.length} package changelogs\n${summary}`)
     }
 
     const aggregated = aggregate(parsed)
