@@ -25,9 +25,7 @@ test.describe('@mobile-only mobile nav', () => {
     await page.waitForLoadState('networkidle')
 
     // The hamburger button — selector is forgiving until we lock in the aria-label.
-    const hamburger = page
-      .getByRole('button', { name: /menu|sidebar|toggle|navigation/i })
-      .first()
+    const hamburger = page.getByRole('button', { name: /menu|sidebar|toggle|navigation/i }).first()
     await expect(hamburger).toBeVisible()
     await hamburger.click()
 

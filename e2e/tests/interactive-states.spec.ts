@@ -36,7 +36,7 @@ test.describe('@desktop-only interactive states', () => {
   test('sidebar link — active page', async ({ page }) => {
     await page.goto('/concepts/themes')
     await page.waitForLoadState('networkidle')
-    const activeLink = page.locator('[aria-current="page"], .rspress-sidebar-item-active').first()
+    const activeLink = page.locator('.rp-sidebar-item--active').first()
     await snapshotElement(page, activeLink, 'sidebar-link-active')
   })
 })

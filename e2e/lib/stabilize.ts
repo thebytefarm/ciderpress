@@ -25,7 +25,7 @@ export async function prepareForSnapshot(page: Page): Promise<void> {
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready
     }
-    const images = Array.from(document.images)
+    const images = [...document.images]
     await Promise.all(
       images.map((img) =>
         img.complete

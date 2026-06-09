@@ -19,7 +19,7 @@ type BannerPreviewProps = Record<string, unknown>
 function BannerPreview(_props: BannerPreviewProps): React.ReactElement {
   return (
     <Box flexDirection="column" padding={1}>
-      <Banner />
+      <Banner width={78} />
     </Box>
   )
 }

@@ -1,4 +1,14 @@
+import process from 'node:process'
+
 import { defineConfig, devices } from '@playwright/test'
+
+// Load e2e/.env (gitignored). Holds ARGOS_TOKEN and any local overrides.
+// In CI, env vars come from the workflow's `env:` block instead.
+try {
+  process.loadEnvFile('.env')
+} catch {
+  // No .env file — that's fine, vars may be set elsewhere (CI, shell).
+}
 
 /**
  * Playwright config for the Ciderpress docs site.
@@ -33,10 +43,7 @@ export default defineConfig({
         ['blob', { outputDir: './.playwright/blob-report' }],
         ['github'],
       ]
-    : [
-        ['html', { open: 'on-failure', outputFolder: './.playwright/report' }],
-        ['list'],
-      ],
+    : [['html', { open: 'on-failure', outputFolder: './.playwright/report' }], ['list']],
   expect: {
     toHaveScreenshot: {
       maxDiffPixelRatio: 0.01,

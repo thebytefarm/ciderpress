@@ -1,4 +1,4 @@
-name: 'CI: Benchmarks'
+name: CI / Benchmarks
 
 on:
   pull_request:

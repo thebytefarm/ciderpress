@@ -147,7 +147,7 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
  * @private
  */
 function BannerBlock(): React.ReactElement {
-  return <Banner />
+  return <Banner width={98} />
 }
 
 /**

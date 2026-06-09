@@ -12,11 +12,11 @@ import { DYNAMIC_MASKS, prepareForSnapshot } from './stabilize.ts'
 const ARGOS_ROOT = './.playwright/screenshots'
 
 interface SnapshotOptions {
-  /** Stable name. Argos will namespace by project (desktop/tablet/mobile) automatically. */
+  // Stable name. Argos will namespace by project (desktop/tablet/mobile) automatically.
   name: string
-  /** Defaults to true. Set false for above-the-fold-only screenshots (sticky header tests). */
+  // Defaults to true. Set false for above-the-fold-only screenshots (sticky header tests).
   fullPage?: boolean
-  /** Extra selectors to mask, on top of the global DYNAMIC_MASKS. */
+  // Extra selectors to mask, on top of the global DYNAMIC_MASKS.
   mask?: string[]
 }
 
@@ -39,11 +39,7 @@ export async function snapshot(page: Page, options: SnapshotOptions): Promise<vo
  * Element-scoped snapshot. Use for component-state tests (hover, focus,
  * sidebar open/closed) where the rest of the page is irrelevant noise.
  */
-export async function snapshotElement(
-  page: Page,
-  locator: Locator,
-  name: string
-): Promise<void> {
+export async function snapshotElement(page: Page, locator: Locator, name: string): Promise<void> {
   await prepareForSnapshot(page)
   await argosScreenshot(page, name, {
     root: ARGOS_ROOT,

@@ -26,12 +26,13 @@ const isTTY = Boolean(process.stdin.isTTY)
 
 /**
  * Maximum width (in columns) of the dev TUI. Sized to fit the
- * `ciderpress` banner rendered by `<Banner />` (ink-big-text's "block"
- * font is ~88-90 cols wide for this string) with a few columns of
- * breathing room. On wider terminals the layout stays at this width
- * for a compact feel; on narrower terminals everything shrinks to fit.
+ * `ciderpress` banner rendered by `<Banner />` with `letterSpacing: 2`
+ * on the "block" tier — ~100 cols of glyphs + a few cols of breathing
+ * room. On wider terminals the layout stays at this width for a
+ * compact feel; on narrower terminals everything (banner included)
+ * shrinks tier-by-tier to fit.
  */
-const MAX_TUI_WIDTH = 100
+const MAX_TUI_WIDTH = 110
 
 /**
  * Props passed to the DevScreen component by the screen() runtime.
@@ -149,7 +150,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   if (state.phase === 'error') {
     return (
       <Box flexDirection="column" padding={1} width={width}>
-        <Banner />
+        <Banner width={separatorWidth} />
         <Box marginTop={1}>
           <Alert variant="error" title="Fatal Error" width={width}>
             {state.error ?? 'Unknown error'}
@@ -182,7 +183,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   if (state.phase === 'loading') {
     return (
       <Box flexDirection="column" padding={1} width={width}>
-        <Banner />
+        <Banner width={separatorWidth} />
         <Box marginTop={1}>
           <Spinner label="Starting dev server..." type="dots" />
         </Box>
@@ -193,7 +194,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   return (
     <Box flexDirection="column" padding={1} width={width}>
       {/* Banner + URL */}
-      <Banner />
+      <Banner width={separatorWidth} />
       <Box marginTop={1}>
         <Text dimColor>
           http://localhost:<Text color="cyan">{state.port}</Text>

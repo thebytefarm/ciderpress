@@ -25,7 +25,7 @@ for (const route of ROUTES) {
 
     const response = await page.goto(route)
     expect(response?.status(), `${route} should respond 2xx`).toBeLessThan(400)
-    await expect(page.locator('main, [role="main"]').first()).toBeVisible()
+    await expect(page.locator('.cp-header').first()).toBeVisible()
     expect(errors, `console errors on ${route}:\n${errors.join('\n')}`).toEqual([])
   })
 }
