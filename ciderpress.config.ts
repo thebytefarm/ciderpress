@@ -19,12 +19,6 @@ export default defineConfig({
       body: 'Pull docs from your codebase and keep them green automatically.',
       cta: { text: 'Try ciderpress →', href: '/getting-started/quick-start' },
     },
-    announcement: {
-      id: 'ciderpress-1.0',
-      lead: 'ciderpress 1.0',
-      message: 'is shipping soon · early-access program now open',
-      cta: { href: '/getting-started/quick-start', label: 'Get on the list' },
-    },
     footer: {
       tagline: 'powered by ciderpress',
       columns: [
