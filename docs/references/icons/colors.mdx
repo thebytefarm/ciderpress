@@ -5,9 +5,11 @@ description: Available icon color classes for workspace and feature cards.
 
 import { Icon, TechIconTable } from '@ciderpress/ui/theme'
 
+{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}
+
 # Icon Colors
 
-Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an object with `id` and `color` (e.g. `icon: { id: 'pixelarticons:heart', color: 'blue' }`). The `color` field applies a CSS color class that controls the accent color shown behind or around the icon on cards.
+Workspace cards and feature cards support a `color` field inside the `icon` object that applies a CSS color class to the icon. This controls the accent color shown behind or around the icon on cards.
 
 ## Available colors
 
@@ -42,7 +44,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>purple</code>
       </td>
       <td>
-        <code>{'.home-card-icon--purple'}</code>
+        <code>{'.cp-card__icon--purple'}</code>
       </td>
       <td>Primary brand, general purpose</td>
     </tr>
@@ -67,7 +69,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>blue</code>
       </td>
       <td>
-        <code>{'.home-card-icon--blue'}</code>
+        <code>{'.cp-card__icon--blue'}</code>
       </td>
       <td>APIs, services, networking</td>
     </tr>
@@ -92,7 +94,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>green</code>
       </td>
       <td>
-        <code>{'.home-card-icon--green'}</code>
+        <code>{'.cp-card__icon--green'}</code>
       </td>
       <td>Databases, data, success states</td>
     </tr>
@@ -117,7 +119,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>amber</code>
       </td>
       <td>
-        <code>{'.home-card-icon--amber'}</code>
+        <code>{'.cp-card__icon--amber'}</code>
       </td>
       <td>Warnings, configuration, tooling</td>
     </tr>
@@ -142,7 +144,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>red</code>
       </td>
       <td>
-        <code>{'.home-card-icon--red'}</code>
+        <code>{'.cp-card__icon--red'}</code>
       </td>
       <td>Destructive actions, critical</td>
     </tr>
@@ -167,7 +169,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>slate</code>
       </td>
       <td>
-        <code>{'.home-card-icon--slate'}</code>
+        <code>{'.cp-card__icon--slate'}</code>
       </td>
       <td>Neutral, infrastructure</td>
     </tr>
@@ -192,7 +194,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>cyan</code>
       </td>
       <td>
-        <code>{'.home-card-icon--cyan'}</code>
+        <code>{'.cp-card__icon--cyan'}</code>
       </td>
       <td>Testing, monitoring, observability</td>
     </tr>
@@ -217,7 +219,7 @@ Icons can be set as a plain string (e.g. `icon: 'pixelarticons:heart'`) or as an
         <code>pink</code>
       </td>
       <td>
-        <code>{'.home-card-icon--pink'}</code>
+        <code>{'.cp-card__icon--pink'}</code>
       </td>
       <td>Design, UI, creative tools</td>
     </tr>
@@ -267,7 +269,7 @@ features: [
 ]
 ```
 
-The CSS class for feature cards follows the pattern `.home-card-icon--{color}`.
+The CSS class for feature cards follows the pattern `.cp-card__icon--{color}`.
 
 ## Default behavior
 

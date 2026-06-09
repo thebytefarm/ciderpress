@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 878 430" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 878 430" font-family="Menlo">
   <!-- Background -->
   <rect width="878" height="430" rx="10" ry="10" fill="#1e1e2e" />
 
@@ -15,13 +15,13 @@
   <text font-size="12" x="439" y="22" text-anchor="middle" fill="#6c7086">ciderpress</text>
 
   <!-- CIDERPRESS ASCII art logo (centered) -->
-  <g transform="translate(161, 0)" fill="#991b1b">
-    <text font-size="13" y="68" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text font-size="13" y="84" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text font-size="13" y="100" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text font-size="13" y="116" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text font-size="13" y="132" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
-    <text font-size="13" y="148" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+  <g transform="translate(161, 0)" fill="#dc2626">
+    <text font-size="13" y="68">&#160;██████╗██╗██████╗&#160;███████╗██████╗&#160;██████╗&#160;██████╗&#160;███████╗███████╗███████╗</text>
+    <text font-size="13" y="84">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
+    <text font-size="13" y="100">██║&#160;&#160;&#160;&#160;&#160;██║██║&#160;&#160;██║█████╗&#160;&#160;██████╔╝██████╔╝██████╔╝█████╗&#160;&#160;███████╗███████╗</text>
+    <text font-size="13" y="116">██║&#160;&#160;&#160;&#160;&#160;██║██║&#160;&#160;██║██╔══╝&#160;&#160;██╔══██╗██╔═══╝&#160;██╔══██╗██╔══╝&#160;&#160;╚════██║╚════██║</text>
+    <text font-size="13" y="132">╚██████╗██║██████╔╝███████╗██║&#160;&#160;██║██║&#160;&#160;&#160;&#160;&#160;██║&#160;&#160;██║███████╗███████║███████║</text>
+    <text font-size="13" y="148">&#160;╚═════╝╚═╝╚═════╝&#160;╚══════╝╚═╝&#160;&#160;╚═╝╚═╝&#160;&#160;&#160;&#160;&#160;╚═╝&#160;&#160;╚═╝╚══════╝╚══════╝╚══════╝</text>
   </g>
 
   <!-- Tagline -->
@@ -42,13 +42,13 @@
   <text font-size="12" x="38" y="236"><tspan fill="#89b4fa">~</tspan><tspan fill="#6c7086"> $ </tspan><tspan fill="#cdd6f4">ciderpress dev</tspan></text>
 
   <!-- Starting -->
-  <text font-size="12" x="38" y="264"><tspan fill="#6c7086">Starting </tspan><tspan fill="#991b1b">ciderpress</tspan><tspan fill="#6c7086">...</tspan></text>
+  <text font-size="12" x="38" y="264"><tspan fill="#6c7086">Starting </tspan><tspan fill="#dc2626">ciderpress</tspan><tspan fill="#6c7086">...</tspan></text>
 
   <!-- Output -->
-  <text font-size="12" x="38" y="288" xml:space="preserve"><tspan fill="#a6e3a1">  ✓</tspan><tspan fill="#cdd6f4"> Loaded config</tspan></text>
-  <text font-size="12" x="38" y="304" xml:space="preserve"><tspan fill="#a6e3a1">  ✓</tspan><tspan fill="#cdd6f4"> Synced 12 documents</tspan></text>
-  <text font-size="12" x="38" y="320" xml:space="preserve"><tspan fill="#a6e3a1">  ✓</tspan><tspan fill="#cdd6f4"> Generated sidebar</tspan></text>
-  <text font-size="12" x="38" y="336" xml:space="preserve"><tspan fill="#a6e3a1">  ✓</tspan><tspan fill="#cdd6f4"> Watching for changes</tspan></text>
+  <text font-size="12" x="38" y="288"><tspan fill="#a6e3a1">&#160;&#160;✓</tspan><tspan fill="#cdd6f4"> Loaded config</tspan></text>
+  <text font-size="12" x="38" y="304"><tspan fill="#a6e3a1">&#160;&#160;✓</tspan><tspan fill="#cdd6f4"> Synced 12 documents</tspan></text>
+  <text font-size="12" x="38" y="320"><tspan fill="#a6e3a1">&#160;&#160;✓</tspan><tspan fill="#cdd6f4"> Generated sidebar</tspan></text>
+  <text font-size="12" x="38" y="336"><tspan fill="#a6e3a1">&#160;&#160;✓</tspan><tspan fill="#cdd6f4"> Watching for changes</tspan></text>
 
   <!-- Summary -->
   <text font-size="12" x="38" y="364"><tspan fill="#6c7086">Ready — dev server on :5173</tspan></text>
@@ -87,28 +87,28 @@
   <text font-size="12" x="487" y="268"><tspan fill="#cba6f7">export default </tspan><tspan fill="#89b4fa">defineConfig</tspan><tspan fill="#9399b2">({</tspan></text>
 
   <!-- Line 4:   title: 'My Docs', -->
-  <text font-size="12" x="487" y="284" xml:space="preserve"><tspan fill="#9399b2">  </tspan><tspan fill="#94e2d5">title</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'My Docs'</tspan><tspan fill="#9399b2">,</tspan></text>
+  <text font-size="12" x="487" y="284"><tspan fill="#9399b2">&#160;&#160;</tspan><tspan fill="#94e2d5">title</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'My Docs'</tspan><tspan fill="#9399b2">,</tspan></text>
 
   <!-- Line 5:   description: 'Project docs', -->
-  <text font-size="12" x="487" y="300" xml:space="preserve"><tspan fill="#9399b2">  </tspan><tspan fill="#94e2d5">description</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'Project docs'</tspan><tspan fill="#9399b2">,</tspan></text>
+  <text font-size="12" x="487" y="300"><tspan fill="#9399b2">&#160;&#160;</tspan><tspan fill="#94e2d5">description</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'Project docs'</tspan><tspan fill="#9399b2">,</tspan></text>
 
   <!-- Line 6:   sidebar: { -->
-  <text font-size="12" x="487" y="316" xml:space="preserve"><tspan fill="#9399b2">  </tspan><tspan fill="#94e2d5">sidebar</tspan><tspan fill="#9399b2">: {</tspan></text>
+  <text font-size="12" x="487" y="316"><tspan fill="#9399b2">&#160;&#160;</tspan><tspan fill="#94e2d5">sidebar</tspan><tspan fill="#9399b2">: {</tspan></text>
 
   <!-- Line 7:     guide: { -->
-  <text font-size="12" x="487" y="332" xml:space="preserve"><tspan fill="#9399b2">    </tspan><tspan fill="#94e2d5">guide</tspan><tspan fill="#9399b2">: {</tspan></text>
+  <text font-size="12" x="487" y="332"><tspan fill="#9399b2">&#160;&#160;&#160;&#160;</tspan><tspan fill="#94e2d5">guide</tspan><tspan fill="#9399b2">: {</tspan></text>
 
   <!-- Line 8:       label: 'Guide', -->
-  <text font-size="12" x="487" y="348" xml:space="preserve"><tspan fill="#9399b2">      </tspan><tspan fill="#94e2d5">label</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'Guide'</tspan><tspan fill="#9399b2">,</tspan></text>
+  <text font-size="12" x="487" y="348"><tspan fill="#9399b2">&#160;&#160;&#160;&#160;&#160;&#160;</tspan><tspan fill="#94e2d5">label</tspan><tspan fill="#9399b2">: </tspan><tspan fill="#a6e3a1">'Guide'</tspan><tspan fill="#9399b2">,</tspan></text>
 
   <!-- Line 9:       items: ['intro', 'setup'], -->
-  <text font-size="12" x="487" y="364" xml:space="preserve"><tspan fill="#9399b2">      </tspan><tspan fill="#94e2d5">items</tspan><tspan fill="#9399b2">: [</tspan><tspan fill="#a6e3a1">'intro'</tspan><tspan fill="#9399b2">, </tspan><tspan fill="#a6e3a1">'setup'</tspan><tspan fill="#9399b2">],</tspan></text>
+  <text font-size="12" x="487" y="364"><tspan fill="#9399b2">&#160;&#160;&#160;&#160;&#160;&#160;</tspan><tspan fill="#94e2d5">items</tspan><tspan fill="#9399b2">: [</tspan><tspan fill="#a6e3a1">'intro'</tspan><tspan fill="#9399b2">, </tspan><tspan fill="#a6e3a1">'setup'</tspan><tspan fill="#9399b2">],</tspan></text>
 
   <!-- Line 10:     }, -->
-  <text font-size="12" x="487" y="380" xml:space="preserve"><tspan fill="#9399b2">    },</tspan></text>
+  <text font-size="12" x="487" y="380"><tspan fill="#9399b2">&#160;&#160;&#160;&#160;},</tspan></text>
 
   <!-- Line 11:   }, -->
-  <text font-size="12" x="487" y="396" xml:space="preserve"><tspan fill="#9399b2">  },</tspan></text>
+  <text font-size="12" x="487" y="396"><tspan fill="#9399b2">&#160;&#160;},</tspan></text>
 
   <!-- Line 12: }) -->
   <text font-size="12" x="487" y="412"><tspan fill="#9399b2">})</tspan></text>

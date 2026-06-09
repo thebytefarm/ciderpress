@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 510" font-family="'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 510" font-family="Menlo">
   <!-- Window frame -->
   <rect width="1120" height="510" rx="12" fill="#313244"/>
   <rect x="1" y="1" width="1118" height="508" rx="11" fill="#1e1e2e"/>
@@ -22,24 +22,24 @@
     <text font-size="15" x="36" y="0" fill="#cdd6f4">ciderpress build</text>
 
     <!-- CIDERPRESS ASCII art -->
-    <text font-size="13" y="40" fill="#991b1b" xml:space="preserve"> ██████╗██╗██████╗ ███████╗██████╗ ██████╗ ██████╗ ███████╗███████╗███████╗</text>
-    <text font-size="13" y="56" fill="#991b1b" xml:space="preserve">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
-    <text font-size="13" y="72" fill="#991b1b" xml:space="preserve">██║     ██║██║  ██║█████╗  ██████╔╝██████╔╝██████╔╝█████╗  ███████╗███████╗</text>
-    <text font-size="13" y="88" fill="#991b1b" xml:space="preserve">██║     ██║██║  ██║██╔══╝  ██╔══██╗██╔═══╝ ██╔══██╗██╔══╝  ╚════██║╚════██║</text>
-    <text font-size="13" y="104" fill="#991b1b" xml:space="preserve">╚██████╗██║██████╔╝███████╗██║  ██║██║     ██║  ██║███████╗███████║███████║</text>
-    <text font-size="13" y="120" fill="#991b1b" xml:space="preserve"> ╚═════╝╚═╝╚═════╝ ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝</text>
+    <text font-size="13" y="40" fill="#dc2626">&#160;██████╗██╗██████╗&#160;███████╗██████╗&#160;██████╗&#160;██████╗&#160;███████╗███████╗███████╗</text>
+    <text font-size="13" y="56" fill="#dc2626">██╔════╝██║██╔══██╗██╔════╝██╔══██╗██╔══██╗██╔══██╗██╔════╝██╔════╝██╔════╝</text>
+    <text font-size="13" y="72" fill="#dc2626">██║&#160;&#160;&#160;&#160;&#160;██║██║&#160;&#160;██║█████╗&#160;&#160;██████╔╝██████╔╝██████╔╝█████╗&#160;&#160;███████╗███████╗</text>
+    <text font-size="13" y="88" fill="#dc2626">██║&#160;&#160;&#160;&#160;&#160;██║██║&#160;&#160;██║██╔══╝&#160;&#160;██╔══██╗██╔═══╝&#160;██╔══██╗██╔══╝&#160;&#160;╚════██║╚════██║</text>
+    <text font-size="13" y="104" fill="#dc2626">╚██████╗██║██████╔╝███████╗██║&#160;&#160;██║██║&#160;&#160;&#160;&#160;&#160;██║&#160;&#160;██║███████╗███████║███████║</text>
+    <text font-size="13" y="120" fill="#dc2626">&#160;╚═════╝╚═╝╚═════╝&#160;╚══════╝╚═╝&#160;&#160;╚═╝╚═╝&#160;&#160;&#160;&#160;&#160;╚═╝&#160;&#160;╚═╝╚══════╝╚══════╝╚══════╝</text>
 
     <!-- Version and description -->
-    <text font-size="15" y="156" fill="#cdd6f4">  ciderpress <tspan fill="#6c7086">v0.1.0</tspan></text>
-    <text font-size="15" y="180" fill="#cdd6f4">  Making "I vibe-coded it and it works on my machine" look professional.</text>
+    <text font-size="15" y="156" fill="#cdd6f4">&#160;&#160;ciderpress <tspan fill="#6c7086">v0.1.0</tspan></text>
+    <text font-size="15" y="180" fill="#cdd6f4">&#160;&#160;Making "I vibe-coded it and it works on my machine" look professional.</text>
 
     <!-- Build output -->
-    <text font-size="15" y="220"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Loaded config</tspan></text>
-    <text font-size="15" y="244"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Synced documents</tspan></text>
-    <text font-size="15" y="268"><tspan fill="#a6e3a1">  &#x2713;</tspan><tspan fill="#cdd6f4"> Generated sidebar &amp; nav</tspan></text>
+    <text font-size="15" y="220"><tspan fill="#a6e3a1">&#160;&#160;&#x2713;</tspan><tspan fill="#cdd6f4"> Loaded config</tspan></text>
+    <text font-size="15" y="244"><tspan fill="#a6e3a1">&#160;&#160;&#x2713;</tspan><tspan fill="#cdd6f4"> Synced documents</tspan></text>
+    <text font-size="15" y="268"><tspan fill="#a6e3a1">&#160;&#160;&#x2713;</tspan><tspan fill="#cdd6f4"> Generated sidebar &amp; nav</tspan></text>
 
     <!-- Done message -->
-    <text font-size="15" y="304"><tspan fill="#a6e3a1">  Done!</tspan><tspan fill="#cdd6f4"> Run </tspan><tspan fill="#991b1b">ciderpress --help</tspan><tspan fill="#cdd6f4"> to learn more.</tspan></text>
+    <text font-size="15" y="304"><tspan fill="#a6e3a1">&#160;&#160;Done!</tspan><tspan fill="#cdd6f4"> Run </tspan><tspan fill="#dc2626">ciderpress --help</tspan><tspan fill="#cdd6f4"> to learn more.</tspan></text>
 
     <!-- New prompt -->
     <text font-size="15" y="344" fill="#89b4fa">~</text>

@@ -3,7 +3,9 @@ title: Icons
 description: Supported icon sets and how to use them across your site.
 ---
 
-import { Icon } from '@ciderpress/ui/theme'
+import { Icon, TechIconTable } from '@ciderpress/ui/theme'
+
+{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}
 
 # Icons
 
@@ -159,13 +161,13 @@ Top-level sections display an icon in the collapsed sidebar rail. Set via the `i
 ```ts
 {
   title: 'Guides',
-  path: '/guides',
-  include: 'docs/guides/*.md',
+  prefix: '/guides',
+  from: 'docs/guides/*.md',
   icon: 'pixelarticons:book-open',
 }
 ```
 
-Only top-level sections render icons in the sidebar rail. Icons set on nested (child) sections are ignored.
+Only top-level sections (depth 0) render icons. Nested sections ignore the `icon` field.
 
 ### Navigation bar
 
@@ -182,10 +184,10 @@ With `nav: 'auto'`, icons are inherited from the corresponding section.
 
 ### Workspace cards
 
-Workspace items display an icon on their home page card and landing page:
+Workspace items (`apps`, `packages`, `workspaces`) display an icon on their home page card and landing page:
 
 ```ts
-workspaces: [
+apps: [
   {
     title: 'API',
     icon: 'devicon:hono',
@@ -212,7 +214,7 @@ features: [
 
 ### Technology tags
 
-Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/reference/technology) reference for the full list of supported tag names.
+Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/reference/technology/overview) reference for the full list of supported tag names.
 
 ## Validation
 
