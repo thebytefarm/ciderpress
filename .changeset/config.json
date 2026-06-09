@@ -12,7 +12,8 @@
     "example-large",
     "example-simple",
     "ciderpress-vscode",
-    "benchmarks"
+    "benchmarks",
+    "e2e"
   ],
   "privatePackages": {
     "version": false,
