@@ -67,10 +67,12 @@ Write clear, concise descriptions in the imperative mood ("add feature" not "add
 
 ```text
 packages/
-├── cli/              # @ciderpress/cli — CLI commands, watcher, Rspress integration
-├── core/             # @ciderpress/core — config loading, sync engine, sidebar/nav generation
-├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
-└── ciderpress/           # ciderpress — public wrapper package (CLI + config re-exports)
+├── cli/         # @ciderpress/cli — CLI for building and serving ciderpress documentation sites
+├── config/      # @ciderpress/config — configuration loading and validation
+├── templates/   # @ciderpress/templates — documentation templates SDK (built-in + custom)
+├── theme/       # @ciderpress/theme — theme types and built-in theme definitions
+├── ui/          # @ciderpress/ui — Rspress plugin, theme components, and styles
+└── ciderpress/  # ciderpress — public wrapper package (CLI + config re-exports)
 ```
 
 ## Code Style

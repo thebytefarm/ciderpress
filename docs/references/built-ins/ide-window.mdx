@@ -67,7 +67,7 @@ Use full paths for clarity in monorepo contexts:
 
 ```mdx
 <IDEWindow
-  files={[{ name: 'packages/core/src/sync/index.ts', active: true }]}
+  files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
   lang="ts"
   code={
     "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
@@ -78,7 +78,7 @@ Use full paths for clarity in monorepo contexts:
 **Output**
 
 <IDEWindow
-  files={[{ name: 'packages/core/src/sync/index.ts', active: true }]}
+  files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
   lang="ts"
   code={
     "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"

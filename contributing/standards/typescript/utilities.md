@@ -108,7 +108,7 @@ import { chunk, groupBy, keyBy, uniqBy } from 'massaman/array'
 
 // Group scripts by workspace
 const scriptsByWorkspace = groupBy(scripts, 'workspace')
-// { root: [...], packages/core: [...] }
+// { root: [...], packages/lib: [...] }
 
 // Create name lookup
 const scriptsByName = keyBy(scripts, 'name')

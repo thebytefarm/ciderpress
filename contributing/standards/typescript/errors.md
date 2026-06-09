@@ -32,24 +32,6 @@ const failure: Result<Config, ParseError> = [
 ]
 ```
 
-For CLI handlers, use the `HandlerResult` specialization with `ok()` and `fail()` constructors. Note: This pattern is planned but not yet implemented in the codebase.
-
-```ts
-type HandlerResult<T = void> = Result<T, HandlerError>
-
-interface HandlerError {
-  readonly _tag: 'HandlerError'
-  readonly message: string
-  readonly hint?: string
-  readonly exitCode?: number
-}
-
-function ok(): HandlerResult<void>
-function ok<T>(value: T): HandlerResult<T>
-
-function fail(error: HandlerError): HandlerResult<never>
-```
-
 ### Return Results for Expected Failures
 
 Use `Result<T, E>` for operations that can fail in expected ways such as parsing, validation, file I/O, and external calls. Define a specific error interface for each domain.
