@@ -7,6 +7,8 @@ description: Copy-paste template for writing concept (explanation) documentation
 
 Template for explanation docs — understanding-oriented documentation that covers the "what" and "why" of a system behavior, mechanism, or domain concept.
 
+Scaffold this template with `ciderpress draft --type explanation`.
+
 ## Rules
 
 - H1 is a single noun or short phrase — the concept name

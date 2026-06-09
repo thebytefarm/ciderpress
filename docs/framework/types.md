@@ -1,11 +1,11 @@
 ---
 title: Types
-description: The seven documentation types and when to use each one.
+description: The eight documentation types and when to use each one.
 ---
 
 # Doc Types
 
-Every document you write falls into one of seven types. Each type has a distinct purpose, audience, and structure. Mixing types within a single document is the most common source of confusing docs.
+Every document you write falls into one of eight types. Each type has a distinct purpose, audience, and structure. Mixing types within a single document is the most common source of confusing docs.
 
 ## Tutorial
 
@@ -100,13 +100,13 @@ Conceptual background that helps the reader understand a topic.
 
 **Structure:**
 
-| Section      | Required |
-| ------------ | -------- |
-| Overview     | Yes      |
-| Architecture | No       |
-| Key Concepts | Yes      |
-| Usage        | No       |
-| References   | Yes      |
+| Section          | Required |
+| ---------------- | -------- |
+| Overview         | Yes      |
+| Key Terms        | Yes      |
+| How It Works     | Yes      |
+| Design Decisions | Yes      |
+| References       | Yes      |
 
 **Example title:** "Authentication"
 

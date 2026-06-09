@@ -5,8 +5,6 @@ description: How sections and pages define your site structure — explicit item
 
 # Content
 
-How documentation is structured, discovered, and enriched with metadata in ciderpress.
-
 ## Overview
 
 Content in ciderpress is a tree of **sections** and **pages** defined in the `sections` array of your config. Sections group pages under collapsible sidebar headings. Pages map source markdown files (or inline content) to URLs. Together they define your entire site structure without requiring you to restructure your existing files.
@@ -155,7 +153,7 @@ For large doc trees that mirror a directory structure, use `recursive: true`:
 
 This maps directory nesting to sidebar nesting. In each directory, the `entryFile` (default `"overview"`) becomes the section header page.
 
-```
+```text
 docs/reference/
 ├── overview.md          → Section header for /reference
 ├── auth/
@@ -229,12 +227,13 @@ Transforms only apply to auto-discovered children. Sections with explicit `title
 
 ### Sorting
 
-| Strategy      | Behavior                                                                                |
-| ------------- | --------------------------------------------------------------------------------------- |
-| `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then alpha |
-| `'alpha'`     | Alphabetical by derived text                                                            |
-| `'filename'`  | Alphabetical by filename                                                                |
-| `(a, b) => n` | Custom comparator on `ResolvedPage`                                                     |
+| Strategy      | Behavior                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `index`, `readme`) to the top, then alpha |
+| `'alpha'`     | Alphabetical by derived text                                                                     |
+| `'filename'`  | Alphabetical by filename                                                                         |
+| `'none'`      | Preserve glob-discovery order, no reordering                                                     |
+| `(a, b) => n` | Custom comparator on `ResolvedPage`                                                              |
 
 When `sort` is omitted, the `'default'` strategy is used.
 

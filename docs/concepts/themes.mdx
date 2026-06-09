@@ -7,8 +7,6 @@ import { BrowserWindow, ThemeColorPalette } from '@theme'
 
 # Themes
 
-How the visual identity of your documentation site is controlled through built-in themes, per-theme variants, and color token overrides.
-
 ## Overview
 
 A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with six built-in themes — Mulled, Honeycrisp, Granny Smith, Amber, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
@@ -188,6 +186,7 @@ When the built-in themes plus color overrides aren't enough, register a fully cu
 
 ```ts
 import { defineConfig, defineTheme } from 'ciderpress'
+import type { CiderpressTokens } from '@ciderpress/theme'
 
 const citrus = defineTheme({
   name: 'citrus',
@@ -275,4 +274,5 @@ defineTheme({
 ## References
 
 - [Configuration reference](/reference/configuration#top-level-fields) — `theme` field in the top-level config
-- [`defineTheme` API](/reference/configuration#siteconfig) — full input shape
+<!-- TODO: link defineTheme reference once Phase 1 adds a section for it in /reference/configuration -->
+- `defineTheme` API — full input shape (see `packages/theme/src/index.ts`)

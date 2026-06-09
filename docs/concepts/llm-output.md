@@ -5,8 +5,6 @@ description: How ciderpress serves documentation as structured text for LLMs, AI
 
 # LLM Output
 
-How ciderpress makes your documentation consumable by LLMs, AI agents, and other programmatic tools — automatically, with zero configuration.
-
 ## Overview
 
 Every ciderpress site exposes three machine-readable interfaces out of the box:
@@ -121,8 +119,11 @@ OpenAPI-generated pages replace the standard raw markdown button with a "Copy Ma
 - **Build-time generation** — LLMs.txt files are generated during `ciderpress build`, not served dynamically. This keeps runtime simple and means the files are cacheable by CDNs.
 - **Per-page `.md` endpoints** — rather than forcing consumers to parse HTML or download the full `llms-full.txt`, individual pages are available as raw markdown. This lets agents fetch only what they need.
 
-## References
+## Resources
 
 - [llms.txt specification](https://llmstxt.org/)
+
+## References
+
 - [Content](/concepts/content) — how pages and sections define your site structure
 - [Configuration reference](/reference/configuration) — full config field reference

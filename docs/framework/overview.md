@@ -27,12 +27,13 @@ This framework is heavily inspired by [Diataxis](https://diataxis.fr), a documen
 
 We extend this with three additional types that most real-world projects need: **Standards**, **Troubleshooting**, and **Runbooks**.
 
-## The seven doc types
+## The eight doc types
 
 | Type                | Purpose                                 | Reader mindset                |
 | ------------------- | --------------------------------------- | ----------------------------- |
 | **Tutorial**        | Guided learning experience              | "Teach me"                    |
 | **Guide**           | Step-by-step task instructions          | "Help me do this"             |
+| **Quickstart**      | Fastest path to a working result        | "Get me running"              |
 | **Explanation**     | Conceptual background and architecture  | "Help me understand"          |
 | **Reference**       | Technical descriptions and API surfaces | "Give me the details"         |
 | **Standard**        | Rules and conventions                   | "What are the rules?"         |

@@ -5,8 +5,6 @@ description: How the top navigation bar and auto-generated landing pages control
 
 # Navigation
 
-How the top nav bar and auto-generated landing pages work together to help users discover content.
-
 ## Overview
 
 Navigation in ciderpress has two layers: the **top navigation bar** that provides quick access to major documentation areas, and **landing pages** that are auto-generated for sections with children. The nav bar controls top-level wayfinding. Landing pages provide section-level entry points with card grids.
@@ -24,7 +22,7 @@ flowchart TD
 
 ### Auto navigation
 
-Set `nav: 'auto'` (the default) to generate one nav item per top-level section (excluding those with `standalone: true`):
+Set `nav: 'auto'` (the default) to render the first three non-standalone sections plus every standalone section (workspace dropdowns) in the topbar:
 
 ```ts
 export default defineConfig({
@@ -37,7 +35,7 @@ export default defineConfig({
 })
 ```
 
-This produces three nav items: Getting Started, Guides, and Reference. Sections with `standalone: true` are excluded from auto-generated nav.
+This produces three nav items: Getting Started, Guides, and Reference. Auto mode caps the topbar at the first three non-standalone sections; any section with `standalone: true` is always added on top of that cap (as a workspace dropdown).
 
 ### Explicit navigation
 
@@ -150,8 +148,8 @@ See the [Workspaces](/concepts/workspaces) concept for workspace configuration.
 Card descriptions are resolved in this order (highest priority first):
 
 1. `card.description` on the entry
-2. `description` from the entry's frontmatter
-3. Auto-extracted description from the page content
+2. `description` from the source file's frontmatter
+3. The section's own `description` field on the config entry
 
 ```ts
 {
