@@ -10,7 +10,7 @@
     "@ciderpress/config": "workspace:*"
   },
   "devDependencies": {
-    "@codspeed/vitest-plugin": "^5.4.0",
+    "@codspeed/vitest-plugin": "^5.5.0",
     "vitest": "catalog:"
   }
 }
