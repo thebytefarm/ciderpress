@@ -3,7 +3,7 @@ title: Themes
 description: How built-in themes, dark/light variants, and color token overrides control the visual identity of your documentation site.
 ---
 
-import { BrowserWindow } from '@theme'
+import { BrowserWindow, ThemeColorPalette } from '@theme'
 
 # Themes
 
@@ -27,8 +27,10 @@ The canonical brand. Deep cider burgundy — the "evening / premium" branch of t
 **Variants:** `dark` (default) · `light`
 
 <BrowserWindow url="https://docs.example.com">
-  ![Mulled theme — dark](../.assets/theme-base.png)
+  ![Mulled theme — dark](../.assets/theme-mulled.png)
 </BrowserWindow>
+
+<ThemeColorPalette theme="mulled" />
 
 ### Honeycrisp
 
@@ -36,17 +38,35 @@ Bright apple-red identity (primary `#dc2626`) with both `dark` and `light` varia
 
 **Variants:** `dark` (default) · `light`
 
+<BrowserWindow url="https://docs.example.com">
+  ![Honeycrisp theme — dark](../.assets/theme-honeycrisp.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="honeycrisp" />
+
 ### Granny Smith
 
 Apple-green identity (primary `#65a30d`) with both `dark` and `light` variants — the sun/moon toggle is enabled.
 
 **Variants:** `dark` (default) · `light`
 
+<BrowserWindow url="https://docs.example.com">
+  ![Granny Smith theme — dark](../.assets/theme-grannysmith.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="grannysmith" />
+
 ### Amber
 
 Warm hearth amber identity (primary `#d97706`) with both `dark` and `light` variants. The light variant pairs parchment surfaces (`#fffaf2`) with deep-roast brown ink; the dark variant shares the apple-family near-black canvas.
 
 **Variants:** `dark` (default) · `light`
+
+<BrowserWindow url="https://docs.example.com">
+  ![Amber theme — dark](../.assets/theme-amber.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="amber" />
 
 ### Midnight
 
@@ -58,6 +78,8 @@ Opinionated deep-black blue theme. Background sits at `#050505` for a near-pure-
   ![Midnight theme](../.assets/theme-midnight.png)
 </BrowserWindow>
 
+<ThemeColorPalette theme="midnight" />
+
 ### Arcade
 
 Retro neon-green theme inspired by arcade cabinets and CRT monitors. Single-variant (`dark` only). Includes custom hover animations: border tracing on cards, CRT scanlines on code blocks, neon pulse on buttons, glow effects on sidebar items.
@@ -67,6 +89,8 @@ Retro neon-green theme inspired by arcade cabinets and CRT monitors. Single-vari
 <BrowserWindow url="https://docs.example.com">
   ![Arcade theme](../.assets/theme-arcade.png)
 </BrowserWindow>
+
+<ThemeColorPalette theme="arcade" />
 
 ## Configuration
 

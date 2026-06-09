@@ -1,3 +1,4 @@
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
 /**
@@ -22,11 +23,17 @@ export interface CodeBlockRuntimeProps {
  * @returns Preformatted code element
  */
 export function CodeBlockRuntime({ code, lang }: CodeBlockRuntimeProps): React.ReactElement {
-  return (
-    <pre className={lang ? `language-${lang}` : undefined}>
-      <code>{code}</code>
-    </pre>
-  )
+  return match(lang)
+    .with(P.nonNullable, (l) => (
+      <pre className={`language-${l}`}>
+        <code>{code}</code>
+      </pre>
+    ))
+    .otherwise(() => (
+      <pre>
+        <code>{code}</code>
+      </pre>
+    ))
 }
 
 export interface LlmsCopyButtonProps {

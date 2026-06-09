@@ -1,11 +1,13 @@
 import type { Story } from '@ladle/react'
-import type React from 'react'
 
-import { Badge, type BadgeProps } from './status-badge.tsx'
+import { Badge } from './status-badge.tsx'
+import type { BadgeProps } from './status-badge.tsx'
 
-export default {
-  title: 'Shared / Status Badge',
+const meta = {
+  title: 'Data Display / Status Badge',
 }
+
+export default meta
 
 /**
  * Default badge — info variant.
@@ -13,6 +15,7 @@ export default {
  * @param args - Badge props driven by Ladle controls
  * @returns Rendered badge
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const Default: Story<BadgeProps> = (args) => <Badge {...args}>{args.children}</Badge>
 
 Default.args = {
@@ -33,6 +36,7 @@ Default.argTypes = {
  *
  * @returns Variant gallery
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const Variants: Story = () => (
   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
     <Badge variant="info">Info</Badge>
@@ -47,6 +51,7 @@ export const Variants: Story = () => (
  *
  * @returns Custom-colored badge
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const CustomColor: Story = () => (
   <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
     <Badge color="#7c3aed">Violet</Badge>

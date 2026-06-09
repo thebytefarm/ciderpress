@@ -7,8 +7,8 @@ import { Icon } from '../shared/icon.tsx'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
 import { CiderpressNavSocialLinks } from './ciderpress-nav-social-links'
 import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
-import { ThemeSwitcher } from './theme-switcher'
 import { TopbarCTA } from './topbar-cta'
+import { VariantToggle } from './variant-toggle'
 
 import './ciderpress-nav-hamburger.css'
 
@@ -24,7 +24,7 @@ export interface CiderpressNavHamburgerProps {
 /**
  * Mobile hamburger trigger + slide-in drawer. Shown only at narrow
  * viewports (CSS-driven via `--cp-nav-hamburger-breakpoint`). Drawer
- * surfaces the full primary nav, theme switcher, social cluster, and
+ * surfaces the full primary nav, variant toggle, social cluster, and
  * CTA on screens where the desktop chrome can't fit.
  *
  * Built on `react-aria-components` `<ModalOverlay>` + `<Dialog>`, which
@@ -87,7 +87,7 @@ export function CiderpressNavHamburger(props: CiderpressNavHamburgerProps): Reac
 
             <div className="cp-nav-drawer__row">
               <span className="cp-nav-drawer__row-label">Theme</span>
-              <ThemeSwitcher />
+              <VariantToggle />
             </div>
 
             {props.socialLinks.length > 0 ? (

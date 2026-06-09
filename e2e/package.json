@@ -1,0 +1,15 @@
+{
+  "name": "e2e",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:update": "playwright test --update-snapshots",
+    "install:browsers": "playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@argos-ci/playwright": "^7.0.5",
+    "@playwright/test": "^1.60.0"
+  }
+}

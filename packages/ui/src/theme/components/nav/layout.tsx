@@ -16,6 +16,7 @@ import { MetaActions } from '../content-footer/meta-actions'
 import { SiteFooter } from '../footer/site-footer'
 import { SidebarLinks } from '../sidebar/sidebar-links'
 import { SidebarPromo } from '../sidebar/sidebar-promo'
+import { CiderpressDocsBar } from './ciderpress-docs-bar'
 import { CiderpressHeader } from './ciderpress-header'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
 import { FloatingBranchIndicator } from './floating-branch-indicator'
@@ -132,6 +133,7 @@ export function Layout(): React.ReactElement {
         afterNavMenu={null}
         beforeSidebar={beforeSidebar}
         afterSidebar={afterSidebar}
+        beforeDoc={<CiderpressDocsBar />}
         afterDoc={afterDocSlot}
         bottom={bottomSlot}
       />

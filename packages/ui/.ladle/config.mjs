@@ -11,7 +11,7 @@
  *
  * @type {import('@ladle/react').UserConfig}
  */
-export default {
+const config = {
   stories: 'src/**/*.stories.{ts,tsx}',
   defaultStory: undefined,
   viteConfig: '.ladle/vite.config.ts',
@@ -26,3 +26,5 @@ export default {
     },
   },
 }
+
+export default config

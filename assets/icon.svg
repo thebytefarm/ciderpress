@@ -1,23 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <style>
-      .text { font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace; }
-      .brand { fill: #991b1b; }
-    </style>
-  </defs>
-
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" shape-rendering="crispEdges">
   <!-- Rounded square background (terminal canvas) -->
   <rect width="512" height="512" rx="32" ry="32" fill="#0a0a0a" />
 
-  <!-- "C" from the ciderpress ASCII art logo, centred.
-       The six rows span y=-160..160 (320px tall, midpoint at 0), so the
-       block sits exactly on the (256, 256) translation. -->
-  <g transform="translate(256, 256)" text-anchor="middle">
-    <text class="text brand" font-size="52" y="-140" xml:space="preserve"> ██████╗</text>
-    <text class="text brand" font-size="52" y="-76" xml:space="preserve">██╔════╝</text>
-    <text class="text brand" font-size="52" y="-12" xml:space="preserve">██║     </text>
-    <text class="text brand" font-size="52" y="52" xml:space="preserve">██║     </text>
-    <text class="text brand" font-size="52" y="116" xml:space="preserve">╚██████╗</text>
-    <text class="text brand" font-size="52" y="180" xml:space="preserve"> ╚═════╝</text>
+  <!-- Pixel-art apple, cropped to its content box (60,40 -> 250,260 in source),
+       scaled 1.6x and centred in the 512x512 canvas. Apple body recoloured to
+       honeycrisp brand reds; leaf greens and stem browns retained. -->
+  <g transform="translate(104, 80) scale(1.6) translate(-60, -40)">
+    <path d="M80,40h10v10h-10v-10zM90,50h30v10h10v10h-30v-10h-10v-10z" fill="#99e550" fill-rule="evenodd"/>
+    <path d="M90,40h30v10h-30v-10zM120,50h10v10h-10v-10zM130,60h10v10h-10v-10z" fill="#6abe30" fill-rule="evenodd"/>
+    <path d="M120,40h20v10h10v20h-10v-10h-10v-10h-10v-10z" fill="#4b692f" fill-rule="evenodd"/>
+    <path d="M160,40h20v10h-10v10h-10v10h-10v-20h10v-10z" fill="#d9a066" fill-rule="evenodd"/>
+    <path d="M150,70h10v20h-10v-20z" fill="#8f563b" fill-rule="evenodd"/>
+    <path d="M90,80h20v10h30v10h30v-10h30v-10h20v10h10v10h10v10h10v90h-10v20h-10v20h-10v10h-10v10h-30v-10h-10v-10h-10v-10h-10v10h-10v10h-10v10h-30v-10h-10v-10h-10v-20h-10v-20h-10v-90h10v-10h10v-10h10v-10zM220,200h10v-30h-10v-10h-10v40h-10v20h-10v20h10v-10h10v-10h10v-20z" fill="#dc2626" fill-rule="evenodd"/>
+    <path d="M110,80h30v10h-30v-10zM170,80h30v10h-30v-10zM140,90h30v10h-30v-10zM210,160h10v10h10v30h-10v20h-10v10h-10v10h-10v-20h10v-20h10v-40zM150,230h10v10h10v10h10v10h-50v-10h10v-10h10v-10z" fill="#7f1d1d" fill-rule="evenodd"/>
   </g>
 </svg>

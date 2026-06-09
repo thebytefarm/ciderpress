@@ -111,7 +111,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeDarkColors = resolveThemeDarkColors(config)
 
   const userThemesCss = userThemes.map(themeToCss).join('')
-  const themeCss = getThemeCss(themeName) + userThemesCss
+  const loaderStyle = config.loader ?? 'apple'
+  const themeCss = getThemeCss(themeName, loaderStyle) + userThemesCss
   const themeRegistry: readonly ThemeRegistryEntry[] = [
     ...BUILT_IN_THEME_REGISTRY,
     ...userThemes.map(buildRegistryEntry),
@@ -263,6 +264,13 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // single-variant themes via `[data-cp-variants]`.
       darkMode: true,
       search: true,
+      // Route Rspress's auto-rendered LLMs UI to the outline placement
+      // (away from the H1) — Ciderpress mounts its own LlmsContainer in
+      // <CiderpressDocsBar />, and a CSS rule hides the outline render
+      // so we keep a single source of truth. `placement: 'outline'`
+      // also keeps the page itself clean natively without relying on a
+      // `display: none` over the H1 cluster.
+      llmsUI: { placement: 'outline' },
       // Custom ciderpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),

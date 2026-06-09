@@ -1,17 +1,19 @@
 import type { Story } from '@ladle/react'
-import type React from 'react'
 
 import { Card } from './card.tsx'
 
-export default {
-  title: 'Shared / Card',
+const meta = {
+  title: 'Surface / Card',
 }
+
+export default meta
 
 /**
  * Plain card without a link target — renders as `<div>`.
  *
  * @returns Static card
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const Static: Story = () => (
   <Card>
     <h3 style={{ marginTop: 0 }}>Static card</h3>
@@ -24,6 +26,7 @@ export const Static: Story = () => (
  *
  * @returns Clickable card
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const Clickable: Story = () => (
   <Card href="/guides/getting-started">
     <h3 style={{ marginTop: 0 }}>Clickable card</h3>
@@ -37,7 +40,9 @@ export const Clickable: Story = () => (
  *
  * @returns Card with stripped href
  */
+// oxlint-disable-next-line func-style -- Ladle stories use `export const`
 export const RejectedHref: Story = () => (
+  // oxlint-disable-next-line no-script-url -- testing safeUrl() rejection
   <Card href={'javascript:alert(1)'}>
     <h3 style={{ marginTop: 0 }}>Rejected href</h3>
     <p>Falls back to a div — XSS sink defused.</p>

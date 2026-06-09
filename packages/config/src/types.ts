@@ -1355,6 +1355,20 @@ export interface CiderpressConfig {
    */
   readonly themes?: readonly CiderpressThemeInput[]
   /**
+   * Inline FOUC loader style.
+   *
+   * Two variants ship out of the box:
+   *   - `'apple'` (default) — Ciderpress's native pixel-apple animation:
+   *     five discrete bites, ballerina-spin on the vertical axis, with
+   *     the leaf surviving the bites.
+   *   - `'classic'` — legacy dots loader cycling `loading`, `loading.`,
+   *     `loading..`, `loading...` every 300ms.
+   *
+   * Both styles share the same backdrop and lifecycle (`cp-loader-fade`,
+   * `data-cp-ready`). Omitting the field gets you `'apple'`.
+   */
+  readonly loader?: 'apple' | 'classic'
+  /**
    * Brand icon rendered next to the site title in the topbar. Iconify id
    * only — the topbar logo position does not accept colored icon configs.
    */

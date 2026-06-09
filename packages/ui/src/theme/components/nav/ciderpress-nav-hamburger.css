@@ -32,7 +32,11 @@
   color: var(--cp-c-brand-1);
 }
 
-@media (max-width: 768px) {
+/* Show the hamburger at the same breakpoint where `<CiderpressHeader />`
+   collapses its desktop chrome (see `ciderpress-header.css`) and where
+   `<CiderpressDocsBar />` flips to its mobile layout, so all three
+   pieces transition together. */
+@media (max-width: 1024px) {
   .cp-nav-hamburger {
     display: inline-flex;
   }

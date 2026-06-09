@@ -22,46 +22,16 @@
     --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
   }
 
-  /* ── LLMs UI — hide the view-options trigger button (dropdown arrow) ── */
-  html .rp-llms-view-options__trigger {
+  /* ── LLMs UI — Ciderpress mounts its own `<LlmsContainer />` inside
+     `<CiderpressDocsBar />`. The H1 placement is suppressed natively
+     by setting `themeConfig.llmsUI.placement: 'outline'` (see
+     `packages/ui/src/config.ts`). That moves Rspress's auto-render
+     into the outline rail (`<LlmsCopyRow />` + `<LlmsOpenRow />`),
+     which we then hide here so the bar is the single source of
+     truth. ───────────────────────────────────────────────────── */
+  html .rp-outline .rp-outline__action-row,
+  html .rp-outline .rp-outline__open-in-wrapper {
     display: none;
-  }
-
-  html .rp-llms-container {
-    float: right;
-    margin-top: 8px;
-    margin-bottom: 0;
-  }
-
-  html .rp-doc h1.rp-toc-include {
-    display: inline;
-  }
-
-  /* ── Mobile: un-float so the H1 gets its own line, compact the
-       Copy Markdown button to icon-only (the view-options dropdown
-       trigger is already hidden globally above). ──────────────── */
-  @media (max-width: 640px) {
-    html .rp-llms-container {
-      float: none;
-      display: flex;
-      justify-content: flex-end;
-      margin-top: 0;
-      margin-bottom: 12px;
-    }
-
-    html .rp-doc h1.rp-toc-include {
-      display: block;
-    }
-
-    html .rp-llms-container .rp-llms-copy-button {
-      padding: 0;
-      width: 36px;
-      gap: 0;
-    }
-
-    html .rp-llms-container .rp-llms-copy-button > span {
-      display: none;
-    }
   }
 
   /* ── Buttons — pill shape ─────────────────────────────────── */

@@ -31,16 +31,19 @@ export function Link({ to, className, children }: LinkProps): React.ReactElement
 }
 
 /**
- * Stub for Rspress's `useLocation` — returns the live `window.location`
+ * Stub for Rspress's `useLocation` — returns the live `globalThis.location`
  * when available, an empty path on the server.
  *
  * @returns Minimal location object
  */
 export function useLocation(): { readonly pathname: string; readonly search: string } {
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return { pathname: '/', search: '' }
   }
-  return { pathname: window.location.pathname, search: window.location.search }
+  return {
+    pathname: globalThis.window.location.pathname,
+    search: globalThis.window.location.search,
+  }
 }
 
 /**

@@ -131,14 +131,15 @@ Important top-level configs:
 <commands>
 
 ```bash
-pnpm lint           # Lint with OXLint
-pnpm lint:fix       # Auto-fix lint issues
-pnpm format         # Check formatting with OXFmt
-pnpm format:fix     # Auto-fix formatting
-pnpm typecheck      # Type check all packages (via Turbo)
-pnpm check          # Typecheck + lint + format
-pnpm build          # Build all packages (via Turbo)
-pnpm clean          # Clean all dist output (via Turbo)
+pnpm lint                       # Lint with OXLint
+pnpm lint:fix                   # Auto-fix lint issues
+pnpm format                     # Check formatting with OXFmt
+pnpm format:fix                 # Auto-fix formatting
+pnpm typecheck                  # Type check all packages (via Turbo)
+pnpm check                      # Typecheck + lint + format
+pnpm build                      # Build all packages (via Turbo)
+pnpm clean                      # Clean all dist output (via Turbo)
+pnpm docs:dev --headless        # Run the dogfooded docs site without the Ink TUI (use this from a non-TTY shell / background task — plain log output, no raw-mode error)
 ```
 
 Per-package (from `packages/*/`):

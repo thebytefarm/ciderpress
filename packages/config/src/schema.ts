@@ -370,6 +370,12 @@ export const ciderpressConfigSchema = z
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
     themes: z.array(ciderpressThemeInputSchema).optional(),
+    loader: z
+      .enum(['apple', 'classic'])
+      .describe(
+        "Inline FOUC loader style. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader (loading, loading., loading.., loading...)."
+      )
+      .optional(),
     icon: iconIdSchema.optional(),
     logo: logoConfigSchema.optional(),
     tagline: z.string().optional(),

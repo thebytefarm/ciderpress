@@ -194,6 +194,14 @@
         "additionalProperties": false
       }
     },
+    "loader": {
+      "type": "string",
+      "enum": [
+        "apple",
+        "classic"
+      ],
+      "description": "Inline FOUC loader style. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader (loading, loading., loading.., loading...)."
+    },
     "icon": {
       "type": "string"
     },

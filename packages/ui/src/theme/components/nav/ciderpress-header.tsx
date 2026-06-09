@@ -2,7 +2,6 @@ import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
 import { CiderpressLogo } from '../shared/ciderpress-logo'
-import { SidebarToggle } from '../sidebar/sidebar-toggle'
 import { CiderpressNavHamburger } from './ciderpress-nav-hamburger'
 import { CiderpressNavMenu } from './ciderpress-nav-menu'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
@@ -10,8 +9,8 @@ import { CiderpressNavSearch } from './ciderpress-nav-search'
 import { CiderpressNavSocialLinks } from './ciderpress-nav-social-links'
 import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
 import { NavDivider } from './nav-divider'
-import { ThemeSwitcher } from './theme-switcher'
 import { TopbarCTA } from './topbar-cta'
+import { VariantToggle } from './variant-toggle'
 
 import './ciderpress-header.css'
 
@@ -45,7 +44,7 @@ export interface CiderpressHeaderProps {
 /**
  * Custom replacement for Rspress's built-in `.rp-nav`. Owns the entire
  * topbar chrome (logo, search trigger, primary menu with
- * measure-and-collapse overflow, theme switcher, social cluster, CTA)
+ * measure-and-collapse overflow, variant toggle, social cluster, CTA)
  * using only `cp-*` class names and `cp-*` CSS custom properties so
  * theme authors can override every surface without reaching into
  * Rspress internals.
@@ -66,7 +65,9 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
     <header className={`cp-header ${variantClass}`}>
       {props.announcement}
       <div className="cp-header-inner">
-        {/* Left: hamburger (mobile) + logo + sidebar toggle (docs only) */}
+        {/* Left: hamburger (mobile primary-nav drawer) + logo. Sidebar
+            collapse/expand lives in <CiderpressDocsBar />, the sticky
+            sub-header rendered beneath the site nav on docs pages. */}
         <CiderpressNavHamburger
           navItems={props.navItems}
           socialLinks={props.socialLinks}
@@ -75,7 +76,6 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
         <RouteLink href="/" className="cp-header-logo" aria-label="Home">
           <CiderpressLogo />
         </RouteLink>
-        {props.isHome ? null : <SidebarToggle />}
 
         {/* Right cluster wrapper. Grows from a zero basis so its width
             equals the actual available room (not the content), which is
@@ -93,7 +93,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
         </div>
 
         <NavDivider />
-        <ThemeSwitcher />
+        <VariantToggle />
         <CiderpressNavSocialLinks links={props.socialLinks} />
         {props.topbarCta === undefined ? null : (
           <>

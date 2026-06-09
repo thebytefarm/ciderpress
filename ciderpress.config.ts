@@ -51,8 +51,8 @@ export default defineConfig({
     // Landing-page extensions (mockup parity)
     eyebrow: '★ open source · v0.5 · MIT',
     trust: {
-      lead: 'used by docs at',
-      names: ['Healthie', 'Kindred', 'ButterflyMX', 'Discovery Education'],
+      lead: 'used by',
+      names: ['maltty', 'viteval', 'massaman', 'marxml'],
     },
     cta: {
       title: 'Ship the docs your team deserves.',

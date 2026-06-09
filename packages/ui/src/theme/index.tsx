@@ -50,6 +50,7 @@ import './components/home/hero-demo.css'
 import './components/home/trust-strip.css'
 import './components/home/split.css'
 import './components/home/cta.css'
+import './components/nav/ciderpress-docs-bar.css'
 import './components/nav/nav-logo.css'
 import './components/nav/version-chip.css'
 import './components/nav/topbar-cta.css'
@@ -61,6 +62,7 @@ import './components/shared/frame.css'
 import './components/shared/tooltip.css'
 import './components/shared/prompt.css'
 import './components/shared/color.css'
+import './components/shared/theme-color-palette.css'
 import './components/shared/steps.css'
 import './components/shared/field.css'
 
@@ -68,6 +70,8 @@ export * from '@rspress/core/theme-original'
 
 /** @internal Rspress layout override — injects ciderpress nav components via layout slots */
 export { Layout } from './components/nav/layout'
+/** @internal Rspress doc-layout override — replaces `.rp-doc-layout__menu` with `<CiderpressDocsBar />` */
+export { CiderpressDocLayout as DocLayout } from './components/nav/ciderpress-doc-layout'
 /** @internal Home page feature block override */
 export { HomeFeature } from './components/home/feature'
 /** @internal Home page layout override */
@@ -127,6 +131,8 @@ export { Prompt } from './components/shared/prompt'
 export type { PromptProps, PromptAction } from './components/shared/prompt'
 export { Color } from './components/shared/color'
 export type { ColorProps } from './components/shared/color'
+export { ThemeColorPalette } from './components/shared/theme-color-palette'
+export type { ThemeColorPaletteProps } from './components/shared/theme-color-palette'
 export { Steps, Step } from './components/shared/steps'
 export type { StepsProps, StepProps } from './components/shared/steps'
 export { Field, FieldGroup } from './components/shared/field'

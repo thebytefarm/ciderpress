@@ -15,15 +15,15 @@ const config: UserConfig = {
     alias: [
       {
         find: '@rspress/core/runtime',
-        replacement: fileURLToPath(new URL('./stubs/rspress-runtime.tsx', import.meta.url)),
+        replacement: fileURLToPath(new URL('stubs/rspress-runtime.tsx', import.meta.url)),
       },
       {
         find: '@rspress/core/theme-original',
-        replacement: fileURLToPath(new URL('./stubs/rspress-theme-original.tsx', import.meta.url)),
+        replacement: fileURLToPath(new URL('stubs/rspress-theme-original.tsx', import.meta.url)),
       },
       {
         find: '@rspress/core/theme',
-        replacement: fileURLToPath(new URL('./stubs/rspress-theme.tsx', import.meta.url)),
+        replacement: fileURLToPath(new URL('stubs/rspress-theme.tsx', import.meta.url)),
       },
     ],
   },

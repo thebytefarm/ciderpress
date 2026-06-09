@@ -1,0 +1,505 @@
+/**
+ * CiderpressDocsBar — sticky sub-header beneath the site nav, replaces
+ * Rspress's `.rp-doc-layout__menu` (which our DocLayout override no
+ * longer renders at all).
+ *
+ * Three-column layout that mirrors the rail below:
+ *   [ Menu (sidebar-width) | Breadcrumbs (content-padding-x) | Outline (outline-width) ]
+ * Vertical hairlines between the columns line up with the dividers
+ * between sidebar / doc / outline in `.rp-doc-layout__container`.
+ *
+ * Theme-author API:
+ *   --cp-docs-bar-height        row height (default 46px)
+ *   --cp-docs-bar-bg            background colour
+ *   --cp-docs-bar-border        column-divider + outer hairline colour
+ */
+.cp-docs-bar {
+  position: sticky;
+  /* Clear the header AND the announcement bar above it. The
+     announcement self-reports its height via `--cp-announcement-height`
+     (see `<AnnouncementBar />`); it collapses to `0px` when dismissed
+     so the bar slides up against the header automatically. */
+  top: calc(var(--cp-header-height, 56px) + var(--cp-announcement-height, 0px));
+  /* Must sit ABOVE Rspress's sidebar (`--rp-z-index-sidebar: 50`) and
+     outline (`--rp-z-index-aside: 40`) — both are sticky-positioned in
+     the same flex row and would otherwise paint over the bar when the
+     page scrolls. Stay BELOW the site header (`--cp-header-z: 60`) so
+     the header still wins the top edge. */
+  z-index: 55;
+  display: flex;
+  align-items: stretch;
+  height: var(--cp-docs-bar-height, 46px);
+  margin: 0 var(--cp-frame-gutter);
+  background: var(--cp-docs-bar-bg, var(--cp-c-bg));
+  border-left: 1px solid var(--cp-docs-bar-border, var(--cp-c-border));
+  border-right: 1px solid var(--cp-docs-bar-border, var(--cp-c-border));
+  border-bottom: 1px solid var(--cp-c-divider);
+  font-size: 12.5px;
+  color: var(--cp-c-text-2);
+}
+
+/* ── Left column: "Menu" button — width matches the sidebar below
+   so the hairline divider aligns with the sidebar / content seam. ── */
+.cp-docs-bar__menu {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: var(--rp-sidebar-width, 260px);
+  padding: 0 12px;
+  border-right: 1px solid var(--cp-docs-bar-border, var(--cp-c-border));
+}
+
+.cp-docs-bar__menu-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--cp-c-text-2);
+  background: transparent;
+  border: 0;
+  padding: 6px 8px;
+  border-radius: var(--cp-radius-card);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cp-docs-bar__menu-btn:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+}
+
+/* ── Middle column: breadcrumbs (left, takes remaining width) +
+   Copy Markdown / view-options dropdown (right, fixed).
+
+   NOTE: `overflow: hidden` cannot be set here — Rspress's
+   `<LlmsViewOptions />` renders its popover as a `position: absolute`
+   child of the trigger button (not a portal), so any clipping ancestor
+   hides the dropdown. Breadcrumb truncation is handled inside
+   `.cp-docs-bar__crumbs` instead. ──────────────────────────────── */
+.cp-docs-bar__center {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0 var(--cp-docs-bar-crumbs-pad-x, 20px);
+}
+
+.cp-docs-bar__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.cp-docs-bar__crumb-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.cp-docs-bar__crumb-wrap:last-child {
+  color: var(--cp-c-text-1);
+  font-weight: 500;
+  overflow: hidden;
+}
+
+/* ── Home icon — anchors the breadcrumb trail at the root. Sits
+   inline with the section/page labels; the icon itself renders at 14px
+   to match the other docs-bar icons. ────────────────────────────── */
+.cp-docs-bar__crumb-home {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--cp-c-text-2);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.cp-docs-bar__crumb-home:hover {
+  color: var(--cp-c-text-1);
+  text-decoration: none;
+}
+
+.cp-docs-bar__crumb {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+/* Anchor variant — Rspress's global anchor styles can add underlines on
+   hover; reset so breadcrumb links read as inline text that brightens
+   on hover rather than gaining a rule beneath. */
+a.cp-docs-bar__crumb:hover {
+  color: var(--cp-c-text-1);
+  text-decoration: none;
+}
+
+.cp-docs-bar__sep {
+  color: var(--cp-c-text-3, var(--cp-c-text-2));
+  flex-shrink: 0;
+}
+
+/* ── Right column wrapper — anchors the dropdown for the outline
+   "On this page" button. Position: relative so the absolutely-
+   positioned dropdown sits flush against the button's bottom edge. */
+.cp-docs-bar__outline-wrap {
+  position: relative;
+  flex-shrink: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+/* ── Right column: "On this page" — at desktop (>= 1280px) the
+   button toggles `data-cp-outline-collapsed` (hides the outline rail
+   via CSS in `sidebar-toggle.css`); at <= 1279px it toggles the
+   in-bar TOC dropdown below. Contents: label · scrolled-section
+   text · read percent · chevron. Width matches the rail's outline
+   column. ────────────────────────────────────────────────────── */
+.cp-docs-bar__outline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  width: var(--rp-outline-width, 240px);
+  padding: 0 16px;
+  border-top: 0;
+  border-right: 0;
+  border-bottom: 0;
+  border-left: 1px solid var(--cp-docs-bar-border, var(--cp-c-border));
+  background: transparent;
+  color: var(--cp-c-text-2);
+  font: inherit;
+  cursor: pointer;
+  min-width: 0;
+  transition: background 0.15s ease;
+}
+
+.cp-docs-bar__outline:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+}
+
+.cp-docs-bar__chev {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: var(--cp-c-text-3, var(--cp-c-text-2));
+  transition: transform 0.15s ease;
+}
+
+html[data-cp-outline-collapsed='true'] .cp-docs-bar__chev {
+  transform: rotate(-90deg);
+}
+
+/* ── Outline TOC dropdown — appears below the right column button
+   when `isOutlineOpen` is true (handled by `<CiderpressDocsBar />`).
+   Sits above the docs bar's own z-index so it overlaps the bar's
+   bottom border without being clipped. Click-outside closes via the
+   `mousedown` listener in `ciderpress-docs-bar.tsx`; clicks on `<a>`
+   links inside close via `makeLinkClickCloser` (hash-only navigation
+   doesn't trigger React Router's pathname effect, so this is the
+   actual closer). ─────────────────────────────────────────────── */
+/*
+ * The dropdown carries TWO classes:
+ *   - `.cp-docs-bar__outline-dropdown` — ours, owns positioning + visuals
+ *   - `.rp-doc-layout__outline` — Rspress's, included only so its
+ *     `<TocItem>` scroll-into-view boundary stops here instead of
+ *     scrolling the whole page (the boundary check is `classList
+ *     .contains('rp-doc-layout__outline') || classList.contains
+ *     ('rspress-doc')`, hard-coded in Rspress's TocItem source).
+ *
+ * That second class drags in Rspress's `@media (width <= 1279px)`
+ * block which sets `visibility: hidden; opacity: 0; transform:
+ * translate3d(0, -10px, 0)` — same single-class specificity as ours,
+ * so source order alone decides who wins, and we kept losing once the
+ * entry animation completed (animation-fill-mode: none reverts the
+ * properties). Chaining both classes in our selector (specificity
+ * 0,2,0) definitively beats Rspress's 0,1,0 at every viewport width,
+ * and `forwards` on the animations pins the end state so the
+ * dropdown stays visible after the entry transition.
+ */
+.cp-docs-bar__outline-dropdown.rp-doc-layout__outline {
+  /* Default (>=1025px): side popout — full-height column on the
+     right edge, slides in from the right. */
+  position: fixed;
+  top: calc(
+    var(--cp-header-height, 56px) + var(--cp-docs-bar-height, 46px) +
+      var(--cp-announcement-height, 0px)
+  );
+  right: 0;
+  bottom: 0;
+  inset-inline-end: 0;
+  width: var(--rp-outline-width, 240px);
+  max-width: calc(100vw - 24px);
+  height: auto;
+  overflow-y: auto;
+  padding: 12px 0;
+  margin: 0;
+  background: var(--cp-c-bg);
+  backdrop-filter: none;
+  border: 0;
+  border-left: 1px solid var(--cp-c-border);
+  border-radius: 0;
+  box-shadow: -8px 0 24px rgba(0, 0, 0, 0.3);
+  visibility: visible;
+  opacity: 1;
+  transform: none;
+  transition: none;
+  font-size: 13px;
+  z-index: 70;
+  animation: cp-outline-slide-in 0.2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes cp-outline-slide-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* Mobile (<=1024px) — outline button opens a *dropdown* (sized to
+   content, anchored under the button), not the full-height side
+   panel. The side panel is reserved for the 1025-1279 "tablet" range.
+   Selector chains both classes to keep specificity (0,2,0) above
+   Rspress's `.rp-doc-layout__outline` rules at <=1279px. */
+@media (max-width: 1024px) {
+  .cp-docs-bar__outline-dropdown.rp-doc-layout__outline {
+    bottom: auto;
+    width: 280px;
+    max-width: calc(100vw - 16px);
+    max-height: calc(
+      100vh - var(--cp-header-height, 56px) - var(--cp-docs-bar-height, 46px) -
+        var(--cp-announcement-height, 0px) - 16px
+    );
+    margin-right: 8px;
+    padding: 6px 0;
+    border: 1px solid var(--cp-c-border);
+    border-radius: var(--cp-radius-card, 6px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+    animation: cp-outline-fade-in 0.15s ease forwards;
+  }
+}
+
+@keyframes cp-outline-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* `<TocItem>` ships a 10px top margin between items + a `:before`
+   active-marker hairline positioned at negative left of the outline
+   rail's padding. Inside a dropdown both look wrong — items want to
+   sit on a tighter rhythm and the `:before` indicator lands outside
+   the dropdown's clipping box, never visible. Strip both. */
+.cp-docs-bar__outline-dropdown .rp-toc-item {
+  display: block;
+  margin: 0;
+  /* No padding on the link itself so hover/active backgrounds fill
+     full dropdown width AND `<TocItem>`'s inline `padding-left`
+     (depth × 12px) keeps providing the hierarchy indent. */
+  padding: 0;
+  color: var(--cp-c-text-2);
+  text-decoration: none;
+  position: relative;
+}
+
+.cp-docs-bar__outline-dropdown .rp-toc-item::before {
+  display: none;
+}
+
+.cp-docs-bar__outline-dropdown .rp-toc-item:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+}
+
+.cp-docs-bar__outline-dropdown .rp-toc-item--active {
+  background: var(--cp-c-bg-soft);
+}
+
+/* The actual visual padding lives on the text span — keeps the
+   hover/active background flush to the dropdown edges while the
+   text stays inset 16px from left and right. */
+.cp-docs-bar__outline-dropdown .rp-toc-item__text {
+  display: block;
+  padding: 6px 16px;
+  color: inherit;
+  line-height: 1.4;
+}
+
+.cp-docs-bar__outline-dropdown .rp-toc-item--active .rp-toc-item__text {
+  color: var(--cp-c-brand-1, var(--cp-c-text-1));
+  font-weight: 500;
+}
+
+/* ── LlmsContainer (Copy Markdown + view-options dropdown) — Rspress
+   emits `.rp-llms-container` with its own float / margin meant for
+   the H1-adjacent placement. Inside our bar we override to a tight
+   inline-flex cluster of compact buttons. The Copy button shows
+   "Copy Markdown" inline with its icon on desktop; mobile collapses
+   the entire `.cp-docs-bar__center` so the label disappears with
+   it. The view-options trigger keeps just its caret icon. The
+   on-page render of `.rp-llms-container` is hidden separately in
+   `styles/overrides/rspress.css`. ──────────────────────────────── */
+.cp-docs-bar__llms {
+  flex-shrink: 0;
+}
+
+.cp-docs-bar__llms .rp-llms-container {
+  float: none;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Compact button reset — Rspress ships `.rp-llms-button` at 36px tall
+   with 12px horizontal padding and a 14px label, sized for the H1
+   placement. In the docs bar we squeeze to ~28px square so the cluster
+   reads as a row of icon affordances next to the chevron. */
+.cp-docs-bar__llms .rp-llms-button {
+  height: 28px;
+  min-width: 28px;
+  padding: 0 6px;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--cp-radius-card, 6px);
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--cp-c-text-2);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.cp-docs-bar__llms .rp-llms-button:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Tighten the copy button's icon wrapper so it centres in the 28px box. */
+.cp-docs-bar__llms .rp-llms-copy-button__icon-wrapper,
+.cp-docs-bar__llms .rp-llms-copy-button__icon-copy,
+.cp-docs-bar__llms .rp-llms-copy-button__icon-success {
+  width: 14px;
+  height: 14px;
+}
+
+.cp-docs-bar__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--cp-c-text-3, var(--cp-c-text-2));
+  flex-shrink: 0;
+}
+
+.cp-docs-bar__section {
+  /* Active scrolled-section heading. Hidden on desktop because the
+     outline rail surfaces the active heading via its own active
+     state; shown on mobile (below) where the outline rail collapses
+     into a drawer and the bar is the only place to see what section
+     the user is currently reading. */
+  display: none;
+  color: var(--cp-c-text-1);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+/* ── Layout flip — at <=1279px the Outline column collapses from a
+   sticky rail into a drawer (Rspress's own behaviour, matched by
+   `OUTLINE_DRAWER_MAX_WIDTH` in `ciderpress-docs-bar.tsx`). Flip the
+   bar's layout at the same threshold so the breadcrumbs + Copy-
+   Markdown cluster step out of the way and the two button affordances
+   ("Menu" + "On this page") expand to fill the bar.
+
+   Gutter / side-border removal lives in a separate rule below so the
+   docs bar stays aligned with the doc rail beneath it (rail mobile
+   breakpoint is 1024px). */
+@media (max-width: 1279px) {
+  .cp-docs-bar__menu {
+    width: auto;
+    flex: 1 1 auto;
+    border-right: 0;
+  }
+
+  .cp-docs-bar__center {
+    display: none;
+  }
+
+  .cp-docs-bar__outline {
+    width: auto;
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  /* Hide the "On this page" label on mobile and surface the active
+     scrolled-section heading instead — the chevron telegraphs that
+     tapping opens a dropdown, and the section text tells the user
+     where they are without forcing the outline drawer open. */
+  .cp-docs-bar__outline .cp-docs-bar__label {
+    display: none;
+  }
+
+  .cp-docs-bar__outline .cp-docs-bar__section {
+    display: block;
+  }
+}
+
+/* ── Gutter alignment — at <=1024px the doc rail beneath the bar
+   loses its side borders and frame gutter (see `rail.css`). Mirror
+   that here so the bar runs edge-to-edge against the same threshold
+   and the two stay visually flush. */
+@media (max-width: 1024px) {
+  .cp-docs-bar {
+    margin: 0;
+    border-left: 0;
+    border-right: 0;
+  }
+}
+
+/* ── Sidebar drawer backdrop mask — rendered by `<CiderpressDocLayout />`
+   only when `isSidebarOpen` is true (the outline uses an in-bar
+   dropdown, not a drawer). Click closes the drawer.
+
+   `z-index: 45` sits between the page content (z=0) and the sidebar
+   drawer (Rspress's `--rp-z-index-sidebar: 50`), so the drawer
+   paints over the mask and clicks on drawer content reach the
+   drawer. Stays BELOW the docs bar (55) and header (60) so those
+   chrome elements remain visible and interactive. */
+.cp-drawer-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+/* ── Body scroll lock while a drawer is open. ──────────────────── */
+html[data-cp-drawer-open='true'],
+html[data-cp-drawer-open='true'] body {
+  overflow: hidden;
+}

@@ -79,8 +79,7 @@ packages/*/.ciderpress-dev-headless.mjs
 # Visual-parity baselines
 .snapshots/
 
-# Ladle build output (component playground for @ciderpress/ui)
-packages/ui/build/
-packages/*/.ladle/dist/
+# Ladle cache (component playground for @ciderpress/ui)
+packages/ui/node_modules/.ladle/
 
 

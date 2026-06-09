@@ -3,11 +3,29 @@ import { match } from 'massaman/match'
 import { useEffect, useState } from 'react'
 import type React from 'react'
 
-// Theme palette CSS — order mirrors `src/theme/index.tsx`. Mulled is loaded
-// first because it doubles as the FOUC fallback in production.
+// Rspress base — mirrors `@rspress/core/dist/theme/styles/index.js`. Must
+// load first so `--rp-c-*`, `--rp-radius`, `--rp-shadow-*`, preflight
+// resets, and the body typography exist before any ciderpress override
+// tries to consume them. `nprogress/nprogress.css` is skipped (route
+// progress bar isn't relevant in a stories harness).
+import '@rspress/core/dist/theme/styles/vars/brand-vars.css'
+import '@rspress/core/dist/theme/styles/vars/shiki-vars.css'
+import '@rspress/core/dist/theme/styles/vars/code-vars.css'
+import '@rspress/core/dist/theme/styles/vars/home-vars.css'
+import '@rspress/core/dist/theme/styles/vars/base-vars.css'
+import '@rspress/core/dist/theme/styles/base.css'
+import '@rspress/core/dist/theme/styles/scrollbar.css'
+import '@rspress/core/dist/theme/styles/shiki.css'
+// Full theme cascade — mirrors `src/theme/index.tsx` exactly so every
+// `.cp-*` and `.rp-*` selector resolves the same way it does on the live
+// docs site. Order matters: layers > fonts > tokens > rspress reset >
+// palette CSS > overrides > component CSS. Component-colocated CSS files
+// (browser-window.css, desktop-window.css, etc.) are picked up
+// automatically when their `.tsx` is imported by a story.
 import '../src/theme/styles/layers.css'
 import '../src/theme/styles/overrides/fonts.css'
 import '../src/theme/styles/overrides/tokens.css'
+import '../src/theme/styles/overrides/rspress.css'
 import '../src/theme/styles/themes/mulled.css'
 import '../src/theme/styles/themes/honeycrisp.css'
 import '../src/theme/styles/themes/grannysmith.css'
@@ -15,19 +33,43 @@ import '../src/theme/styles/themes/amber.css'
 import '../src/theme/styles/themes/midnight.css'
 import '../src/theme/styles/themes/arcade.css'
 import '../src/theme/styles/themes/arcade-fx.css'
-
-// Component CSS — pull in everything stories under shared/ can reach for.
-import '../src/theme/components/shared/browser-window.css'
-import '../src/theme/components/shared/desktop-window.css'
-import '../src/theme/components/shared/status-badge.css'
+import '../src/theme/styles/overrides/details.css'
+import '../src/theme/styles/overrides/scrollbar.css'
+import '../src/theme/styles/overrides/rail.css'
+import '../src/theme/styles/overrides/sidebar.css'
+import '../src/theme/styles/overrides/content-footer.css'
+import '../src/theme/styles/overrides/home.css'
+import '../src/theme/styles/overrides/home-card.css'
+import '../src/theme/styles/overrides/section-card.css'
+import '../src/theme/styles/overrides/vscode.css'
+import '../src/theme/styles/overrides/badge.css'
+import '../src/theme/components/announcement/announcement-bar.css'
+import '../src/theme/components/ask-ai/ask-ai-button.css'
+import '../src/theme/components/content-footer/feedback.css'
+import '../src/theme/components/content-footer/meta-actions.css'
+import '../src/theme/components/content-footer/page-pager.css'
+import '../src/theme/components/sidebar/framework-picker.css'
+import '../src/theme/components/sidebar/sidebar-promo.css'
+import '../src/theme/components/sidebar/sidebar-toggle.css'
+import '../src/theme/components/home/page-rail.css'
+import '../src/theme/components/home/hero.css'
+import '../src/theme/components/home/hero-demo.css'
+import '../src/theme/components/home/trust-strip.css'
+import '../src/theme/components/home/split.css'
+import '../src/theme/components/home/cta.css'
+import '../src/theme/components/nav/nav-logo.css'
+import '../src/theme/components/nav/version-chip.css'
+import '../src/theme/components/nav/topbar-cta.css'
+import '../src/theme/components/openapi/openapi.css'
 import '../src/theme/components/shared/accordion.css'
 import '../src/theme/components/shared/columns.css'
-import '../src/theme/components/shared/field.css'
+import '../src/theme/components/shared/status-badge.css'
 import '../src/theme/components/shared/frame.css'
-import '../src/theme/components/shared/prompt.css'
-import '../src/theme/components/shared/steps.css'
 import '../src/theme/components/shared/tooltip.css'
-
+import '../src/theme/components/shared/prompt.css'
+import '../src/theme/components/shared/color.css'
+import '../src/theme/components/shared/steps.css'
+import '../src/theme/components/shared/field.css'
 import './ladle.css'
 
 /**
@@ -48,16 +90,19 @@ const STORAGE_KEY = 'ciderpress-ladle-theme'
  * `data-cp-variant` and exposes an in-page palette picker that drives
  * `data-cp-theme` on `<html>`.
  *
+ * Must be `export const` — Ladle's Babel-driven story discovery reads
+ * `declaration.declarations[0]` and crashes on `function` declarations.
+ *
  * @param props - Ladle global provider props (children + globalState)
  * @returns Wrapped story with theme controls
  */
+// oxlint-disable-next-line func-style -- Ladle's parser requires `export const`
 export const Provider: GlobalProvider = ({ children, globalState }) => {
   const [theme, setTheme] = useState<ThemeName>(readStoredTheme)
 
   useEffect(() => {
     const html = document.documentElement
     html.dataset.cpTheme = theme
-    html.dataset.cpReady = 'true'
     writeStoredTheme(theme)
   }, [theme])
 
@@ -107,12 +152,7 @@ function ThemePicker({ value, onChange }: ThemePickerProps): React.ReactElement 
             .with(true, () => 'cp-ladle-picker__btn cp-ladle-picker__btn--active')
             .otherwise(() => 'cp-ladle-picker__btn')
           return (
-            <button
-              key={name}
-              type="button"
-              className={className}
-              onClick={() => onChange(name)}
-            >
+            <button key={name} type="button" className={className} onClick={() => onChange(name)}>
               {name}
             </button>
           )
@@ -130,11 +170,11 @@ function ThemePicker({ value, onChange }: ThemePickerProps): React.ReactElement 
  * @returns Resolved palette name
  */
 function readStoredTheme(): ThemeName {
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return 'mulled'
   }
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY)
+    const raw = globalThis.window.localStorage.getItem(STORAGE_KEY)
     const found = THEMES.find((t) => t === raw)
     return match(found)
       .with(undefined, () => 'mulled' as ThemeName)
@@ -151,11 +191,11 @@ function readStoredTheme(): ThemeName {
  * @param name - Palette name to persist
  */
 function writeStoredTheme(name: ThemeName): void {
-  if (typeof window === 'undefined') {
+  if (globalThis.window === undefined) {
     return
   }
   try {
-    window.localStorage.setItem(STORAGE_KEY, name)
+    globalThis.window.localStorage.setItem(STORAGE_KEY, name)
   } catch {
     // storage unavailable
   }

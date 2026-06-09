@@ -3,6 +3,7 @@ packages:
   - 'examples/*'
   - 'extensions/*'
   - 'benchmarks'
+  - 'e2e'
 
 catalog:
   '@rslib/core': ^0.21.5

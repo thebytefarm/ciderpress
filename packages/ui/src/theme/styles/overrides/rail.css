@@ -14,10 +14,43 @@
 
 /* ── Token overrides — tighten Rspress defaults to match mockup ── */
 html:root {
-  --rp-nav-height: 56px;
+  /* Define ciderpress sticky-stack heights at root so the docs bar's
+     `top:` and the `--rp-nav-height` override calc in
+     `ciderpress-header.css` resolve against the SAME value when a theme
+     overrides either token. Without these, both sides only see their
+     hard-coded `var(..., 56px)` / `var(..., 46px)` fallbacks. */
+  --cp-header-height: 56px;
+  --cp-docs-bar-height: 46px;
+  /* `--rp-nav-height` drives:
+       - sidebar / outline sticky-top (DocLayout/index.css)
+       - scroll-padding-top on <html> (styles/base.css) for anchor jumps
+     The viewport-blocking stack on docs pages is:
+       [ <AnnouncementBar /> ] + [ <CiderpressHeader /> ] + [ <CiderpressDocsBar /> ]
+     `--cp-announcement-height` is set by <AnnouncementBar /> itself
+     (it injects a `<style>` tag, same pattern Rspress's `<Banner />`
+     uses) so it tracks the actual rendered height and collapses to
+     `0px` when the bar is dismissed. Defining the calc at `html:root`
+     wins over Rspress's `:root` default (`64px`) on specificity. */
+  --rp-nav-height: calc(
+    var(--cp-header-height) + var(--cp-docs-bar-height) + var(--cp-announcement-height, 0px)
+  );
   --rp-sidebar-width: 260px;
   --rp-sidebar-padding: 0px;
   --rp-outline-width: 240px;
+  /* Zero out Rspress's `--rp-sidebar-menu-height` (default 46px).
+     Rspress consumes it in three places:
+       1. `.rp-doc-layout__sidebar { margin-top: calc(-1 * var(--rp-sidebar-menu-height)) }`
+          — pulls the sidebar UP 46px to overlap the `.rp-doc-layout__menu` bar.
+       2. `.rp-doc-layout__outline { margin-top: var(--rp-sidebar-menu-height) }`
+          — pushes the outline DOWN 46px to clear that same bar.
+       3. `html { scroll-padding-top: calc(... + var(--rp-sidebar-menu-height)) }`
+          — accounts for the bar when scrolling to anchors.
+     Our `<CiderpressDocLayout />` doesn't render `.rp-doc-layout__menu`,
+     so leaving the token at its default phantom-offsets the rails
+     (sidebar's `.cp-sidebar-top` band leaks under `<CiderpressDocsBar />`,
+     outline gets an extra 46px of dead space at the top, anchors land
+     46px low). Zero kills all three at the source. */
+  --rp-sidebar-menu-height: 0px;
   --rp-content-padding-x: 64px;
   --rp-content-padding-y: 56px;
   /* Set this MUCH wider than typical viewports so Rspress's `.rp-doc-layout__doc`
@@ -48,17 +81,11 @@ html .rp-doc-layout__container {
   border-right: 1px solid var(--cp-c-border);
 }
 
-html .rp-doc-layout__menu {
-  width: auto;
-  margin: 0 var(--cp-frame-gutter);
-  background: var(--cp-c-bg);
-  border-left: 1px solid var(--cp-c-border);
-  border-right: 1px solid var(--cp-c-border);
-  /* Mobile-only menu drawer — on desktop it renders as an empty 1px-tall
-     element, so a `border-bottom` here paints a duplicate hairline right
-     beneath the topbar's own `border-bottom`. Drop it; the drawer when
-     actually expanded gets visual structure from its own chrome. */
-}
+/* Note: `.rp-doc-layout__menu` is no longer rendered at all — see
+   `<CiderpressDocLayout />`, our DocLayout override that re-exports
+   from the theme entry. `<CiderpressDocsBar />` (inserted via the
+   `beforeDoc` slot) replaces it with breadcrumbs + active-section
+   chrome. No CSS override needed for the old element. */
 
 /* ── Sidebar / content / outline dividers ──────────────── */
 html .rp-doc-layout__sidebar {
@@ -147,7 +174,19 @@ html .rp-doc-layout__outline {
   background: var(--cp-c-bg);
   border-left: 1px solid var(--cp-c-border);
   box-shadow: none;
-  padding: 24px 16px;
+  /* `padding-top: 12px` matches the rhythm of `.cp-sidebar-top` /
+     first-child margin on the left sidebar so the first TOC link and
+     the first nav link land at the same y. */
+  padding: 12px 16px;
+}
+
+/* Hide the outline's built-in "On this page" title — the same label
+   lives in <CiderpressDocsBar /> above it, so showing both is
+   redundant. (The Rspress `<ReadPercent />` indicator nested inside
+   the title goes with it; not worth preserving for a doc rail that
+   already lists every heading.) */
+html .rp-outline__title {
+  display: none;
 }
 
 html .rp-doc-layout__doc {
@@ -178,6 +217,20 @@ html .rp-doc h1 {
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.1;
+}
+
+/* ── First H2 divider — tighten Rspress's default spacing.
+   Rspress paints a hairline as `::before` on the first h2 in `.rp-doc`
+   with `margin-top: 3rem` on the h2 and `margin-bottom: 3rem` on the
+   pseudo, leaving the line floating in ~48px of dead space on each side.
+   Pull both gaps in so the divider reads as a clean separator between
+   the intro paragraph and the first heading. */
+html .rp-doc h2:first-of-type {
+  margin-top: 1.5rem;
+}
+
+html .rp-doc h2:first-of-type::before {
+  margin-bottom: 1rem;
 }
 
 /* ── Right rail (TOC) typography — tighten to mockup ── */
@@ -260,19 +313,25 @@ html .cp-site-footer {
    comfortable at wide viewports. */
 
 /* ── Mobile: drop the gutter + vertical hairlines on the rail so it
-   goes edge-to-edge, matching the navbar and footer above/below it.
-   Reclaims the 24px of horizontal space that's noticeable at narrow
-   viewports, and removes the visual stairstep between full-bleed
-   navbar/footer and the inset rail. */
-@media (max-width: 720px) {
-  html:root {
-    --rp-content-padding-x: 20px;
-  }
-
+   goes edge-to-edge with the header and docs bar above it. Breakpoint
+   matches `<CiderpressHeader />`, `<CiderpressNavHamburger />`, and
+   `<CiderpressDocsBar />` (all at `max-width: 1024px`) so the entire
+   top-of-page stack transitions to full-bleed in one beat instead of
+   leaving the rail inset under a full-bleed docs bar. */
+@media (max-width: 1024px) {
   html .rp-doc-layout__container,
   html .rp-doc-layout__menu {
     margin: 0;
     border-left: 0;
     border-right: 0;
+  }
+}
+
+/* At very narrow viewports, tighten the prose's inner horizontal
+   padding so the article body keeps breathing room without eating into
+   the reading width. */
+@media (max-width: 720px) {
+  html:root {
+    --rp-content-padding-x: 20px;
   }
 }

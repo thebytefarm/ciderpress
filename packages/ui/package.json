@@ -50,7 +50,6 @@
     "dev": "rslib build --watch --no-clean",
     "generate:theme-css": "node scripts/generate-theme-css.mjs",
     "ladle": "ladle serve",
-    "ladle:build": "ladle build",
     "test": "vitest run",
     "typecheck": "tsgo --noEmit"
   },

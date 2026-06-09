@@ -25,8 +25,13 @@
     "docs:generate": "lauf run docs",
     "dev": "turbo run dev",
     "stories": "pnpm --filter @ciderpress/cli stories",
+    "ladle": "pnpm --filter @ciderpress/ui ladle",
     "bench": "pnpm --filter benchmarks bench",
-    "bench:run": "pnpm --filter benchmarks bench:run"
+    "bench:run": "pnpm --filter benchmarks bench:run",
+    "e2e": "pnpm --filter e2e test",
+    "e2e:ui": "pnpm --filter e2e test:ui",
+    "e2e:update": "pnpm --filter e2e test:update",
+    "e2e:install": "pnpm --filter e2e install:browsers"
   },
   "dependencies": {
     "ciderpress": "workspace:*"

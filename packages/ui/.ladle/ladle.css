@@ -22,7 +22,11 @@
   border: 1px solid var(--cp-c-border, #2a2a2a);
   border-radius: 8px;
   background: var(--cp-c-bg-elv, #161616);
-  font: 12px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  font:
+    12px/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
 }
 
 .cp-ladle-picker__label {
@@ -64,4 +68,18 @@
   border: 1px dashed var(--cp-c-divider, #1e1e1e);
   border-radius: 8px;
   background: var(--cp-c-bg-alt, #0f0f0f);
+}
+
+/*
+ * Standalone-component layout hints.
+ *
+ * The real theme expects `.cp-card` to live inside a grid wrapper
+ * (`.cp-feature-grid__item`) that provides display/sizing. In Ladle we
+ * render the bare component, so we force a block context and a sane
+ * max-width so the showcase isn't a full-bleed strip and a clickable
+ * `<a class="cp-card">` doesn't collapse to inline-with-block-children.
+ */
+.cp-ladle-canvas .cp-card {
+  display: block;
+  max-width: 480px;
 }
