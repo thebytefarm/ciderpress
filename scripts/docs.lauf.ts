@@ -529,14 +529,14 @@ function renderOverview(): string {
     '',
     '### Technology tags',
     '',
-    'Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/references/icons/technology) reference for the full list of supported tag names.',
+    'Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/reference/technology/overview) reference for the full list of supported tag names.',
     '',
     '## Validation',
     '',
     'Icons are validated at config load time. An icon must:',
     '',
     '- Contain exactly one `:` separator',
-    '- Use a recognized `prefix` (one of the six bundled sets)',
+    '- Use a recognized `prefix` (one of the nine bundled sets)',
     '',
     'Invalid icons produce a config error with type `invalid_icon`.',
     '',
@@ -561,7 +561,7 @@ function renderColors(): string {
       '</div>',
       '</td>',
       `<td><code>${c.name}</code></td>`,
-      `<td><code>{'.home-card-icon--${c.name}'}</code></td>`,
+      `<td><code>{'.cp-card__icon--${c.name}'}</code></td>`,
       `<td>${c.useCase}</td>`,
       '</tr>',
     ].join('')
@@ -637,7 +637,7 @@ function renderColors(): string {
     ']',
     '```',
     '',
-    'The CSS class for feature cards follows the pattern `.home-card-icon--{color}`.',
+    'The CSS class for feature cards follows the pattern `.cp-card__icon--{color}`.',
     '',
     '## Default behavior',
     '',
@@ -655,7 +655,7 @@ function renderTechOverview(allCategories: readonly Category[]): string {
       .flatMap((c) => c.entries.slice(0, 1))
       .map((e) => e.label)
       .join(', ')
-    return `| [${spec.title}](/references/icons/technology/${spec.slug}) | ${count} | ${examples}, etc. |`
+    return `| [${spec.title}](/reference/technology/${spec.slug}) | ${count} | ${examples}, etc. |`
   })
 
   const totalCount = countEntries(allCategories)
@@ -744,7 +744,7 @@ export default lauf({
     }
 
     const outDir = join(ctx.root, 'docs/references/icons')
-    const techDir = join(outDir, 'technology')
+    const techDir = join(ctx.root, 'docs/references/technology')
 
     mkdirSync(outDir, { recursive: true })
     mkdirSync(techDir, { recursive: true })

@@ -2,9 +2,9 @@
 
 <intro>
 
-**Ciderpress** is a documentation framework for monorepos. Point it at your existing markdown — get a full site. It wraps Rspress with a config layer, sync engine, and Rspress plugin that handle sidebar/nav generation, workspace cards, OpenAPI integration, Liquid templates, and four built-in themes.
+**Ciderpress** is a documentation framework for monorepos. Point it at your existing markdown — get a full site. It wraps Rspress with a config layer, sync engine, and Rspress plugin that handle sidebar/nav generation, workspace cards, OpenAPI integration, Liquid templates, and six built-in themes.
 
-**Goal of this repo:** ship a polished, opinionated docs framework that conforms to a repo's existing structure rather than forcing a layout on it. The public package is `ciderpress`; internals are split across `@ciderpress/cli`, `@ciderpress/core`, and `@ciderpress/ui`.
+**Goal of this repo:** ship a polished, opinionated docs framework that conforms to a repo's existing structure rather than forcing a layout on it. The public package is `ciderpress`; internals are split across `@ciderpress/cli`, `@ciderpress/config`, `@ciderpress/templates`, `@ciderpress/theme`, and `@ciderpress/ui`.
 
 </intro>
 
@@ -22,9 +22,9 @@
 - Immutable data; explicit return types on exports; JSDoc on every export.
 - Object params for functions with 2+ args.
 - kebab-case filenames; flat directory structure.
-- Conventional Commits with directory-style scopes (`packages/cli`, `packages/core`, etc.).
+- Conventional Commits with directory-style scopes (`packages/cli`, `packages/config`, etc.).
 - Prefer installed CLIs (`pnpm`, `oxlint`, `oxfmt`, `tsgo`) over `npx`/`bunx`.
-- Run commands from repo root with workspace filters (e.g. `pnpm test --filter=@ciderpress/core`).
+- Run commands from repo root with workspace filters (e.g. `pnpm test --filter=@ciderpress/cli`).
 - Before proposing an implementation plan, read the relevant `<rules>` file(s) for the areas the change touches and verify the approach matches these Boundaries.
 
 </always>
@@ -76,8 +76,10 @@
 ```
 .
 ├── packages/             # source packages — see below
-│   ├── cli/              # @ciderpress/cli — CLI commands, watcher, Rspress integration
-│   ├── core/             # @ciderpress/core — config loading, sync engine, sidebar/nav generation
+│   ├── cli/              # @ciderpress/cli — CLI for building and serving ciderpress documentation sites
+│   ├── config/           # @ciderpress/config — configuration loading and validation
+│   ├── templates/        # @ciderpress/templates — documentation templates SDK (built-in + custom)
+│   ├── theme/            # @ciderpress/theme — theme types and built-in theme definitions
 │   ├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
 │   └── ciderpress/       # ciderpress — public wrapper package (CLI + config re-exports)
 ├── docs/                 # the user-facing documentation site (concepts, guides, references, examples, framework, getting-started) — built with Ciderpress itself
@@ -169,7 +171,7 @@ Types:
 - **security** — vulnerability patches
 - **release** — automated version bumps
 
-Scopes use directory-style paths for packages (`packages/cli`, `packages/core`, `packages/ui`, `packages/ciderpress`) and short labels for cross-cutting (`deps`, `ci`, `repo`).
+Scopes use directory-style paths for packages (`packages/cli`, `packages/config`, `packages/ui`, `packages/theme`, `packages/templates`, `packages/ciderpress`) and short labels for cross-cutting (`deps`, `ci`, `repo`).
 
 ### Pull Requests
 

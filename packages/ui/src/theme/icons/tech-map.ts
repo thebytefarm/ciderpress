@@ -14,6 +14,7 @@
  * ```
  */
 export const TECH_ICONS = {
+  // -- Languages --
   typescript: { icon: 'devicon:typescript', label: 'TypeScript' },
   javascript: { icon: 'devicon:javascript', label: 'JavaScript' },
   python: { icon: 'devicon:python', label: 'Python' },
@@ -40,6 +41,7 @@ export const TECH_ICONS = {
   julia: { icon: 'devicon:julia', label: 'Julia' },
   groovy: { icon: 'devicon:groovy', label: 'Groovy' },
 
+  // -- Frontend frameworks --
   react: { icon: 'devicon:react', label: 'React' },
   nextjs: { icon: 'devicon:nextjs', label: 'Next.js' },
   vue: { icon: 'devicon:vuejs', label: 'Vue' },
@@ -55,6 +57,7 @@ export const TECH_ICONS = {
   preact: { icon: 'logos:preact', label: 'Preact' },
   lit: { icon: 'logos:lit', label: 'Lit' },
 
+  // -- Backend frameworks --
   hono: { icon: 'logos:hono', label: 'Hono' },
   express: { icon: 'devicon:express', label: 'Express' },
   fastify: { icon: 'devicon:fastify', label: 'Fastify' },
@@ -70,10 +73,12 @@ export const TECH_ICONS = {
   gin: { icon: 'logos:gin', label: 'Gin' },
   akka: { icon: 'devicon:akka', label: 'Akka' },
 
+  // -- Mobile --
   flutter: { icon: 'devicon:flutter', label: 'Flutter' },
   reactnative: { icon: 'devicon:reactnative', label: 'React Native' },
   ionic: { icon: 'devicon:ionic', label: 'Ionic' },
 
+  // -- Databases --
   postgresql: { icon: 'devicon:postgresql', label: 'PostgreSQL' },
   mysql: { icon: 'devicon:mysql', label: 'MySQL' },
   mongodb: { icon: 'devicon:mongodb', label: 'MongoDB' },
@@ -90,6 +95,7 @@ export const TECH_ICONS = {
   vitess: { icon: 'devicon:vitess', label: 'Vitess' },
   oracle: { icon: 'devicon:oracle', label: 'Oracle' },
 
+  // -- ORM / Data tools --
   prisma: { icon: 'devicon:prisma', label: 'Prisma' },
   graphql: { icon: 'logos:graphql', label: 'GraphQL' },
   drizzle: { icon: 'logos:drizzle', label: 'Drizzle' },
@@ -97,6 +103,7 @@ export const TECH_ICONS = {
   sequelize: { icon: 'logos:sequelize', label: 'Sequelize' },
   sqlalchemy: { icon: 'devicon:sqlalchemy', label: 'SQLAlchemy' },
 
+  // -- Cloud & hosting --
   vercel: { icon: 'devicon:vercel', label: 'Vercel' },
   aws: { icon: 'devicon:amazonwebservices', label: 'AWS' },
   azure: { icon: 'devicon:azure', label: 'Azure' },
@@ -111,6 +118,7 @@ export const TECH_ICONS = {
   pulumi: { icon: 'devicon:pulumi', label: 'Pulumi' },
   fly: { icon: 'logos:fly-icon', label: 'Fly.io' },
 
+  // -- CI/CD & DevOps --
   docker: { icon: 'devicon:docker', label: 'Docker' },
   kubernetes: { icon: 'devicon:kubernetes', label: 'Kubernetes' },
   github: { icon: 'devicon:github', label: 'GitHub' },
@@ -122,6 +130,7 @@ export const TECH_ICONS = {
   jenkins: { icon: 'devicon:jenkins', label: 'Jenkins' },
   argocd: { icon: 'devicon:argocd', label: 'Argo CD' },
 
+  // -- Build & package tools --
   vite: { icon: 'devicon:vite', label: 'Vite' },
   webpack: { icon: 'devicon:webpack', label: 'Webpack' },
   npm: { icon: 'devicon:npm', label: 'npm' },
@@ -139,6 +148,7 @@ export const TECH_ICONS = {
   gradle: { icon: 'devicon:gradle', label: 'Gradle' },
   maven: { icon: 'devicon:maven', label: 'Maven' },
 
+  // -- UI & styling --
   tailwindcss: { icon: 'devicon:tailwindcss', label: 'Tailwind CSS' },
   css: { icon: 'devicon:css3', label: 'CSS' },
   html: { icon: 'devicon:html5', label: 'HTML' },
@@ -149,6 +159,7 @@ export const TECH_ICONS = {
   storybook: { icon: 'devicon:storybook', label: 'Storybook' },
   figma: { icon: 'devicon:figma', label: 'Figma' },
 
+  // -- Testing --
   jest: { icon: 'logos:jest', label: 'Jest' },
   vitest: { icon: 'devicon:vitest', label: 'Vitest' },
   cypress: { icon: 'devicon:cypressio', label: 'Cypress' },
@@ -158,11 +169,13 @@ export const TECH_ICONS = {
   puppeteer: { icon: 'devicon:puppeteer', label: 'Puppeteer' },
   cucumber: { icon: 'logos:cucumber', label: 'Cucumber' },
 
+  // -- Auth & integrations --
   oauth: { icon: 'devicon:oauth', label: 'OAuth' },
   auth0: { icon: 'logos:auth0', label: 'Auth0' },
   stripe: { icon: 'logos:stripe', label: 'Stripe' },
   twilio: { icon: 'devicon:twilio', label: 'Twilio' },
 
+  // -- AI / ML --
   openai: { icon: 'logos:openai-icon', label: 'OpenAI' },
   tensorflow: { icon: 'devicon:tensorflow', label: 'TensorFlow' },
   pytorch: { icon: 'devicon:pytorch', label: 'PyTorch' },
@@ -174,16 +187,19 @@ export const TECH_ICONS = {
   scikitlearn: { icon: 'devicon:scikitlearn', label: 'scikit-learn' },
   matplotlib: { icon: 'devicon:matplotlib', label: 'Matplotlib' },
 
+  // -- Monitoring & observability --
   grafana: { icon: 'devicon:grafana', label: 'Grafana' },
   prometheus: { icon: 'devicon:prometheus', label: 'Prometheus' },
   datadog: { icon: 'devicon:datadog', label: 'Datadog' },
   sentry: { icon: 'devicon:sentry', label: 'Sentry' },
   newrelic: { icon: 'devicon:newrelic', label: 'New Relic' },
 
+  // -- Message queues --
   kafka: { icon: 'devicon:apachekafka', label: 'Kafka' },
   rabbitmq: { icon: 'devicon:rabbitmq', label: 'RabbitMQ' },
   nats: { icon: 'devicon:nats', label: 'NATS' },
 
+  // -- CMS --
   strapi: { icon: 'logos:strapi', label: 'Strapi' },
   contentful: { icon: 'logos:contentful', label: 'Contentful' },
   sanity: { icon: 'devicon:sanity', label: 'Sanity' },
@@ -191,12 +207,14 @@ export const TECH_ICONS = {
   shopify: { icon: 'logos:shopify', label: 'Shopify' },
   ghost: { icon: 'devicon:ghost', label: 'Ghost' },
 
+  // -- Infrastructure --
   node: { icon: 'devicon:nodejs', label: 'Node.js' },
 
   nginx: { icon: 'devicon:nginx', label: 'Nginx' },
   apache: { icon: 'devicon:apache', label: 'Apache' },
   linux: { icon: 'devicon:linux', label: 'Linux' },
 
+  // -- Project-specific (label-only fallback when icon not in any set) --
   'trigger-dev': { icon: 'material-icon-theme:trigger', label: 'Trigger.dev' },
   'ai-sdk': { icon: 'simple-icons:vercel', label: 'AI SDK' },
   openrouter: { icon: 'simple-icons:openrouter', label: 'OpenRouter' },

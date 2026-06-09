@@ -84,7 +84,7 @@ export default lauf({
     }
 
     const content = renderOutput(output)
-    const outPath = join(ctx.root, 'packages/core/src/icons.generated.ts')
+    const outPath = join(ctx.root, 'packages/config/src/icons.generated.ts')
 
     writeFileSync(outPath, content)
 
