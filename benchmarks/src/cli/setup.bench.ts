@@ -7,11 +7,11 @@ import { bench, describe } from 'vitest'
 import { runCli } from '../helpers/exec.ts'
 import { BENCH_OPTIONS } from '../helpers/fixtures.ts'
 
-describe('zpress setup (cli)', () => {
+describe('ciderpress setup (cli)', () => {
   bench(
     'fresh project',
     () => {
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'zpress-bench-setup-'))
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ciderpress-bench-setup-'))
       fs.writeFileSync(
         path.join(tempDir, 'package.json'),
         '{"name":"bench-setup","private":true}',

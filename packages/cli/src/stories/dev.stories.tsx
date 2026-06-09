@@ -22,7 +22,7 @@ const SAMPLE_LOG: readonly LogEntry[] = [
   },
   { timestamp: '14:32:10', action: 'removed', file: 'docs/old-page.md', elapsed: 2 },
   { timestamp: '14:31:55', action: 'synced', file: 'docs/api/reference.md', elapsed: 15 },
-  { timestamp: '14:31:42', action: 'restarted', file: 'zpress.config.ts', elapsed: 0 },
+  { timestamp: '14:31:42', action: 'restarted', file: 'ciderpress.config.ts', elapsed: 0 },
   { timestamp: '14:31:30', action: 'synced', file: 'docs/concepts/content.md', elapsed: 9 },
 ]
 
@@ -143,15 +143,11 @@ function DevScreenPreview(props: DevScreenPreviewProps): React.ReactElement {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * @private
  */
 function BannerBlock(): React.ReactElement {
-  return <Banner />
+  return <Banner width={98} />
 }
 
 /**

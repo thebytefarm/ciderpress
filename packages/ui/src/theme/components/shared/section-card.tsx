@@ -27,22 +27,18 @@ export function SectionCard({
 }: SectionCardProps): React.ReactElement {
   const resolved = resolveCardIcon(icon) ?? { id: 'pixelarticons:file', color: 'purple' }
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <span className="zp-section-card__desc">{d}</span>)
+    .with(P.nonNullable, (d) => <span className="cp-section-card__desc">{d}</span>)
     .otherwise(() => null)
 
   return (
-    <Card href={href} className="zp-section-card">
-      <div className="zp-section-card__header">
-        <span className={`zp-section-card__icon zp-section-card__icon--${resolved.color}`}>
+    <Card href={href} className="cp-section-card">
+      <div className="cp-section-card__header">
+        <span className={`cp-section-card__icon cp-section-card__icon--${resolved.color}`}>
           <Icon icon={resolved.id} />
         </span>
-        <span className="zp-section-card__title">{title}</span>
+        <span className="cp-section-card__title">{title}</span>
       </div>
       {descEl}
     </Card>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------

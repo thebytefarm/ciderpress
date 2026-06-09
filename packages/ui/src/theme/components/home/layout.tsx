@@ -40,7 +40,7 @@ interface FrontmatterCTA {
 }
 
 /**
- * Custom HomeLayout for zpress.
+ * Custom HomeLayout for ciderpress.
  *
  * Renders the approved mockup landing surface inside a continuous PageRail:
  * Hero → TrustStrip → Features → Workspaces → CTA → SiteFooter. Sections
@@ -99,7 +99,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
       <HomeSplit
         eyebrow="Configuration"
         title="One file. Validated. Type-safe."
-        body="Define your docs site in zpress.config.ts. Zod validates at boot — no surprises in prod."
+        body="Define your docs site in ciderpress.config.ts. Zod validates at boot — no surprises in prod."
         bullets={[
           'Type-safe config with full IntelliSense',
           'Hot-reloads on every save',
@@ -118,7 +118,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
 
 /**
  * ConfigPreview — minimal `defineConfig` code preview shown inside the
- * Split section. Imports come exclusively from `@zpress/kit` so the
+ * Split section. Imports come exclusively from `ciderpress` so the
  * sample resolves against the published package set.
  *
  * @returns React element.
@@ -127,7 +127,7 @@ function ConfigPreview(): React.ReactElement {
   return (
     <pre>
       <span className="tok-kw">import</span> {'{ defineConfig }'}{' '}
-      <span className="tok-kw">from</span> <span className="tok-str">'@zpress/kit'</span>
+      <span className="tok-kw">from</span> <span className="tok-str">'ciderpress'</span>
       {'\n\n'}
       <span className="tok-kw">export default</span> <span className="tok-fn">defineConfig</span>
       {'({\n'}
@@ -142,22 +142,18 @@ function ConfigPreview(): React.ReactElement {
       {' },\n'}
       {'  ],\n'}
       {'  theme: { name: '}
-      <span className="tok-str">'midnight'</span>
+      <span className="tok-str">'mulled'</span>
       {' },\n'}
       {'})'}
     </pre>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Render a hero title with the trailing segment styled as a gradient.
  *
  * Splits the title on its last word break and wraps the tail in
- * `<span className="zp-hero__grad">`. When the title is a single word
+ * `<span className="cp-hero__grad">`. When the title is a single word
  * (or empty), it renders verbatim.
  *
  * @private
@@ -179,7 +175,7 @@ function renderTitle(raw: string): React.ReactNode {
           return (
             <>
               {headWords}
-              <span className="zp-hero__grad"> {tailWords}</span>
+              <span className="cp-hero__grad"> {tailWords}</span>
             </>
           )
         })

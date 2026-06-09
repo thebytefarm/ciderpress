@@ -8,7 +8,7 @@ import type React from 'react'
 export function LockIcon(): React.ReactElement {
   return (
     <svg
-      className="zp-oas-security__lock"
+      className="cp-oas-security__lock"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"

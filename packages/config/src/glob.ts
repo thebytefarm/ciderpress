@@ -1,3 +1,5 @@
+import { isNil, isString } from 'massaman/predicate'
+
 /**
  * Returns true if the string contains glob metacharacters.
  *
@@ -17,10 +19,10 @@ export function hasGlobChars(s: string): boolean {
 export function normalizeInclude(
   include: string | readonly string[] | undefined | null
 ): readonly string[] {
-  if (include === null || include === undefined) {
+  if (isNil(include)) {
     return []
   }
-  if (typeof include === 'string') {
+  if (isString(include)) {
     return [include]
   }
   return include
@@ -35,7 +37,7 @@ export function normalizeInclude(
 export function isSingleFileInclude(
   include: string | readonly string[] | undefined | null
 ): boolean {
-  return typeof include === 'string' && !hasGlobChars(include)
+  return isString(include) && !hasGlobChars(include)
 }
 
 /**
@@ -48,10 +50,10 @@ export function isSingleFileInclude(
  * @returns True if include contains glob patterns
  */
 export function hasAnyGlobInclude(include: string | readonly string[] | undefined | null): boolean {
-  if (include === null || include === undefined) {
+  if (isNil(include)) {
     return false
   }
-  if (typeof include === 'string') {
+  if (isString(include)) {
     return hasGlobChars(include)
   }
   return include.length > 0

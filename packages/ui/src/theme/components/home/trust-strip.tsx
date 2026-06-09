@@ -26,14 +26,14 @@ export function TrustStrip(props: TrustStripProps): React.ReactElement | null {
   return match(names.length === 0)
     .with(true, () => null)
     .otherwise(() => (
-      <section className="zp-trust">
-        <div className="zp-trust__row">
-          <span className="zp-trust__lead">{lead}</span>
+      <section className="cp-trust">
+        <div className="cp-trust__row">
+          <span className="cp-trust__lead">{lead}</span>
           {names.map((name, i) => (
-            <span key={`${name}:${i}`} className="zp-trust__item">
-              <span className="zp-trust__name">{name}</span>
+            <span key={`${name}:${i}`} className="cp-trust__item">
+              <span className="cp-trust__name">{name}</span>
               {match(i < names.length - 1)
-                .with(true, () => <span className="zp-trust__sep">·</span>)
+                .with(true, () => <span className="cp-trust__sep">·</span>)
                 .otherwise(() => null)}
             </span>
           ))}

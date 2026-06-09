@@ -1,6 +1,6 @@
 # Incremental Sync
 
-Manifest-based skip logic that makes `zpress dev` fast after the initial sync.
+Manifest-based skip logic that makes `ciderpress dev` fast after the initial sync.
 
 ## Overview
 

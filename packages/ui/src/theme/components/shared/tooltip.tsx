@@ -2,6 +2,7 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 import { Button, OverlayArrow, Tooltip as AriaTooltip, TooltipTrigger } from 'react-aria-components'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 export interface TooltipProps {
@@ -39,7 +40,7 @@ export interface TooltipProps {
  */
 export function Tooltip({ tip, headline, cta, href, children }: TooltipProps): React.ReactElement {
   const headlineEl = match(headline)
-    .with(P.nonNullable, (h) => <strong className="zp-tooltip__headline">{h}</strong>)
+    .with(P.nonNullable, (h) => <strong className="cp-tooltip__headline">{h}</strong>)
     .otherwise(() => null)
 
   const ctaEl = match({ cta, href })
@@ -49,25 +50,25 @@ export function Tooltip({ tip, headline, cta, href, children }: TooltipProps): R
         return null
       }
       return (
-        <a className="zp-tooltip__cta" href={safeHref}>
+        <RouteLink className="cp-tooltip__cta" href={safeHref}>
           {label}
-        </a>
+        </RouteLink>
       )
     })
     .otherwise(() => null)
 
   return (
     <TooltipTrigger delay={300}>
-      <Button className="zp-tooltip__trigger">{children}</Button>
-      <AriaTooltip className="zp-tooltip__overlay" offset={8}>
-        <OverlayArrow className="zp-tooltip__arrow">
+      <Button className="cp-tooltip__trigger">{children}</Button>
+      <AriaTooltip className="cp-tooltip__overlay" offset={8}>
+        <OverlayArrow className="cp-tooltip__arrow">
           <svg width="12" height="6" viewBox="0 0 12 6">
-            <path d="M0 6L6 0L12 6" fill="var(--zp-c-bg-elv)" stroke="var(--zp-c-border)" />
+            <path d="M0 6L6 0L12 6" fill="var(--cp-c-bg-elv)" stroke="var(--cp-c-border)" />
           </svg>
         </OverlayArrow>
-        <div className="zp-tooltip__body">
+        <div className="cp-tooltip__body">
           {headlineEl}
-          <span className="zp-tooltip__tip">{tip}</span>
+          <span className="cp-tooltip__tip">{tip}</span>
           {ctaEl}
         </div>
       </AriaTooltip>

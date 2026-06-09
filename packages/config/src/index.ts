@@ -1,6 +1,5 @@
-// ─── Config types ────────────────────────────────────────────────────────
 export type {
-  ZpressConfig,
+  CiderpressConfig,
   ThemeName,
   IconColor,
   IconPrefix,
@@ -8,7 +7,7 @@ export type {
   IconConfig,
   ThemeColors,
   ThemeConfig,
-  ZpressThemeInput,
+  CiderpressThemeInput,
   Frontmatter,
   NavItem,
   CardConfig,
@@ -47,12 +46,10 @@ export type {
   Result,
 } from './types.ts'
 
-// ─── Define / validate ───────────────────────────────────────────────────
 export { defineConfig } from './define-config.ts'
 export { validateConfig } from './validator.ts'
-export { zpressConfigSchema, pathsSchema } from './schema.ts'
+export { ciderpressConfigSchema, pathsSchema } from './schema.ts'
 
-// ─── Errors ──────────────────────────────────────────────────────────────
 export { configError, configErrorFromZod, configWarning } from './errors.ts'
 export type {
   ConfigError,
@@ -62,30 +59,22 @@ export type {
   ConfigWarningType,
 } from './errors.ts'
 
-// ─── Icon helpers (resolve/serialize IconConfig values) ──────────────────
 export { resolveIcon, resolveOptionalIcon, serializeIcon } from './icon.ts'
 export type { ResolvedIcon } from './icon.ts'
 
-// ─── Icon registry (generated from @iconify-json/*) ──────────────────────
 export { ICON_PREFIXES, VALID_ICON_IDS } from './icons.generated.ts'
 
-// ─── Include / glob helpers ──────────────────────────────────────────────
 export { hasGlobChars, normalizeInclude, isSingleFileInclude, hasAnyGlobInclude } from './glob.ts'
 
-// ─── Workspace helpers ───────────────────────────────────────────────────
 export { collectAllWorkspaceItems } from './workspace.ts'
 
-// ─── Theme re-exports ────────────────────────────────────────────────────
 export {
   THEME_NAMES,
   ICON_COLORS,
   isBuiltInTheme,
   isBuiltInIconColor,
   defineTheme,
-} from '@zpress/theme'
-export type { BuiltInThemeName, BuiltInIconColor } from '@zpress/theme'
+} from '@ciderpress/theme'
+export type { BuiltInThemeName, BuiltInIconColor } from '@ciderpress/theme'
 
-// ─── Loader (Node-only) ──────────────────────────────────────────────────
-// NOTE: `loadConfig` is exported separately at `@zpress/config/loader` to keep
-// the main entry client-safe. See package.json `exports`.
 export type { LoadConfigOptions } from './loader.ts'

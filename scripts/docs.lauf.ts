@@ -3,8 +3,6 @@ import { join } from 'node:path'
 
 import { lauf, z } from 'laufen'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface TechEntry {
   readonly key: string
   readonly icon: string
@@ -49,8 +47,6 @@ interface GeneratedFile {
   readonly path: string
   readonly content: string
 }
-
-// ── Constants ────────────────────────────────────────────────
 
 const HEADER = '{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}'
 
@@ -335,8 +331,6 @@ const PAGE_SPECS: readonly PageSpec[] = [
   },
 ]
 
-// ── Parsing ──────────────────────────────────────────────────
-
 function parseTechMap(source: string): readonly Category[] {
   const lines = source.split('\n')
 
@@ -381,9 +375,7 @@ function countEntries(categories: readonly Category[]): number {
   return categories.reduce((sum, c) => sum + c.entries.length, 0)
 }
 
-// ── Rendering — shared ──────────────────────────────────────
-
-const mdxImport = "import { Icon, TechIconTable } from '@zpress/ui/theme'"
+const mdxImport = "import { Icon, TechIconTable } from '@ciderpress/ui/theme'"
 
 function frontmatter(title: string, description: string): string {
   return ['---', `title: ${title}`, `description: ${description}`, '---'].join('\n')
@@ -393,8 +385,6 @@ function iconTable(entries: readonly TechEntry[]): string {
   const json = JSON.stringify(entries.map((e) => ({ tag: e.key, icon: e.icon, label: e.label })))
   return `<TechIconTable entries={${json}} />`
 }
-
-// ── Rendering — tech pages ──────────────────────────────────
 
 function renderTechPage(spec: PageSpec, allCategories: readonly Category[]): string {
   const sections = spec.sections
@@ -428,8 +418,6 @@ function renderTechPage(spec: PageSpec, allCategories: readonly Category[]): str
   ].join('\n')
 }
 
-// ── Rendering — overview ────────────────────────────────────
-
 function renderOverview(): string {
   const setRows = ICON_SETS.map(
     (s) =>
@@ -445,7 +433,7 @@ function renderOverview(): string {
     '',
     '# Icons',
     '',
-    'zpress uses [Iconify](https://iconify.design) for all icon rendering. Icons are resolved offline at build time — no external requests are made.',
+    'ciderpress uses [Iconify](https://iconify.design) for all icon rendering. Icons are resolved offline at build time — no external requests are made.',
     '',
     '## Format',
     '',
@@ -541,14 +529,14 @@ function renderOverview(): string {
     '',
     '### Technology tags',
     '',
-    'Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/references/icons/technology) reference for the full list of supported tag names.',
+    'Workspace cards display technology tags with auto-resolved icons. See the [Technology Tags](/reference/technology/overview) reference for the full list of supported tag names.',
     '',
     '## Validation',
     '',
     'Icons are validated at config load time. An icon must:',
     '',
     '- Contain exactly one `:` separator',
-    '- Use a recognized `prefix` (one of the six bundled sets)',
+    '- Use a recognized `prefix` (one of the nine bundled sets)',
     '',
     'Invalid icons produce a config error with type `invalid_icon`.',
     '',
@@ -563,8 +551,6 @@ function renderOverview(): string {
   ].join('\n')
 }
 
-// ── Rendering — colors ──────────────────────────────────────
-
 function renderColors(): string {
   const colorRows = ICON_COLORS.map((c) =>
     [
@@ -575,7 +561,7 @@ function renderColors(): string {
       '</div>',
       '</td>',
       `<td><code>${c.name}</code></td>`,
-      `<td><code>{'.home-card-icon--${c.name}'}</code></td>`,
+      `<td><code>{'.cp-card__icon--${c.name}'}</code></td>`,
       `<td>${c.useCase}</td>`,
       '</tr>',
     ].join('')
@@ -651,7 +637,7 @@ function renderColors(): string {
     ']',
     '```',
     '',
-    'The CSS class for feature cards follows the pattern `.home-card-icon--{color}`.',
+    'The CSS class for feature cards follows the pattern `.cp-card__icon--{color}`.',
     '',
     '## Default behavior',
     '',
@@ -659,8 +645,6 @@ function renderColors(): string {
     '',
   ].join('\n')
 }
-
-// ── Rendering — tech overview ───────────────────────────────
 
 function renderTechOverview(allCategories: readonly Category[]): string {
   const pageRows = PAGE_SPECS.map((spec) => {
@@ -671,7 +655,7 @@ function renderTechOverview(allCategories: readonly Category[]): string {
       .flatMap((c) => c.entries.slice(0, 1))
       .map((e) => e.label)
       .join(', ')
-    return `| [${spec.title}](/references/icons/technology/${spec.slug}) | ${count} | ${examples}, etc. |`
+    return `| [${spec.title}](/reference/technology/${spec.slug}) | ${count} | ${examples}, etc. |`
   })
 
   const totalCount = countEntries(allCategories)
@@ -685,7 +669,7 @@ function renderTechOverview(allCategories: readonly Category[]): string {
     '',
     '# Technology Tags',
     '',
-    `Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. zpress ships with a curated map of **${totalCount} technologies** that auto-resolve to the correct icon and display label.`,
+    `Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. ciderpress ships with a curated map of **${totalCount} technologies** that auto-resolve to the correct icon and display label.`,
     '',
     '## How it works',
     '',
@@ -735,8 +719,6 @@ function renderTechOverview(allCategories: readonly Category[]): string {
   ].join('\n')
 }
 
-// ── Script ───────────────────────────────────────────────────
-
 export default lauf({
   description: 'Generate icon reference docs from TECH_ICONS source of truth',
   args: {
@@ -762,7 +744,7 @@ export default lauf({
     }
 
     const outDir = join(ctx.root, 'docs/references/icons')
-    const techDir = join(outDir, 'technology')
+    const techDir = join(ctx.root, 'docs/references/technology')
 
     mkdirSync(outDir, { recursive: true })
     mkdirSync(techDir, { recursive: true })

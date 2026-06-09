@@ -9,21 +9,17 @@ export default lauf({
   },
   async run(ctx) {
     const patterns: string[] = [
-      // Build outputs
       'packages/*/dist',
       'examples/*/dist',
       'extensions/*/dist',
 
-      // Zpress outputs
-      'examples/*/.zpress/dist',
-      'examples/*/.zpress/cache',
-      'examples/*/.zpress/content',
+      'examples/*/.ciderpress/dist',
+      'examples/*/.ciderpress/cache',
+      'examples/*/.ciderpress/content',
 
-      // Caches
       '**/node_modules/.cache',
       '**/.turbo',
 
-      // TypeScript
       '**/tsconfig.tsbuildinfo',
     ]
 

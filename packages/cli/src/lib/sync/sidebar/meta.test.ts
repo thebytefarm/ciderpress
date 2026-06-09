@@ -3,12 +3,8 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedEntry } from '../types'
 import { buildMetaDirectories, buildRootMeta } from './meta'
 
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
-
 /**
- * Simulates the packages section from zpress.config.ts where each package
+ * Simulates the packages section from ciderpress.config.ts where each package
  * section has a landing page leaf that shares the same path as the parent.
  *
  * ```
@@ -43,7 +39,7 @@ function makePackageSection(params: {
 
 /**
  * Simulates a package section with only a landing page and no subdirectory
- * content (e.g., @zpress/templates has no Changelog).
+ * content (e.g., @ciderpress/templates has no Changelog).
  */
 function makePackageSectionNoSubdir(params: {
   readonly name: string
@@ -67,13 +63,13 @@ const packagesRoot: ResolvedEntry = {
   title: 'Packages',
   link: '/packages',
   items: [
-    makePackageSection({ name: 'zpress', label: '@zpress/kit' }),
-    makePackageSection({ name: 'cli', label: '@zpress/cli' }),
-    makePackageSection({ name: 'config', label: '@zpress/config' }),
-    makePackageSection({ name: 'core', label: '@zpress/core' }),
-    makePackageSection({ name: 'ui', label: '@zpress/ui' }),
-    makePackageSection({ name: 'theme', label: '@zpress/theme' }),
-    makePackageSectionNoSubdir({ name: 'templates', label: '@zpress/templates' }),
+    makePackageSection({ name: 'ciderpress', label: 'ciderpress' }),
+    makePackageSection({ name: 'cli', label: '@ciderpress/cli' }),
+    makePackageSection({ name: 'config', label: '@ciderpress/config' }),
+    makePackageSection({ name: 'core', label: '@ciderpress/core' }),
+    makePackageSection({ name: 'ui', label: '@ciderpress/ui' }),
+    makePackageSection({ name: 'theme', label: '@ciderpress/theme' }),
+    makePackageSectionNoSubdir({ name: 'templates', label: '@ciderpress/templates' }),
   ],
 }
 
@@ -106,10 +102,6 @@ const referenceRoot: ResolvedEntry = {
     },
   ],
 }
-
-// ---------------------------------------------------------------------------
-// buildRootMeta
-// ---------------------------------------------------------------------------
 
 describe('buildRootMeta()', () => {
   it('should include visible top-level sections', () => {
@@ -188,10 +180,6 @@ describe('buildRootMeta()', () => {
   })
 })
 
-// ---------------------------------------------------------------------------
-// buildMetaDirectories
-// ---------------------------------------------------------------------------
-
 describe('buildMetaDirectories()', () => {
   it('should use the section title when a leaf and section share the same name', () => {
     const directories = buildMetaDirectories([packagesRoot])
@@ -202,7 +190,7 @@ describe('buildMetaDirectories()', () => {
       (item) => typeof item === 'object' && 'name' in item && item.name === 'cli'
     )
 
-    expect(cliItem).toMatchObject({ type: 'dir', name: 'cli', label: '@zpress/cli' })
+    expect(cliItem).toMatchObject({ type: 'dir', name: 'cli', label: '@ciderpress/cli' })
   })
 
   it('should not produce duplicate entries for same-name leaf and section', () => {
@@ -237,7 +225,7 @@ describe('buildMetaDirectories()', () => {
       )
       .map((item) => item.name)
 
-    expect(names).toStrictEqual(['zpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
+    expect(names).toStrictEqual(['ciderpress', 'cli', 'config', 'core', 'ui', 'theme', 'templates'])
   })
 
   it('should emit file type with section label when section has no subdirectory content', () => {
@@ -252,7 +240,7 @@ describe('buildMetaDirectories()', () => {
     expect(templatesItem).toMatchObject({
       type: 'file',
       name: 'templates',
-      label: '@zpress/templates',
+      label: '@ciderpress/templates',
     })
   })
 

@@ -10,4 +10,4 @@
 import { createRequire } from 'node:module'
 
 // oxlint-disable-next-line no-global-assign -- intentional shim for Node 24 CJS compat
-globalThis.require = globalThis.require ?? createRequire(import.meta.url)
+globalThis.require ??= createRequire(import.meta.url)

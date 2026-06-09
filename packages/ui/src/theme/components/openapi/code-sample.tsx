@@ -64,16 +64,16 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
     .otherwise(() => ({ code: generateCurl(props), lang: 'bash' }))
 
   return (
-    <div className="zp-oas-code-sample">
-      <div className="zp-oas-code-sample__title">Code Examples</div>
-      <div className="zp-oas-code-sample__tabs">
+    <div className="cp-oas-code-sample">
+      <div className="cp-oas-code-sample__title">Code Examples</div>
+      <div className="cp-oas-code-sample__tabs">
         {TABS.map((tab) => (
           <button
             key={tab.label}
             type="button"
             className={match(activeTab === tab.label)
-              .with(true, () => 'zp-oas-code-sample__tab zp-oas-code-sample__tab--active')
-              .otherwise(() => 'zp-oas-code-sample__tab')}
+              .with(true, () => 'cp-oas-code-sample__tab cp-oas-code-sample__tab--active')
+              .otherwise(() => 'cp-oas-code-sample__tab')}
             onClick={() => {
               setActiveTab(tab.label)
             }}
@@ -82,16 +82,12 @@ export function CodeSample(props: CodeSampleProps): React.ReactElement {
           </button>
         ))}
       </div>
-      <div className="zp-oas-code-sample__block">
+      <div className="cp-oas-code-sample__block">
         <CodeBlockRuntime lang={resolved.lang} code={resolved.code} />
       </div>
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build a full URL from base URL and path.

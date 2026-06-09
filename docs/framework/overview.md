@@ -1,11 +1,11 @@
 ---
 title: Overview
-description: zpress's opinionated take on documentation organization, inspired by Diataxis.
+description: ciderpress's opinionated take on documentation organization, inspired by Diataxis.
 ---
 
 # Framework
 
-Most documentation sites grow organically and end up as a pile of markdown files with no clear structure. zpress recommends an opinionated framework for organizing your docs so they stay useful as your project scales.
+Most documentation sites grow organically and end up as a pile of markdown files with no clear structure. ciderpress recommends an opinionated framework for organizing your docs so they stay useful as your project scales.
 
 ## Why this matters
 
@@ -27,12 +27,13 @@ This framework is heavily inspired by [Diataxis](https://diataxis.fr), a documen
 
 We extend this with three additional types that most real-world projects need: **Standards**, **Troubleshooting**, and **Runbooks**.
 
-## The seven doc types
+## The eight doc types
 
 | Type                | Purpose                                 | Reader mindset                |
 | ------------------- | --------------------------------------- | ----------------------------- |
 | **Tutorial**        | Guided learning experience              | "Teach me"                    |
 | **Guide**           | Step-by-step task instructions          | "Help me do this"             |
+| **Quickstart**      | Fastest path to a working result        | "Get me running"              |
 | **Explanation**     | Conceptual background and architecture  | "Help me understand"          |
 | **Reference**       | Technical descriptions and API surfaces | "Give me the details"         |
 | **Standard**        | Rules and conventions                   | "What are the rules?"         |
@@ -41,9 +42,9 @@ We extend this with three additional types that most real-world projects need: *
 
 Each type has its own structure, rules, and templates. See [Types](/framework/types) for details.
 
-## How this maps to zpress
+## How this maps to ciderpress
 
-The framework maps directly to zpress sections. A typical project might look like:
+The framework maps directly to ciderpress sections. A typical project might look like:
 
 ```ts
 sections: [

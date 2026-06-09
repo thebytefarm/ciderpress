@@ -1,0 +1,63 @@
+{
+  "name": "ciderpress",
+  "version": "1.0.0-rc.0",
+  "description": "Documentation framework powered by Rspress with a config-driven information architecture",
+  "keywords": [
+    "ciderpress",
+    "docs",
+    "documentation",
+    "rspress"
+  ],
+  "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/ciderpress#readme",
+  "bugs": "https://github.com/thebytefarm/ciderpress/issues",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/thebytefarm/ciderpress.git",
+    "directory": "packages/ciderpress"
+  },
+  "bin": {
+    "ciderpress": "./dist/cli.mjs"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    },
+    "./config": {
+      "types": "./dist/config.d.ts",
+      "import": "./dist/config.mjs"
+    }
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "rslib build",
+    "dev": "rslib build --watch --no-clean",
+    "typecheck": "tsgo --noEmit"
+  },
+  "dependencies": {
+    "@ciderpress/cli": "workspace:*",
+    "@ciderpress/config": "workspace:*",
+    "@ciderpress/theme": "workspace:*",
+    "@ciderpress/ui": "workspace:*"
+  },
+  "devDependencies": {
+    "@rslib/core": "catalog:",
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "@rspress/core": "catalog:",
+    "react": "^19.2.5",
+    "react-dom": "^19.2.5"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

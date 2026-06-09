@@ -55,7 +55,6 @@ const DIAGRAM_TYPE_MAP: Record<string, string> = {
   c4Deployment: 'C4 Deployment',
 }
 
-// Keywords used for lightweight client-side syntax highlighting
 const MERMAID_KEYWORDS = [
   'graph',
   'flowchart',
@@ -164,7 +163,6 @@ function escapeHtml(text: string): string {
 function highlightMermaid(code: string): string {
   const escaped = escapeHtml(code)
 
-  // Use placeholder tokens to avoid nested replacements
   const placeholders: string[] = []
   function placeholder(html: string): string {
     const idx = placeholders.length
@@ -223,7 +221,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
 
   const highlightedCode = useMemo(() => highlightMermaid(code), [code])
 
-  // Keep transformRef in sync with transform state for stable callbacks
   transformRef.current = transform
 
   const isPreview = tab === 'preview'
@@ -251,7 +248,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     renderMermaid()
   }, [renderMermaid])
 
-  // Re-render on dark mode toggle
   useEffect(() => {
     const observer = new MutationObserver(() => {
       renderMermaid()
@@ -267,7 +263,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     }
   }, [renderMermaid])
 
-  // Non-passive wheel listener for zoom — only in preview mode
   useEffect(() => {
     const el = containerRef.current
     if (!el || !isPreview) {
@@ -292,7 +287,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     }
   }, [isPreview])
 
-  // Pointer-based panning — only in preview mode
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
       if (!isPreview) {
@@ -302,7 +296,10 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
         return
       }
       const target = e.target as HTMLElement
-      if (target.closest('.zpress-mermaid-controls') || target.closest('.zpress-mermaid-footer')) {
+      if (
+        target.closest('.ciderpress-mermaid-controls') ||
+        target.closest('.ciderpress-mermaid-footer')
+      ) {
         return
       }
 
@@ -334,7 +331,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     dragRef.current = { ...dragRef.current, dragging: false }
   }, [])
 
-  // Control button handlers
   const zoomIn = useCallback(() => {
     setTransform((prev) => ({ ...prev, scale: Math.min(MAX_SCALE, prev.scale + ZOOM_STEP) }))
   }, [])
@@ -353,7 +349,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     setTransform(INITIAL_TRANSFORM)
   }, [])
 
-  // Close fullscreen on Escape
   useEffect(() => {
     if (!fullscreen) {
       return
@@ -372,7 +367,6 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
     }
   }, [fullscreen])
 
-  // Lock body scroll in fullscreen
   useEffect(() => {
     if (!fullscreen) {
       return
@@ -391,9 +385,9 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
   const transformStyle = `translate(${String(transform.x)}px, ${String(transform.y)}px) scale(${String(transform.scale)})`
 
   const containerClasses = [
-    'zpress-mermaid',
-    fullscreen ? 'zpress-mermaid-fullscreen' : '',
-    isPreview ? '' : 'zpress-mermaid-no-pan',
+    'ciderpress-mermaid',
+    fullscreen ? 'ciderpress-mermaid-fullscreen' : '',
+    isPreview ? '' : 'ciderpress-mermaid-no-pan',
   ]
     .filter(Boolean)
     .join(' ')
@@ -402,22 +396,22 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
   const fullscreenIcon = fullscreen ? '✕' : '⛶'
 
   const previewTabClass = isPreview
-    ? 'zpress-mermaid-tab zpress-mermaid-tab-active'
-    : 'zpress-mermaid-tab'
+    ? 'ciderpress-mermaid-tab ciderpress-mermaid-tab-active'
+    : 'ciderpress-mermaid-tab'
 
   const codeTabClass = isPreview
-    ? 'zpress-mermaid-tab'
-    : 'zpress-mermaid-tab zpress-mermaid-tab-active'
+    ? 'ciderpress-mermaid-tab'
+    : 'ciderpress-mermaid-tab ciderpress-mermaid-tab-active'
 
   const body = isPreview ? (
     <div
       ref={innerRef}
-      className="zpress-mermaid-inner"
+      className="ciderpress-mermaid-inner"
       style={{ transform: transformStyle }}
       dangerouslySetInnerHTML={{ __html: svg }}
     />
   ) : (
-    <div className="zpress-mermaid-code">
+    <div className="ciderpress-mermaid-code">
       <pre>
         <code dangerouslySetInnerHTML={{ __html: highlightedCode }} />
       </pre>
@@ -433,16 +427,21 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
       onPointerUp={handlePointerUp}
     >
       {isPreview && (
-        <div className="zpress-mermaid-controls">
-          <button type="button" className="zpress-mermaid-btn" onClick={zoomIn} title="Zoom in">
+        <div className="ciderpress-mermaid-controls">
+          <button type="button" className="ciderpress-mermaid-btn" onClick={zoomIn} title="Zoom in">
             +
           </button>
-          <button type="button" className="zpress-mermaid-btn" onClick={zoomOut} title="Zoom out">
+          <button
+            type="button"
+            className="ciderpress-mermaid-btn"
+            onClick={zoomOut}
+            title="Zoom out"
+          >
             −
           </button>
           <button
             type="button"
-            className="zpress-mermaid-btn"
+            className="ciderpress-mermaid-btn"
             onClick={resetView}
             title="Reset view"
           >
@@ -450,7 +449,7 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
           </button>
           <button
             type="button"
-            className="zpress-mermaid-btn"
+            className="ciderpress-mermaid-btn"
             onClick={toggleFullscreen}
             title={fullscreenTitle}
           >
@@ -462,9 +461,9 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
       {body}
 
       {!fullscreen && (
-        <div className="zpress-mermaid-footer">
-          <span className="zpress-mermaid-type">{detectDiagramType(code)}</span>
-          <div className="zpress-mermaid-tabs">
+        <div className="ciderpress-mermaid-footer">
+          <span className="ciderpress-mermaid-type">{detectDiagramType(code)}</span>
+          <div className="ciderpress-mermaid-tabs">
             <button type="button" className={previewTabClass} onClick={() => setTab('preview')}>
               Preview
             </button>

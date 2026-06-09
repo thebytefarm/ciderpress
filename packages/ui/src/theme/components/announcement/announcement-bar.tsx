@@ -1,11 +1,18 @@
 import { match } from 'massaman/match'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './announcement-bar.css'
 
-const STORAGE_PREFIX = 'zpress-announcement-dismissed:'
+const STORAGE_PREFIX = 'ciderpress-announcement-dismissed:'
+/**
+ * Initial height assumption before the bar mounts and measures itself.
+ * Matches the value Rspress's own `<Banner />` uses (`useState(36)`) so
+ * downstream sticky offsets are roughly correct on the first paint.
+ */
+const INITIAL_HEIGHT = 36
 
 export interface AnnouncementBarProps {
   /**
@@ -13,7 +20,7 @@ export interface AnnouncementBarProps {
    */
   readonly id?: string
   /**
-   * Lead text. Use for the highlighted phrase ("zpress 1.0", "NEW:", etc).
+   * Lead text. Use for the highlighted phrase ("ciderpress 1.0", "NEW:", etc).
    */
   readonly lead?: React.ReactNode
   /**
@@ -41,6 +48,14 @@ export interface AnnouncementBarProps {
 export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement | null {
   const { id, lead, children, cta, persistent } = props
   const [dismissed, setDismissed] = useState(() => readDismissed(id))
+  // Track the rendered height so downstream sticky offsets
+  // (`--rp-nav-height` calc + the docs bar's sticky `top`) clear the
+  // announcement bar without anybody hardcoding a number. Mirrors the
+  // pattern Rspress's own `<Banner />` uses: a state value + a
+  // callback ref + a sibling `<style>` tag exposing the value as a
+  // CSS variable.
+  const [height, setHeight] = useState(INITIAL_HEIGHT)
+  const measureRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     setDismissed(readDismissed(id))
@@ -51,61 +66,71 @@ export function AnnouncementBar(props: AnnouncementBarProps): React.ReactElement
     setDismissed(true)
   }, [id])
 
+  const setMeasureRef = useCallback((element: HTMLDivElement | null) => {
+    measureRef.current = element
+    if (element !== null && element.offsetHeight > 0) {
+      setHeight(element.offsetHeight)
+    }
+  }, [])
+
   return match(dismissed)
     .with(true, () => null)
     .otherwise(() => (
-      <div className="zp-announce" role="region" aria-label="Announcement">
-        <span className="zp-announce__pulse" aria-hidden="true" />
-        <span className="zp-announce__msg">
-          {match(lead)
-            .with(undefined, () => null)
-            .otherwise((l) => (
-              <em className="zp-announce__lead">{l}</em>
-            ))}{' '}
-          {children}
-          {match(cta)
-            .with(undefined, () => null)
-            .otherwise((c) => {
-              const href = safeUrl(c.href)
-              if (href === null) {
-                return null
-              }
-              return (
-                <a className="zp-announce__cta" href={href}>
-                  {c.label} →
-                </a>
-              )
-            })}
-        </span>
-        {match(persistent === true)
-          .with(true, () => null)
-          .otherwise(() => (
-            <button
-              className="zp-announce__close"
-              type="button"
-              onClick={handleDismiss}
-              aria-label="Dismiss announcement"
-            >
-              <svg
-                width="12"
-                height="12"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
+      <>
+        <div ref={setMeasureRef} className="cp-announce" role="region" aria-label="Announcement">
+          <span className="cp-announce__pulse" aria-hidden="true" />
+          <span className="cp-announce__msg">
+            {match(lead)
+              .with(undefined, () => null)
+              .otherwise((l) => (
+                <em className="cp-announce__lead">{l}</em>
+              ))}{' '}
+            {children}
+            {match(cta)
+              .with(undefined, () => null)
+              .otherwise((c) => {
+                const href = safeUrl(c.href)
+                if (href === null) {
+                  return null
+                }
+                return (
+                  <RouteLink className="cp-announce__cta" href={href}>
+                    {c.label} →
+                  </RouteLink>
+                )
+              })}
+          </span>
+          {match(persistent === true)
+            .with(true, () => null)
+            .otherwise(() => (
+              <button
+                className="cp-announce__close"
+                type="button"
+                onClick={handleDismiss}
+                aria-label="Dismiss announcement"
               >
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-          ))}
-      </div>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            ))}
+        </div>
+        {/* Expose the measured height as a CSS variable so the docs
+            bar's sticky `top:` and the `--rp-nav-height` calc clear
+            the announcement without anybody hardcoding 36px. Pattern
+            cribbed directly from Rspress's `<Banner />`. */}
+        <style>{`:root { --cp-announcement-height: ${height}px; }`}</style>
+      </>
     ))
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Read the dismissed flag from localStorage.

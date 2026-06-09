@@ -1,10 +1,6 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
-// ---------------------------------------------------------------------------
-// Columns
-// ---------------------------------------------------------------------------
-
 export interface ColumnsProps {
   /**
    * Number of grid columns (1–4). Defaults to 2.
@@ -26,18 +22,14 @@ export interface ColumnsProps {
  */
 export function Columns({ cols = 2, children }: ColumnsProps): React.ReactElement {
   const className = match(cols)
-    .with(1, () => 'zp-columns zp-columns--1')
-    .with(2, () => 'zp-columns zp-columns--2')
-    .with(3, () => 'zp-columns zp-columns--3')
-    .with(4, () => 'zp-columns zp-columns--4')
+    .with(1, () => 'cp-columns cp-columns--1')
+    .with(2, () => 'cp-columns cp-columns--2')
+    .with(3, () => 'cp-columns cp-columns--3')
+    .with(4, () => 'cp-columns cp-columns--4')
     .exhaustive()
 
   return <div className={className}>{children}</div>
 }
-
-// ---------------------------------------------------------------------------
-// Column
-// ---------------------------------------------------------------------------
 
 export interface ColumnProps {
   /**
@@ -54,5 +46,5 @@ export interface ColumnProps {
  * @returns React element for a grid cell
  */
 export function Column({ children }: ColumnProps): React.ReactElement {
-  return <div className="zp-column">{children}</div>
+  return <div className="cp-column">{children}</div>
 }

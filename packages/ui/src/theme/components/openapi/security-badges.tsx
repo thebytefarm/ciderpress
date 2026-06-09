@@ -25,11 +25,11 @@ export function SecurityBadges({ securities }: SecurityBadgesProps): React.React
     .with(
       P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
       (s) => (
-        <div className="zp-oas-security">
-          <div className="zp-oas-security__title">Authentication</div>
-          <div className="zp-oas-security__list">
+        <div className="cp-oas-security">
+          <div className="cp-oas-security__title">Authentication</div>
+          <div className="cp-oas-security__list">
             {s.map((requirement, idx) => (
-              <span key={String(idx)} className="zp-oas-security__badge">
+              <span key={String(idx)} className="cp-oas-security__badge">
                 <LockIcon />
                 {formatSchemes(requirement)}
               </span>
@@ -40,10 +40,6 @@ export function SecurityBadges({ securities }: SecurityBadgesProps): React.React
     )
     .otherwise(() => null)
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Format security scheme names with optional OAuth scopes.

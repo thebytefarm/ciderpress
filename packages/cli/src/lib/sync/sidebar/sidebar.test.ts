@@ -29,10 +29,11 @@ describe('injectLandingPages()', () => {
       items: [child],
     }
 
-    injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], [])
 
-    expect(section.page).toBeDefined()
-    expect(section.page!.outputPath).toMatch(/\.mdx$/)
+    expect(result.page).toBeDefined()
+    expect(result.page!.outputPath).toMatch(/\.mdx$/)
+    expect(section.page).toBeUndefined()
   })
 
   it('should not overwrite an existing page on a section', () => {
@@ -49,9 +50,9 @@ describe('injectLandingPages()', () => {
       items: [child],
     }
 
-    injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], [])
 
-    expect(section.page).toBe(existingPage)
+    expect(result.page).toBe(existingPage)
   })
 
   it('should recursively inject landing pages for nested sections', () => {
@@ -71,9 +72,11 @@ describe('injectLandingPages()', () => {
       items: [nested],
     }
 
-    injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], [])
 
-    expect(nested.page).toBeDefined()
-    expect(nested.page!.outputPath).toMatch(/\.mdx$/)
+    const [rebuiltNested] = result.items!
+    expect(rebuiltNested.page).toBeDefined()
+    expect(rebuiltNested.page!.outputPath).toMatch(/\.mdx$/)
+    expect(nested.page).toBeUndefined()
   })
 })

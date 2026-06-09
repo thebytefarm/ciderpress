@@ -1,7 +1,7 @@
 /**
  * Arcade theme — custom hover animations and visual effects.
  *
- * All rules are scoped to html[data-zp-theme='arcade'] so they
+ * All rules are scoped to html[data-cp-theme='arcade'] so they
  * only activate when the arcade palette is in use.
  *
  * Effects:
@@ -30,15 +30,15 @@
  * Requires position: relative and overflow: hidden on the card
  * so the ::before pseudo-element stays within bounds.
  */
-html[data-zp-theme='arcade'] .zp-card,
-html[data-zp-theme='arcade'] .zp-section-card {
+html[data-cp-theme='arcade'] .cp-card,
+html[data-cp-theme='arcade'] .cp-section-card {
   position: relative;
   overflow: hidden;
   --arcade-border-angle: 0deg;
 }
 
-html[data-zp-theme='arcade'] .zp-card::before,
-html[data-zp-theme='arcade'] .zp-section-card::before {
+html[data-cp-theme='arcade'] .cp-card::before,
+html[data-cp-theme='arcade'] .cp-section-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -62,19 +62,19 @@ html[data-zp-theme='arcade'] .zp-section-card::before {
   z-index: 1;
 }
 
-html[data-zp-theme='arcade'] .zp-card:hover::before,
-html[data-zp-theme='arcade'] .zp-card:focus-visible::before,
-html[data-zp-theme='arcade'] .zp-section-card:hover::before,
-html[data-zp-theme='arcade'] .zp-section-card:focus-visible::before {
+html[data-cp-theme='arcade'] .cp-card:hover::before,
+html[data-cp-theme='arcade'] .cp-card:focus-visible::before,
+html[data-cp-theme='arcade'] .cp-section-card:hover::before,
+html[data-cp-theme='arcade'] .cp-section-card:focus-visible::before {
   opacity: 1;
   animation: arcade-border-spin 2.5s linear infinite;
 }
 
 /* Glow shadow behind the card on hover */
-html[data-zp-theme='arcade'] .zp-card:hover,
-html[data-zp-theme='arcade'] .zp-card:focus-visible,
-html[data-zp-theme='arcade'] .zp-section-card:hover,
-html[data-zp-theme='arcade'] .zp-section-card:focus-visible {
+html[data-cp-theme='arcade'] .cp-card:hover,
+html[data-cp-theme='arcade'] .cp-card:focus-visible,
+html[data-cp-theme='arcade'] .cp-section-card:hover,
+html[data-cp-theme='arcade'] .cp-section-card:focus-visible {
   box-shadow:
     0 0 12px rgba(0, 255, 136, 0.15),
     0 0 24px rgba(0, 255, 136, 0.06);
@@ -92,14 +92,14 @@ html[data-zp-theme='arcade'] .zp-section-card:focus-visible {
  * Replace the default gradient with a solid neon brand color,
  * dark text for contrast, and a subtle border glow on hover.
  */
-html[data-zp-theme='arcade'] .rp-button--brand {
+html[data-cp-theme='arcade'] .rp-button--brand {
   background: #7c3aed;
   color: #fff;
   border: 1px solid #7c3aed;
   opacity: 1;
 }
 
-html[data-zp-theme='arcade'] .rp-button--brand:hover {
+html[data-cp-theme='arcade'] .rp-button--brand:hover {
   background: transparent;
   color: #a78bfa;
   border-color: #a78bfa;
@@ -112,13 +112,13 @@ html[data-zp-theme='arcade'] .rp-button--brand:hover {
 /*
  * Alt button — outlined style with neon border.
  */
-html[data-zp-theme='arcade'] .rp-button--alt {
+html[data-cp-theme='arcade'] .rp-button--alt {
   background: transparent;
-  color: var(--zp-c-text-1);
-  border: 1px solid var(--zp-c-border);
+  color: var(--cp-c-text-1);
+  border: 1px solid var(--cp-c-border);
 }
 
-html[data-zp-theme='arcade'] .rp-button--alt:hover {
+html[data-cp-theme='arcade'] .rp-button--alt:hover {
   border-color: #a78bfa;
   color: #a78bfa;
   opacity: 1;
@@ -132,16 +132,16 @@ html[data-zp-theme='arcade'] .rp-button--alt:hover {
  * On hover, hero action buttons emit an expanding ring pulse
  * using box-shadow animation. The ring fades out as it expands.
  */
-html[data-zp-theme='arcade'] .rp-button--medium,
-html[data-zp-theme='arcade'] .rp-button--big {
+html[data-cp-theme='arcade'] .rp-button--medium,
+html[data-cp-theme='arcade'] .rp-button--big {
   transition:
     background 0.2s,
     box-shadow 0.2s,
     transform 0.2s;
 }
 
-html[data-zp-theme='arcade'] .rp-button--medium:hover,
-html[data-zp-theme='arcade'] .rp-button--big:hover {
+html[data-cp-theme='arcade'] .rp-button--medium:hover,
+html[data-cp-theme='arcade'] .rp-button--big:hover {
   transform: scale(1.03);
   animation: arcade-neon-pulse 1.4s ease-out infinite;
 }
@@ -176,11 +176,11 @@ html[data-zp-theme='arcade'] .rp-button--big:hover {
  * (the inner container with the background color) so it sits
  * above the code but below the title bar and button group.
  */
-html[data-zp-theme='arcade'] .rp-codeblock__content {
+html[data-cp-theme='arcade'] .rp-codeblock__content {
   position: relative;
 }
 
-html[data-zp-theme='arcade'] .rp-codeblock__content::after {
+html[data-cp-theme='arcade'] .rp-codeblock__content::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -198,7 +198,7 @@ html[data-zp-theme='arcade'] .rp-codeblock__content::after {
   transition: opacity 0.3s ease;
 }
 
-html[data-zp-theme='arcade'] .rp-codeblock:hover .rp-codeblock__content::after {
+html[data-cp-theme='arcade'] .rp-codeblock:hover .rp-codeblock__content::after {
   opacity: 0;
 }
 
@@ -220,7 +220,7 @@ html[data-zp-theme='arcade'] .rp-codeblock:hover .rp-codeblock__content::after {
  * Rspress uses a.rp-link for content links inside .rp-doc.
  * Header anchors use .rp-header-anchor and are excluded.
  */
-html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
+html[data-cp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
   text-decoration: none;
   background-image: linear-gradient(#00ff88, #00ff88);
   background-size: 0% 1.5px;
@@ -231,7 +231,7 @@ html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor) {
     text-shadow 0.3s ease;
 }
 
-html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
+html[data-cp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
   background-size: 100% 1.5px;
   border-bottom: none;
   text-shadow:
@@ -247,7 +247,7 @@ html[data-zp-theme='arcade'] .rp-doc a.rp-link:not(.rp-header-anchor):hover {
  * (.rp-nav-menu__item). Uses a background-image gradient
  * that expands from 0% to 100% width on hover.
  */
-html[data-zp-theme='arcade'] .rp-sidebar-item {
+html[data-cp-theme='arcade'] .rp-sidebar-item {
   text-decoration: none;
   background-image: linear-gradient(#00ff88, #00ff88);
   background-size: 0% 1.5px;
@@ -260,14 +260,14 @@ html[data-zp-theme='arcade'] .rp-sidebar-item {
     text-shadow 0.3s ease;
 }
 
-html[data-zp-theme='arcade'] .rp-sidebar-item:hover {
+html[data-cp-theme='arcade'] .rp-sidebar-item:hover {
   background-size: 100% 1.5px;
   text-shadow:
     0 0 6px rgba(0, 255, 136, 0.5),
     0 0 12px rgba(0, 255, 136, 0.2);
 }
 
-html[data-zp-theme='arcade'] .rp-nav-menu__item {
+html[data-cp-theme='arcade'] .rp-nav-menu__item {
   text-decoration: none;
   background-image: linear-gradient(#00ff88, #00ff88);
   background-size: 0% 1.5px;
@@ -279,7 +279,7 @@ html[data-zp-theme='arcade'] .rp-nav-menu__item {
     text-shadow 0.3s ease;
 }
 
-html[data-zp-theme='arcade'] .rp-nav-menu__item:hover {
+html[data-cp-theme='arcade'] .rp-nav-menu__item:hover {
   background-size: 100% 1.5px;
   text-shadow:
     0 0 6px rgba(0, 255, 136, 0.5),
@@ -296,11 +296,11 @@ html[data-zp-theme='arcade'] .rp-nav-menu__item:hover {
  * It already has position: relative. Uses ::after because
  * ::before is used by Rspress for group-item line indicators.
  */
-html[data-zp-theme='arcade'] .rp-sidebar-item--active {
+html[data-cp-theme='arcade'] .rp-sidebar-item--active {
   overflow: visible;
 }
 
-html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
+html[data-cp-theme='arcade'] .rp-sidebar-item--active::after {
   content: '';
   position: absolute;
   left: 0;
@@ -330,15 +330,15 @@ html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
  * Override to a darker green that maintains the neon feel
  * while ensuring legibility.
  */
-html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__link {
+html[data-cp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__link {
   background-color: #007a42;
 }
 
-html[data-zp-theme='arcade'] .rp-suggest-item__mark {
+html[data-cp-theme='arcade'] .rp-suggest-item__mark {
   color: #00ff88;
 }
 
-html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
+html[data-cp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
   color: #fff;
 }
 
@@ -349,17 +349,17 @@ html[data-zp-theme='arcade'] .rp-suggest-item--current .rp-suggest-item__mark {
  * the user has opted into reduced motion.
  */
 @media (prefers-reduced-motion: reduce) {
-  html[data-zp-theme='arcade'] .zp-card:hover::before,
-  html[data-zp-theme='arcade'] .zp-card:focus-visible::before,
-  html[data-zp-theme='arcade'] .zp-section-card:hover::before,
-  html[data-zp-theme='arcade'] .zp-section-card:focus-visible::before,
-  html[data-zp-theme='arcade'] .rp-codeblock__content::after,
-  html[data-zp-theme='arcade'] .rp-sidebar-item--active::after {
+  html[data-cp-theme='arcade'] .cp-card:hover::before,
+  html[data-cp-theme='arcade'] .cp-card:focus-visible::before,
+  html[data-cp-theme='arcade'] .cp-section-card:hover::before,
+  html[data-cp-theme='arcade'] .cp-section-card:focus-visible::before,
+  html[data-cp-theme='arcade'] .rp-codeblock__content::after,
+  html[data-cp-theme='arcade'] .rp-sidebar-item--active::after {
     animation: none;
   }
 
-  html[data-zp-theme='arcade'] .rp-button--medium:hover,
-  html[data-zp-theme='arcade'] .rp-button--big:hover {
+  html[data-cp-theme='arcade'] .rp-button--medium:hover,
+  html[data-cp-theme='arcade'] .rp-button--big:hover {
     animation: none;
     transform: none;
   }

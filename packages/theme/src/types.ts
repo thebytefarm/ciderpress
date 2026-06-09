@@ -3,15 +3,31 @@ import type { LiteralUnion } from 'type-fest'
 /**
  * Theme name with autocomplete for built-in themes and support for custom themes.
  *
- * Built-in themes: 'default', 'midnight', 'arcade'
- * Custom themes: any string value
+ * Built-in themes: 'honeycrisp' (apple red), 'grannysmith' (apple green),
+ * 'mulled' (deep cider burgundy), 'amber' (warm hearth amber), 'midnight'
+ * (deep dark blue), 'arcade' (neon green). The legacy slug `'default'` is
+ * kept in the autocomplete union and is normalized to `'honeycrisp'` at
+ * resolve time via {@link THEME_ALIASES} — existing configs continue to
+ * render unchanged.
+ *
+ * Custom themes: any string value.
  */
-export type ThemeName = LiteralUnion<'default' | 'midnight' | 'arcade', string>
+export type ThemeName = LiteralUnion<
+  'default' | 'honeycrisp' | 'grannysmith' | 'mulled' | 'amber' | 'midnight' | 'arcade',
+  string
+>
 
 /**
- * Built-in theme names for validation and iteration.
+ * Built-in theme names for validation and iteration. `'default'` is *not*
+ * a built-in — it's an alias that resolves to `'honeycrisp'`.
  */
-export type BuiltInThemeName = 'default' | 'midnight' | 'arcade'
+export type BuiltInThemeName =
+  | 'honeycrisp'
+  | 'grannysmith'
+  | 'mulled'
+  | 'amber'
+  | 'midnight'
+  | 'arcade'
 
 /**
  * The set of variants a theme can render in. A theme registers tokens
@@ -56,7 +72,7 @@ export type ColorMode = ThemeVariant
 /**
  * Optional color overrides keyed to CSS custom properties.
  *
- * Each key maps to one or more `--zp-c-*` / `--rp-c-*` variables.
+ * Each key maps to one or more `--cp-c-*` / `--rp-c-*` variables.
  * Values must be valid CSS color strings (hex or rgba).
  */
 export interface ThemeColors {
@@ -77,12 +93,14 @@ export interface ThemeColors {
 }
 
 /**
- * Top-level theme configuration for `zpress.config.ts`.
+ * Top-level theme configuration for `ciderpress.config.ts`.
  */
 export interface ThemeConfig {
   /**
-   * Theme to use. Built-in themes get autocomplete, custom themes are also supported.
-   * @default 'default'
+   * Theme to use. Built-in themes get autocomplete, custom themes are also
+   * supported. The legacy slug `'default'` is accepted and aliases to
+   * `'honeycrisp'`.
+   * @default 'honeycrisp'
    */
   readonly name?: ThemeName
   /**

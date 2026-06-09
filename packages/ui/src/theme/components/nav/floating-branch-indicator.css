@@ -1,0 +1,106 @@
+/**
+ * Floating git-branch indicator — pinned to the bottom-right viewport
+ * corner. Collapsed shows only the git-branch icon (36px circle); on
+ * hover/focus the pill expands rightward to reveal the branch name.
+ *
+ * `right`-anchored so the expansion grows leftward and never clips off the
+ * right edge regardless of branch-name length.
+ */
+
+.cp-floating-branch {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 50;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+
+  height: 36px;
+  width: 36px;
+  padding: 0;
+  border-radius: 18px;
+
+  background: var(--cp-c-bg-soft);
+  border: 1px solid var(--cp-c-divider);
+  color: var(--cp-c-text-3);
+
+  font-family: var(--cp-font-family-mono);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-decoration: none !important;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+
+  transition:
+    width 0.2s ease,
+    padding 0.2s ease,
+    gap 0.2s ease,
+    border-color 0.2s,
+    color 0.2s,
+    background 0.2s;
+}
+
+.cp-floating-branch:hover,
+.cp-floating-branch:focus-visible {
+  width: auto;
+  max-width: 240px;
+  padding: 0 12px 0 10px;
+  gap: 6px;
+
+  border-color: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-1);
+  background: var(--cp-c-bg);
+  text-decoration: none !important;
+}
+
+.cp-floating-branch:focus-visible {
+  outline: 2px solid var(--rp-c-brand);
+  outline-offset: 2px;
+}
+
+.cp-floating-branch__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  transition: margin 0.2s ease;
+}
+
+.cp-floating-branch:hover .cp-floating-branch__icon,
+.cp-floating-branch:focus-visible .cp-floating-branch__icon {
+  margin: 0;
+}
+
+.cp-floating-branch__text {
+  display: inline-block;
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  transition:
+    max-width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.cp-floating-branch:hover .cp-floating-branch__text,
+.cp-floating-branch:focus-visible .cp-floating-branch__text {
+  max-width: 200px;
+  opacity: 1;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+/* Mobile: hide the floating branch indicator entirely. The hamburger
+   drawer surfaces the same chrome, and a corner-anchored chip
+   competes with the on-screen keyboard / browser UI on small viewports. */
+@media (max-width: 768px) {
+  .cp-floating-branch {
+    display: none;
+  }
+}

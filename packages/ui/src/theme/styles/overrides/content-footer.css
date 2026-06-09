@@ -6,10 +6,10 @@
  */
 
 /* ── Portal wrapper — sits at the top of `.rp-doc-footer` ── */
-html .rp-doc-footer .zp-content-footer {
+html .rp-doc-footer .cp-content-footer {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid var(--zp-c-border);
+  border-top: 1px solid var(--cp-c-border);
 }
 
 /* Rspress occasionally renders an empty `.rp-doc-footer__edit` row.
@@ -33,9 +33,9 @@ html .rp-prev-next-page__item {
   flex-direction: column;
   gap: 4px;
   padding: 14px 16px;
-  border: 1px solid var(--zp-c-border);
-  border-radius: var(--zp-radius-card);
-  background: var(--zp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-card);
+  background: var(--cp-c-bg-soft);
   text-decoration: none;
   transition:
     border-color 0.15s ease,
@@ -43,8 +43,8 @@ html .rp-prev-next-page__item {
 }
 
 html .rp-prev-next-page__item:hover {
-  border-color: var(--zp-c-border);
-  background: var(--zp-c-bg-elv);
+  border-color: var(--cp-c-border);
+  background: var(--cp-c-bg-elv);
 }
 
 html .rp-prev-next-page__item--next,
@@ -54,9 +54,9 @@ html .rp-prev-next-page__next {
 }
 
 html .rp-prev-next-page__item__desc {
-  font-family: var(--zp-font-family-mono);
+  font-family: var(--cp-font-family-mono);
   font-size: 11px;
-  color: var(--zp-c-text-3);
+  color: var(--cp-c-text-3);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -67,7 +67,7 @@ html .rp-prev-next-page__item__title {
   gap: 6px;
   font-size: 14px;
   font-weight: 500;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
 }
 
 /* Chevron icons Rspress injects inside the title — size them down and
@@ -75,6 +75,6 @@ html .rp-prev-next-page__item__title {
 html .rp-prev-next-page__icon {
   width: 12px;
   height: 12px;
-  color: var(--zp-c-text-3);
+  color: var(--cp-c-text-3);
   flex-shrink: 0;
 }

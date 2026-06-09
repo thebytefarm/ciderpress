@@ -1,26 +1,26 @@
-.zp-sidebar-promo {
+.cp-sidebar-promo {
   margin: 12px 8px;
-  border: 1px solid var(--zp-c-border);
-  border-radius: var(--zp-radius-card);
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-card);
   padding: 14px;
-  background: var(--zp-c-bg-soft);
+  background: var(--cp-c-bg-soft);
 }
 
-.zp-sidebar-promo__title {
+.cp-sidebar-promo__title {
   font-size: 13px;
   font-weight: 500;
   margin: 0 0 4px;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
 }
 
-.zp-sidebar-promo__body {
+.cp-sidebar-promo__body {
   font-size: 12px;
-  color: var(--zp-c-text-2);
+  color: var(--cp-c-text-2);
   line-height: 1.5;
   margin: 0 0 10px;
 }
 
-.zp-sidebar-promo__cta {
+.cp-sidebar-promo__cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -28,15 +28,15 @@
   padding: 6px 12px;
   font-size: 12px;
   font-weight: 600;
-  border-radius: var(--zp-radius-pill);
-  background: var(--zp-c-brand-1);
-  color: var(--zp-c-brand-fg);
+  border-radius: var(--cp-radius-pill);
+  background: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-fg);
   text-decoration: none;
   transition: background 0.15s ease;
 }
 
-.zp-sidebar-promo__cta:hover {
-  background: var(--zp-c-brand-2);
-  color: var(--zp-c-brand-fg);
+.cp-sidebar-promo__cta:hover {
+  background: var(--cp-c-brand-2);
+  color: var(--cp-c-brand-fg);
   text-decoration: none;
 }

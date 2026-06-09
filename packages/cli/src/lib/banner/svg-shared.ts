@@ -2,17 +2,17 @@
  * Shared constants for SVG banner and logo generation.
  *
  * Surfaces / chrome use the Catppuccin Mocha palette to match the
- * existing zpress banner aesthetic. The `brand` slot is the active
- * theme's primary, pulled from `@zpress/theme` so static SVGs stay
+ * existing ciderpress banner aesthetic. The `brand` slot is the active
+ * theme's primary, pulled from `@ciderpress/theme` so static SVGs stay
  * in sync with the docs site CSS and the CLI TUI.
  */
 
-import { resolveBrandPalette } from '@zpress/theme'
+import { resolveBrandPalette } from '@ciderpress/theme'
 
 /**
  * Catppuccin Mocha palette colors used across all generated SVGs.
- * `brand` resolves to the base theme's primary at module load — the
- * same color the docs site and CLI render.
+ * `brand` resolves to the canonical honeycrisp theme's primary at module
+ * load — the same color the docs site and CLI render.
  */
 export const COLORS = Object.freeze({
   base: '#1e1e2e',
@@ -24,7 +24,7 @@ export const COLORS = Object.freeze({
   green: '#a6e3a1',
   red: '#f38ba8',
   yellow: '#f9e2af',
-  brand: resolveBrandPalette('default').primary,
+  brand: resolveBrandPalette('honeycrisp').primary,
 })
 
 /**
@@ -76,7 +76,7 @@ export const CONTENT_PADDING = 24
  * Comment placed as the first line of generated SVGs to distinguish
  * from user-customized files.
  */
-export const GENERATED_MARKER = '<!-- zpress-generated -->'
+export const GENERATED_MARKER = '<!-- ciderpress-generated -->'
 
 /**
  * Escape special XML characters in text content.

@@ -1,20 +1,20 @@
 {
-  "name": "@zpress/templates",
-  "version": "1.0.0-rc.1",
-  "description": "Documentation templates SDK for zpress — use built-in templates, extend them, or register custom ones",
+  "name": "@ciderpress/templates",
+  "version": "1.0.0-rc.0",
+  "description": "Documentation templates SDK for ciderpress — use built-in templates, extend them, or register custom ones",
   "keywords": [
+    "ciderpress",
     "docs",
     "documentation",
     "scaffold",
-    "templates",
-    "zpress"
+    "templates"
   ],
-  "homepage": "https://github.com/joggrdocs/zpress/tree/main/packages/templates#readme",
-  "bugs": "https://github.com/joggrdocs/zpress/issues",
+  "homepage": "https://github.com/thebytefarm/ciderpress/tree/main/packages/templates#readme",
+  "bugs": "https://github.com/thebytefarm/ciderpress/issues",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/joggrdocs/zpress.git",
+    "url": "https://github.com/thebytefarm/ciderpress.git",
     "directory": "packages/templates"
   },
   "files": [

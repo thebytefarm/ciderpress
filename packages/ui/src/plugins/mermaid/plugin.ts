@@ -43,7 +43,7 @@ export function mermaidPlugin(options: MermaidPluginOptions = {}): RspressPlugin
   })
 
   return {
-    name: 'zpress-plugin-mermaid',
+    name: 'ciderpress-plugin-mermaid',
     markdown: {
       remarkPlugins: [remarkMermaid.remarkPlugin],
       globalComponents: remarkMermaid.mdxComponents,

@@ -1,7 +1,8 @@
+import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
 import { z } from 'zod'
 
+import { logConfigErrors } from '../lib/log-config-errors.ts'
 import { createPaths } from '../lib/paths.ts'
 import { openBrowser, serveSite } from '../lib/rspress.ts'
 
@@ -19,16 +20,13 @@ export default command({
     vscode: z.boolean().optional().default(false),
   }),
   handler: async (ctx) => {
-    ctx.log.intro('zpress serve')
+    ctx.log.intro('ciderpress serve')
     const paths = createPaths(process.cwd())
     const [configErr, config] = await loadConfig(paths.repoRoot)
     if (configErr) {
       ctx.log.error(configErr.message)
       if (configErr.errors && configErr.errors.length > 0) {
-        configErr.errors.map((err) => {
-          const path = err.path.join('.')
-          return ctx.log.error(`  ${path}: ${err.message}`)
-        })
+        logConfigErrors(ctx.log, configErr.errors)
       }
       process.exit(1)
     }

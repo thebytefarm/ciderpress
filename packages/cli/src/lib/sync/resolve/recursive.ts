@@ -1,10 +1,11 @@
 import path from 'node:path'
 
+import { normalizeInclude } from '@ciderpress/config'
+import type { Section, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
-import { normalizeInclude } from '@zpress/config'
-import type { Section, Frontmatter } from '@zpress/config'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
+import { isNotNil } from 'massaman/predicate'
 
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
@@ -34,7 +35,7 @@ export async function resolveRecursiveGlob(
 
   const patterns = normalizeInclude(section.include)
   if (patterns.length === 0) {
-    log.error('[zpress] resolveRecursiveGlob called without section.include')
+    log.error('[ciderpress] resolveRecursiveGlob called without section.include')
     return []
   }
 
@@ -57,7 +58,6 @@ export async function resolveRecursiveGlob(
   const baseDir = extractBaseDir(patterns[0])
   const prefix = section.path ?? ''
 
-  // Extract titleFrom and titleTransform from title object config
   const titleConfig = match(section.title)
     .when(
       (
@@ -90,10 +90,6 @@ export async function resolveRecursiveGlob(
     depth,
   })
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * A node in the directory tree built from glob results.
@@ -202,7 +198,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
     depth,
   } = params
 
-  // 1. Files at this level — exclude the entry file (it becomes the section header)
+  // Files at this level — exclude the entry file (it becomes the section header)
   const nonIndexFiles = node.files.filter(
     (file) => path.basename(file, path.extname(file)) !== entryFile
   )
@@ -230,12 +226,10 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
     })
   )
 
-  // 2. Subdirectories become nested sections
   const subdirEntries = await Promise.all(
     [...node.subdirs].map(async ([dirName, subNode]) => {
       const subPrefix = `${prefix}/${dirName}`
 
-      // Check for entry file in this subdirectory (.md or .mdx)
       const entryFilePath = subNode.files.find(
         (f) => path.basename(f, path.extname(f)) === entryFile
       )
@@ -375,7 +369,7 @@ function resolveSectionLink(
   subPrefix: string,
   entryFile: string
 ): string | undefined {
-  if (entryFilePath !== null && entryFilePath !== undefined) {
+  if (isNotNil(entryFilePath)) {
     return `${subPrefix}/${entryFile}`
   }
   return undefined

@@ -1,6 +1,6 @@
 import { basename, extname } from 'node:path'
 
-import type { ResolvedPage } from '@zpress/config'
+import type { ResolvedPage } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 
 import type { ResolvedEntry } from '../types.ts'
@@ -51,10 +51,6 @@ export function sortEntries(
       entries.toSorted((a, b) => comparator(toResolvedPage(a), toResolvedPage(b)))
     )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Default comparator: sections first, then pinned intro files, then alpha by title.

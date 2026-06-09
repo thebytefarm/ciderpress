@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 
-import type { Section } from '@zpress/config'
+import type { Section } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { capitalize, words } from 'massaman/string'
 
@@ -66,10 +66,6 @@ export function resolveSectionTitle(section: Section): string {
 export function kebabToTitle(slug: string): string {
   return words(slug).map(capitalize).join(' ')
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Derive text from YAML frontmatter `title` field, falling back to first heading,

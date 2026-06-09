@@ -24,7 +24,7 @@ const CODE_BLOCK_RE = /```[\s\S]*?```/g
 /**
  * Placeholder prefix for protected code blocks.
  */
-const PLACEHOLDER_PREFIX = '<!--ZPRESS_IMG_CB_'
+const PLACEHOLDER_PREFIX = '<!--CIDERPRESS_IMG_CB_'
 
 /**
  * Placeholder suffix for protected code blocks.
@@ -34,7 +34,7 @@ const PLACEHOLDER_SUFFIX = '-->'
 /**
  * Regex to restore code block placeholders.
  */
-const PLACEHOLDER_RE = /<!--ZPRESS_IMG_CB_(\d+)-->/g
+const PLACEHOLDER_RE = /<!--CIDERPRESS_IMG_CB_(\d+)-->/g
 
 /**
  * Regex matching markdown image syntax: `![alt](path)` or `![alt](path "title")`.
@@ -70,7 +70,7 @@ export async function rewriteImages(params: {
   const sourceDir = path.dirname(path.resolve(params.repoRoot, params.sourcePath))
   const imagesOutDir = path.resolve(params.outDir, 'public', 'images')
 
-  // 1. Protect code blocks
+  // Protect code blocks during link/image rewriting.
   // intentional mutation: collect code blocks during regex replacement
   const codeBlocks: string[] = []
   const withoutCode = params.content.replace(CODE_BLOCK_RE, (block) => {
@@ -79,7 +79,6 @@ export async function rewriteImages(params: {
     return `${PLACEHOLDER_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`
   })
 
-  // 2. Discover relative image references and copy files
   const mdMatches = [...withoutCode.matchAll(IMAGE_RE)]
   const htmlMatches = [...withoutCode.matchAll(IMG_SRC_RE)]
   const allImagePaths = [...mdMatches.map((m) => m[1]), ...htmlMatches.map((m) => m[1])]
@@ -109,7 +108,6 @@ export async function rewriteImages(params: {
       const filename = `${baseName}-${hash}${ext}`
       const destPath = path.resolve(imagesOutDir, filename)
 
-      // Skip copy when destination is at least as recent as source
       const destStat = await fs.stat(destPath).catch(() => null)
       if (destStat && destStat.mtimeMs >= exists.mtimeMs) {
         return [imagePath, `/images/${filename}`] as const
@@ -126,7 +124,6 @@ export async function rewriteImages(params: {
     entries.filter((entry): entry is readonly [string, string] => entry !== null)
   )
 
-  // 3. Replace image paths in content (markdown syntax and HTML/JSX tags)
   const mdRewritten = withoutCode.replace(IMAGE_RE, (fullMatch, url: string) => {
     const replacement = imageMap.get(url)
     if (replacement === undefined) {
@@ -143,13 +140,8 @@ export async function rewriteImages(params: {
     return fullMatch.replace(url, replacement)
   })
 
-  // 4. Restore code blocks
   return rewritten.replace(PLACEHOLDER_RE, (_, idx) => codeBlocks[Number(idx)])
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Check whether a URL is absolute or external (should not be rewritten).

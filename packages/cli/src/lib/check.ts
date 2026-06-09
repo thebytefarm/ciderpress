@@ -9,10 +9,12 @@
 
 import path from 'node:path'
 
+import { configError } from '@ciderpress/config'
+import type { ConfigError, ConfigWarning, CiderpressConfig } from '@ciderpress/config'
 import type { Log } from '@kidd-cli/core'
-import { configError } from '@zpress/config'
-import type { ConfigError, ConfigWarning, ZpressConfig } from '@zpress/config'
 import { toError } from 'massaman/conversion'
+import { sumBy } from 'massaman/math'
+import { isString } from 'massaman/predicate'
 
 import type { Paths } from './paths.ts'
 import { buildSiteForCheck } from './rspress.ts'
@@ -56,13 +58,13 @@ interface PresentResultsParams {
 }
 
 interface RunBuildCheckParams {
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly paths: Paths
   readonly verbose?: boolean
 }
 
 interface RunConfigCheckParams {
-  readonly config: ZpressConfig | null
+  readonly config: CiderpressConfig | null
   readonly loadError: ConfigError | null
 }
 
@@ -124,7 +126,6 @@ export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildC
       return { status: 'failed', deadlinks }
     }
 
-    // Non-deadlink build error — surface as a generic failure
     return { status: 'error', message: error.message }
   }
 
@@ -167,7 +168,7 @@ export function presentResults(params: PresentResultsParams): boolean {
   } else if (buildResult.status === 'error') {
     logger.error(`Build failed: ${buildResult.message}`)
   } else {
-    const totalLinks = buildResult.deadlinks.reduce((sum, info) => sum + info.links.length, 0)
+    const totalLinks = sumBy(buildResult.deadlinks, (info) => info.links.length)
     logger.error(`Found ${totalLinks} broken link(s):`)
     const block = buildResult.deadlinks.map(formatDeadlinkGroup).join('\n')
     logger.message(block)
@@ -175,10 +176,6 @@ export function presentResults(params: PresentResultsParams): boolean {
 
   return configResult.passed && buildResult.status === 'passed'
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Run the build check without capturing output, letting Rspress/Rspack
@@ -216,7 +213,7 @@ function stripAnsi(text: string): string {
  * @returns UTF-8 string representation
  */
 function chunkToString(chunk: Uint8Array | string): string {
-  if (typeof chunk === 'string') {
+  if (isString(chunk)) {
     return chunk
   }
   return Buffer.from(chunk).toString('utf8')
@@ -243,7 +240,6 @@ function createInterceptor(chunks: string[]): typeof process.stdout.write {
     const text = chunkToString(chunk)
     // oxlint-disable-next-line functional/immutable-data -- accumulating captured output
     chunks.push(text)
-    // Invoke callback if provided (matches Node's write signature overloads)
     if (typeof encodingOrCb === 'function') {
       // oxlint-disable-next-line eslint-plugin-promise/prefer-await-to-callbacks -- invoking Node's write callback, not an async pattern
       encodingOrCb()
@@ -374,7 +370,7 @@ function parseDeadlinks(stderr: string): readonly DeadlinkInfo[] {
  *
  * Output resembles linting output:
  * ```
- *   ✖ .zpress/content/getting-started.md
+ *   ✖ .ciderpress/content/getting-started.md
  *       → /this-does-not-exist
  *       → /another/bad-link
  * ```

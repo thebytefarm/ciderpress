@@ -4,10 +4,6 @@ import { useState } from 'react'
 
 import { Icon } from './icon'
 
-// ---------------------------------------------------------------------------
-// Field
-// ---------------------------------------------------------------------------
-
 export interface FieldProps {
   /**
    * Field name, rendered in monospace bold.
@@ -54,51 +50,47 @@ export function Field({
   children,
 }: FieldProps): React.ReactElement {
   const nameClass = match(deprecated)
-    .with(true, () => 'zp-field__name zp-field__name--deprecated')
-    .otherwise(() => 'zp-field__name')
+    .with(true, () => 'cp-field__name cp-field__name--deprecated')
+    .otherwise(() => 'cp-field__name')
 
   const typeEl = match(type)
-    .with(P.nonNullable, (t) => <span className="zp-field__type">{t}</span>)
+    .with(P.nonNullable, (t) => <span className="cp-field__type">{t}</span>)
     .otherwise(() => null)
 
   const badgeEl = match(deprecated)
     .with(true, () => (
-      <span className="zp-field__badge zp-field__badge--deprecated">deprecated</span>
+      <span className="cp-field__badge cp-field__badge--deprecated">deprecated</span>
     ))
     .otherwise(() =>
       match(required)
         .with(true, () => (
-          <span className="zp-field__badge zp-field__badge--required">required</span>
+          <span className="cp-field__badge cp-field__badge--required">required</span>
         ))
         .otherwise(() => (
-          <span className="zp-field__badge zp-field__badge--optional">optional</span>
+          <span className="cp-field__badge cp-field__badge--optional">optional</span>
         ))
     )
 
   const defaultEl = match(defaultValue)
     .with(P.nonNullable, (v) => (
-      <div className="zp-field__default">
+      <div className="cp-field__default">
         Default: <code>{v}</code>
       </div>
     ))
     .otherwise(() => null)
 
   return (
-    <div className="zp-field">
-      <div className="zp-field__header">
+    <div className="cp-field">
+      <div className="cp-field__header">
         <span className={nameClass}>{name}</span>
         {typeEl}
         {badgeEl}
       </div>
       {defaultEl}
-      <div className="zp-field__body">{children}</div>
+      <div className="cp-field__body">{children}</div>
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// FieldGroup
-// ---------------------------------------------------------------------------
 
 export interface FieldGroupProps {
   /**
@@ -142,16 +134,12 @@ export function FieldGroup({
       </ExpandableFieldGroup>
     ))
     .otherwise(() => (
-      <div className="zp-field-group">
-        <div className="zp-field-group__title">{title}</div>
+      <div className="cp-field-group">
+        <div className="cp-field-group__title">{title}</div>
         {children}
       </div>
     ))
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 const DATA_OPEN = { 'data-open': '' } as const
 const DATA_CLOSED = {} as const
@@ -181,18 +169,18 @@ function ExpandableFieldGroup({
     .otherwise(() => DATA_CLOSED)
 
   return (
-    <div className="zp-field-group--expandable" {...dataAttrs}>
+    <div className="cp-field-group--expandable" {...dataAttrs}>
       <button
         type="button"
-        className="zp-field-group__trigger"
+        className="cp-field-group__trigger"
         onClick={() => setOpen((prev) => !prev)}
       >
-        <span className="zp-field-group__chevron">
+        <span className="cp-field-group__chevron">
           <Icon icon="pixelarticons:chevron-right" />
         </span>
         {title}
       </button>
-      <div className="zp-field-group__panel">{children}</div>
+      <div className="cp-field-group__panel">{children}</div>
     </div>
   )
 }

@@ -1,0 +1,85 @@
+/*
+ * Ladle-only chrome: palette picker and story canvas frame.
+ * Lives outside the theme cascade — no `--rp-*` or `--cp-*` reset rules
+ * touch these classes.
+ */
+
+.cp-ladle-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+  min-height: 100vh;
+  background: var(--cp-c-bg, #0a0a0a);
+  color: var(--cp-c-text-1, #f5f5f5);
+}
+
+.cp-ladle-picker {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border: 1px solid var(--cp-c-border, #2a2a2a);
+  border-radius: 8px;
+  background: var(--cp-c-bg-elv, #161616);
+  font:
+    12px/1 ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.cp-ladle-picker__label {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cp-c-text-3, rgba(245, 245, 245, 0.48));
+}
+
+.cp-ladle-picker__group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.cp-ladle-picker__btn {
+  padding: 4px 10px;
+  border: 1px solid var(--cp-c-border, #2a2a2a);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--cp-c-text-2, rgba(245, 245, 245, 0.72));
+  cursor: pointer;
+  font: inherit;
+}
+
+.cp-ladle-picker__btn:hover {
+  border-color: var(--cp-c-brand-1, #991b1b);
+  color: var(--cp-c-text-1, #f5f5f5);
+}
+
+.cp-ladle-picker__btn--active {
+  background: var(--cp-c-brand-1, #991b1b);
+  border-color: var(--cp-c-brand-1, #991b1b);
+  color: var(--cp-c-brand-fg, #ffffff);
+}
+
+.cp-ladle-canvas {
+  flex: 1;
+  padding: 24px;
+  border: 1px dashed var(--cp-c-divider, #1e1e1e);
+  border-radius: 8px;
+  background: var(--cp-c-bg-alt, #0f0f0f);
+}
+
+/*
+ * Standalone-component layout hints.
+ *
+ * The real theme expects `.cp-card` to live inside a grid wrapper
+ * (`.cp-feature-grid__item`) that provides display/sizing. In Ladle we
+ * render the bare component, so we force a block context and a sane
+ * max-width so the showcase isn't a full-bleed strip and a clickable
+ * `<a class="cp-card">` doesn't collapse to inline-with-block-children.
+ */
+.cp-ladle-canvas .cp-card {
+  display: block;
+  max-width: 480px;
+}

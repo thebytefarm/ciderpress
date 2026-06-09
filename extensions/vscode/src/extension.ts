@@ -25,16 +25,16 @@ import { createStatusBarItem } from './status-bar'
 import { createPreviewPanel } from './webview'
 
 /**
- * TODO: Use @zpress/core config resolution instead of manual file checks.
+ * TODO: Use @ciderpress/core config resolution instead of manual file checks.
  * This is a quick hack — should be replaced with proper config loading
- * from the zpress packages once the extension can depend on them.
+ * from the ciderpress packages once the extension can depend on them.
  */
 const CONFIG_FILES = [
-  'zpress.config.ts',
-  'zpress.config.mts',
-  'zpress.config.js',
-  'zpress.config.mjs',
-  'zpress.config.json',
+  'ciderpress.config.ts',
+  'ciderpress.config.mts',
+  'ciderpress.config.js',
+  'ciderpress.config.mjs',
+  'ciderpress.config.json',
 ] as const
 
 function isServerUrl(url: string, baseUrl: string): boolean {
@@ -54,28 +54,28 @@ function isServerUrl(url: string, baseUrl: string): boolean {
   }
 }
 
-function isZpressProject(workspaceRoot: string): boolean {
+function isCiderpressProject(workspaceRoot: string): boolean {
   // oxlint-disable-next-line security/detect-non-literal-fs-filename
   return CONFIG_FILES.some((file) => fs.existsSync(path.join(workspaceRoot, file)))
 }
 
 /**
- * Activates the zpress VS Code extension when a zpress project is detected.
+ * Activates the ciderpress VS Code extension when a ciderpress project is detected.
  */
 export function activate(context: ExtensionContext): void {
   const folders = workspace.workspaceFolders
   if (!folders) {
     return
   }
-  const workspaceFolder = folders.find((folder) => isZpressProject(folder.uri.fsPath))
+  const workspaceFolder = folders.find((folder) => isCiderpressProject(folder.uri.fsPath))
   if (!workspaceFolder) {
     return
   }
 
   const workspaceRoot = workspaceFolder.uri.fsPath
 
-  commands.executeCommand('setContext', 'zpress:isProject', true)
-  const outputChannel = window.createOutputChannel('zpress')
+  commands.executeCommand('setContext', 'ciderpress:isProject', true)
+  const outputChannel = window.createOutputChannel('ciderpress')
 
   const statusBar = createStatusBarItem((alignment, priority) =>
     window.createStatusBarItem(alignment, priority)
@@ -96,10 +96,10 @@ export function activate(context: ExtensionContext): void {
     iconPath: Uri.joinPath(context.extensionUri, 'resources', 'icon.svg'),
     EventEmitter,
     onError: (message) => {
-      outputChannel.appendLine(`[zpress] ${message}`)
+      outputChannel.appendLine(`[ciderpress] ${message}`)
     },
     onStart: () => {
-      commands.executeCommand('zpress.start')
+      commands.executeCommand('ciderpress.start')
     },
   })
 
@@ -112,15 +112,14 @@ export function activate(context: ExtensionContext): void {
     RelativePattern,
   })
 
-  /* Empty tree view shown while the dev server is starting */
-  const loadingView = window.createTreeView('zpress.loading', {
+  const loadingView = window.createTreeView('ciderpress.loading', {
     treeDataProvider: { getTreeItem: () => ({ label: '' }), getChildren: () => [] },
   })
 
   /* Server panel — shows status, start/stop, and open-in-browser as tree items */
   // oxlint-disable-next-line unicorn/prefer-event-target -- VS Code API requires EventEmitter
   const serverEmitter = new EventEmitter<void>()
-  const serverTreeView = window.createTreeView('zpress.server', {
+  const serverTreeView = window.createTreeView('ciderpress.server', {
     treeDataProvider: {
       onDidChangeTreeData: serverEmitter.event,
       getTreeItem: (item: { readonly id: string }) => {
@@ -150,7 +149,7 @@ export function activate(context: ExtensionContext): void {
         if (item.id === 'toggle') {
           const label = server.isRunning() ? 'Stop Server' : 'Start Server'
           const icon = server.isRunning() ? 'debug-stop' : 'debug-start'
-          const command = server.isRunning() ? 'zpress.stop' : 'zpress.start'
+          const command = server.isRunning() ? 'ciderpress.stop' : 'ciderpress.start'
           return {
             label,
             iconPath: new ThemeIcon(icon),
@@ -163,7 +162,7 @@ export function activate(context: ExtensionContext): void {
             label: 'Restart Server',
             iconPath: new ThemeIcon('debug-restart'),
             collapsibleState: 0,
-            command: { title: 'Restart Server', command: 'zpress.restart' },
+            command: { title: 'Restart Server', command: 'ciderpress.restart' },
           }
         }
         if (item.id === 'browser') {
@@ -171,7 +170,7 @@ export function activate(context: ExtensionContext): void {
             label: 'Open in Browser',
             iconPath: new ThemeIcon('link-external'),
             collapsibleState: 0,
-            command: { title: 'Open in Browser', command: 'zpress.openInBrowser' },
+            command: { title: 'Open in Browser', command: 'ciderpress.openInBrowser' },
           }
         }
         return { label: '' }
@@ -218,7 +217,7 @@ export function activate(context: ExtensionContext): void {
     sidebar.sections.map((section, i) => {
       const contextKey = SECTION_CONTEXT_KEYS[i]
       if (contextKey) {
-        commands.executeCommand('setContext', `zpress:section.${contextKey}`, section.hasItems)
+        commands.executeCommand('setContext', `ciderpress:section.${contextKey}`, section.hasItems)
       }
       return null
     })
@@ -226,13 +225,13 @@ export function activate(context: ExtensionContext): void {
 
   // oxlint-disable-next-line unicorn/consistent-function-scoping
   function setServerStatus(status: 'stopped' | 'starting' | 'running' | 'stopping'): void {
-    commands.executeCommand('setContext', 'zpress:serverReady', status === 'running')
+    commands.executeCommand('setContext', 'ciderpress:serverReady', status === 'running')
     commands.executeCommand(
       'setContext',
-      'zpress:serverStarting',
+      'ciderpress:serverStarting',
       status === 'starting' || status === 'stopping'
     )
-    commands.executeCommand('setContext', 'zpress:serverStopped', status === 'stopped')
+    commands.executeCommand('setContext', 'ciderpress:serverStopped', status === 'stopped')
   }
 
   const server = createDevServer({
@@ -251,7 +250,9 @@ export function activate(context: ExtensionContext): void {
       manifestReader.reload(baseUrl)
       sidebar.setBaseUrl(baseUrl)
       refreshSectionViews()
-      const autoOpen = workspace.getConfiguration('zpress.server').get<boolean>('autoOpen', true)
+      const autoOpen = workspace
+        .getConfiguration('ciderpress.server')
+        .get<boolean>('autoOpen', true)
       if (autoOpen) {
         previewPanel.open(baseUrl)
       }
@@ -262,28 +263,24 @@ export function activate(context: ExtensionContext): void {
     },
   })
 
-  /* Update section visibility whenever sidebar.json changes */
   sidebar.onDidReload(refreshSectionViews)
 
-  /* Set initial section visibility from any existing sidebar.json */
   refreshSectionViews()
 
-  /* Set initial server status to stopped */
   setServerStatus('stopped')
   previewPanel.updateStatus('stopped')
 
   function updateTrackedContext(editor: TextEditor | undefined): void {
     if (!editor) {
-      commands.executeCommand('setContext', 'zpress:isTrackedFile', false)
+      commands.executeCommand('setContext', 'ciderpress:isTrackedFile', false)
       return
     }
     const isTracked =
       editor.document.languageId === 'markdown' &&
       manifestReader.isTracked(editor.document.uri.fsPath)
-    commands.executeCommand('setContext', 'zpress:isTrackedFile', isTracked)
+    commands.executeCommand('setContext', 'ciderpress:isTrackedFile', isTracked)
   }
 
-  /* Re-evaluate tracked context whenever the manifest updates */
   manifestReader.onDidChange(() => {
     updateTrackedContext(window.activeTextEditor)
   })
@@ -335,7 +332,9 @@ export function activate(context: ExtensionContext): void {
     serverTreeView,
     serverEmitter,
     loadingView.onDidChangeVisibility((e) => {
-      const autoStart = workspace.getConfiguration('zpress.server').get<boolean>('autoStart', true)
+      const autoStart = workspace
+        .getConfiguration('ciderpress.server')
+        .get<boolean>('autoStart', true)
       if (e.visible && autoStart && !server.isRunning()) {
         server.start()
       }
@@ -343,29 +342,29 @@ export function activate(context: ExtensionContext): void {
     previewPanel.onNavigate(revealSidebarNode),
     previewPanel.onEdit((urlPath: string) => openSourceFile(urlPath)),
     ...sectionTreeViews,
-    commands.registerCommand('zpress.editSource', (node: { readonly link?: string }) => {
+    commands.registerCommand('ciderpress.editSource', (node: { readonly link?: string }) => {
       if (!node || !node.link) {
         return
       }
       openSourceFile(node.link)
     }),
-    commands.registerCommand('zpress.start', () => {
+    commands.registerCommand('ciderpress.start', () => {
       server.start()
     }),
-    commands.registerCommand('zpress.stop', () => {
+    commands.registerCommand('ciderpress.stop', () => {
       server.stop()
     }),
-    commands.registerCommand('zpress.toggle', () => {
+    commands.registerCommand('ciderpress.toggle', () => {
       if (server.isRunning()) {
         server.stop()
       } else {
         server.start()
       }
     }),
-    commands.registerCommand('zpress.restart', () => {
+    commands.registerCommand('ciderpress.restart', () => {
       server.restart()
     }),
-    commands.registerCommand('zpress.collapseAll', () => {
+    commands.registerCommand('ciderpress.collapseAll', () => {
       // oxlint-disable-next-line no-unused-expressions -- .map() used for side-effect (collapsing all sections)
       sidebar.sections.map((section) => {
         if (section.hasItems) {
@@ -374,7 +373,7 @@ export function activate(context: ExtensionContext): void {
         return null
       })
     }),
-    commands.registerCommand('zpress.openInBrowser', () => {
+    commands.registerCommand('ciderpress.openInBrowser', () => {
       const baseUrl = server.getBaseUrl()
       if (!baseUrl) {
         window.showWarningMessage('Dev server is not running.')
@@ -382,14 +381,14 @@ export function activate(context: ExtensionContext): void {
       }
       env.openExternal(Uri.parse(baseUrl))
     }),
-    commands.registerCommand('zpress.openPage', (url: string) => {
+    commands.registerCommand('ciderpress.openPage', (url: string) => {
       const baseUrl = server.getBaseUrl()
       if (!baseUrl || !isServerUrl(url, baseUrl)) {
         return
       }
       previewPanel.open(url)
     }),
-    commands.registerCommand('zpress.preview', (arg?: string | Uri) => {
+    commands.registerCommand('ciderpress.preview', (arg?: string | Uri) => {
       /*
        * When invoked from CodeLens, arg is a string URL.
        * When invoked from editor/title menu, VS Code passes the resource Uri.
@@ -399,7 +398,7 @@ export function activate(context: ExtensionContext): void {
 
       const baseUrl = server.getBaseUrl()
       if (!targetUrl || !baseUrl || !isServerUrl(targetUrl, baseUrl)) {
-        window.showWarningMessage('This file is not part of the zpress configuration.')
+        window.showWarningMessage('This file is not part of the ciderpress configuration.')
         return
       }
 
@@ -409,9 +408,9 @@ export function activate(context: ExtensionContext): void {
     window.onDidChangeActiveTextEditor(updateTrackedContext),
     workspace.onDidChangeConfiguration((e) => {
       const affected =
-        e.affectsConfiguration('zpress.theme') ||
-        e.affectsConfiguration('zpress.theme.mode') ||
-        e.affectsConfiguration('zpress.server.port')
+        e.affectsConfiguration('ciderpress.theme') ||
+        e.affectsConfiguration('ciderpress.theme.mode') ||
+        e.affectsConfiguration('ciderpress.server.port')
       if (affected && server.isRunning()) {
         server.restart()
       }
@@ -422,6 +421,6 @@ export function activate(context: ExtensionContext): void {
 }
 
 /**
- * Deactivates the zpress VS Code extension.
+ * Deactivates the ciderpress VS Code extension.
  */
 export function deactivate(): void {}

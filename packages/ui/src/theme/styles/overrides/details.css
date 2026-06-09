@@ -3,11 +3,11 @@
  */
 
 details {
-  border: 1px solid var(--zp-c-border);
+  border: 1px solid var(--cp-c-border);
   border-radius: 8px;
   padding: 0;
   margin: 0;
-  background: var(--zp-c-bg-soft);
+  background: var(--cp-c-bg-soft);
 }
 
 details summary {
@@ -15,7 +15,7 @@ details summary {
   padding: 0 12px;
   font-weight: 600;
   font-size: 14px;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
   list-style: none;
   display: flex;
   align-items: center;
@@ -25,7 +25,7 @@ details summary {
 }
 
 details summary:hover {
-  color: var(--zp-c-brand-1);
+  color: var(--cp-c-brand-1);
 }
 
 details summary::-webkit-details-marker {

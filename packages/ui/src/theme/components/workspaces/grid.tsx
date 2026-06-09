@@ -39,17 +39,13 @@ export function WorkspaceGrid({
   return (
     <>
       <h2>{heading}</h2>
-      <p className="zp-workspace-section__desc">{description}</p>
-      <div className="zp-workspace-grid" style={style}>
+      <p className="cp-workspace-section__desc">{description}</p>
+      <div className="cp-workspace-grid" style={style}>
         {children}
       </div>
     </>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build an inline style object for the workspace grid column count.
@@ -60,7 +56,7 @@ export function WorkspaceGrid({
  */
 function columnsStyle(columns: number | undefined): React.CSSProperties | undefined {
   if (columns !== undefined) {
-    return { '--zp-workspace-cols': String(columns) } as React.CSSProperties
+    return { '--cp-workspace-cols': String(columns) } as React.CSSProperties
   }
   return undefined
 }

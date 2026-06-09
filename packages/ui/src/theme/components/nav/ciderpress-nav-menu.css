@@ -1,0 +1,130 @@
+/**
+ * CiderpressNavMenu — primary topbar nav with overflow → dropdown.
+ *
+ * Theme-author API (all overridable per theme):
+ *   --cp-nav-menu-gap                inline gap between items (default 16px)
+ *   --cp-nav-menu-item-padding-x     horizontal padding inside each item
+ *   --cp-nav-menu-item-color         item text colour
+ *   --cp-nav-menu-item-color-hover   item text colour on hover
+ *   --cp-nav-menu-item-color-active  item text colour on the active route
+ *   --cp-nav-menu-item-font-size     item font size
+ *   --cp-nav-menu-item-font-weight   item font weight
+ *   --cp-nav-menu-overflow-bg        overflow popover surface colour
+ *   --cp-nav-menu-overflow-border    overflow popover border colour
+ */
+.cp-nav-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--cp-nav-menu-gap, 16px);
+  /* Take the full width of the parent wrapper so that
+     `container.clientWidth` (used by the ResizeObserver) reflects the
+     actual space available for items, not just the natural width of
+     whatever items happen to currently render. Without this the menu
+     shrinks to fit its content, reports a tiny available width, and
+     collapses every item into the overflow popover. */
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.cp-nav-menu__item {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--cp-nav-menu-item-padding-x, 4px);
+  color: var(--cp-nav-menu-item-color, var(--cp-c-text-2, #cdd6f4));
+  font-size: var(--cp-nav-menu-item-font-size, 13px);
+  font-weight: var(--cp-nav-menu-item-font-weight, 500);
+  line-height: 1;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+
+.cp-nav-menu__item:hover {
+  color: var(--cp-nav-menu-item-color-hover, var(--cp-c-brand-1, currentColor));
+  text-decoration: none;
+}
+
+.cp-nav-menu__item--active {
+  color: var(--cp-nav-menu-item-color-active, var(--cp-c-brand-1, currentColor));
+}
+
+/* ── Hidden measurement layer ──────────────────────────────────────────
+   Renders every item at full natural width so the JS layer always has
+   a stable per-item measurement no matter how narrow the live menu
+   gets. `position: absolute` + `visibility: hidden` keeps it out of
+   the layout flow while remaining measurable. */
+.cp-nav-menu-measure {
+  position: absolute;
+  visibility: hidden;
+  pointer-events: none;
+  display: inline-flex;
+  gap: var(--cp-nav-menu-gap, 16px);
+  white-space: nowrap;
+}
+
+/* ── Overflow toggle + popover ─────────────────────────────────────── */
+.cp-nav-menu__overflow {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cp-nav-menu__overflow-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 var(--cp-nav-menu-item-padding-x, 4px);
+  background: transparent;
+  border: none;
+  color: var(--cp-nav-menu-item-color, var(--cp-c-text-2, #cdd6f4));
+  font-size: var(--cp-nav-menu-item-font-size, 13px);
+  font-weight: var(--cp-nav-menu-item-font-weight, 500);
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+
+.cp-nav-menu__overflow-toggle:hover {
+  color: var(--cp-nav-menu-item-color-hover, var(--cp-c-brand-1, currentColor));
+}
+
+.cp-nav-menu__overflow-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 60;
+  min-width: 200px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--cp-nav-menu-overflow-bg, var(--cp-c-bg, #1e1e2e));
+  border: 1px solid var(--cp-nav-menu-overflow-border, var(--cp-c-border, #313244));
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+.cp-nav-menu__overflow-item {
+  display: block;
+  padding: 8px 12px;
+  border-radius: 6px;
+  color: var(--cp-nav-menu-item-color, var(--cp-c-text-2, #cdd6f4));
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.1s ease,
+    color 0.1s ease;
+}
+
+.cp-nav-menu__overflow-item:hover {
+  background: var(--cp-c-bg-soft, rgba(255, 255, 255, 0.04));
+  color: var(--cp-nav-menu-item-color-hover, var(--cp-c-brand-1, currentColor));
+  text-decoration: none;
+}
+
+.cp-nav-menu__overflow-item--active {
+  color: var(--cp-nav-menu-item-color-active, var(--cp-c-brand-1, currentColor));
+}

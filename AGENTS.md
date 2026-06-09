@@ -1,131 +1,202 @@
-# System Instructions
+# Ciderpress Instructions
 
-This file provides guidance to Coding Agents when working with code in this repository.
+<intro>
 
-## Persona
+**Ciderpress** is a documentation framework for monorepos. Point it at your existing markdown — get a full site. It wraps Rspress with a config layer, sync engine, and Rspress plugin that handle sidebar/nav generation, workspace cards, OpenAPI integration, Liquid templates, and six built-in themes.
 
-You are a strict functional programmer. You write pure, immutable, declarative TypeScript. You prefer composition over inheritance, expressions over statements, and data transformations over imperative mutation. You never reach for classes, loops, `let`, or `throw` — instead you use `map`, `filter`, `reduce`, pattern matching, and Result/Option types. You treat every function as a value and every side effect as something to be pushed to the edges.
+**Goal of this repo:** ship a polished, opinionated docs framework that conforms to a repo's existing structure rather than forcing a layout on it. The public package is `ciderpress`; internals are split across `@ciderpress/cli`, `@ciderpress/config`, `@ciderpress/templates`, `@ciderpress/theme`, and `@ciderpress/ui`.
+
+</intro>
+
+## Boundaries
+
+<boundaries>
+
+### Always
+
+<always>
+
+- Validate with `pnpm check` before claiming done (typecheck + lint + format).
+- Use factories + closures, not classes.
+- Return `Result<T, E>` tuples, not `throw` — see `.claude/rules/errors.md`.
+- Immutable data; explicit return types on exports; JSDoc on every export.
+- Object params for functions with 2+ args.
+- kebab-case filenames; flat directory structure.
+- Conventional Commits with directory-style scopes (`packages/cli`, `packages/config`, etc.).
+- Prefer installed CLIs (`pnpm`, `oxlint`, `oxfmt`, `tsgo`) over `npx`/`bunx`.
+- Run commands from repo root with workspace filters (e.g. `pnpm test --filter=@ciderpress/cli`).
+- Before proposing an implementation plan, read the relevant `<rules>` file(s) for the areas the change touches and verify the approach matches these Boundaries.
+
+</always>
+
+### Ask first
+
+<ask>
+
+- Adding a dependency in any package.
+- Schema or config-shape changes (Zod schemas at module boundaries).
+- Creating new packages or top-level directories.
+- Changing exported APIs of `@ciderpress/*` packages.
+- Renaming or deleting public exports.
+- Force pushes, branch deletes, or anything rewriting shared history.
+
+</ask>
+
+### Never
+
+<never>
+
+- `class`, `let`, `for`/`while`/`do…while`, `throw`, `any`, `!`, `?.`, ternaries — see `.claude/rules/typescript.md`.
+- ESLint, Prettier, or `tsc` — use **oxlint**, **oxfmt**, **tsgo**.
+- `--no-verify` or any hook-bypass flag to make a commit go through. Fix the underlying failure.
+- Direct commits to `main`.
+- Override per-package build or TS config (Rslib, tsconfig) without a stated reason — the root config is canonical.
+- Emojis in code, commits, PRs, or docs unless explicitly asked.
+- Comments restating what well-named code already says.
+
+</never>
+
+### Rules
+
+<rules>
+
+- **Code style** — `.claude/rules/typescript.md` · any TypeScript change
+- **Error handling** — `.claude/rules/errors.md` · error handling, Result types
+- **Testing** — `.claude/rules/testing.md` · test file structure, mocking
+- **Documentation** — `.claude/rules/documentation.md` · creating or editing markdown
+
+</rules>
+
+</boundaries>
 
 ## Structure
 
+<structure>
+
 ```
 .
-├── packages/
-│   ├── cli/              # @zpress/cli — CLI commands, watcher, Rspress integration
-│   ├── core/             # @zpress/core — config loading, sync engine, sidebar/nav generation
-│   ├── ui/               # @zpress/ui — Rspress plugin, theme components, and styles
-│   └── zpress/           # @zpress/kit — public wrapper package (CLI + config re-exports)
+├── packages/             # source packages — see below
+│   ├── cli/              # @ciderpress/cli — CLI for building and serving ciderpress documentation sites
+│   ├── config/           # @ciderpress/config — configuration loading and validation
+│   ├── templates/        # @ciderpress/templates — documentation templates SDK (built-in + custom)
+│   ├── theme/            # @ciderpress/theme — theme types and built-in theme definitions
+│   ├── ui/               # @ciderpress/ui — Rspress plugin, theme components, and styles
+│   └── ciderpress/       # ciderpress — public wrapper package (CLI + config re-exports)
+├── docs/                 # the user-facing documentation site (concepts, guides, references, examples, framework, getting-started) — built with Ciderpress itself
+├── contributing/         # internal contributor docs (concepts, guides, references, standards)
+├── examples/             # working example sites: simple, kitchen-sink, large
+├── extensions/           # editor/IDE integrations (vscode)
+├── benchmarks/           # vitest benchmark suite
+├── scripts/              # one-off scripts — *.lauf.ts run via `lauf run <name>`, plus shell utilities
+├── assets/               # branding (banner.svg, logo, etc.)
+├── patches/              # pnpm patches for upstream deps
+├── .changeset/           # changeset configs and pending changesets
+├── .github/              # workflows and PR templates
+└── .claude/rules/        # canonical rule files referenced from <rules>
 ```
+
+Important top-level configs:
+
+- **`ciderpress.config.ts`** — Ciderpress eats its own dogfood; this drives the live docs site
+- **`package.json`** — root workspace scripts (`dev`, `build`, `test`, `check`, `docs:dev`, `bench`, etc.)
+- **`pnpm-workspace.yaml`** — pnpm workspace definition
+- **`turbo.json`** — Turbo task graph
+- **`tsconfig.json`** — root TS config; packages extend this
+- **`.oxlintrc.json`** · **`.oxfmtrc.json`** — OXC lint/format rules (enforce the `<never>` list)
+- **`vitest.workspace.ts`** — vitest workspace
+- **`lauf.config.ts`** — script runner config for `scripts/*.lauf.ts`
+- **`vercel.json`** — deploy config for the docs site
+
+</structure>
 
 ## Tech Stack
 
-| Tool                                                         | Purpose                      | Docs                                                   |
-| ------------------------------------------------------------ | ---------------------------- | ------------------------------------------------------ |
-| [Rspress](https://rspress.dev)                               | Documentation framework      | [GitHub](https://github.com/web-infra-dev/rspress)     |
-| [React](https://react.dev)                                   | UI framework                 | [GitHub](https://github.com/facebook/react)            |
-| [es-toolkit](https://es-toolkit.sh)                          | Functional utilities         | [GitHub](https://github.com/toss/es-toolkit)           |
-| [ts-pattern](https://github.com/gvergnaud/ts-pattern)        | Pattern matching             | [GitHub](https://github.com/gvergnaud/ts-pattern)      |
-| [@kidd-cli/core](https://github.com/kidd-framework/kidd-cli) | CLI framework                | [GitHub](https://github.com/kidd-framework/kidd-cli)   |
-| [@clack/prompts](https://www.clack.cc)                       | Sync engine prompts & output | [GitHub](https://github.com/bombshell-dev/clack)       |
-| [c12](https://github.com/unjs/c12)                           | Config loading               | [GitHub](https://github.com/unjs/c12)                  |
-| [chokidar](https://github.com/paulmillr/chokidar)            | File watching                | [GitHub](https://github.com/paulmillr/chokidar)        |
-| [gray-matter](https://github.com/jonschlinkert/gray-matter)  | Frontmatter parsing          | [GitHub](https://github.com/jonschlinkert/gray-matter) |
-| [Rslib](https://lib.rsbuild.dev)                             | Bundler                      | [llms-full.txt](https://lib.rsbuild.dev/llms-full.txt) |
-| [OXC](https://oxc.rs) (oxlint + oxfmt)                       | Linting & formatting         | [llms.txt](https://oxc.rs/llms.txt)                    |
-| [Turborepo](https://turbo.build)                             | Monorepo orchestration       | [Docs](https://turbo.build/repo/docs)                  |
+<tech-stack>
+
+- **Rspress** — documentation framework · [site](https://rspress.dev) · [github](https://github.com/web-infra-dev/rspress)
+- **React** — UI framework · [github](https://github.com/facebook/react)
+- **es-toolkit** — functional utilities · [site](https://es-toolkit.sh) · [github](https://github.com/toss/es-toolkit)
+- **ts-pattern** — pattern matching · [github](https://github.com/gvergnaud/ts-pattern)
+- **@kidd-cli/core** — CLI framework · [github](https://github.com/kidd-framework/kidd-cli)
+- **@clack/prompts** — sync-engine prompts & output · [site](https://www.clack.cc) · [github](https://github.com/bombshell-dev/clack)
+- **c12** — config loading · [github](https://github.com/unjs/c12)
+- **chokidar** — file watching · [github](https://github.com/paulmillr/chokidar)
+- **gray-matter** — frontmatter parsing · [github](https://github.com/jonschlinkert/gray-matter)
+- **Rslib** — bundler · [docs](https://lib.rsbuild.dev) · [llms-full.txt](https://lib.rsbuild.dev/llms-full.txt)
+- **OXC** (oxlint + oxfmt) — linting & formatting · [site](https://oxc.rs) · [llms.txt](https://oxc.rs/llms.txt)
+- **Turborepo** — monorepo orchestration · [docs](https://turbo.build/repo/docs)
+
+</tech-stack>
 
 ## Commands
 
+<commands>
+
 ```bash
-pnpm lint           # Lint with OXLint
-pnpm lint:fix       # Auto-fix lint issues
-pnpm format         # Check formatting with OXFmt
-pnpm format:fix     # Auto-fix formatting
-pnpm typecheck      # Type check all packages (via Turbo)
-pnpm check          # Typecheck + lint + format
-pnpm build          # Build all packages (via Turbo)
-pnpm clean          # Clean all dist output (via Turbo)
+pnpm lint                       # Lint with OXLint
+pnpm lint:fix                   # Auto-fix lint issues
+pnpm format                     # Check formatting with OXFmt
+pnpm format:fix                 # Auto-fix formatting
+pnpm typecheck                  # Type check all packages (via Turbo)
+pnpm check                      # Typecheck + lint + format
+pnpm build                      # Build all packages (via Turbo)
+pnpm clean                      # Clean all dist output (via Turbo)
+pnpm docs:dev --headless        # Run the dogfooded docs site without the Ink TUI (use this from a non-TTY shell / background task — plain log output, no raw-mode error)
 ```
 
-Per-package commands (from each `packages/*/`):
+Per-package (from `packages/*/`):
 
 ```bash
 pnpm build          # Build with Rslib
 pnpm typecheck      # Type check (tsc --noEmit)
 ```
 
-## Package Conventions
+</commands>
 
-- ESM only (`"type": "module"`)
-- Built with `Rslib` (`format: 'esm'`, `target: 'node'`, `syntax: 'esnext'`)
-- TypeScript: `target: ESNext`, `module: ESNext`, `moduleResolution: bundler`, `strict: true`
-- Explicit return types on all exported functions
-- All public properties `readonly`
-- Config validated with Zod at module boundaries
+## Git
+
+<git>
+
+Follow [Conventional Commits](https://www.conventionalcommits.org/): `type(scope): description`.
+
+Types:
+
+- **feat** — new user-facing functionality
+- **fix** — bug fix
+- **docs** — documentation only
+- **refactor** — no behavior change
+- **test** — test files only
+- **chore** — build, deps, config
+- **perf** — optimization
+- **security** — vulnerability patches
+- **release** — automated version bumps
+
+Scopes use directory-style paths for packages (`packages/cli`, `packages/config`, `packages/ui`, `packages/theme`, `packages/templates`, `packages/ciderpress`) and short labels for cross-cutting (`deps`, `ci`, `repo`).
+
+### Pull Requests
+
+<pull-requests>
+
+- Title uses the same `type(scope): description` format as commits.
+- Description follows: Summary > Changes > Testing > Related Issues.
+- Squash-and-merge — all PRs squash into one commit on `main`.
+
+</pull-requests>
+
+</git>
 
 ## Superpowers
 
 <superpowers>
+
 All superpowers output (specs, brainstorms, plans, reviews, etc.) must be written to `.superpowers/`. Superpowers determines its own directory structure within `.superpowers/`. This directory is gitignored.
+
 </superpowers>
 
-## Standards
+## Scratchpad
 
-When planning, designing, or architecting changes — before writing any code — consult the relevant standards:
+<scratchpad>
 
-| Area           | Standard                         | When to Consult              |
-| -------------- | -------------------------------- | ---------------------------- |
-| Code style     | `.claude/rules/typescript.md`    | Any TypeScript change        |
-| Error handling | `.claude/rules/errors.md`        | Error handling, Result types |
-| Testing        | `.claude/rules/testing.md`       | Test file structure, mocking |
-| Documentation  | `.claude/rules/documentation.md` | Creating or editing markdown |
+Create files, markdown documents, scripts, or anything else you need in `./.scratchpad` — it's gitignored.
 
-### Planning Checklist
-
-Before proposing an implementation plan:
-
-1. Read the relevant standard files for the areas the change touches
-2. Identify which packages are affected and understand their existing patterns
-3. Verify the approach uses factories (not classes), Result tuples (not throw), and immutable data
-4. Confirm new files follow kebab-case naming and flat directory structure
-5. Confirm new functions use object parameters (2+ params), explicit return types, and JSDoc on exports
-6. Plan test files alongside source files with coverage targets in mind
-
-## Git
-
-### Commit Messages
-
-Follow [Conventional Commits](https://www.conventionalcommits.org/) format: `type(scope): description`
-
-| Type       | Usage                         |
-| ---------- | ----------------------------- |
-| `feat`     | New user-facing functionality |
-| `fix`      | Bug fix                       |
-| `docs`     | Documentation only            |
-| `refactor` | No behavior change            |
-| `test`     | Test files only               |
-| `chore`    | Build, deps, config           |
-| `perf`     | Optimization                  |
-| `security` | Vulnerability patches         |
-| `release`  | Automated version bumps       |
-
-#### Scopes
-
-Use directory-style paths for packages: `packages/cli`, `packages/core`, `packages/ui`, `packages/zpress`. Use short labels for cross-cutting: `deps`, `ci`, `repo`.
-
-#### Format
-
-- Description starts with lowercase verb in present tense
-- Use `!` after scope for breaking changes with `BREAKING CHANGE:` footer
-- Add body to explain "why" when the change is non-obvious
-- Reference issues in footer: `Refs #42`, `Closes #123`
-
-#### Atomic Commits
-
-Each commit represents one logical change, builds independently, and is revertable without side effects.
-
-### Pull Requests
-
-- Title uses same `type(scope): description` format as commits
-- Description follows: Summary > Changes > Testing > Related Issues
-- Squash and merge strategy — all PRs squash into one commit on main
+</scratchpad>

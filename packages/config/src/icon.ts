@@ -1,3 +1,5 @@
+import { isNil, isString } from 'massaman/predicate'
+
 import type { IconConfig as ConfigIconConfig, IconColor as ConfigIconColor } from './types.ts'
 
 export type { IconConfig, IconColor } from './types.ts'
@@ -20,7 +22,7 @@ export interface ResolvedIcon {
  * @returns Normalized `{ id, color }` pair
  */
 export function resolveIcon(icon: ConfigIconConfig): ResolvedIcon {
-  if (typeof icon === 'string') {
+  if (isString(icon)) {
     return { id: icon, color: 'purple' }
   }
   return { id: icon.id, color: icon.color }
@@ -35,7 +37,7 @@ export function resolveIcon(icon: ConfigIconConfig): ResolvedIcon {
  * @returns Normalized `{ id, color }` pair, or `undefined`
  */
 export function resolveOptionalIcon(icon: ConfigIconConfig | undefined): ResolvedIcon | undefined {
-  if (icon === undefined) {
+  if (isNil(icon)) {
     return undefined
   }
   return resolveIcon(icon)

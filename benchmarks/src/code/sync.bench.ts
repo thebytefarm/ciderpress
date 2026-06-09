@@ -1,8 +1,8 @@
-import type { ZpressConfig } from '@zpress/config'
-import { loadConfig } from '@zpress/config/loader'
+import type { CiderpressConfig } from '@ciderpress/config'
+import { loadConfig } from '@ciderpress/config/loader'
 import { afterAll, beforeAll, bench, describe } from 'vitest'
 
-// Sync engine moved into @zpress/cli internals after the @zpress/core deletion.
+// Sync engine moved into @ciderpress/cli internals after the @ciderpress/core deletion.
 // Benchmarks consume it via deep workspace-relative imports since the CLI
 // only publishes the bin entry, not its lib surface. These imports work
 // because vitest's TS loader resolves relative paths across the monorepo.
@@ -13,7 +13,7 @@ import { BENCH_OPTIONS, TIERS, generateFixture } from '../helpers/fixtures.ts'
 
 interface PreparedFixture {
   readonly fixture: GeneratedFixture
-  readonly config: ZpressConfig
+  readonly config: CiderpressConfig
   readonly paths: ReturnType<typeof createPaths>
 }
 

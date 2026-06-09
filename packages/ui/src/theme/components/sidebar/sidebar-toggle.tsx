@@ -3,13 +3,13 @@ import React, { useCallback, useEffect, useState } from 'react'
 
 import './sidebar-toggle.css'
 
-const STORAGE_KEY = 'zpress-sidebar-collapsed'
-const HTML_ATTR = 'zpSidebarCollapsed'
+const STORAGE_KEY = 'ciderpress-sidebar-collapsed'
+const HTML_ATTR = 'cpSidebarCollapsed'
 
 /**
  * SidebarToggle — small icon button in the topbar to collapse/expand the
  * docs sidebar on desktop. State persists in localStorage and is applied
- * via `html[data-zp-sidebar-collapsed='true']` for CSS targeting.
+ * via `html[data-cp-sidebar-collapsed='true']` for CSS targeting.
  *
  * @returns React element.
  */
@@ -46,7 +46,7 @@ export function SidebarToggle(): React.ReactElement {
 
   return (
     <button
-      className="zp-sidebar-toggle"
+      className="cp-sidebar-toggle"
       type="button"
       onClick={handleClick}
       aria-label={label}
@@ -67,10 +67,6 @@ export function SidebarToggle(): React.ReactElement {
     </button>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Read the persisted collapsed state from localStorage.

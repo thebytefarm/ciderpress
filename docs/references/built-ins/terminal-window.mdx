@@ -17,7 +17,7 @@ The `<TerminalWindow>` component renders a terminal-style window with a dark bac
 import { TerminalWindow, Command, Output } from '@theme'
 
 <TerminalWindow>
-  <Command>pnpm install @zpress/kit</Command>
+  <Command>pnpm install ciderpress</Command>
   <Output>
     Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s
   </Output>
@@ -27,7 +27,7 @@ import { TerminalWindow, Command, Output } from '@theme'
 **Output**
 
 <TerminalWindow>
-  <Command>pnpm install @zpress/kit</Command>
+  <Command>pnpm install ciderpress</Command>
   <Output>
     Packages: +42{'\n'}Progress: resolved 187, reused 180, downloaded 7{'\n'}Done in 2.3s
   </Output>
@@ -39,20 +39,20 @@ import { TerminalWindow, Command, Output } from '@theme'
 
 ```mdx
 <TerminalWindow>
-  <Command>zpress sync</Command>
+  <Command>ciderpress sync</Command>
   <Output>Synced 24 pages (3 new, 2 updated, 19 skipped)</Output>
-  <Command>zpress build</Command>
-  <Output>Build completed in 4.2s{'\n'}Output: .zpress/dist/</Output>
+  <Command>ciderpress build</Command>
+  <Output>Build completed in 4.2s{'\n'}Output: .ciderpress/dist/</Output>
 </TerminalWindow>
 ```
 
 **Output**
 
 <TerminalWindow>
-  <Command>zpress sync</Command>
+  <Command>ciderpress sync</Command>
   <Output>Synced 24 pages (3 new, 2 updated, 19 skipped)</Output>
-  <Command>zpress build</Command>
-  <Output>Build completed in 4.2s{'\n'}Output: .zpress/dist/</Output>
+  <Command>ciderpress build</Command>
+  <Output>Build completed in 4.2s{'\n'}Output: .ciderpress/dist/</Output>
 </TerminalWindow>
 
 ## Custom title
@@ -83,12 +83,12 @@ Use `<Line>` within `<Output>` for colored and styled text:
 import { TerminalWindow, Command, Output, Line } from '@theme'
 
 <TerminalWindow>
-  <Command>zpress check</Command>
+  <Command>ciderpress check</Command>
   <Output>
     <Line color="step" bold>
       {'◆'}
     </Line>{' '}
-    <Line bold>zpress check</Line>
+    <Line bold>ciderpress check</Line>
     {'\n'}
     <Line color="bar">│</Line>
     {'\n'}
@@ -109,12 +109,12 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 **Output**
 
 <TerminalWindow>
-  <Command>zpress check</Command>
+  <Command>ciderpress check</Command>
   <Output>
     <Line color="step" bold>
       {'◆'}
     </Line>{' '}
-    <Line bold>zpress check</Line>
+    <Line bold>ciderpress check</Line>
     {'\n'}
     <Line color="bar">│</Line>
     {'\n'}
@@ -137,12 +137,12 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 
 ```mdx
 <TerminalWindow>
-  <Command>zpress build</Command>
+  <Command>ciderpress build</Command>
   <Output>
     <Line color="step" bold>
       {'◆'}
     </Line>{' '}
-    <Line bold>zpress build</Line>
+    <Line bold>ciderpress build</Line>
     {'\n'}
     <Line color="bar">│</Line>
     {'\n'}
@@ -173,12 +173,12 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
 **Output**
 
 <TerminalWindow>
-  <Command>zpress build</Command>
+  <Command>ciderpress build</Command>
   <Output>
     <Line color="step" bold>
       {'◆'}
     </Line>{' '}
-    <Line bold>zpress build</Line>
+    <Line bold>ciderpress build</Line>
     {'\n'}
     <Line color="bar">│</Line>
     {'\n'}
@@ -217,7 +217,7 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
     {'\n'}
     Changes not staged for commit:{'\n'}
     {'  '}
-    <Line color="red">modified: zpress.config.ts</Line>
+    <Line color="red">modified: ciderpress.config.ts</Line>
     {'\n'}
     {'  '}
     <Line color="red">modified: docs/getting-started/intro.md</Line>
@@ -244,7 +244,7 @@ import { TerminalWindow, Command, Output, Line } from '@theme'
     {'\n'}
     Changes not staged for commit:{'\n'}
     {'  '}
-    <Line color="red">modified: zpress.config.ts</Line>
+    <Line color="red">modified: ciderpress.config.ts</Line>
     {'\n'}
     {'  '}
     <Line color="red">modified: docs/getting-started/intro.md</Line>

@@ -1,4 +1,4 @@
-import { loadConfig } from '@zpress/config/loader'
+import { loadConfig } from '@ciderpress/config/loader'
 import { attemptAsync } from 'massaman/control'
 import { toError } from 'massaman/conversion'
 import { mapValues } from 'massaman/object'
@@ -182,7 +182,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
           set.pushLog({
             timestamp: formatTime(new Date()),
             action: 'restarted',
-            file: pendingFile.current ?? 'zpress.config.ts',
+            file: pendingFile.current ?? 'ciderpress.config.ts',
             elapsed: 0,
           })
         },
@@ -238,10 +238,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private hooks
-// ---------------------------------------------------------------------------
-
 const MAX_LOG_ENTRIES = 50
 
 /**
@@ -267,10 +263,6 @@ function useActivityLog(): {
 
   return { log, pushLog, clearLog }
 }
-
-// ---------------------------------------------------------------------------
-// Private helpers
-// ---------------------------------------------------------------------------
 
 /**
  * Wrap each setter so it becomes a no-op after disposal.

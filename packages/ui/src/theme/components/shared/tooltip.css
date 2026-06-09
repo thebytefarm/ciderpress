@@ -2,7 +2,7 @@
  * Tooltip — hover-to-reveal definitions.
  */
 
-.zp-tooltip__trigger {
+.cp-tooltip__trigger {
   display: inline;
   padding: 0;
   border: none;
@@ -12,58 +12,58 @@
   cursor: help;
   text-decoration: underline;
   text-decoration-style: dotted;
-  text-decoration-color: var(--zp-c-text-3);
-  text-underline-offset: var(--zp-s-3);
+  text-decoration-color: var(--cp-c-text-3);
+  text-underline-offset: var(--cp-s-3);
 }
 
-.zp-tooltip__trigger:focus-visible {
-  outline: var(--zp-size-focus-ring) solid var(--zp-c-brand-1);
-  outline-offset: var(--zp-size-focus-ring-offset);
-  border-radius: var(--zp-radius-xs);
+.cp-tooltip__trigger:focus-visible {
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
+  border-radius: var(--cp-radius-xs);
 }
 
-.zp-tooltip__overlay {
-  max-width: var(--zp-size-tooltip-max);
-  padding: var(--zp-s-10) var(--zp-s-14);
-  background: var(--zp-c-bg-elv);
-  border: 1px solid var(--zp-c-border);
+.cp-tooltip__overlay {
+  max-width: var(--cp-size-tooltip-max);
+  padding: var(--cp-s-10) var(--cp-s-14);
+  background: var(--cp-c-bg-elv);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius-large);
-  box-shadow: var(--zp-shadow-tooltip);
-  font-size: var(--zp-fs-tooltip);
-  line-height: var(--zp-lh-base);
-  color: var(--zp-c-text-1);
-  z-index: var(--zp-z-tooltip);
+  box-shadow: var(--cp-shadow-tooltip);
+  font-size: var(--cp-fs-tooltip);
+  line-height: var(--cp-lh-base);
+  color: var(--cp-c-text-1);
+  z-index: var(--cp-z-tooltip);
 }
 
-.zp-tooltip__arrow svg {
+.cp-tooltip__arrow svg {
   display: block;
 }
 
-.zp-tooltip__body {
+.cp-tooltip__body {
   display: flex;
   flex-direction: column;
-  gap: var(--zp-s-4);
+  gap: var(--cp-s-4);
 }
 
-.zp-tooltip__headline {
-  font-size: var(--zp-fs-tooltip-headline);
+.cp-tooltip__headline {
+  font-size: var(--cp-fs-tooltip-headline);
   font-weight: 600;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
 }
 
-.zp-tooltip__tip {
-  color: var(--zp-c-text-2);
+.cp-tooltip__tip {
+  color: var(--cp-c-text-2);
 }
 
-.zp-tooltip__cta {
+.cp-tooltip__cta {
   display: inline-block;
-  margin-top: var(--zp-s-4);
-  font-size: var(--zp-fs-tooltip-cta);
+  margin-top: var(--cp-s-4);
+  font-size: var(--cp-fs-tooltip-cta);
   font-weight: 500;
-  color: var(--zp-c-brand-1);
+  color: var(--cp-c-brand-1);
   text-decoration: none;
 }
 
-.zp-tooltip__cta:hover {
+.cp-tooltip__cta:hover {
   text-decoration: underline;
 }

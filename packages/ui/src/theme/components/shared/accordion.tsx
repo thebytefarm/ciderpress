@@ -5,10 +5,6 @@ import { Button, Disclosure, DisclosurePanel } from 'react-aria-components'
 
 import { Icon } from './icon'
 
-// ---------------------------------------------------------------------------
-// AccordionGroup
-// ---------------------------------------------------------------------------
-
 export interface AccordionGroupProps {
   /**
    * When true, only one accordion in the group can be open at a time.
@@ -43,14 +39,10 @@ export function AccordionGroup({
 
   return (
     <AccordionGroupContext.Provider value={{ exclusive, openId, setOpenId }}>
-      <div className="zp-accordion-group">{children}</div>
+      <div className="cp-accordion-group">{children}</div>
     </AccordionGroupContext.Provider>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Accordion
-// ---------------------------------------------------------------------------
 
 export interface AccordionProps {
   /**
@@ -109,14 +101,12 @@ export function Accordion({
 
   const [isExpanded, setIsExpanded] = useState(initialOpen)
 
-  // Seed exclusive group state from defaultOpen on initial render
   useEffect(() => {
     if (group !== null && group.exclusive && group.openId === null && initialOpen) {
       group.setOpenId(anchorId)
     }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps -- seed once on mount
 
-  // Sync with group exclusive mode
   const expanded = match(group)
     .with(
       P.when((g): g is AccordionGroupContextValue => g !== null && g.exclusive),
@@ -138,7 +128,6 @@ export function Accordion({
           setIsExpanded(open)
         })
 
-      // Update URL hash on expand
       if (open && globalThis.history !== undefined) {
         globalThis.history.replaceState(null, '', `#${anchorId}`)
       }
@@ -146,7 +135,6 @@ export function Accordion({
     [group, anchorId]
   )
 
-  // Auto-expand on mount if URL hash matches
   useEffect(() => {
     if (isFirstRender.current && hashMatch) {
       isFirstRender.current = false
@@ -156,14 +144,14 @@ export function Accordion({
 
   const iconEl = match(icon)
     .with(P.nonNullable, (i) => (
-      <span className="zp-accordion__icon">
+      <span className="cp-accordion__icon">
         <Icon icon={i} />
       </span>
     ))
     .otherwise(() => null)
 
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <span className="zp-accordion__description">{d}</span>)
+    .with(P.nonNullable, (d) => <span className="cp-accordion__description">{d}</span>)
     .otherwise(() => null)
 
   return (
@@ -171,26 +159,22 @@ export function Accordion({
       id={anchorId}
       isExpanded={expanded}
       onExpandedChange={handleExpandedChange}
-      className="zp-accordion"
+      className="cp-accordion"
     >
-      <Button slot="trigger" className="zp-accordion__trigger">
+      <Button slot="trigger" className="cp-accordion__trigger">
         {iconEl}
-        <span className="zp-accordion__header">
-          <span className="zp-accordion__title">{title}</span>
+        <span className="cp-accordion__header">
+          <span className="cp-accordion__title">{title}</span>
           {descEl}
         </span>
-        <span className="zp-accordion__chevron">
+        <span className="cp-accordion__chevron">
           <Icon icon="pixelarticons:chevron-right" />
         </span>
       </Button>
-      <DisclosurePanel className="zp-accordion__panel">{children}</DisclosurePanel>
+      <DisclosurePanel className="cp-accordion__panel">{children}</DisclosurePanel>
     </Disclosure>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Convert a title string to a URL-safe slug.

@@ -22,10 +22,10 @@ export function TechTag({ name }: TechTagProps): React.ReactElement {
 
   return match(entry)
     .with(P.nonNullable, (e) => (
-      <span className="zp-tag">
+      <span className="cp-tag">
         <Icon icon={e.icon} />
         {` ${e.label}`}
       </span>
     ))
-    .otherwise(() => <span className="zp-tag">{name}</span>)
+    .otherwise(() => <span className="cp-tag">{name}</span>)
 }

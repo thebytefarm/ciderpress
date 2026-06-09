@@ -2,25 +2,25 @@
 
 ## Overview
 
-Patterns for conditional logic in TypeScript. This standard covers early returns, `if`/`else` for simple conditions, and `ts-pattern` for multi-branch matching. Ternaries are banned by the linter. Choosing the right construct keeps logic flat, exhaustive, and easy to follow.
+Patterns for conditional logic in TypeScript. This standard covers early returns, `if`/`else` for simple conditions, and `match` from `massaman/match` (the project's umbrella for `ts-pattern`) for multi-branch matching. Ternaries are banned by the linter. Choosing the right construct keeps logic flat, exhaustive, and easy to follow.
 
 ## Rules
 
-### Use ts-pattern for Multi-Branch Logic
+### Use `match` for Multi-Branch Logic
 
-Use `ts-pattern` for conditional logic with 2+ branches. It provides exhaustiveness checking and better readability than switch statements or nested ternaries.
+Import `match` and `P` from `massaman/match` (which re-exports `ts-pattern`). It provides exhaustiveness checking and better readability than switch statements or nested ternaries.
 
-| Scenario           | Use            | Why                    |
-| ------------------ | -------------- | ---------------------- |
-| Single boolean     | `if`/`else`    | Simpler for true/false |
-| Early return/guard | `if` statement | Cleaner guard clauses  |
-| 2+ conditions      | `ts-pattern`   | Exhaustive, readable   |
-| Type narrowing     | `ts-pattern`   | Type-safe matching     |
+| Scenario           | Use              | Why                    |
+| ------------------ | ---------------- | ---------------------- |
+| Single boolean     | `if`/`else`      | Simpler for true/false |
+| Early return/guard | `if` statement   | Cleaner guard clauses  |
+| 2+ conditions      | `massaman/match` | Exhaustive, readable   |
+| Type narrowing     | `massaman/match` | Type-safe matching     |
 
 #### Correct
 
 ```ts
-import { match, P } from 'ts-pattern'
+import { match, P } from 'massaman/match'
 
 // Match on value
 const message = match(status)
@@ -69,7 +69,7 @@ switch (status) {
 
 ### Use Inferred Types from Callbacks
 
-Always use the inferred type from the `ts-pattern` callback parameter. Never cast to explicit types inside a match arm.
+Always use the inferred type from the `match` callback parameter. Never cast to explicit types inside a match arm.
 
 #### Correct
 
@@ -95,7 +95,7 @@ match(event)
 
 ### Match on Shape, Not Categories
 
-Use `ts-pattern` directly to match on object shape rather than creating intermediate categorization functions.
+Use `match` directly to match on object shape rather than creating intermediate categorization functions.
 
 #### Correct
 

@@ -17,7 +17,7 @@ const SHARED = {
 export default defineConfig({
   lib: [
     // Client-safe entry — no Node shims so the bundle stays browser-clean.
-    // The Rspress client bundle reaches this entry via `@zpress/kit`, so it
+    // The Rspress client bundle reaches this entry via `ciderpress`, so it
     // MUST NOT contain any `node:*` imports or CJS-shim side effects.
     {
       ...SHARED,
@@ -29,7 +29,7 @@ export default defineConfig({
     },
     // Node-only entry — shims enabled because Node helpers (`createRequire`,
     // `__dirname`, `__filename`) are needed inside `createRspressConfig` /
-    // `zpressPlugin`.
+    // `ciderpressPlugin`.
     {
       ...SHARED,
       shims: { esm: { __dirname: true, __filename: true, require: true } },

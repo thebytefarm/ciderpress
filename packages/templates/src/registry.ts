@@ -12,7 +12,7 @@ import type { ExtendTemplateOptions, Template, TemplateRegistry } from './types.
  *
  * @example
  * ```ts
- * import { createRegistry } from '@zpress/templates'
+ * import { createRegistry } from '@ciderpress/templates'
  *
  * // Use built-in templates as-is
  * const registry = createRegistry()
@@ -48,10 +48,6 @@ export function createRegistry(templates?: readonly Template[]): TemplateRegistr
   const entries: ReadonlyMap<string, Template> = resolveEntries(templates)
   return createFromMap(entries)
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Resolve template entries from optional input, defaulting to built-in templates.

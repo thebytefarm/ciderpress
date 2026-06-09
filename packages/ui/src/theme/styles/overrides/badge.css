@@ -2,25 +2,25 @@
  * Badge — inline badge row for shields.io / GitHub status badges.
  *
  * Usage (in markdown):
- *   <span class="zp-badge">
+ *   <span class="cp-badge">
  *   [![CI](https://img.shields.io/badge/ci-passing-green)](https://example.com)
  *   [![npm](https://img.shields.io/npm/v/pkg)](https://npmjs.com/package/pkg)
  *   </span>
  */
 
-.zp-badge {
+.cp-badge {
   display: inline-flex;
   gap: 4px;
   flex-wrap: wrap;
   align-items: center;
 }
 
-.zp-badge p {
+.cp-badge p {
   margin: 0;
   padding: 0;
 }
 
-.zp-badge img {
+.cp-badge img {
   display: inline-block;
   vertical-align: middle;
 }

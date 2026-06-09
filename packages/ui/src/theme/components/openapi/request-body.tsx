@@ -30,13 +30,13 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
   const parsed = extractFirstContent(requestBody)
 
   const descEl = match(description)
-    .with(P.nonNullable, (d) => <div className="zp-oas-request-body__description">{d}</div>)
+    .with(P.nonNullable, (d) => <div className="cp-oas-request-body__description">{d}</div>)
     .otherwise(() => null)
 
   const bodyEl = match(parsed)
     .with(P.nonNullable, (p) => (
       <div>
-        <div className="zp-oas-request-body__content-type">{p.contentType}</div>
+        <div className="cp-oas-request-body__content-type">{p.contentType}</div>
         <SchemaViewer schema={p.schema} />
       </div>
     ))
@@ -53,18 +53,14 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
     .otherwise(() => null)
 
   return (
-    <div className="zp-oas-request-body">
-      <div className="zp-oas-request-body__title">Request Body</div>
+    <div className="cp-oas-request-body">
+      <div className="cp-oas-request-body__title">Request Body</div>
       {descEl}
       {bodyEl}
       {exampleEl}
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Extract the first content type entry from a request body.

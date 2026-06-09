@@ -1,21 +1,21 @@
-.zp-page-rail {
-  max-width: var(--zp-landing-max-width);
-  margin: 0 var(--zp-frame-gutter);
+.cp-page-rail {
+  max-width: var(--cp-landing-max-width);
+  margin: 0 var(--cp-frame-gutter);
   background: transparent;
-  border-left: 1px solid var(--zp-c-border);
-  border-right: 1px solid var(--zp-c-border);
+  border-left: 1px solid var(--cp-c-border);
+  border-right: 1px solid var(--cp-c-border);
 }
 
-.zp-page-rail > * {
-  border-bottom: 1px solid var(--zp-c-border);
+.cp-page-rail > * {
+  border-bottom: 1px solid var(--cp-c-border);
 }
 
-.zp-page-rail > *:last-child {
+.cp-page-rail > *:last-child {
   border-bottom: 0;
 }
 
 @media (min-width: 1248px) {
-  .zp-page-rail {
+  .cp-page-rail {
     margin: 0 auto;
   }
 }

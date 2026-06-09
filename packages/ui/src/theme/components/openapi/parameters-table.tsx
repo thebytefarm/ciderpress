@@ -28,18 +28,14 @@ export function ParametersTable({ parameters }: ParametersTableProps): React.Rea
     .with(
       P.when((g): g is readonly ParameterGroup[] => g.length > 0),
       (g) => (
-        <div className="zp-oas-parameters">
-          <div className="zp-oas-parameters__title">Parameters</div>
+        <div className="cp-oas-parameters">
+          <div className="cp-oas-parameters__title">Parameters</div>
           {g.map(renderGroup)}
         </div>
       )
     )
     .otherwise(() => null)
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Group parameters by their `in` field (path, query, header, etc.).
@@ -62,7 +58,7 @@ function groupByIn(params: readonly Record<string, unknown>[]): readonly Paramet
  */
 function renderRequired(param: Record<string, unknown>): React.ReactElement | null {
   return match(param['required'])
-    .with(true, () => <span className="zp-oas-parameters__required">required</span>)
+    .with(true, () => <span className="cp-oas-parameters__required">required</span>)
     .otherwise(() => null)
 }
 
@@ -74,14 +70,13 @@ function renderRequired(param: Record<string, unknown>): React.ReactElement | nu
  * @returns Default value element or null
  */
 function renderDefault(param: Record<string, unknown>): React.ReactElement | null {
-  // OpenAPI 3.x: param.schema.default | Swagger 2.0: param.default
   const schemaDefault = match(param['schema'])
     .with(P.nonNullable, (schema) => (schema as Record<string, unknown>)['default'])
     .otherwise(() => null)
   const defaultValue = schemaDefault ?? param['default']
 
   return match(defaultValue)
-    .with(P.nonNullable, (def) => <span className="zp-oas-parameters__default">{String(def)}</span>)
+    .with(P.nonNullable, (def) => <span className="cp-oas-parameters__default">{String(def)}</span>)
     .otherwise(() => null)
 }
 
@@ -93,7 +88,6 @@ function renderDefault(param: Record<string, unknown>): React.ReactElement | nul
  * @returns Type string or dash placeholder
  */
 function extractType(param: Record<string, unknown>): string {
-  // OpenAPI 3.x: param.schema.type
   const schemaType = match(param['schema'])
     .with(
       P.nonNullable,
@@ -101,7 +95,6 @@ function extractType(param: Record<string, unknown>): string {
     )
     .otherwise(() => null)
 
-  // Swagger 2.0: param.type (directly on parameter)
   return String(schemaType ?? param['type'] ?? '—')
 }
 
@@ -116,10 +109,10 @@ function renderRow(param: Record<string, unknown>): React.ReactElement {
   return (
     <tr key={String(param['name'])}>
       <td>
-        <span className="zp-oas-parameters__name">{String(param['name'] ?? '')}</span>
+        <span className="cp-oas-parameters__name">{String(param['name'] ?? '')}</span>
       </td>
       <td>
-        <span className="zp-oas-parameters__type">{extractType(param)}</span>
+        <span className="cp-oas-parameters__type">{extractType(param)}</span>
       </td>
       <td>{renderRequired(param)}</td>
       <td>{String(param['description'] ?? '')}</td>
@@ -138,8 +131,8 @@ function renderRow(param: Record<string, unknown>): React.ReactElement {
 function renderGroup(group: ParameterGroup): React.ReactElement {
   return (
     <div key={group.label}>
-      <div className="zp-oas-parameters__group-label">{group.label}</div>
-      <table className="zp-oas-parameters__table">
+      <div className="cp-oas-parameters__group-label">{group.label}</div>
+      <table className="cp-oas-parameters__table">
         <thead>
           <tr>
             <th>Name</th>

@@ -3,14 +3,14 @@ import { resolve } from 'node:path'
 
 import { z } from 'zod'
 
-import { zpressConfigSchema } from '../src/schema.ts'
+import { ciderpressConfigSchema } from '../src/schema.ts'
 
 const packageJsonPath = resolve(import.meta.dirname, '../package.json')
 const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version: string }
 const currentVersion = packageJson.version
 
 try {
-  const rawJsonSchema = z.toJSONSchema(zpressConfigSchema, {
+  const rawJsonSchema = z.toJSONSchema(ciderpressConfigSchema, {
     target: 'draft-7',
     unrepresentable: 'any',
   })
@@ -18,9 +18,9 @@ try {
 
   const schema = {
     $schema: 'http://json-schema.org/draft-07/schema#',
-    $id: `https://raw.githubusercontent.com/joggrdocs/zpress/v${currentVersion}/packages/config/schemas/schema.json`,
-    title: 'Zpress Configuration',
-    description: 'Configuration file for zpress documentation framework',
+    $id: `https://raw.githubusercontent.com/thebytefarm/ciderpress/v${currentVersion}/packages/config/schemas/schema.json`,
+    title: 'Ciderpress Configuration',
+    description: 'Configuration file for ciderpress documentation framework',
     ...jsonSchema,
   }
 

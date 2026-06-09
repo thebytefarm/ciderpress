@@ -2,36 +2,36 @@
  * Badge — inline labels with semantic variants and custom colors.
  */
 
-.zp-badge {
+.cp-badge {
   display: inline-flex;
   align-items: center;
-  padding: var(--zp-s-1) var(--zp-s-8);
-  border-radius: var(--zp-radius-pill);
-  font-size: var(--zp-fs-badge);
+  padding: var(--cp-s-1) var(--cp-s-8);
+  border-radius: var(--cp-radius-pill);
+  font-size: var(--cp-fs-badge);
   font-weight: 600;
-  line-height: var(--zp-lh-relaxed);
-  letter-spacing: var(--zp-letter-wide);
+  line-height: var(--cp-lh-relaxed);
+  letter-spacing: var(--cp-letter-wide);
   text-transform: uppercase;
   white-space: nowrap;
   vertical-align: middle;
 }
 
-.zp-badge--info {
-  background: var(--zp-c-badge-info-bg);
-  color: var(--zp-c-badge-info-fg);
+.cp-badge--info {
+  background: var(--cp-c-badge-info-bg);
+  color: var(--cp-c-badge-info-fg);
 }
 
-.zp-badge--success {
-  background: var(--zp-c-badge-success-bg);
-  color: var(--zp-c-badge-success-fg);
+.cp-badge--success {
+  background: var(--cp-c-badge-success-bg);
+  color: var(--cp-c-badge-success-fg);
 }
 
-.zp-badge--warning {
-  background: var(--zp-c-badge-warning-bg);
-  color: var(--zp-c-badge-warning-fg);
+.cp-badge--warning {
+  background: var(--cp-c-badge-warning-bg);
+  color: var(--cp-c-badge-warning-fg);
 }
 
-.zp-badge--error {
-  background: var(--zp-c-badge-error-bg);
-  color: var(--zp-c-badge-error-fg);
+.cp-badge--error {
+  background: var(--cp-c-badge-error-bg);
+  color: var(--cp-c-badge-error-fg);
 }

@@ -1,4 +1,4 @@
-# @zpress/ui — Agent Instructions
+# @ciderpress/ui — Agent Instructions
 
 ## Raw-Copied Components (Rspress Global Components)
 
@@ -22,7 +22,7 @@ import packages that Rspress's webpack can resolve**:
 | -------------------- | ----------------------------------------------- |
 | `react`, `react-dom` | `ts-pattern`                                    |
 | `mermaid`            | `es-toolkit`                                    |
-| Relative CSS imports | Any `@zpress/*` workspace package               |
+| Relative CSS imports | Any `@ciderpress/*` workspace package           |
 | Other Rspress deps   | Any dependency not in Rspress's resolve context |
 
 ### Style rules relaxed

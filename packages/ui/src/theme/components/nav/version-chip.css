@@ -6,7 +6,7 @@ html .rp-nav__title {
   gap: 0;
 }
 
-.zp-version-chip {
+.cp-version-chip {
   display: inline-flex;
   align-items: center;
   gap: 10px;
@@ -16,16 +16,16 @@ html .rp-nav__title {
   line-height: 1;
 }
 
-.zp-version-chip__divider {
+.cp-version-chip__divider {
   display: inline-block;
   width: 1px;
   height: 16px;
-  background: var(--zp-c-border);
+  background: var(--cp-c-border);
 }
 
-.zp-version-chip__text {
-  font-family: var(--zp-font-family-mono);
+.cp-version-chip__text {
+  font-family: var(--cp-font-family-mono);
   font-size: 11px;
   font-weight: 400;
-  color: var(--zp-c-text-3);
+  color: var(--cp-c-text-3);
 }

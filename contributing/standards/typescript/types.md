@@ -8,7 +8,7 @@ Patterns for defining and using TypeScript types effectively. Prefer discriminat
 
 ### Use Discriminated Unions for Variants
 
-Define a common discriminator field (usually `type`, `kind`, or `strategy`) that TypeScript uses to narrow the type. Combine with `ts-pattern` for exhaustive matching.
+Define a common discriminator field (usually `type`, `kind`, or `strategy`) that TypeScript uses to narrow the type. Combine with `match` from `massaman/match` for exhaustive matching.
 
 #### Correct
 
@@ -29,8 +29,8 @@ function summarize(result: RunResult): string {
   return `Skipped: ${result.reason}`
 }
 
-// Exhaustive matching with ts-pattern
-import { match } from 'ts-pattern'
+// Exhaustive matching with massaman/match
+import { match } from 'massaman/match'
 
 const summary = match(result)
   .with({ type: 'success' }, (r) => r.output)
@@ -41,7 +41,7 @@ const summary = match(result)
 
 ### Use type-fest for Common Utilities
 
-[type-fest](https://github.com/sindresorhus/type-fest) provides type utilities not included in TypeScript's standard library. Note: `type-fest` is not currently installed in this project. When installed, prefer its utilities for the use cases below. If `type-fest` is not available, use TypeScript's built-in utility types (see [Use Built-in Utility Types](#use-built-in-utility-types)).
+[type-fest](https://github.com/sindresorhus/type-fest) provides type utilities not included in TypeScript's standard library. It is installed under `@ciderpress/config` and `@ciderpress/theme` — prefer `LiteralUnion`, `Simplify`, `SetRequired`, `PartialDeep`, etc. over hand-rolled equivalents.
 
 | Utility             | Description                    | Example                       |
 | ------------------- | ------------------------------ | ----------------------------- |
@@ -209,4 +209,4 @@ const DEFAULTS = {
 
 ## References
 
-- [Conditionals](./conditionals.md) -- Using discriminated unions with ts-pattern
+- [Conditionals](./conditionals.md) -- Using discriminated unions with `massaman/match`

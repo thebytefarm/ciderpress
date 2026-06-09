@@ -1,0 +1,70 @@
+/**
+ * VariantToggle — sun/moon button that flips the active theme's variant.
+ *
+ * Both icons render into the DOM; CSS hides whichever doesn't match the
+ * current `html[data-cp-variant]` value. When dark, the sun is visible
+ * (click to go light); when light, the moon is visible (click to go
+ * dark) — the icon telegraphs the destination, matching the convention
+ * used by GitHub, Vercel, and most modern docs sites.
+ *
+ * Theme-author API:
+ *   --cp-variant-toggle-size      button width/height (default 32px)
+ *   --cp-variant-toggle-radius    border-radius (defaults to --rp-radius)
+ */
+.cp-variant-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cp-variant-toggle-size, 32px);
+  height: var(--cp-variant-toggle-size, 32px);
+  padding: 0;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-variant-toggle-radius, var(--rp-radius));
+  background: var(--cp-c-bg);
+  color: var(--cp-c-text-2);
+  cursor: pointer;
+  transition:
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.cp-variant-toggle:hover {
+  color: var(--cp-c-text-1);
+  border-color: var(--cp-c-brand-1);
+}
+
+/* ── Icon swap ─────────────────────────────────────────────────────
+ * Visibility is driven entirely by the `[data-cp-variant]` attribute
+ * set on `<html>` (by the head IIFE for first paint, then by the
+ * toggle's click handler).
+ * ──────────────────────────────────────────────────────────────── */
+.cp-variant-toggle__icon {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+html[data-cp-variant='dark'] .cp-variant-toggle__icon--sun {
+  display: inline-flex;
+}
+
+html[data-cp-variant='light'] .cp-variant-toggle__icon--moon {
+  display: inline-flex;
+}
+
+/* SSR / pre-hydration fallback — before the head IIFE has set
+   `data-cp-variant`, neither selector above matches. Show the moon so
+   the button isn't empty during the first paint window. */
+html:not([data-cp-variant]) .cp-variant-toggle__icon--moon {
+  display: inline-flex;
+}
+
+/* ── Single-variant themes — hide the toggle when the active theme
+   only ships one variant. Mirrors the existing rule that hides
+   Rspress's `.rp-switch-appearance` for the same reason (see
+   `styles/overrides/rspress.css`). ────────────────────────────── */
+html[data-cp-variants='dark'] .cp-variant-toggle,
+html[data-cp-variants='light'] .cp-variant-toggle {
+  display: none;
+}

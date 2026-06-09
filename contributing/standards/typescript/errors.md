@@ -1,8 +1,13 @@
 # Error Handling
 
-## Overview
+The project uses two different `Result` shapes — know which one you are touching.
 
-All operations that can fail in expected ways use the `Result<T, E>` type instead of throwing exceptions. This makes error handling explicit, type-safe, and composable. The pattern is inspired by Rust's Result type and pairs naturally with `ts-pattern` for exhaustive error matching.
+| Shape                 | Source                                                | Form                                                      |
+| --------------------- | ----------------------------------------------------- | --------------------------------------------------------- |
+| Project-native        | `@ciderpress/config` (`packages/config/src/types.ts`) | Tuple: `readonly [E, null] \| readonly [null, T]`         |
+| `attemptAsync` helper | `massaman/control`                                    | Object: `Ok<T> \| Err` with `ok`, `value`, `error` fields |
+
+Public-facing functions return the tuple form. The object form only appears at the boundary where `massaman`'s `attemptAsync` is called.
 
 ## Rules
 
@@ -27,24 +32,6 @@ const failure: Result<Config, ParseError> = [
 ]
 ```
 
-For CLI handlers, use the `HandlerResult` specialization with `ok()` and `fail()` constructors. Note: This pattern is planned but not yet implemented in the codebase.
-
-```ts
-type HandlerResult<T = void> = Result<T, HandlerError>
-
-interface HandlerError {
-  readonly _tag: 'HandlerError'
-  readonly message: string
-  readonly hint?: string
-  readonly exitCode?: number
-}
-
-function ok(): HandlerResult<void>
-function ok<T>(value: T): HandlerResult<T>
-
-function fail(error: HandlerError): HandlerResult<never>
-```
-
 ### Return Results for Expected Failures
 
 Use `Result<T, E>` for operations that can fail in expected ways such as parsing, validation, file I/O, and external calls. Define a specific error interface for each domain.
@@ -52,12 +39,12 @@ Use `Result<T, E>` for operations that can fail in expected ways such as parsing
 #### Correct
 
 ```ts
-import type { Result } from '../lib/result.ts'
+import type { Result } from '@ciderpress/config'
 
 interface ParseError {
   readonly _tag: 'ParseError'
-  type: 'parse_error' | 'validation_error'
-  message: string
+  readonly type: 'parse_error' | 'validation_error'
+  readonly message: string
 }
 
 function parseConfig(json: string): Result<Config, ParseError> {
@@ -93,31 +80,42 @@ function parseConfig(json: string): Config {
 }
 ```
 
-### Wrap Async Operations
+### Wrap Async Operations with `attemptAsync`
 
-Use a wrapper to convert promise rejections into `Result` tuples.
+Import `attemptAsync` from `massaman/control` to convert promise rejections into a `Result`. Note: the helper returns an `Ok<T> | Err` **object** (with `ok`, `value`, `error` fields), not the project-native tuple.
+
+```ts
+// massaman/control
+interface Ok<T> {
+  readonly ok: true
+  readonly value: T
+  readonly error: null
+}
+interface Err {
+  readonly ok: false
+  readonly value: null
+  readonly error: Error
+}
+type Result<T> = Ok<T> | Err
+```
+
+When bridging between massaman's object Result and the project's tuple Result, destructure with `.ok`, `.value`, `.error` from massaman, then return `[null, value]` or `[error, null]` from your function.
 
 #### Correct
 
 ```ts
-async function attemptAsync<T, E = unknown>(fn: () => Promise<T>): Promise<Result<T, E>> {
-  try {
-    return [null, await fn()]
-  } catch (error) {
-    return [error as E, null]
+import { attemptAsync } from 'massaman/control'
+import type { Result } from '@ciderpress/config'
+
+async function readContents(path: string): Promise<Result<string, ReadError>> {
+  const readResult = await attemptAsync(() => readFile(path, 'utf8'))
+
+  if (!readResult.ok) {
+    return [{ _tag: 'ReadError', message: readResult.error.message }, null]
   }
+
+  return [null, readResult.value]
 }
-
-// Usage — destructure the tuple
-const [readError, contents] = await attemptAsync(() => readFile(configPath))
-
-if (readError) {
-  console.error('Read failed:', readError)
-  return
-}
-
-// contents is typed as string (or whatever readFile returns)
-processContents(contents)
 ```
 
 ### Define Domain-Specific Results
@@ -130,16 +128,16 @@ Create type aliases for consistency within a domain. This keeps function signatu
 // types.ts
 interface ConfigError {
   readonly _tag: 'ConfigError'
-  type: 'invalid_toml' | 'missing_field' | 'unknown_workspace'
-  message: string
-  details?: unknown
+  readonly type: 'invalid_toml' | 'missing_field' | 'unknown_workspace'
+  readonly message: string
+  readonly details?: unknown
 }
 
 export type ConfigResult<T> = Result<T, ConfigError>
 
 // implementation
-function loadConfig(path: string): ConfigResult<ZpressConfig> {
-  // returns [ConfigError, null] on failure or [null, ZpressConfig] on success
+function loadConfig(path: string): ConfigResult<CiderpressConfig> {
+  // returns [ConfigError, null] on failure or [null, CiderpressConfig] on success
 }
 ```
 
@@ -169,11 +167,13 @@ async function runScript(name: string, workspace: string): Promise<Result<RunOut
 
 ### Handle Multiple Error Types
 
-Use destructuring and early returns to handle different error types. For exhaustive handling of multiple error variants, combine with `ts-pattern`.
+Use destructuring and early returns to handle different error types. For exhaustive handling of multiple error variants, combine with `match` from `massaman/match`.
 
 #### Correct
 
 ```ts
+import { match } from 'massaman/match'
+
 const [error, config] = loadConfig(path)
 
 if (error) {
@@ -248,4 +248,4 @@ processConfig(config) // config might be null — error was not checked
 ## References
 
 - [Types](./types.md) -- Discriminated union patterns
-- [Conditionals](./conditionals.md) -- ts-pattern for error handling
+- [Conditionals](./conditionals.md) -- `massaman/match` for error handling

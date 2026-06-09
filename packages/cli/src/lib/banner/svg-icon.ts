@@ -49,10 +49,6 @@ export function composeIcon(params: { readonly title: string }): string {
   return buildFallbackIcon({ char: firstChar })
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Build a FIGlet-based icon SVG with the glyph scaled and centered in a 512px square.
  *

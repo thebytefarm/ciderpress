@@ -17,7 +17,10 @@
  * `BRAND_COLORS` / `resolveBrandPalette` names for back-compat.
  */
 
+import { mapValues } from 'massaman/object'
+
 import { BUILT_IN_THEMES } from './theme-registry.ts'
+import type { CiderpressTheme } from './theme-registry.ts'
 import type { BuiltInThemeName } from './types.ts'
 
 /**
@@ -44,24 +47,11 @@ export interface BrandPalette {
  * Pulled from each theme's default variant — brand colors stay constant
  * across variants for built-in themes, so picking `defaultVariant` is
  * unambiguous. Kept under the historical name so existing consumers
- * (`@zpress/core/banner`, CLI banner, asset scripts) continue to compile
+ * (`@ciderpress/core/banner`, CLI banner, asset scripts) continue to compile
  * unchanged.
  */
 export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Object.freeze(
-  Object.fromEntries(
-    (Object.keys(BUILT_IN_THEMES) as BuiltInThemeName[]).map(
-      (name): readonly [BuiltInThemeName, BrandPalette] => {
-        const theme = BUILT_IN_THEMES[name]
-        const defaultTokens = theme.variants[theme.defaultVariant]
-        if (defaultTokens === undefined) {
-          // Unreachable — `defineTheme` guarantees `defaultVariant` is present.
-          return [name, Object.freeze({ primary: '', hover: '', active: '', fg: '', soft: '' })]
-        }
-        const { primary, hover, active, fg, soft } = defaultTokens.colors.brand
-        return [name, Object.freeze({ primary, hover, active, fg, soft })]
-      }
-    )
-  ) as Record<BuiltInThemeName, BrandPalette>
+  mapValues(BUILT_IN_THEMES, extractBrandPalette)
 )
 
 /**
@@ -72,7 +62,10 @@ export const BRAND_COLORS: Readonly<Record<BuiltInThemeName, BrandPalette>> = Ob
  * `BUILT_IN_THEMES`.
  */
 export const BRAND_GRADIENT: Readonly<Record<BuiltInThemeName, readonly string[]>> = Object.freeze({
-  default: ['#a78bfa', '#8b5cf6', '#5b21b6'],
+  honeycrisp: ['#f87171', '#dc2626', '#7f1d1d'],
+  grannysmith: ['#a3e635', '#65a30d', '#365314'],
+  mulled: ['#dc2626', '#991b1b', '#450a0a'],
+  amber: ['#fbbf24', '#d97706', '#78350f'],
   midnight: ['#3b82f6', '#1d4ed8', '#1e3a8a'],
   arcade: ['#86efac', '#00ff88', '#00994f'],
 })
@@ -95,4 +88,22 @@ export function resolveBrandPalette(theme: BuiltInThemeName): BrandPalette {
  */
 export function resolveBrandGradient(theme: BuiltInThemeName): readonly string[] {
   return BRAND_GRADIENT[theme]
+}
+
+/**
+ * Extract a `BrandPalette` from a built-in theme's default variant token tree.
+ * Used by `mapValues(BUILT_IN_THEMES, extractBrandPalette)` to derive
+ * `BRAND_COLORS` without the legacy `Object.entries → map → fromEntries` shape.
+ *
+ * @private
+ * @param theme - Built-in theme from `BUILT_IN_THEMES`
+ * @returns Frozen `BrandPalette` for the theme's default variant
+ */
+function extractBrandPalette(theme: CiderpressTheme): BrandPalette {
+  const defaultTokens = theme.variants[theme.defaultVariant]
+  if (defaultTokens === undefined) {
+    return Object.freeze({ primary: '', hover: '', active: '', fg: '', soft: '' })
+  }
+  const { primary, hover, active, fg, soft } = defaultTokens.colors.brand
+  return Object.freeze({ primary, hover, active, fg, soft })
 }

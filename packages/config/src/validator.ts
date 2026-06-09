@@ -1,10 +1,12 @@
-import { THEME_NAMES, THEME_VARIANTS } from '@zpress/theme'
+import { isBuiltInTheme, THEME_NAMES, THEME_VARIANTS } from '@ciderpress/theme'
+import { uniqBy } from 'massaman/array'
 import { match, P } from 'massaman/match'
+import { either, isNotNil, isString } from 'massaman/predicate'
 
 import { configError, configErrorFromZod } from './errors.ts'
 import type { ConfigError, ConfigResult } from './errors.ts'
 import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
-import { zpressConfigSchema } from './schema.ts'
+import { ciderpressConfigSchema } from './schema.ts'
 import type {
   Feature,
   IconConfig,
@@ -14,28 +16,28 @@ import type {
   ThemeConfig,
   Workspace,
   WorkspaceGroup,
-  ZpressConfig,
+  CiderpressConfig,
 } from './types.ts'
 import { collectAllWorkspaceItems } from './workspace.ts'
 
 /**
- * Validate a zpress config — Zod schema parse followed by semantic checks.
+ * Validate a ciderpress config — Zod schema parse followed by semantic checks.
  *
  * 1. Schema parse via Zod (shape, types, required fields).
  * 2. Cross-field semantic validation (workspace path uniqueness, OpenAPI
  *    nesting, include/path coupling, landing/standalone requirements, icon
  *    identifier format, theme name validity).
  *
- * @param config - Raw config object to validate (typically loaded from `zpress.config.ts`)
+ * @param config - Raw config object to validate (typically loaded from `ciderpress.config.ts`)
  * @returns `ConfigResult` tuple — `[null, config]` on success or `[ConfigError, null]` on failure
  */
-export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
-  const parsed = zpressConfigSchema.safeParse(config)
+export function validateConfig(config: unknown): ConfigResult<CiderpressConfig> {
+  const parsed = ciderpressConfigSchema.safeParse(config)
   if (!parsed.success) {
     return [configErrorFromZod(parsed.error), null]
   }
 
-  const validated = parsed.data as ZpressConfig
+  const validated = parsed.data as CiderpressConfig
   const [semanticErr] = validateSemantics(validated)
   if (semanticErr) {
     return [semanticErr, null]
@@ -44,10 +46,6 @@ export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
   return [null, validated]
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Run all semantic checks across the parsed config.
  *
@@ -55,7 +53,7 @@ export function validateConfig(config: unknown): ConfigResult<ZpressConfig> {
  * @param config - Schema-validated config
  * @returns First semantic error encountered, or success
  */
-function validateSemantics(config: ZpressConfig): ConfigResult<true> {
+function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
   if (!config.sections || config.sections.length === 0) {
     return [configError('empty_sections', 'config.sections must have at least one section'), null]
   }
@@ -86,16 +84,10 @@ function validateSemantics(config: ZpressConfig): ConfigResult<true> {
     return [openapiErr, null]
   }
 
-  const sectionErrors = config.sections.reduce<ConfigError | null>((acc, section) => {
-    if (acc) {
-      return acc
-    }
+  const sectionErrors = firstErrorOf(config.sections, (section) => {
     const [sectionErr] = validateSection(section)
-    if (sectionErr) {
-      return sectionErr
-    }
-    return null
-  }, null)
+    return sectionErr
+  })
 
   if (sectionErrors) {
     return [sectionErrors, null]
@@ -124,7 +116,7 @@ function includeHasRecursive(include: Section['include']): boolean {
   if (include === null || include === undefined) {
     return false
   }
-  if (typeof include === 'string') {
+  if (isString(include)) {
     return include.includes('**')
   }
   return include.some((p) => p.includes('**'))
@@ -133,63 +125,76 @@ function includeHasRecursive(include: Section['include']): boolean {
 /**
  * Validate workspaces have required fields and no duplicate paths.
  *
+ * Split into two passes:
+ *   1. Per-item shape check (`firstErrorOf` + `validateWorkspaceItem`) for
+ *      `title`, `description`, `path`, and `icon` fields.
+ *   2. Path-uniqueness check via `uniqBy` — if `uniqBy(items, w => w.path)`
+ *      shortens the list, at least one duplicate exists; locate the first
+ *      and report it.
+ *
  * @private
  */
 function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
-  const pathError = items.reduce<{ error: ConfigError | null; seen: ReadonlySet<string> }>(
-    (acc, item) => {
-      if (acc.error) {
-        return acc
-      }
-
-      if (!item.title) {
-        return {
-          error: configError('missing_field', 'Workspace: "title" is required'),
-          seen: acc.seen,
-        }
-      }
-
-      if (!item.description) {
-        return {
-          error: configError(
-            'missing_field',
-            `Workspace "${item.title}": "description" is required`
-          ),
-          seen: acc.seen,
-        }
-      }
-
-      if (!item.path) {
-        return {
-          error: configError('missing_field', `Workspace "${item.title}": "path" is required`),
-          seen: acc.seen,
-        }
-      }
-
-      if (acc.seen.has(item.path)) {
-        return {
-          error: configError(
-            'duplicate_prefix',
-            `Workspace "${item.title}": duplicate path "${item.path}"`
-          ),
-          seen: acc.seen,
-        }
-      }
-
-      const [iconErr] = validateIconConfig(item.icon, `Workspace "${item.title}"`)
-      if (iconErr) {
-        return { error: iconErr, seen: acc.seen }
-      }
-
-      return { error: null, seen: new Set([...acc.seen, item.path]) }
-    },
-    { error: null, seen: new Set<string>() }
-  )
-
-  if (pathError.error) {
-    return [pathError.error, null]
+  const shapeError = firstErrorOf(items, validateWorkspaceItem)
+  if (shapeError) {
+    return [shapeError, null]
   }
-  return [null, true]
+
+  const uniquePaths = uniqBy(items, (w) => w.path)
+  if (uniquePaths.length === items.length) {
+    return [null, true]
+  }
+
+  const duplicate = findFirstDuplicateByPath(items)
+  if (duplicate === null) {
+    return [null, true]
+  }
+  return [
+    configError(
+      'duplicate_prefix',
+      `Workspace "${duplicate.title}": duplicate path "${duplicate.path}"`
+    ),
+    null,
+  ]
+}
+
+/**
+ * Per-item shape check for a single `Workspace`.
+ *
+ * @private
+ */
+function validateWorkspaceItem(item: Workspace): ConfigError | null {
+  if (!item.title) {
+    return configError('missing_field', 'Workspace: "title" is required')
+  }
+  if (!item.description) {
+    return configError('missing_field', `Workspace "${item.title}": "description" is required`)
+  }
+  if (!item.path) {
+    return configError('missing_field', `Workspace "${item.title}": "path" is required`)
+  }
+  const [iconErr] = validateIconConfig(item.icon, `Workspace "${item.title}"`)
+  if (iconErr) {
+    return iconErr
+  }
+  return null
+}
+
+/**
+ * Locate the first workspace whose `path` repeats an earlier entry's `path`.
+ * Returns `null` when every path is unique — only reached after `uniqBy`
+ * has signalled a duplicate exists.
+ *
+ * @private
+ */
+function findFirstDuplicateByPath(items: readonly Workspace[]): Workspace | null {
+  const duplicate = items
+    .map((item, index) => ({ item, index }))
+    .find(({ item, index }) => items.slice(0, index).some((earlier) => earlier.path === item.path))
+  if (duplicate === undefined) {
+    return null
+  }
+  return duplicate.item
 }
 
 /**
@@ -198,33 +203,32 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
  * @private
  */
 function validateWorkspaceGroups(groups: readonly WorkspaceGroup[]): ConfigResult<true> {
-  const categoryError = groups.reduce<ConfigError | null>((acc, group) => {
-    if (acc) {
-      return acc
-    }
-
-    if (!group.title) {
-      return configError('missing_field', 'WorkspaceGroup: "title" is required')
-    }
-
-    if (!group.icon) {
-      return configError('missing_field', `WorkspaceGroup "${group.title}": "icon" is required`)
-    }
-
-    if (!group.items || group.items.length === 0) {
-      return configError(
-        'missing_field',
-        `WorkspaceGroup "${group.title}": "items" must be a non-empty array`
-      )
-    }
-
-    return null
-  }, null)
-
+  const categoryError = firstErrorOf(groups, validateWorkspaceGroup)
   if (categoryError) {
     return [categoryError, null]
   }
   return [null, true]
+}
+
+/**
+ * Per-group shape check for a single `WorkspaceGroup`.
+ *
+ * @private
+ */
+function validateWorkspaceGroup(group: WorkspaceGroup): ConfigError | null {
+  if (!group.title) {
+    return configError('missing_field', 'WorkspaceGroup: "title" is required')
+  }
+  if (!group.icon) {
+    return configError('missing_field', `WorkspaceGroup "${group.title}": "icon" is required`)
+  }
+  if (!group.items || group.items.length === 0) {
+    return configError(
+      'missing_field',
+      `WorkspaceGroup "${group.title}": "items" must be a non-empty array`
+    )
+  }
+  return null
 }
 
 /**
@@ -319,16 +323,10 @@ function validateSection(section: Section): ConfigResult<true> {
   }
 
   if (section.items) {
-    const childErr = section.items.reduce<ConfigError | null>((acc, child) => {
-      if (acc) {
-        return acc
-      }
+    const childErr = firstErrorOf(section.items, (child) => {
       const [err] = validateSection(child)
-      if (err) {
-        return err
-      }
-      return null
-    }, null)
+      return err
+    })
 
     if (childErr) {
       return [childErr, null]
@@ -343,17 +341,12 @@ function validateSection(section: Section): ConfigResult<true> {
  *
  * @private
  */
-function validateFeatures(features: ZpressConfig['features']): ConfigResult<true> {
+function validateFeatures(features: CiderpressConfig['features']): ConfigResult<true> {
   if (features === undefined) {
     return [null, true]
   }
 
-  const featureError = features.reduce<ConfigError | null>((acc, feature) => {
-    if (acc) {
-      return acc
-    }
-    return validateFeature(feature)
-  }, null)
+  const featureError = firstErrorOf(features, validateFeature)
 
   if (featureError) {
     return [featureError, null]
@@ -393,7 +386,7 @@ function validateIconConfig(icon: IconConfig | undefined, context: string): Conf
     return [null, true]
   }
 
-  if (typeof icon === 'string') {
+  if (isString(icon)) {
     if (!icon.includes(':')) {
       return [
         configError(
@@ -475,68 +468,78 @@ function validateAllOpenAPI(
 
   const allConfigs = [...rootConfigs, ...workspaceConfigs]
 
-  const individualError = allConfigs.reduce<ConfigError | null>((acc, entry) => {
-    if (acc) {
-      return acc
-    }
+  const individualError = firstErrorOf(allConfigs, (entry) => {
     const [err] = validateOpenAPI(entry.config, entry.context)
-    if (err) {
-      return err
-    }
-    return null
-  }, null)
+    return err
+  })
 
   if (individualError) {
     return [individualError, null]
   }
 
-  const scopeError = workspaceConfigs.reduce<ConfigError | null>((acc, entry) => {
-    if (acc) {
-      return acc
-    }
-    const workspaceRoot = match(entry.workspacePath.endsWith('/'))
-      .with(true, () => entry.workspacePath)
-      .otherwise(() => `${entry.workspacePath}/`)
-    if (!entry.config.path.startsWith(workspaceRoot)) {
-      return configError(
-        'invalid_openapi',
-        `${entry.context}: "path" ("${entry.config.path}") must be nested under "${workspaceRoot}"`
-      )
-    }
-    return null
-  }, null)
-
+  const scopeError = firstErrorOf(workspaceConfigs, checkOpenApiNesting)
   if (scopeError) {
     return [scopeError, null]
   }
 
-  const duplicateError = allConfigs.reduce<{
-    readonly error: ConfigError | null
-    readonly seen: ReadonlySet<string>
-  }>(
-    (acc, entry) => {
-      if (acc.error) {
-        return acc
-      }
-      if (acc.seen.has(entry.config.path)) {
-        return {
-          error: configError(
-            'invalid_openapi',
-            `${entry.context}: duplicate OpenAPI path "${entry.config.path}"`
-          ),
-          seen: acc.seen,
-        }
-      }
-      return { error: null, seen: new Set([...acc.seen, entry.config.path]) }
-    },
-    { error: null, seen: new Set<string>() }
-  )
-
-  if (duplicateError.error) {
-    return [duplicateError.error, null]
+  const uniqueByPath = uniqBy(allConfigs, (entry) => entry.config.path)
+  if (uniqueByPath.length === allConfigs.length) {
+    return [null, true]
   }
 
-  return [null, true]
+  const duplicate = findFirstDuplicateOpenApi(allConfigs)
+  if (duplicate === null) {
+    return [null, true]
+  }
+  return [
+    configError(
+      'invalid_openapi',
+      `${duplicate.context}: duplicate OpenAPI path "${duplicate.config.path}"`
+    ),
+    null,
+  ]
+}
+
+/**
+ * Per-workspace OpenAPI scope check — ensures the workspace's `openapi.path`
+ * is nested under its `workspacePath`.
+ *
+ * @private
+ */
+function checkOpenApiNesting(entry: {
+  readonly config: OpenAPIConfig
+  readonly context: string
+  readonly workspacePath: string
+}): ConfigError | null {
+  const workspaceRoot = match(entry.workspacePath.endsWith('/'))
+    .with(true, () => entry.workspacePath)
+    .otherwise(() => `${entry.workspacePath}/`)
+  if (!entry.config.path.startsWith(workspaceRoot)) {
+    return configError(
+      'invalid_openapi',
+      `${entry.context}: "path" ("${entry.config.path}") must be nested under "${workspaceRoot}"`
+    )
+  }
+  return null
+}
+
+/**
+ * Locate the first OpenAPI config entry whose `config.path` repeats an
+ * earlier entry's path. Returns `null` only when every path is unique —
+ * after `uniqBy` has signalled a duplicate exists.
+ *
+ * @private
+ */
+function findFirstDuplicateOpenApi(
+  entries: readonly { readonly config: OpenAPIConfig; readonly context: string }[]
+): { readonly config: OpenAPIConfig; readonly context: string } | null {
+  const duplicate = entries.find((entry, index) =>
+    entries.slice(0, index).some((earlier) => earlier.config.path === entry.config.path)
+  )
+  if (duplicate === undefined) {
+    return null
+  }
+  return duplicate
 }
 
 /**
@@ -563,10 +566,7 @@ function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<t
     'homeBg',
   ]
 
-  const firstError = keys.reduce<ConfigError | null>((acc, key) => {
-    if (acc) {
-      return acc
-    }
+  const firstError = firstErrorOf(keys, (key) => {
     const value = colors[key]
     if (value !== undefined && !colorPattern.test(value)) {
       return configError(
@@ -575,7 +575,7 @@ function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<t
       )
     }
     return null
-  }, null)
+  })
 
   if (firstError) {
     return [firstError, null]
@@ -596,24 +596,18 @@ function validateTheme(
     return [null, true]
   }
 
-  const allKnownNames: readonly string[] = [
-    ...(THEME_NAMES as readonly string[]),
-    ...userThemeNames,
-  ]
-  if (theme.name !== undefined && !allKnownNames.includes(theme.name)) {
+  const isKnownThemeName = either(isBuiltInTheme, (name: string) => userThemeNames.includes(name))
+  if (theme.name !== undefined && !isKnownThemeName(theme.name)) {
     return [
       configError(
         'invalid_theme',
-        `theme.name: "${theme.name}" is not a valid theme (use ${allKnownNames.map((n) => `"${n}"`).join(', ')})`
+        `theme.name: "${theme.name}" is not a valid theme (use ${formatKnownThemeNames(userThemeNames)})`
       ),
       null,
     ]
   }
 
-  if (
-    theme.variant !== undefined &&
-    !(THEME_VARIANTS as readonly string[]).includes(theme.variant)
-  ) {
+  if (theme.variant !== undefined && !THEME_VARIANTS.includes(theme.variant)) {
     return [
       configError(
         'invalid_theme',
@@ -638,4 +632,38 @@ function validateTheme(
   }
 
   return [null, true]
+}
+
+/**
+ * Run `check` over every item until the first non-null error appears.
+ *
+ * Replaces the hand-rolled `.reduce<ConfigError | null>((acc, x) => acc ? acc : check(x), null)`
+ * pattern that previously appeared at eight sites in this module.
+ *
+ * The full sweep with `.map().find()` is fine in practice — typical inputs
+ * are <100 sections / workspaces, validation work is constant per item, and
+ * eager evaluation keeps the code dead-simple.
+ *
+ * @private
+ * @param items - Items to check
+ * @param check - Per-item check that returns either a `ConfigError` or `null`
+ * @returns The first non-null error, or `null` when every item passes
+ */
+function firstErrorOf<T>(
+  items: readonly T[],
+  check: (item: T) => ConfigError | null
+): ConfigError | null {
+  return items.map(check).find(isNotNil) ?? null
+}
+
+/**
+ * Format the set of valid theme names for the `invalid_theme` error message.
+ * Built-in names come first (declared order), then any user-registered names.
+ *
+ * @private
+ * @param userThemeNames - Names of themes registered via `config.themes`
+ * @returns Comma-separated, double-quoted list (e.g. `'"mulled", "honeycrisp"'`)
+ */
+function formatKnownThemeNames(userThemeNames: readonly string[]): string {
+  return [...THEME_NAMES, ...userThemeNames].map((n) => `"${n}"`).join(', ')
 }

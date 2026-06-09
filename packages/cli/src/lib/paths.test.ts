@@ -10,9 +10,9 @@ describe('createPaths()', () => {
     expect(paths.repoRoot).toBe(path.resolve('/project'))
   })
 
-  it('should set outputRoot ending with .zpress', () => {
+  it('should set outputRoot ending with .ciderpress', () => {
     const paths = createPaths('/project')
-    expect(paths.outputRoot).toMatch(/\.zpress$/)
+    expect(paths.outputRoot).toMatch(/\.ciderpress$/)
   })
 
   it('should set contentDir under outputRoot', () => {

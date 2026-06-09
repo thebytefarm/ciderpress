@@ -47,31 +47,31 @@ export function FeatureCard({
 
   const iconEl = match(resolved)
     .with(P.nonNullable, (r) => (
-      <span className={`zp-card__icon zp-card__icon--${r.color}`}>
+      <span className={`cp-card__icon cp-card__icon--${r.color}`}>
         <Icon icon={r.id} />
       </span>
     ))
     .otherwise(() => null)
 
   const linkTail = match(href)
-    .with(P.nonNullable, () => <span className="zp-feature-card__link">Learn more →</span>)
+    .with(P.nonNullable, () => <span className="cp-feature-card__link">Learn more →</span>)
     .otherwise(() => null)
 
   return (
-    <div className={`zp-feature-grid__item zp-feature-grid__item--span-${span}`}>
-      <div className="zp-feature-grid__item-wrap">
-        <Card href={href} className="zp-feature-card">
-          <div className="zp-feature-card__header">
+    <div className={`cp-feature-grid__item cp-feature-grid__item--span-${span}`}>
+      <div className="cp-feature-grid__item-wrap">
+        <Card href={href} className="cp-feature-card">
+          <div className="cp-feature-card__header">
             {iconEl}
             <span
-              className={clampClass('zp-feature-card__title', titleLines)}
+              className={clampClass('cp-feature-card__title', titleLines)}
               style={clampStyle(titleLines)}
             >
               {title}
             </span>
           </div>
           <span
-            className={clampClass('zp-feature-card__desc', descriptionLines)}
+            className={clampClass('cp-feature-card__desc', descriptionLines)}
             style={clampStyle(descriptionLines)}
           >
             {description}
@@ -95,27 +95,23 @@ interface FeatureGridProps {
  */
 export function FeatureGrid({ children }: FeatureGridProps): React.ReactElement {
   return (
-    <div className="zp-feature-section">
-      <div className="zp-feature-grid">{children}</div>
+    <div className="cp-feature-section">
+      <div className="cp-feature-grid">{children}</div>
     </div>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
- * Build a className string with optional `zp-clamp` suffix.
+ * Build a className string with optional `cp-clamp` suffix.
  *
  * @private
  * @param base - Base CSS class name
  * @param lines - Optional line clamp value
- * @returns Class string with or without zp-clamp
+ * @returns Class string with or without cp-clamp
  */
 function clampClass(base: string, lines: number | undefined): string {
   if (lines) {
-    return `${base} zp-clamp`
+    return `${base} cp-clamp`
   }
   return base
 }

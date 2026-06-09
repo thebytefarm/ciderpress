@@ -1,0 +1,172 @@
+/**
+ * CiderpressHeader — sticky site header that fully replaces Rspress's
+ * built-in `.rp-nav` chrome. All visual properties are themable via
+ * `--cp-*` custom properties.
+ *
+ * Theme-author API:
+ *   --cp-header-bg          background colour
+ *   --cp-header-border      bottom border colour
+ *   --cp-header-height      total row height (default 56px)
+ *   --cp-header-pad-x       inline padding (default 16px)
+ *   --cp-header-max-width   inner content max width (default 1280px)
+ *   --cp-header-gap         flex gap between header items (default 8px)
+ *   --cp-header-z           stacking index (default 60 — matches the
+ *                            Rspress nav slot it replaces and sits
+ *                            above `--rp-z-index-sidebar: 50` so the
+ *                            sidebar doesn't punch through when the
+ *                            page is scrolled)
+ */
+.cp-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--cp-header-z, 60);
+  width: 100%;
+  background: var(--cp-header-bg, var(--cp-c-bg));
+  backdrop-filter: blur(8px);
+}
+
+.cp-header-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--cp-header-gap, 8px);
+  height: var(--cp-header-height, 56px);
+  padding: 0 var(--cp-header-pad-x, 16px);
+  margin: 0 auto;
+  /* Border lives on the inner so it stays aligned with the constrained
+     container, not the full viewport. Docs pages keep the bottom edge
+     (full-width inner). Landing also picks up left + right edges to
+     match `.cp-page-rail`'s box treatment. */
+  border-bottom: 1px solid var(--cp-header-border, var(--cp-c-border));
+  /* Allow `.cp-nav-menu__overflow-popover` to escape vertically; the
+     CiderpressNavMenu owns horizontal overflow via its own measure +
+     collapse logic. */
+  overflow: visible;
+}
+
+/* Landing / home pages: align edge-for-edge with `.cp-page-rail` so
+   the header sits inside the same outer frame as the hero. We mirror
+   page-rail's positioning rules (margin gutter under 1248px, centered
+   margin auto above) and use the same `--cp-landing-max-width` token
+   so both move together when a theme overrides the width. */
+.cp-header--landing .cp-header-inner {
+  max-width: var(--cp-landing-max-width, 1200px);
+  margin: 0 var(--cp-frame-gutter);
+  padding: 0 16px;
+  border-left: 1px solid var(--cp-header-border, var(--cp-c-border));
+  border-right: 1px solid var(--cp-header-border, var(--cp-c-border));
+}
+
+@media (min-width: 1248px) {
+  .cp-header--landing .cp-header-inner {
+    margin: 0 auto;
+  }
+}
+
+/* Doc pages: span the full viewport, matching Rspress's sidebar + main
+   layout which already stretches edge-to-edge. */
+.cp-header--docs .cp-header-inner {
+  max-width: none;
+}
+
+.cp-header-logo {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.cp-header-logo > svg {
+  height: var(--cp-header-logo-height, 28px);
+  width: auto;
+}
+
+/* `.cp-sidebar-toggle` ships with `position: absolute; left: 16px` so it
+   pins to the far-left of its container — fine inside Rspress's own
+   `.rp-nav`, but inside our header it overlaps the logo. Restore inline
+   flex positioning so it flows alongside the other items. */
+.cp-header-inner .cp-sidebar-toggle {
+  position: static;
+  transform: none;
+  margin: 0;
+}
+
+/* Menu wrapper claims every pixel between the left cluster (logo) and
+   the trailing chrome (theme / socials / CTA). `justify-content:
+   flex-end` pushes both children (search + menu) to the right edge of
+   the wrapper, putting them side-by-side as a single right-anchored
+   cluster. CiderpressNavMenu observes this wrapper (not its own width)
+   to decide how many items fit — see ciderpress-nav-menu.tsx. */
+.cp-header-menu-wrap {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cp-header-menu-wrap > .cp-nav-search {
+  flex-shrink: 0;
+}
+
+.cp-header-menu-wrap > .cp-nav-menu {
+  /* Reset the `width: 100%` baked into ciderpress-nav-menu.css; in the
+     header context we want the menu to size to its content so the wrap's
+     `justify-content: flex-end` cleanly pushes both search and the menu
+     items to the right edge as a single right-anchored cluster. */
+  flex: 0 1 auto;
+  width: auto;
+  min-width: 0;
+}
+
+/* ── Mobile collapse ───────────────────────────────────────────────
+   At <=1024px the desktop chrome (inline menu, variant toggle,
+   socials, CTA, dividers) collapses into the slide-out drawer
+   surfaced by `<CiderpressNavHamburger />`. Each of the hidden
+   elements is still in the React tree — the drawer renders its own
+   copies so nothing is actually lost from the mobile UX. The
+   threshold matches `.cp-nav-hamburger`'s show breakpoint and the
+   docs bar's mobile layout (`@media (max-width: 1024px)` everywhere)
+   so the three pieces flip to mobile in lockstep. */
+@media (max-width: 1024px) {
+  /* Hide the chrome that the drawer surfaces. Keep the menu wrap (it
+     still holds the search button), but hide the inline menu items
+     and right-anchor the search to the viewport edge. */
+  .cp-header-inner > .cp-nav-divider,
+  .cp-header-inner > .cp-nav-social,
+  .cp-header-inner > .cp-topbar-cta,
+  .cp-header-inner > .rp-switch-appearance,
+  .cp-header-inner > .cp-variant-toggle,
+  .cp-header-inner > .cp-sidebar-toggle {
+    display: none;
+  }
+  .cp-header-menu-wrap > .cp-nav-menu,
+  .cp-header-menu-wrap > .cp-nav-divider {
+    display: none;
+  }
+  .cp-header-menu-wrap > .cp-nav-search {
+    margin-left: auto;
+  }
+}
+
+/* Hide Rspress's built-in nav entirely. Its DOM stays mounted (so the
+   keyboard-driven search modal still wires up) but it claims zero
+   visual space and zero interaction surface. */
+html .rp-nav {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+}
+
+/* `--rp-nav-height` is defined at `html:root` in
+   `styles/overrides/rail.css` to clear the announcement + header +
+   docs bar stack. Rspress 2.x dropped the `.rp-doc-container` /
+   `.rspress-doc-container` wrapper, so a scoped override here would
+   never match anything. */

@@ -2,7 +2,7 @@
  * FIGlet font character data.
  *
  * Two glyph sets:
- * 1. **ANSI Shadow** (6-row) — the primary zpress brand font
+ * 1. **ANSI Shadow** (6-row) — the primary ciderpress brand font
  * 2. **RubiFont** (4-row) — compact pixel-art fallback for long titles
  *    Source: https://github.com/patorjk/figlet.js (fonts/RubiFont.flf)
  *    Author: RubixTW — created with patorjk.com figfont editor
@@ -34,7 +34,7 @@ type PixelGlyph = readonly [string, string, string, string]
 /* eslint-disable @stylistic/no-multi-spaces */
 
 /**
- * ANSI Shadow character map — the primary zpress brand font.
+ * ANSI Shadow character map — the primary ciderpress brand font.
  */
 export const FIGLET_CHARS: Readonly<Record<string, FigletGlyph>> = Object.freeze({
   A: [' █████╗ ', '██╔══██╗', '███████║', '██╔══██║', '██║  ██║', '╚═╝  ╚═╝'],

@@ -4,13 +4,13 @@
   "initialVersions": {
     "example-kitchen-sink": "0.0.2",
     "example-simple": "0.0.2",
-    "zpress-vscode": "0.2.2",
-    "@zpress/cli": "0.9.1",
-    "@zpress/config": "0.5.2",
-    "@zpress/templates": "0.1.2",
-    "@zpress/theme": "0.3.2",
-    "@zpress/ui": "0.9.1",
-    "@zpress/kit": "0.2.23"
+    "ciderpress-vscode": "0.2.2",
+    "@ciderpress/cli": "0.9.1",
+    "@ciderpress/config": "0.5.2",
+    "@ciderpress/templates": "0.1.2",
+    "@ciderpress/theme": "0.3.2",
+    "@ciderpress/ui": "0.9.1",
+    "ciderpress": "0.2.23"
   },
   "changesets": ["upgrade-deps-latest", "v1-rc1-fixes", "v1-release"]
 }

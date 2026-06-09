@@ -1,9 +1,9 @@
 /**
- * Zod schemas for zpress configuration validation.
+ * Zod schemas for ciderpress configuration validation.
  *
  * Theme schemas (`themeColorsSchema`, `themeConfigSchema`) are imported from
- * `@zpress/theme` — that package owns the canonical theme surface; redefining
- * them here would create drift. Because `@zpress/theme` uses Zod v4, this file
+ * `@ciderpress/theme` — that package owns the canonical theme surface; redefining
+ * them here would create drift. Because `@ciderpress/theme` uses Zod v4, this file
  * also uses the Zod v4 entrypoint (`import { z } from 'zod'`). JSON Schema
  * generation in `packages/config/scripts/generate-schema.ts` uses Zod v4's
  * native `z.toJSONSchema()` accordingly.
@@ -17,7 +17,7 @@
  * lossy (...args: unknown[]) => unknown inference, preserving exact call signatures.
  */
 
-import { themeColorsSchema, themeConfigSchema, themeVariantSchema } from '@zpress/theme'
+import { themeColorsSchema, themeConfigSchema, themeInputEnvelopeSchema } from '@ciderpress/theme'
 import { z } from 'zod'
 
 import type {
@@ -40,6 +40,7 @@ import type {
   SiteReportConfig,
   SiteSidebarPromoConfig,
 } from './types.ts'
+import { SOCIAL_LINK_ICONS, SOCIAL_LINK_MODES } from './types.ts'
 
 // z.function() infers to (...args: unknown[]) => unknown, which loses
 // parameter and return types. z.custom<T> preserves exact signatures
@@ -251,7 +252,7 @@ const ctaConfigSchema = z
   .object({
     title: z.string().optional(),
     subtitle: z.string().optional(),
-    actions: z.array(heroActionSchema).optional(),
+    actions: z.array(heroActionSchema).max(2).optional(),
   })
   .strict()
 
@@ -296,8 +297,8 @@ const siteSidebarPromoConfigSchema = z
 
 const siteCtaConfigSchema = z
   .object({
-    text: z.string(),
-    href: z.string(),
+    text: z.string().describe('Visible label on the topbar CTA button.'),
+    href: z.string().describe('Destination URL — relative path or absolute URL.'),
   })
   .strict()
 
@@ -337,31 +338,8 @@ const siteConfigSchema = z
 
 const socialLinkSchema = z
   .object({
-    icon: z.union([
-      z.enum([
-        'lark',
-        'discord',
-        'facebook',
-        'github',
-        'instagram',
-        'linkedin',
-        'slack',
-        'x',
-        'youtube',
-        'wechat',
-        'qq',
-        'juejin',
-        'zhihu',
-        'bilibili',
-        'weibo',
-        'gitlab',
-        'X',
-        'bluesky',
-        'npm',
-      ]),
-      z.object({ svg: z.string() }).strict(),
-    ]),
-    mode: z.enum(['link', 'text', 'img', 'dom']),
+    icon: z.union([z.enum(SOCIAL_LINK_ICONS), z.object({ svg: z.string() }).strict()]),
+    mode: z.enum(SOCIAL_LINK_MODES),
     content: z.string(),
   })
   .strict()
@@ -376,50 +354,28 @@ const footerConfigSchema = z
 
 // Each variant's tokens are `unknown` because `defineTheme` validates the
 // token tree against `tokensSchema` at factory time — duplicating that
-// validation here would produce two diverging error surfaces. Config-time
-// validation only ensures the envelope (`name`, `variants`, `defaultVariant`)
-// is structurally correct AND that the envelope rules `defineTheme` enforces
-// at factory time also hold at config-load time:
-//   1. `name` is a valid slug
+// validation here would produce two diverging error surfaces.
+//
+// The envelope schema lives in `@ciderpress/theme` so both `defineTheme`
+// (factory-time) and `ciderpressConfigSchema` (config-load-time) enforce
+// identical invariants from a single source:
+//   1. `name` is a valid slug AND not a reserved built-in / `'default'`
 //   2. at least one of `variants.dark` / `variants.light` is present
 //   3. `defaultVariant`, when provided, points at a declared variant
-const zpressThemeInputSchema = z
-  .object({
-    name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, {
-      message:
-        'Theme name must be a lowercase slug (a-z, 0-9, hyphen) starting with an alphanumeric character',
-    }),
-    variants: z
-      .object({
-        dark: z.unknown().optional(),
-        light: z.unknown().optional(),
-      })
-      .strict()
-      .refine((v) => v.dark !== undefined || v.light !== undefined, {
-        message: 'Theme variants must declare at least one of `dark` or `light`',
-      }),
-    defaultVariant: themeVariantSchema.optional(),
-  })
-  .strict()
-  .refine(
-    (theme) => {
-      if (theme.defaultVariant === undefined) {
-        return true
-      }
-      return theme.variants[theme.defaultVariant] !== undefined
-    },
-    {
-      message: '`defaultVariant` must point at a variant declared in `variants`',
-      path: ['defaultVariant'],
-    }
-  )
+const ciderpressThemeInputSchema = themeInputEnvelopeSchema
 
-export const zpressConfigSchema = z
+export const ciderpressConfigSchema = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
-    themes: z.array(zpressThemeInputSchema).optional(),
+    themes: z.array(ciderpressThemeInputSchema).optional(),
+    loader: z
+      .enum(['apple', 'classic'])
+      .describe(
+        "Inline FOUC loader style. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader (loading, loading., loading.., loading...)."
+      )
+      .optional(),
     icon: iconIdSchema.optional(),
     logo: logoConfigSchema.optional(),
     tagline: z.string().optional(),
@@ -427,7 +383,7 @@ export const zpressConfigSchema = z
     packages: z.array(workspaceItemSchema).optional(),
     workspaces: z.array(workspaceGroupSchema).optional(),
     features: z.array(featureSchema).optional(),
-    actions: z.array(heroActionSchema).optional(),
+    actions: z.array(heroActionSchema).max(2).optional(),
     sidebar: sidebarConfigSchema.optional(),
     sections: z.array(entrySchema).min(1, 'config.sections must have at least one entry'),
     nav: z.union([z.literal('auto'), z.array(navItemSchema)]).optional(),
@@ -487,10 +443,6 @@ const _guardSiteConfig: z.ZodType<SiteConfig> = siteConfigSchema
 // Re-export theme schemas so they remain reachable via this module for
 // downstream consumers and JSON Schema generation tooling.
 export { themeColorsSchema, themeConfigSchema }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Runtime check for function values. Used by z.custom<T> to validate

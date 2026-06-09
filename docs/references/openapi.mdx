@@ -7,7 +7,7 @@ import { BrowserWindow } from '@theme'
 
 # OpenAPI
 
-Drop an OpenAPI spec into your config and zpress generates a full API reference — overview page, per-operation pages, and sidebar entries.
+Drop an OpenAPI spec into your config and ciderpress generates a full API reference — overview page, per-operation pages, and sidebar entries.
 
 See the [Petstore API Reference](/petstore) for a live example.
 
@@ -33,7 +33,7 @@ export default defineConfig({
 
 ## What gets generated
 
-During `zpress sync`, the spec is fully dereferenced (all `$ref`s resolved) and three types of files are written:
+During `ciderpress sync`, the spec is fully dereferenced (all `$ref`s resolved) and three types of files are written:
 
 | File                     | Description                                                               |
 | ------------------------ | ------------------------------------------------------------------------- |
@@ -73,7 +73,7 @@ Each sidebar entry shows the operation's `summary` as plain text instead of the 
 
 Attach an OpenAPI spec to any workspace item for per-package API docs:
 
-```ts title="zpress.config.ts"
+```ts title="ciderpress.config.ts"
 export default defineConfig({
   workspaces: [
     {

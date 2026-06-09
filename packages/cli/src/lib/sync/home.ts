@@ -1,9 +1,10 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@zpress/config'
-import type { Feature, Section, Workspace, ZpressConfig } from '@zpress/config'
+import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import type { Feature, Section, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
+import { isNotNil, isString } from 'massaman/predicate'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
@@ -76,12 +77,12 @@ const DEFAULT_SECTION_DESCRIPTIONS: Readonly<Record<string, string>> = {
  * `title`/`description` and `features:` array from top-level sections.
  * Workspace data is serialized separately for `.generated/workspaces.json`.
  *
- * @param config - zpress config
+ * @param config - ciderpress config
  * @param repoRoot - Absolute path to repo root (for resolving source files)
  * @returns Home page content and workspace data
  */
 export async function generateDefaultHomePage(
-  config: ZpressConfig,
+  config: CiderpressConfig,
   repoRoot: string
 ): Promise<HomePageResult> {
   const { tagline } = config
@@ -140,10 +141,10 @@ export async function generateDefaultHomePage(
  * Build serializable workspace data from config apps/packages/workspaces.
  * Returns typed group data for the home page.
  *
- * @param config - Zpress config with apps, packages, and workspace groups
+ * @param config - Ciderpress config with apps, packages, and workspace groups
  * @returns Workspace data result containing all groups
  */
-export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
+export function buildWorkspaceData(config: CiderpressConfig): WorkspaceDataResult {
   const apps = config.apps ?? []
   const packages = config.packages ?? []
   const workspaceGroups = config.workspaces ?? []
@@ -202,10 +203,6 @@ export function buildWorkspaceData(config: ZpressConfig): WorkspaceDataResult {
     data: allResults.map((r) => r.group),
   }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Internal result wrapper returned by `buildWorkspaceData`.
@@ -414,24 +411,17 @@ function findFirstChildLink(section: Section): string | undefined {
  * @returns Description string for the section
  */
 async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
-  // Single-file source — read frontmatter description
-  if (typeof section.include === 'string' && !hasGlobChars(section.include)) {
+  if (isString(section.include) && !hasGlobChars(section.include)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.include))
     if (description) {
       return description
     }
   }
 
-  // Config-level frontmatter description
-  if (
-    section.frontmatter !== null &&
-    section.frontmatter !== undefined &&
-    section.frontmatter.description
-  ) {
+  if (isNotNil(section.frontmatter) && section.frontmatter.description) {
     return String(section.frontmatter.description)
   }
 
-  // Well-known section name → curated default
   const titleStr = resolveSectionTitle(section)
   const knownDesc = DEFAULT_SECTION_DESCRIPTIONS[titleStr.toLowerCase()]
   if (knownDesc) {

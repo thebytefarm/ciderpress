@@ -1,5 +1,5 @@
+import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
 import { z } from 'zod'
 
 import { generateAssets } from '../lib/banner/index.ts'
@@ -31,7 +31,7 @@ export default command({
   handler: async (ctx) => {
     const { quiet, check, verbose } = ctx.args
     const paths = createPaths(process.cwd())
-    ctx.log.intro('zpress build')
+    ctx.log.intro('ciderpress build')
 
     if (ctx.args.clean) {
       const removed = await clean(paths)
@@ -53,7 +53,6 @@ export default command({
     }
 
     if (check) {
-      // Checked build: validate config, sync, generate assets, then build+check
       ctx.log.step('Validating config...')
       const configResult = runConfigCheck({ config, loadError: configErr })
 
@@ -74,10 +73,7 @@ export default command({
         ctx.log.outro('Build failed')
         process.exit(1)
       }
-
-      ctx.log.outro('Done')
     } else {
-      // Unchecked build: sync + assets + build (no validation, noisy output)
       const uncheckedSyncResult = await sync(config, { paths, quiet })
       if (uncheckedSyncResult.error) {
         ctx.log.error(uncheckedSyncResult.error)
@@ -85,17 +81,14 @@ export default command({
       }
       await runAssetGeneration({ config, paths, log: ctx.log, quiet })
       await buildSite({ config, paths })
-      ctx.log.outro('Done')
     }
+
+    ctx.log.outro('Done')
   },
 })
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
- * Build an `AssetConfig` from the loaded zpress config.
+ * Build an `AssetConfig` from the loaded ciderpress config.
  * Returns `null` when no title is configured (nothing to generate).
  *
  * @private
@@ -141,7 +134,6 @@ async function runAssetGeneration(params: RunAssetGenerationParams): Promise<voi
   })
 
   if (assetErr) {
-    // Asset generation is non-fatal — log and continue
     params.log.info(`Asset generation skipped: ${assetErr.message}`)
     return
   }

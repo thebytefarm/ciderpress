@@ -67,10 +67,6 @@ export function getBuiltInTemplates(): Record<TemplateType, Template> {
   return BUILT_IN_TEMPLATE_RECORD
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Reads a `.liquid` template file from the `templates/` directory.
  *

@@ -1,6 +1,6 @@
 ---
 title: Quick Start
-description: Install zpress and create your first documentation site in minutes.
+description: Install ciderpress and create your first documentation site in minutes.
 ---
 
 # Quick Start
@@ -8,15 +8,17 @@ description: Install zpress and create your first documentation site in minutes.
 ## Install
 
 ```bash
-pnpm add @zpress/kit
+pnpm add ciderpress
 ```
+
+ciderpress requires Node ≥24. Peer dependencies are `@rspress/core`, `react@19`, and `react-dom@19` — pnpm installs these automatically; npm classic and yarn classic users must install them explicitly.
 
 ## Initialize
 
-Run `zpress setup` for an interactive walkthrough, or create a `zpress.config.ts` manually at your repo root:
+Run `ciderpress setup` for an interactive walkthrough, or create a `ciderpress.config.ts` manually at your repo root:
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Project',
@@ -47,10 +49,10 @@ Every `.md` file matching the glob becomes a page under `/guides/`.
 
 ## Configure the site chrome
 
-Tell zpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA:
+Tell ciderpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA:
 
 ```ts
-// zpress.config.ts
+// ciderpress.config.ts
 export default defineConfig({
   // ...
   site: {
@@ -67,47 +69,52 @@ Every field is optional — pieces you don't configure render nothing rather tha
 ## Start the dev server
 
 ```bash
-zpress dev
+ciderpress dev
 ```
 
-This copies and processes your source markdown into the `.zpress/content/` build directory, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
+This copies and processes your source markdown into the `.ciderpress/content/` build directory, starts a file watcher for live reload, and launches the dev server. Open the URL printed in the terminal to see your site.
+
+Pass `--headless` for non-interactive shells (CI, Docker, nodemon) — the default Ink TUI requires a real TTY.
 
 ## Commands
 
-| Command           | Purpose                                           |
-| ----------------- | ------------------------------------------------- |
-| `zpress setup`    | Create a starter config and generate SVG assets   |
-| `zpress sync`     | Sync source files into `.zpress/content/`         |
-| `zpress dev`      | Start the dev server with live reload             |
-| `zpress build`    | Build the static site for production              |
-| `zpress serve`    | Preview the production build locally              |
-| `zpress check`    | Validate config and check for broken links        |
-| `zpress draft`    | Scaffold a new documentation file from a template |
-| `zpress clean`    | Remove build artifacts, synced content, and cache |
-| `zpress dump`     | Print the resolved site structure as JSON         |
-| `zpress generate` | Generate banner, logo, and icon SVG assets        |
+| Command            | Purpose                                                                             |
+| ------------------ | ----------------------------------------------------------------------------------- |
+| `ciderpress setup` | Create a starter config and generate SVG assets                                     |
+| `ciderpress dev`   | Start the dev server with live reload                                               |
+| `ciderpress build` | Build the static site for production                                                |
+| `ciderpress serve` | Preview the production build locally                                                |
+| `ciderpress sync`  | Sync source files into `.ciderpress/content/`                                       |
+| `ciderpress check` | Validate config and check for broken links                                          |
+| `ciderpress diff`  | Show changed files in configured source directories — useful for CI `ignoreCommand` |
+| `ciderpress draft` | Scaffold a new documentation file from a template                                   |
+| `ciderpress clean` | Remove build artifacts, synced content, and cache                                   |
+| `ciderpress dump`  | Print the resolved site structure as JSON                                           |
 
 ## Project structure
 
-After running `zpress dev`, the `.zpress/` directory is created:
+After running `ciderpress dev`, the `.ciderpress/` directory is created:
 
-```
+```txt
 your-repo/
 ├── docs/                       # Your source markdown
 │   ├── intro.md
 │   └── guides/
-├── zpress.config.ts         # Site configuration
-└── .zpress/                 # Generated — add to .gitignore
-    ├── content/                # Synced pages
-    │   └── .generated/         # sidebar.json, nav.json
+│       └── _meta.json          # Optional: sidebar order/labels per folder
+├── ciderpress.config.ts        # Site configuration
+└── .ciderpress/                # Generated — add to .gitignore
+    ├── content/                # Synced pages + Rspress-consumed _meta.json files
+    │   └── _nav.json           # Top-nav definition consumed by Rspress
     ├── public/                 # Static assets
     ├── dist/                   # Build output
     └── cache/                  # Build cache
 ```
 
-Add `.zpress/` to your `.gitignore`.
+Inside `.ciderpress/content/`, sidebars are driven by `_meta.json` files placed alongside the markdown, and the top nav comes from `_nav.json` at the root — those are what Rspress reads. Runtime artifacts for the UI live under `.ciderpress/content/.generated/` (`workspaces.json`, `scopes.json`); `sidebar.json` and `nav.json` there are debug snapshots only.
+
+If you skipped `ciderpress setup`, add `.ciderpress/` to your `.gitignore` manually.
 
 ## Next steps
 
 - [Content](/concepts/content) — learn how sections, pages, and navigation work
-- [Configuration reference](/reference/configuration) — complete field reference for `zpress.config.ts`
+- [Configuration reference](/reference/configuration) — complete field reference for `ciderpress.config.ts`

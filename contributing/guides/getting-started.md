@@ -1,6 +1,6 @@
 # Get Started Contributing
 
-Set up your local environment to contribute to zpress.
+Set up your local environment to contribute to ciderpress.
 
 ## Prerequisites
 
@@ -14,8 +14,8 @@ Set up your local environment to contribute to zpress.
 ### 1. Fork and clone
 
 ```bash
-gh repo fork joggrdocs/zpress --clone
-cd zpress
+gh repo fork thebytefarm/ciderpress --clone
+cd ciderpress
 ```
 
 ### 2. Install dependencies
@@ -36,13 +36,19 @@ pnpm build && pnpm check
 
 ### 4. Run the dev server
 
-Start the zpress documentation site locally:
+Start the ciderpress documentation site locally using the project-blessed script (`package.json:22`):
 
 ```bash
-pnpm zpress dev
+pnpm docs:dev
 ```
 
-This runs a sync + Rspress dev server on `http://localhost:6174` with file watching.
+For non-TTY shells (tmux panes without a real PTY, background agent tasks, CI logs), use the headless variant — it skips the Ink TUI and emits plain log output:
+
+```bash
+pnpm docs:dev --headless
+```
+
+Both run a sync + Rspress dev server on `http://localhost:6174` with file watching.
 
 ### 5. Understand the project
 

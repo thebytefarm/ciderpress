@@ -2,18 +2,18 @@
  * Rspress sidebar overrides — group headers, item sizing, active stripe,
  * mobile drawer transitions.
  *
- * Cascade layer: `zpress.overrides` (see styles/layers.css).
+ * Cascade layer: `ciderpress.overrides` (see styles/layers.css).
  *
  * `!important` inventory (task 8.2):
  *   - Before: 0
  *   - After:  0
  *
  * No `!important` declarations are needed here — `html .rp-sidebar-*`
- * specificity combined with the `zpress.overrides` layer wins against
+ * specificity combined with the `ciderpress.overrides` layer wins against
  * Rspress's sidebar defaults.
  */
 
-@layer zpress.overrides {
+@layer ciderpress.overrides {
   /* ── Transitions (960px–1439px) ──────────────────────────── */
 
   @media (min-width: 960px) and (max-width: 1439px) {
@@ -26,31 +26,31 @@
 
   /* ── Group section headers — mono ALL CAPS (mockup pattern) ──── */
   html .rp-sidebar-section-header {
-    font-family: var(--zp-font-family-mono);
+    font-family: var(--cp-font-family-mono);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--zp-c-text-3);
+    color: var(--cp-c-text-3);
     font-weight: 500;
   }
 
   html .rp-sidebar-section-header__left {
-    color: var(--zp-c-text-3);
+    color: var(--cp-c-text-3);
   }
 
   /* Top-level group anchors (clickable section headers) styled as eyebrow labels */
   html .rp-sidebar-item.rp-sidebar-group[data-depth='0'] {
-    font-family: var(--zp-font-family-mono);
+    font-family: var(--cp-font-family-mono);
     font-size: 10px;
     text-transform: uppercase;
     letter-spacing: 0.08em;
-    color: var(--zp-c-text-3);
+    color: var(--cp-c-text-3);
     font-weight: 500;
     margin-top: 12px;
   }
 
   html .rp-sidebar-item.rp-sidebar-group[data-depth='0']:hover {
-    color: var(--zp-c-text-1);
+    color: var(--cp-c-text-1);
   }
 
   /* Sub-items — 13px regular Geist, denser than Rspress default */
@@ -78,8 +78,8 @@
      every time the active page changes. The stripe + bg + brand color
      already mark the row; the bold is redundant. */
   html .rp-sidebar-item--active {
-    color: var(--zp-c-text-1);
-    background: var(--zp-c-bg-soft);
+    color: var(--cp-c-text-1);
+    background: var(--cp-c-bg-soft);
     font-weight: 400;
     position: relative;
   }
@@ -91,7 +91,7 @@
     top: 7px;
     bottom: 7px;
     width: 2px;
-    background: var(--zp-c-brand-1);
+    background: var(--cp-c-brand-1);
     border-radius: 0 2px 2px 0;
   }
 

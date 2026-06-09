@@ -2,9 +2,10 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import type { Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
-import type { Frontmatter } from '@zpress/config'
 import { match } from 'massaman/match'
+import { isEmpty, isNil, isNotNil } from 'massaman/predicate'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
 import { rewriteImages } from './images.ts'
@@ -29,7 +30,7 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
   const cached = await tryMtimeSkip(page, ctx)
   if (cached !== null) {
     // Verify the output file still exists on disk — the manifest may survive
-    // even if .zpress/content/ was partially deleted.
+    // even if .ciderpress/content/ was partially deleted.
     const outputExists = await fs.stat(outPath).catch(() => null)
     if (outputExists !== null) {
       return cached
@@ -49,7 +50,7 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
         .otherwise(() => page.content as string)
       return injectFrontmatter(await body, page.frontmatter)
     }
-    log.error(`[zpress] Page "${page.outputPath}" has neither source nor content`)
+    log.error(`[ciderpress] Page "${page.outputPath}" has neither source nor content`)
     return ''
   })()
 
@@ -60,22 +61,20 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
 
   const contentHash = createHash('sha256').update(content).digest('hex')
 
-  // Store source as repo-relative path (not machine-local absolute path)
   const relativeSource = (() => {
-    if (page.source !== null && page.source !== undefined) {
+    if (isNotNil(page.source)) {
       return path.relative(ctx.repoRoot, page.source)
     }
   })()
 
-  // Incremental: skip write if content unchanged
   const prev = (() => {
-    if (ctx.previousManifest !== null && ctx.previousManifest !== undefined) {
+    if (isNotNil(ctx.previousManifest)) {
       return ctx.previousManifest.files[page.outputPath]
     }
   })()
 
   async function resolveSourceMtime(): Promise<number | undefined> {
-    if (page.source !== null && page.source !== undefined) {
+    if (isNotNil(page.source)) {
       const stat = await fs.stat(page.source)
       return stat.mtimeMs
     }
@@ -103,10 +102,6 @@ export async function copyPage(page: PageData, ctx: SyncContext): Promise<Manife
     frontmatterHash: fmHash,
   }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Compute an MD5 hash of serialized frontmatter for change detection.
@@ -137,17 +132,17 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
   if (ctx.skipMtimeOptimization === true) {
     return null
   }
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return null
   }
-  if (ctx.previousManifest === null || ctx.previousManifest === undefined) {
+  if (isNil(ctx.previousManifest)) {
     return null
   }
   const prev = ctx.previousManifest.files[page.outputPath]
-  if (prev === null || prev === undefined) {
+  if (isNil(prev)) {
     return null
   }
-  if (prev.sourceMtime === null || prev.sourceMtime === undefined) {
+  if (isNil(prev.sourceMtime)) {
     return null
   }
   const stat = await fs.stat(page.source).catch(() => null)
@@ -158,7 +153,7 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
     return null
   }
   const fmHash = hashFrontmatter(page.frontmatter)
-  if (prev.frontmatterHash === null || prev.frontmatterHash === undefined) {
+  if (isNil(prev.frontmatterHash)) {
     return null
   }
   if (fmHash !== prev.frontmatterHash) {
@@ -178,10 +173,10 @@ async function tryMtimeSkip(page: PageData, ctx: SyncContext): Promise<ManifestE
  * @returns Content with rewritten links, or original content if no source map
  */
 function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): string {
-  if (ctx.sourceMap === null || ctx.sourceMap === undefined) {
+  if (isNil(ctx.sourceMap)) {
     return raw
   }
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return raw
   }
   const sourcePath = path.relative(ctx.repoRoot, page.source)
@@ -204,7 +199,7 @@ function rewriteSourceLinks(raw: string, page: PageData, ctx: SyncContext): stri
  * @returns Content with rewritten image paths
  */
 function rewriteSourceImages(content: string, page: PageData, ctx: SyncContext): Promise<string> {
-  if (page.source === null || page.source === undefined) {
+  if (isNil(page.source)) {
     return Promise.resolve(content)
   }
   const sourcePath = path.relative(ctx.repoRoot, page.source)
@@ -251,7 +246,6 @@ function warnMdxExports(content: string, outputPath: string): void {
     return
   }
 
-  // Filter out exports inside fenced code blocks
   const fenceRanges = lines.reduce<readonly (readonly [number, number])[]>((acc, line, index) => {
     const isFence = line.trimStart().startsWith('```')
     const lastRange = acc.at(-1)
@@ -271,7 +265,7 @@ function warnMdxExports(content: string, outputPath: string): void {
 
   if (outsideFence.length > 0) {
     log.warn(
-      `[zpress] ${outputPath}: found ESM export(s) on line(s) ${outsideFence.join(', ')}. ` +
+      `[ciderpress] ${outputPath}: found ESM export(s) on line(s) ${outsideFence.join(', ')}. ` +
         'ESM exports are stripped during SSG-MD rendering and will cause ReferenceErrors ' +
         'if referenced by JSX. Use inline values instead.'
     )
@@ -288,7 +282,7 @@ function warnMdxExports(content: string, outputPath: string): void {
  * @returns Markdown string with merged frontmatter
  */
 function injectFrontmatter(raw: string, fm: Frontmatter): string {
-  if (Object.keys(fm).length === 0) {
+  if (isEmpty(fm)) {
     return raw
   }
 

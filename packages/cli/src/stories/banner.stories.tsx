@@ -19,7 +19,7 @@ type BannerPreviewProps = Record<string, unknown>
 function BannerPreview(_props: BannerPreviewProps): React.ReactElement {
   return (
     <Box flexDirection="column" padding={1}>
-      <Banner />
+      <Banner width={78} />
     </Box>
   )
 }
@@ -38,7 +38,7 @@ export default stories<BannerPreviewProps>({
   stories: {
     Default: {
       props: {},
-      description: 'zpress logo banner with purple gradient',
+      description: 'ciderpress logo banner with mulled brand-burgundy gradient',
     },
   },
 })

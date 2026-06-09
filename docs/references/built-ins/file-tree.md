@@ -5,7 +5,7 @@ description: Render interactive file tree visualizations.
 
 # File Tree
 
-zpress bundles `rspress-plugin-file-tree` for rendering file and directory structures. Trees are collapsible and expanded one level deep by default. No configuration required.
+ciderpress bundles `rspress-plugin-file-tree` for rendering file and directory structures. Trees are collapsible and expanded one level deep by default. No configuration required.
 
 Use a fenced code block with the `tree` language.
 
@@ -79,7 +79,7 @@ Use a fenced code block with the `tree` language.
 │   │   └── quick-start.md
 │   └── concepts/
 │       └── sections-and-pages.md
-├── zpress.config.ts
+├── ciderpress.config.ts
 └── package.json
 ```
 ````
@@ -117,7 +117,7 @@ Use a fenced code block with the `tree` language.
 │   │   └── quick-start.md
 │   └── concepts/
 │       └── sections-and-pages.md
-├── zpress.config.ts
+├── ciderpress.config.ts
 └── package.json
 ```
 

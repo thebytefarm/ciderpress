@@ -37,7 +37,7 @@ See the [TypeScript standards](../standards/typescript/coding-style.md) and [err
 Run the CI check suite as you work to catch issues early:
 
 ```bash
-pnpm lint && pnpm format && pnpm typecheck
+pnpm lint && pnpm format && pnpm typecheck && pnpm test
 ```
 
 Auto-fix formatting and lint issues:
@@ -51,24 +51,24 @@ pnpm format:fix && pnpm lint:fix
 Verify your changes pass all checks before committing:
 
 ```bash
-pnpm check
+pnpm check && pnpm test
 ```
 
-> **Note:** A test runner is not yet configured. `pnpm check` runs typecheck + lint + format.
+`pnpm check` runs typecheck + lint + format. Tests run separately via `pnpm test` (Vitest, wired across `packages/{cli,config,templates,theme,ui}`).
 
 ### 5. Commit
 
 Use [Conventional Commits](https://www.conventionalcommits.org/) format:
 
 ```bash
-git commit -m "feat(packages/core): add parallel script execution"
+git commit -m "feat(packages/cli): add parallel script execution"
 ```
 
 Format: `type(scope): description` -- see [Commit Standards](../standards/git-commits.md) for types, scopes, and examples.
 
 ### 6. Add a changeset
 
-If the change affects published packages (`@zpress/core`, `@zpress/*`), create a changeset:
+If the change affects published packages (`ciderpress`, `@ciderpress/*`), create a changeset:
 
 ```bash
 pnpm changeset
@@ -78,7 +78,7 @@ Follow the prompts to select the package, semver bump type (patch, minor, major)
 
 **When to add a changeset:**
 
-- New features, bug fixes, or breaking changes to `@zpress/core` or `@zpress/*` packages
+- New features, bug fixes, or breaking changes to `ciderpress` or `@ciderpress/*` packages
 
 **When to skip:**
 
@@ -119,14 +119,21 @@ Closes #123
 
 See [Pull Request Standards](../standards/git-pulls.md) for the full review and merge process.
 
-CI runs: lint, format, typecheck.
+CI runs (per `.github/workflows/ci.yml`):
+
+- `pnpm build`
+- `pnpm test`
+- `pnpm typecheck`
+- `pnpm lint`
+- `pnpm format`
+- `pnpm changeset status --since=origin/main` (separate `changeset` job on pull requests)
 
 ### 8. Address review feedback
 
 Respond to review comments within 24 hours. Make fixup commits and push:
 
 ```bash
-git commit -m "fix(packages/core): address review feedback"
+git commit -m "fix(packages/cli): address review feedback"
 git push
 ```
 
@@ -138,23 +145,11 @@ After approval and green CI, use **Squash and Merge**. The Changesets bot handle
 
 Before requesting review, confirm:
 
-1. `pnpm check && pnpm build` all pass
+1. `pnpm check && pnpm test && pnpm build` all pass
 2. PR title follows `type(scope): description` format
 3. Changeset included if the change affects published packages
 
 ## Troubleshooting
-
-### Pre-push hook fails
-
-**Issue:** `git push` is blocked by lint or typecheck errors.
-
-**Fix:**
-
-```bash
-pnpm lint:fix && pnpm format:fix
-```
-
-Fix any remaining typecheck errors, then re-push.
 
 ### Changeset confusion
 

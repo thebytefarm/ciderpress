@@ -9,24 +9,24 @@ import { generateAssets } from '../lib/banner/index.ts'
 import { createPaths } from '../lib/paths.ts'
 import type { Paths } from '../lib/paths.ts'
 
-const CONFIG_FILENAME = 'zpress.config.ts'
+const CONFIG_FILENAME = 'ciderpress.config.ts'
 
 /**
- * Initialize a zpress config file in the project root.
+ * Initialize a ciderpress config file in the project root.
  *
  * Derives the project title from the git remote origin (falling back
- * to the directory name), writes a starter `zpress.config.ts`,
+ * to the directory name), writes a starter `ciderpress.config.ts`,
  * and generates initial banner/logo assets.
  */
 export default command({
   name: 'setup',
-  description: 'Initialize a zpress config in the current project',
+  description: 'Initialize a ciderpress config in the current project',
   handler: async (ctx) => {
     const cwd = process.cwd()
     const paths = createPaths(cwd)
     const configPath = path.join(paths.repoRoot, CONFIG_FILENAME)
 
-    ctx.log.intro('zpress setup')
+    ctx.log.intro('ciderpress setup')
 
     if (fs.existsSync(configPath)) {
       ctx.log.warn(`${CONFIG_FILENAME} already exists — skipping`)
@@ -39,10 +39,8 @@ export default command({
     fs.writeFileSync(configPath, buildConfigTemplate(title), 'utf8')
     ctx.log.success(`Created ${CONFIG_FILENAME} (title: "${title}")`)
 
-    // Ensure .zpress/ is gitignored
     await ensureGitignore(paths, ctx.log)
 
-    // Generate initial banner, logo, and icon assets
     await fsPromises.mkdir(paths.publicDir, { recursive: true })
     const [assetErr, written] = await generateAssets({
       config: { title, tagline: undefined },
@@ -62,10 +60,6 @@ export default command({
   },
 })
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Extract the repository name from the git remote origin URL.
  * Returns `null` if not in a git repo or no origin is configured.
@@ -83,6 +77,11 @@ function extractGitRepoName(cwd: string): string | null {
   // Handle SSH (git@github.com:org/repo.git) and HTTPS (https://github.com/org/repo.git)
   const match = url.match(/[/:]([^/:]+?)(?:\.git)?$/)
   if (!match) {
+    return null
+  }
+  // Trailing-slash remotes (e.g. `https://github.com/org/`) produce an
+  // empty capture; treat that as a miss so we fall back to the directory name.
+  if (!match[1]) {
     return null
   }
 
@@ -134,7 +133,7 @@ function deriveTitle(cwd: string): string {
  */
 function buildConfigTemplate(title: string): string {
   const escaped = title.replaceAll("'", String.raw`\'`)
-  return `import { defineConfig } from '@zpress/kit'
+  return `import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: '${escaped}',
@@ -149,9 +148,9 @@ export default defineConfig({
 `
 }
 
-const ZPRESS_GITIGNORE_ENTRY = '.zpress/'
+const CIDERPRESS_GITIGNORE_ENTRY = '.ciderpress/'
 
-const NESTED_GITIGNORE_CONTENT = `# managed by zpress — ignore everything by default
+const NESTED_GITIGNORE_CONTENT = `# managed by ciderpress — ignore everything by default
 *
 
 # to track custom assets (e.g. banners, logos), uncomment the following lines:
@@ -160,8 +159,8 @@ const NESTED_GITIGNORE_CONTENT = `# managed by zpress — ignore everything by d
 `
 
 /**
- * Ensure .zpress/ is gitignored. Tries to append to the root .gitignore first;
- * if no root .gitignore exists, writes a nested .gitignore inside .zpress/ instead.
+ * Ensure .ciderpress/ is gitignored. Tries to append to the root .gitignore first;
+ * if no root .gitignore exists, writes a nested .gitignore inside .ciderpress/ instead.
  *
  * @private
  * @param paths - Project paths
@@ -177,7 +176,7 @@ async function ensureGitignore(
     const content = fs.readFileSync(rootGitignore, 'utf8')
     const lines = content.split('\n')
     const alreadyIgnored = lines.some(
-      (line) => line.trim() === ZPRESS_GITIGNORE_ENTRY || line.trim() === '.zpress'
+      (line) => line.trim() === CIDERPRESS_GITIGNORE_ENTRY || line.trim() === '.ciderpress'
     )
 
     if (alreadyIgnored) {
@@ -192,10 +191,10 @@ async function ensureGitignore(
     })()
     fs.writeFileSync(
       rootGitignore,
-      `${content}${suffix}\n# zpress\n${ZPRESS_GITIGNORE_ENTRY}\n`,
+      `${content}${suffix}\n# ciderpress\n${CIDERPRESS_GITIGNORE_ENTRY}\n`,
       'utf8'
     )
-    logger.success('Added .zpress/ to .gitignore')
+    logger.success('Added .ciderpress/ to .gitignore')
     return
   }
 
@@ -205,5 +204,5 @@ async function ensureGitignore(
     NESTED_GITIGNORE_CONTENT,
     'utf8'
   )
-  logger.success('Created .zpress/.gitignore')
+  logger.success('Created .ciderpress/.gitignore')
 }

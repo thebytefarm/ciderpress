@@ -1,11 +1,11 @@
 /**
- * Generate theme CSS files from the @zpress/theme registry.
+ * Generate theme CSS files from the @ciderpress/theme registry.
  *
- * Reads `BUILT_IN_THEMES` from `@zpress/theme` and renders each entry with
+ * Reads `BUILT_IN_THEMES` from `@ciderpress/theme` and renders each entry with
  * `themeToCss`, then writes the result to:
  *
- *   - packages/ui/src/theme/styles/themes/{base,midnight,arcade}.css
- *   - packages/ui/src/head/css/themes/{base,midnight,arcade}.css   (FOUC fallback)
+ *   - packages/ui/src/theme/styles/themes/{mulled,honeycrisp,grannysmith,amber,midnight,arcade}.css
+ *   - packages/ui/src/head/css/themes/{mulled,honeycrisp,grannysmith,amber,midnight,arcade}.css   (FOUC fallback)
  *
  * Both output paths receive the same byte-identical body — the FOUC mirror
  * exists so the head injector can ship the critical block inline before the
@@ -30,11 +30,7 @@ import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { BUILT_IN_THEMES, themeToCss } from '@zpress/theme'
-
-// ---------------------------------------------------------------------------
-// Module-level constants
-// ---------------------------------------------------------------------------
+import { BUILT_IN_THEMES, themeToCss } from '@ciderpress/theme'
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 
@@ -48,14 +44,10 @@ const GENERATED_BANNER = '/* GENERATED — DO NOT EDIT — run scripts/generate-
 // hardcoded list to keep in sync.
 const THEME_NAMES = Object.freeze(Object.keys(BUILT_IN_THEMES))
 
-// ---------------------------------------------------------------------------
-// Pure helpers
-// ---------------------------------------------------------------------------
-
 /**
  * Render a single theme to its final CSS string (banner + body).
  *
- * @param {string} name - Built-in theme name (`base` | `midnight` | `arcade`)
+ * @param {string} name - Built-in theme name (`mulled` | `honeycrisp` | `grannysmith` | `amber` | `midnight` | `arcade`)
  * @returns {string} Banner-prefixed CSS source
  */
 const renderThemeCss = (name) => `${GENERATED_BANNER}\n${themeToCss(BUILT_IN_THEMES[name])}`
@@ -90,7 +82,7 @@ const readFileOrNull = async (path) => {
     return await readFile(path, 'utf8')
   } catch (err) {
     if (err && err.code === 'ENOENT') return null
-    process.stderr.write(`[zpress] failed to read ${path}: ${err.message}\n`)
+    process.stderr.write(`[ciderpress] failed to read ${path}: ${err.message}\n`)
     process.exit(1)
   }
 }
@@ -107,10 +99,6 @@ const writeFileEnsuringDir = async (path, contents) => {
   await writeFile(path, contents, 'utf8')
 }
 
-// ---------------------------------------------------------------------------
-// Modes
-// ---------------------------------------------------------------------------
-
 /**
  * Write every generated theme CSS file to disk.
  *
@@ -119,7 +107,7 @@ const writeFileEnsuringDir = async (path, contents) => {
 const runWrite = async () => {
   const targets = buildTargets()
   await Promise.all(targets.map(({ path, contents }) => writeFileEnsuringDir(path, contents)))
-  process.stdout.write(`[zpress] wrote ${targets.length} theme CSS file(s)\n`)
+  process.stdout.write(`[ciderpress] wrote ${targets.length} theme CSS file(s)\n`)
 }
 
 /**
@@ -138,20 +126,18 @@ const runCheck = async () => {
   )
   const stale = results.filter((r) => !r.fresh)
   if (stale.length === 0) {
-    process.stdout.write(`[zpress] theme CSS is up to date (${targets.length} file(s) checked)\n`)
+    process.stdout.write(
+      `[ciderpress] theme CSS is up to date (${targets.length} file(s) checked)\n`
+    )
     return
   }
   process.stderr.write(
-    `[zpress] theme CSS is stale — re-run scripts/generate-theme-css.mjs:\n${stale
+    `[ciderpress] theme CSS is stale — re-run scripts/generate-theme-css.mjs:\n${stale
       .map((s) => `  - ${s.path}`)
       .join('\n')}\n`
   )
   process.exit(1)
 }
-
-// ---------------------------------------------------------------------------
-// Entrypoint
-// ---------------------------------------------------------------------------
 
 const isCheckMode = process.argv.includes('--check')
 const task = (() => {
@@ -162,6 +148,6 @@ const task = (() => {
 })()
 
 task.catch((err) => {
-  process.stderr.write(`[zpress] generate-theme-css failed: ${err.message}\n`)
+  process.stderr.write(`[ciderpress] generate-theme-css failed: ${err.message}\n`)
   process.exit(1)
 })

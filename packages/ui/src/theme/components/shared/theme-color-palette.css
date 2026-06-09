@@ -1,0 +1,80 @@
+/**
+ * ThemeColorPalette — grouped swatch grid rendered inside an Accordion.
+ */
+
+.cp-theme-color-palette {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-16);
+  padding-top: var(--cp-s-4);
+}
+
+.cp-theme-color-palette__variants {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: var(--cp-s-4);
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--rp-radius);
+  background: var(--cp-c-bg);
+  gap: var(--cp-s-4);
+}
+
+.cp-theme-color-palette__variant {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cp-s-6);
+  padding: var(--cp-s-4) var(--cp-s-10);
+  border: none;
+  border-radius: var(--rp-radius);
+  background: transparent;
+  color: var(--cp-c-text-2);
+  font-family: var(--cp-font-family-base);
+  font-size: var(--cp-fs-color-name);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background var(--cp-duration-base),
+    color var(--cp-duration-base);
+}
+
+.cp-theme-color-palette__variant:hover {
+  color: var(--cp-c-text-1);
+  background: var(--cp-c-bg-soft);
+}
+
+.cp-theme-color-palette__variant:focus-visible {
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
+}
+
+.cp-theme-color-palette__variant[data-active='true'] {
+  background: var(--cp-c-brand-soft);
+  color: var(--cp-c-brand-1);
+}
+
+.cp-theme-color-palette__variant svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.cp-theme-color-palette__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-8);
+}
+
+.cp-theme-color-palette__heading {
+  margin: 0;
+  font-size: var(--cp-fs-color-name);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--cp-c-text-3);
+}
+
+.cp-theme-color-palette__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--cp-s-8);
+}

@@ -3,15 +3,13 @@ title: Themes
 description: How built-in themes, dark/light variants, and color token overrides control the visual identity of your documentation site.
 ---
 
-import { BrowserWindow } from '@theme'
+import { BrowserWindow, ThemeColorPalette } from '@theme'
 
 # Themes
 
-How the visual identity of your documentation site is controlled through built-in themes, per-theme variants, and color token overrides.
-
 ## Overview
 
-A theme in zpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. zpress ships with three built-in themes — Default, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
+A theme in ciderpress is a **brand identity** with one or more **variants**. Each variant is a complete set of design tokens that targets either the `dark` or `light` aesthetic. ciderpress ships with six built-in themes — Mulled, Honeycrisp, Granny Smith, Amber, Midnight, and Arcade — and dark is the framework's baseline (the initial paint is always dark unless the user explicitly toggles to light on a multi-variant theme).
 
 | UI                | Job                                                                                                  |
 | ----------------- | ---------------------------------------------------------------------------------------------------- |
@@ -20,25 +18,65 @@ A theme in zpress is a **brand identity** with one or more **variants**. Each va
 
 ## Built-in Themes
 
-### Default
+### Mulled
 
-The framework default. Brand-purple identity with both `dark` and `light` variants — the sun/moon toggle is enabled.
+The canonical brand. Deep cider burgundy — the "evening / premium" branch of the apple family. Primary `#991b1b` with both `dark` and `light` variants. The light variant pairs warm cream surfaces (`#fbf6f4`) with deep burgundy ink for a parchment read; the dark variant uses the same near-black canvas as the other apple themes. This is the default when `theme.name` is omitted. The legacy slug `'default'` is preserved as an alias and resolves to `'mulled'`, so existing `theme: { name: 'default' }` configs continue to render the canonical palette without churn.
 
 **Variants:** `dark` (default) · `light`
 
 <BrowserWindow url="https://docs.example.com">
-  ![Default theme — dark](../.assets/theme-base.png)
+  ![Mulled theme — dark](../.assets/theme-mulled.png)
 </BrowserWindow>
+
+<ThemeColorPalette theme="mulled" />
+
+### Honeycrisp
+
+Bright apple-red identity (primary `#dc2626`) with both `dark` and `light` variants — the sun/moon toggle is enabled.
+
+**Variants:** `dark` (default) · `light`
+
+<BrowserWindow url="https://docs.example.com">
+  ![Honeycrisp theme — dark](../.assets/theme-honeycrisp.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="honeycrisp" />
+
+### Granny Smith
+
+Apple-green identity (primary `#65a30d`) with both `dark` and `light` variants — the sun/moon toggle is enabled.
+
+**Variants:** `dark` (default) · `light`
+
+<BrowserWindow url="https://docs.example.com">
+  ![Granny Smith theme — dark](../.assets/theme-grannysmith.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="grannysmith" />
+
+### Amber
+
+Warm hearth amber identity (primary `#d97706`) with both `dark` and `light` variants. The light variant pairs parchment surfaces (`#fffaf2`) with deep-roast brown ink; the dark variant shares the apple-family near-black canvas.
+
+**Variants:** `dark` (default) · `light`
+
+<BrowserWindow url="https://docs.example.com">
+  ![Amber theme — dark](../.assets/theme-amber.png)
+</BrowserWindow>
+
+<ThemeColorPalette theme="amber" />
 
 ### Midnight
 
-Opinionated near-black blue theme. Single-variant (`dark` only) — the sun/moon toggle is hidden when this theme is active.
+Opinionated deep-black blue theme. Background sits at `#050505` for a near-pure-black surface. Single-variant (`dark` only) — the sun/moon toggle is hidden when this theme is active.
 
 **Variants:** `dark`
 
 <BrowserWindow url="https://docs.example.com">
   ![Midnight theme](../.assets/theme-midnight.png)
 </BrowserWindow>
+
+<ThemeColorPalette theme="midnight" />
 
 ### Arcade
 
@@ -50,12 +88,14 @@ Retro neon-green theme inspired by arcade cabinets and CRT monitors. Single-vari
   ![Arcade theme](../.assets/theme-arcade.png)
 </BrowserWindow>
 
+<ThemeColorPalette theme="arcade" />
+
 ## Configuration
 
-Set the theme in your `zpress.config.ts`:
+Set the theme in your `ciderpress.config.ts`:
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -68,17 +108,17 @@ export default defineConfig({
 })
 ```
 
-The `name` accepts any built-in theme (`default`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. An unknown name writes a build-time warning to stderr and falls back to `default`.
+The `name` accepts any built-in theme (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) or any custom theme registered in the top-level `themes` array. The legacy slug `'default'` is preserved as an alias for `'mulled'`. An unknown name writes a build-time warning to stderr and falls back to `mulled`.
 
 ### Options
 
-| Property     | Type                                  | Default         | Description                                                                                                |
-| ------------ | ------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
-| `name`       | `'default' \| 'midnight' \| 'arcade'` | `'default'`     | Built-in or registered theme to use                                                                        |
-| `variant`    | `'dark' \| 'light'`                   | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
-| `switcher`   | `boolean`                             | `false`         | Show the theme switcher dropdown in the site footer                                                        |
-| `colors`     | `ThemeColors`                         | —               | Color overrides applied to the `light` variant                                                             |
-| `darkColors` | `ThemeColors`                         | —               | Color overrides applied to the `dark` variant                                                              |
+| Property     | Type                                                                             | Default         | Description                                                                                                |
+| ------------ | -------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------------------------------------------------- |
+| `name`       | `'mulled' \| 'honeycrisp' \| 'grannysmith' \| 'amber' \| 'midnight' \| 'arcade'` | `'mulled'`      | Built-in or registered theme to use. `'default'` is accepted as an alias for `'mulled'`                    |
+| `variant`    | `'dark' \| 'light'`                                                              | Theme's default | Force an initial variant. Must be present in the theme's `variants`; otherwise the theme's default is used |
+| `switcher`   | `boolean`                                                                        | `false`         | Show the theme switcher dropdown in the site footer                                                        |
+| `colors`     | `ThemeColors`                                                                    | —               | Color overrides applied to the `light` variant                                                             |
+| `darkColors` | `ThemeColors`                                                                    | —               | Color overrides applied to the `dark` variant                                                              |
 
 ### Forcing a starting variant
 
@@ -86,7 +126,7 @@ Each theme picks its own initial variant when there's no persisted preference. Y
 
 ```ts
 theme: {
-  name: 'default',
+  name: 'honeycrisp',
   variant: 'light',  // start in light mode on first visit
 }
 ```
@@ -95,7 +135,7 @@ The user's last variant choice persists in `localStorage` and overrides this def
 
 ### Hiding the toggle
 
-Themes with only one variant (`midnight`, `arcade`) automatically hide the ☀️/🌙 toggle. CSS keys off `data-zp-variants` on `<html>` — the provider sets it from the active theme's variant list. No config needed.
+Themes with only one variant (`midnight`, `arcade`) automatically hide the ☀️/🌙 toggle. CSS keys off `data-cp-variants` on `<html>` — the provider sets it from the active theme's variant list. No config needed.
 
 ## Color Overrides
 
@@ -142,13 +182,14 @@ Color values must be valid CSS hex (`#xxx` or `#xxxxxx`) or `rgba()` values. The
 
 ## Custom Themes
 
-When the built-in themes plus color overrides aren't enough, register a fully custom theme through `defineTheme`. The theme is validated at config time and emitted as one `html[data-zp-theme='{name}'][data-zp-variant='{variant}']` CSS block per variant.
+When the built-in themes plus color overrides aren't enough, register a fully custom theme through `defineTheme`. The theme is validated at config time and emitted as one `html[data-cp-theme='{name}'][data-cp-variant='{variant}']` CSS block per variant.
 
 ```ts
-import { defineConfig, defineTheme } from '@zpress/kit'
+import { defineConfig, defineTheme } from 'ciderpress'
+import type { CiderpressTokens } from '@ciderpress/theme'
 
-const sunset = defineTheme({
-  name: 'sunset',
+const citrus = defineTheme({
+  name: 'citrus',
   defaultVariant: 'dark',
   variants: {
     dark: {
@@ -163,7 +204,7 @@ const sunset = defineTheme({
           light: '#ffa56a',
           lighter: '#ffc89a',
         },
-        // ... see `ZpressTokens` for the full token tree
+        // ... see `CiderpressTokens` for the full token tree
       },
       // ... spacing, radii, fonts, shadows, motion, etc.
     },
@@ -172,8 +213,8 @@ const sunset = defineTheme({
 })
 
 export default defineConfig({
-  themes: [sunset],
-  theme: { name: 'sunset' },
+  themes: [citrus],
+  theme: { name: 'citrus' },
   // ...
 })
 ```
@@ -190,7 +231,7 @@ const shared = {
 }
 
 defineTheme({
-  name: 'sunset',
+  name: 'citrus',
   variants: {
     dark:  { ...shared, colors: { /* dark palette */ } },
     light: { ...shared, colors: { /* light palette */ } },
@@ -202,22 +243,25 @@ defineTheme({
 
 ### Constraints
 
-| Constraint                     | Detail                                                                                                                                                                                                                                                  |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-zp-theme='{name}']` selector.                                                                                                                                                      |
-| At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                                             |
-| Token tree must be complete    | Every leaf in `ZpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                                              |
-| Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                                  |
-| Persisted theme is validated   | When `switcher: true`, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.                                  |
-| Persisted variant is validated | The active variant is persisted in `localStorage['zpress-variant']`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
+| Constraint                     | Detail                                                                                                                                                                                                                                                      |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                                          |
+| At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                                                 |
+| Token tree must be complete    | Every leaf in `CiderpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                                              |
+| Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                                      |
+| Persisted theme is validated   | When `switcher: true`, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.                                      |
+| Persisted variant is validated | The active variant is persisted in `localStorage['ciderpress-variant']`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
 
 ## Comparing Approaches
 
-| Theme    | Best For                          | Variants    | Default variant |
-| -------- | --------------------------------- | ----------- | --------------- |
-| Default  | General-purpose docs              | dark, light | `dark`          |
-| Midnight | Developer tools, dark-first sites | dark        | `dark`          |
-| Arcade   | Playful branding, creative tools  | dark        | `dark`          |
+| Theme        | Best For                                | Variants    | Default variant |
+| ------------ | --------------------------------------- | ----------- | --------------- |
+| Mulled       | Premium / evening reads (canonical)     | dark, light | `dark`          |
+| Honeycrisp   | Bright apple-red, general-purpose docs  | dark, light | `dark`          |
+| Granny Smith | Green-branded, accessible docs          | dark, light | `dark`          |
+| Amber        | Warm hearth / parchment cider aesthetic | dark, light | `dark`          |
+| Midnight     | Developer tools, dark-first sites       | dark        | `dark`          |
+| Arcade       | Playful branding, creative tools        | dark        | `dark`          |
 
 ## Design Decisions
 
@@ -230,4 +274,4 @@ defineTheme({
 ## References
 
 - [Configuration reference](/reference/configuration#top-level-fields) — `theme` field in the top-level config
-- [`defineTheme` API](/reference/configuration#siteconfig) — full input shape
+- `defineTheme` API — full input shape (see `packages/theme/src/index.ts`)

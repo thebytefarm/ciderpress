@@ -4,8 +4,14 @@ import {
   normalizeInclude,
   resolveOptionalIcon,
   serializeIcon,
-} from '@zpress/config'
-import type { ConfigWarning, Section, TitleConfig, Workspace, ZpressConfig } from '@zpress/config'
+} from '@ciderpress/config'
+import type {
+  ConfigWarning,
+  Section,
+  TitleConfig,
+  Workspace,
+  CiderpressConfig,
+} from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { omitBy } from 'massaman/object'
 import { isNil, isString, isUndefined } from 'massaman/predicate'
@@ -39,12 +45,12 @@ const DEFAULT_CATEGORY_DESCRIPTIONS: Readonly<Record<string, string>> = {
  * added — without mutating the original entries.
  *
  * @param entries - Resolved entry tree from `resolveEntries()`
- * @param config - zpress config containing `workspaces` categories
+ * @param config - ciderpress config containing `workspaces` categories
  * @returns New entry tree with card metadata enriched
  */
 export function enrichWorkspaceCards(
   entries: readonly ResolvedEntry[],
-  config: ZpressConfig
+  config: CiderpressConfig
 ): ResolvedEntry[] {
   const items = collectAllWorkspaceItems(config)
   if (items.length === 0) {
@@ -72,7 +78,7 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
     '  tagline: "Internal platform documentation"',
     '  image:',
     '    src: /banner.svg',
-    '    alt: zpress',
+    '    alt: ciderpress',
     '  actions:',
     '    - theme: brand',
     '      text: Get Started',
@@ -122,7 +128,7 @@ export function generateHomePage(workspaces: WorkspaceArrays): string {
   return [
     frontmatter,
     '',
-    '<div class="zp-workspace-section">',
+    '<div class="cp-workspace-section">',
     '',
     appsSection,
     '',
@@ -167,10 +173,10 @@ export function generateIntroPage(workspaces: WorkspaceArrays): string {
  * ready to merge into `config.sections` before resolution.
  * Skips any category whose link already exists in `config.sections`.
  *
- * @param config - zpress config containing workspaces
+ * @param config - ciderpress config containing workspaces
  * @returns Section array of synthesized workspace sections
  */
-export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
+export function synthesizeWorkspaceSections(config: CiderpressConfig): Section[] {
   const existingLinks = collectAllLinks(config.sections)
 
   const apps = config.apps ?? []
@@ -255,10 +261,10 @@ export function synthesizeWorkspaceSections(config: ZpressConfig): Section[] {
  * and will silently match zero files. This produces warnings so the
  * user can fix their config before broken links appear in the build.
  *
- * @param config - Validated zpress config
+ * @param config - Validated ciderpress config
  * @returns Array of warnings for any workspace items with suspect includes
  */
-export function checkWorkspaceIncludes(config: ZpressConfig): readonly ConfigWarning[] {
+export function checkWorkspaceIncludes(config: CiderpressConfig): readonly ConfigWarning[] {
   const allItems = collectAllWorkspaceItems(config)
   return allItems.flatMap((item) => checkItemInclude(item))
 }
@@ -274,10 +280,6 @@ export function slugify(text: string): string {
   return kebabCase(text)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Check a single workspace item for include patterns that already start
  * with the basePath derived from `path`.
@@ -287,7 +289,7 @@ export function slugify(text: string): string {
  * @returns Array of warnings (empty if no issues)
  */
 function checkItemInclude(item: Workspace): readonly ConfigWarning[] {
-  if (item.include === null || item.include === undefined) {
+  if (isNil(item.include)) {
     return []
   }
   const basePath = item.path.replace(/^\//, '')

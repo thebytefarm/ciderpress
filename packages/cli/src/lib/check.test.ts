@@ -1,4 +1,4 @@
-import type { ZpressConfig } from '@zpress/config'
+import type { CiderpressConfig } from '@ciderpress/config'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 vi.mock(import('./rspress.ts'), () => ({
@@ -7,7 +7,7 @@ vi.mock(import('./rspress.ts'), () => ({
 
 const { runConfigCheck, presentResults } = await import('./check.ts')
 
-const validConfig = { sections: [{ title: 'Test' }] } as unknown as ZpressConfig
+const validConfig = { sections: [{ title: 'Test' }] } as unknown as CiderpressConfig
 
 const loadError = {
   _tag: 'ConfigError' as const,

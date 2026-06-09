@@ -3,10 +3,6 @@ import { describe, expect, it } from 'vitest'
 
 import { belongsToScope, resolveScopedSidebar } from './sidebar-filter'
 
-// ---------------------------------------------------------------------------
-// Fixtures
-// ---------------------------------------------------------------------------
-
 const gettingStarted: SidebarData[number] = {
   text: 'Getting Started',
   link: '/getting-started',
@@ -49,10 +45,6 @@ const groupWithoutLink: SidebarData[number] = {
 
 const fullSidebar: SidebarData = [gettingStarted, packages, contributing]
 const scopes: readonly string[] = ['/packages', '/contributing']
-
-// ---------------------------------------------------------------------------
-// resolveScopedSidebar
-// ---------------------------------------------------------------------------
 
 describe('resolveScopedSidebar()', () => {
   it('should return all items when no scopes are defined', () => {
@@ -104,10 +96,6 @@ describe('resolveScopedSidebar()', () => {
     expect(result[0]).toMatchObject({ text: 'Getting Started' })
   })
 })
-
-// ---------------------------------------------------------------------------
-// belongsToScope
-// ---------------------------------------------------------------------------
 
 describe('belongsToScope()', () => {
   it('should match an item whose link equals the scope', () => {

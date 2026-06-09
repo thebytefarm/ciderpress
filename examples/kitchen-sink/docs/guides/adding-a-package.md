@@ -67,7 +67,7 @@ console.log(hello('world'))
 
 ## Add documentation
 
-Create `packages/my-pkg/docs/overview.md` and add a workspace entry in `zpress.config.ts`:
+Create `packages/my-pkg/docs/overview.md` and add a workspace entry in `ciderpress.config.ts`:
 
 ```ts
 packages: [

@@ -1,34 +1,36 @@
 /**
- * Loading text with animated dots — "loading..." in center of viewport.
+ * Classic dots loader — "loading..." cycling in the centre of the
+ * viewport. The legacy Ciderpress loader, opt-in via
+ * `loader: 'classic'` in `ciderpress.config.ts`. Default is the
+ * apple loader (see loader-apple.css).
  *
  * The text content is driven by JS (loader-dots.js) which cycles the
- * `data-zp-loader-text` attribute. CSS reads the attribute value
- * via `attr()`. This approach works cross-browser — unlike animating
- * the CSS `content` property via @keyframes, which only works in
+ * `data-cp-loader-text` attribute on `<html>` every 300ms. CSS reads
+ * the value via `attr()` — this works cross-browser, unlike animating
+ * the CSS `content` property via @keyframes which only fires in
  * Chromium.
  *
- * Uses a fixed-width container so the dots append without shifting
- * the text. Lifecycle mirrors loader-backdrop.css:
+ * `width` is fixed-pixel so the dots append without shifting the
+ * "loading" base word. Lifecycle mirrors loader-backdrop.css:
  *   1. Visible by default (opacity 1)
- *   2. .zp-loader-fade → opacity transitions to 0 over 200ms
- *   3. [data-zp-ready] → hard removed (display none)
+ *   2. .cp-loader-fade → opacity transitions to 0 over 200ms
+ *   3. [data-cp-ready] → hard removed (display: none)
  */
 
-/* Warning: uses html pseudo-elements which are globally scoped.
-   Avoid defining html::after in theme CSS to prevent conflicts. */
 html::after {
-  content: attr(data-zp-loader-text);
+  content: attr(data-cp-loader-text);
   position: fixed;
   top: 50%;
   left: 50%;
-  width: 8em;
-  margin-left: -4em;
-  margin-top: -0.5em;
+  width: 200px;
+  margin-left: -50px;
+  margin-top: -14px;
   text-align: left;
-  color: var(--zp-c-text-2, #888);
+  color: var(--cp-c-text-2, #888);
   font-family: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
-  font-size: 24px;
+  font-size: 28px;
   font-weight: 400;
+  line-height: 1;
   letter-spacing: 0.04em;
   z-index: 9999;
   pointer-events: none;
@@ -36,10 +38,10 @@ html::after {
   transition: opacity 0.2s ease;
 }
 
-html.zp-loader-fade::after {
+html.cp-loader-fade::after {
   opacity: 0;
 }
 
-html[data-zp-ready]::after {
+html[data-cp-ready]::after {
   display: none;
 }

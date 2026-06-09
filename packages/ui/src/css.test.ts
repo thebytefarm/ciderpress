@@ -7,11 +7,24 @@ vi.mock(import('./head/read.ts'), () => ({
 
 const { getThemeCss } = await import('./css.ts')
 
-const LOADER_CSS = '/* mock css/loader-backdrop.css *//* mock css/loader-dots.css */'
+const APPLE_LOADER_CSS = '/* mock css/loader-backdrop.css *//* mock css/loader-apple.css */'
+const CLASSIC_LOADER_CSS = '/* mock css/loader-backdrop.css *//* mock css/loader-dots.css */'
 
 describe('getThemeCss()', () => {
-  it('should return a string for built-in theme default', () => {
-    expect(getThemeCss('default')).toStrictEqual(expect.any(String))
+  it('should return a string for built-in theme mulled', () => {
+    expect(getThemeCss('mulled')).toStrictEqual(expect.any(String))
+  })
+
+  it('should return a string for built-in theme honeycrisp', () => {
+    expect(getThemeCss('honeycrisp')).toStrictEqual(expect.any(String))
+  })
+
+  it('should return a string for built-in theme grannysmith', () => {
+    expect(getThemeCss('grannysmith')).toStrictEqual(expect.any(String))
+  })
+
+  it('should return a string for built-in theme amber', () => {
+    expect(getThemeCss('amber')).toStrictEqual(expect.any(String))
   })
 
   it('should return a string for built-in theme midnight', () => {
@@ -22,15 +35,33 @@ describe('getThemeCss()', () => {
     expect(getThemeCss('arcade')).toStrictEqual(expect.any(String))
   })
 
-  it('should return loader CSS for unknown theme name', () => {
-    expect(getThemeCss('unknown')).toBe(LOADER_CSS)
+  it('should alias legacy theme name default to mulled', () => {
+    expect(getThemeCss('default')).toContain('/* mock css/themes/mulled.css */')
+  })
+
+  it('should return apple loader CSS for unknown theme name when no loader specified', () => {
+    expect(getThemeCss('unknown')).toBe(APPLE_LOADER_CSS)
+  })
+
+  it('should return classic loader CSS when loader=classic', () => {
+    expect(getThemeCss('unknown', 'classic')).toBe(CLASSIC_LOADER_CSS)
+  })
+
+  it('should default to the apple loader when loader argument is omitted', () => {
+    expect(getThemeCss('honeycrisp')).toContain('/* mock css/loader-apple.css */')
+  })
+
+  it('should swap to the classic loader for built-in themes when loader=classic', () => {
+    const css = getThemeCss('honeycrisp', 'classic')
+    expect(css).toContain('/* mock css/loader-dots.css */')
+    expect(css).not.toContain('/* mock css/loader-apple.css */')
   })
 
   it('should contain theme-specific CSS for built-in themes', () => {
-    expect(getThemeCss('default')).toContain('/* mock css/themes/default.css */')
+    expect(getThemeCss('honeycrisp')).toContain('/* mock css/themes/honeycrisp.css */')
   })
 
-  it('should contain loader CSS for built-in themes', () => {
-    expect(getThemeCss('default')).toContain(LOADER_CSS)
+  it('should contain apple loader CSS by default for built-in themes', () => {
+    expect(getThemeCss('honeycrisp')).toContain(APPLE_LOADER_CSS)
   })
 })

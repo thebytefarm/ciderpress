@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { difference, uniq } from 'massaman/array'
+import { difference, partition, uniq } from 'massaman/array'
 import { attemptAsync } from 'massaman/control'
 
 import type { Manifest } from './types.ts'
@@ -39,42 +39,81 @@ export async function saveManifest(outDir: string, manifest: Manifest): Promise<
 }
 
 /**
+ * Result returned by {@link cleanStaleFiles} describing the outcome of
+ * deleting stale output files.
+ *
+ * `attempted` is the total number of stale paths considered for removal,
+ * `removed` is how many `fs.rm` calls completed without error, and `failed`
+ * captures any per-path errors (with `force: true` set, failures are rare
+ * but indicate permission/IO issues worth surfacing).
+ */
+export interface CleanStaleFilesResult {
+  readonly attempted: number
+  readonly removed: number
+  readonly failed: readonly { readonly path: string; readonly reason: string }[]
+}
+
+/**
  * Delete output files that exist in the old manifest but not the new one.
  * Prunes empty parent directories after removing stale files.
+ *
+ * Each `fs.rm` is wrapped in `attemptAsync` so a single failure cannot
+ * abort the entire cleanup pass. Per-path failures are collected and
+ * returned to the caller; `attempted` may exceed `removed` when some
+ * paths failed to delete (and `failed` will be non-empty).
  *
  * @param outDir - Absolute path to the output directory
  * @param oldManifest - Manifest from the previous sync
  * @param newManifest - Manifest from the current sync
- * @returns Number of stale files removed
+ * @returns Counts of attempted vs removed stale files plus per-path failures
  */
 export async function cleanStaleFiles(
   outDir: string,
   oldManifest: Manifest,
   newManifest: Manifest
-): Promise<number> {
+): Promise<CleanStaleFilesResult> {
   const stalePaths = difference(Object.keys(oldManifest.files), Object.keys(newManifest.files))
 
   const resolved = stalePaths.map((oldPath) => path.resolve(outDir, oldPath))
 
-  // Remove files in parallel (independent I/O, safe to parallelize)
-  await Promise.all(
-    resolved.map((abs) =>
-      attemptAsync(async () => {
+  const outcomes = await Promise.all(
+    resolved.map(async (abs) => {
+      const result = await attemptAsync(async () => {
         await fs.rm(abs, { force: true })
       })
-    )
+      return { abs, result } as const
+    })
   )
 
-  // Deduplicate parents so shared ancestors aren't raced N times
+  const [failures, successes] = partition(outcomes, ({ result }) => !result.ok)
+  const failed = failures.map(({ abs, result }) => ({
+    path: abs,
+    reason: resolveReason(result.error),
+  }))
+
   const uniqueParents = uniq(resolved.map((abs) => path.dirname(abs)))
   await Promise.all(uniqueParents.map((dir) => pruneEmptyDirs(dir, outDir)))
 
-  return stalePaths.length
+  return {
+    attempted: stalePaths.length,
+    removed: successes.length,
+    failed,
+  }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
+/**
+ * Translate an `attemptAsync` error into a human-readable reason string.
+ *
+ * @private
+ * @param error - Error from a failed `attemptAsync` result, or null
+ * @returns Reason message, or `'unknown'` when the error was null
+ */
+function resolveReason(error: Error | null): string {
+  if (error === null) {
+    return 'unknown'
+  }
+  return error.message
+}
 
 /**
  * Recursively remove empty parent directories up to the stop boundary.

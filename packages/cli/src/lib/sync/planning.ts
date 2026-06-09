@@ -61,7 +61,6 @@ export async function discoverPlanningPages(ctx: SyncContext): Promise<readonly 
     const slug = relativePath.replace(/\.md$/, '')
 
     return {
-      // Use content function instead of source so we can strip XML tags
       content: async () => {
         const raw = await fs.readFile(sourcePath, 'utf8')
         return stripXmlTags(raw)
@@ -79,10 +78,6 @@ export async function discoverPlanningPages(ctx: SyncContext): Promise<readonly 
 
   return [indexPage, ...docPages]
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * File entry with derived title and path info.
@@ -132,7 +127,6 @@ async function generatePlanningIndex(
   files: readonly string[],
   planningDir: string
 ): Promise<string> {
-  // 1. Derive metadata for all files in parallel
   const entries: readonly EnrichedEntry[] = await Promise.all(
     files.map(async (relativePath) => {
       const slug = relativePath.replace(/\.md$/, '')
@@ -146,7 +140,6 @@ async function generatePlanningIndex(
     })
   )
 
-  // 2. Partition into root-level and directory-grouped (no mutation)
   const rootFiles: readonly FileEntry[] = entries
     .filter((e) => e.dirName === undefined)
     .toSorted((a, b) => naturalCompare(a.slug, b.slug))
@@ -166,7 +159,6 @@ async function generatePlanningIndex(
         .toSorted((a, b) => naturalCompare(a.slug, b.slug)),
     }))
 
-  // 3. Render markdown (no mutation — build array in one expression)
   const rootSection = resolveRootSection(rootFiles)
 
   const dirSections = dirs.map((dir) => {
@@ -204,7 +196,6 @@ function naturalCompare(a: string, b: string): number {
     const aPart = aParts[idx]
     const bPart = bParts[idx]
 
-    // Both are numeric segments
     if (/^\d+$/.test(aPart) && /^\d+$/.test(bPart)) {
       const diff = Number(aPart) - Number(bPart)
       if (diff !== 0) {
@@ -213,7 +204,6 @@ function naturalCompare(a: string, b: string): number {
       return null
     }
 
-    // Lexicographic comparison for non-numeric segments
     if (aPart < bPart) {
       return -1
     }

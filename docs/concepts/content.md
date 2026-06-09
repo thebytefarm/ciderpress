@@ -5,15 +5,13 @@ description: How sections and pages define your site structure — explicit item
 
 # Content
 
-How documentation is structured, discovered, and enriched with metadata in zpress.
-
 ## Overview
 
-Content in zpress is a tree of **sections** and **pages** defined in the `sections` array of your config. Sections group pages under collapsible sidebar headings. Pages map source markdown files (or inline content) to URLs. Together they define your entire site structure without requiring you to restructure your existing files.
+Content in ciderpress is a tree of **sections** and **pages** defined in the `sections` array of your config. Sections group pages under collapsible sidebar headings. Pages map source markdown files (or inline content) to URLs. Together they define your entire site structure without requiring you to restructure your existing files.
 
 ```mermaid
 flowchart TD
-    A[zpress.config.ts] --> B[sections]
+    A[ciderpress.config.ts] --> B[sections]
     B --> C[Section]
     B --> D[Page]
     C --> E[Explicit items]
@@ -155,7 +153,7 @@ For large doc trees that mirror a directory structure, use `recursive: true`:
 
 This maps directory nesting to sidebar nesting. In each directory, the `entryFile` (default `"overview"`) becomes the section header page.
 
-```
+```text
 docs/reference/
 ├── overview.md          → Section header for /reference
 ├── auth/
@@ -229,12 +227,13 @@ Transforms only apply to auto-discovered children. Sections with explicit `title
 
 ### Sorting
 
-| Strategy      | Behavior                                                                                |
-| ------------- | --------------------------------------------------------------------------------------- |
-| `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then alpha |
-| `'alpha'`     | Alphabetical by derived text                                                            |
-| `'filename'`  | Alphabetical by filename                                                                |
-| `(a, b) => n` | Custom comparator on `ResolvedPage`                                                     |
+| Strategy      | Behavior                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------ |
+| `'default'`   | Pins intro files (`introduction`, `intro`, `overview`, `index`, `readme`) to the top, then alpha |
+| `'alpha'`     | Alphabetical by derived text                                                                     |
+| `'filename'`  | Alphabetical by filename                                                                         |
+| `'none'`      | Preserve glob-discovery order, no reordering                                                     |
+| `(a, b) => n` | Custom comparator on `ResolvedPage`                                                              |
 
 When `sort` is omitted, the `'default'` strategy is used.
 
@@ -257,7 +256,7 @@ When combining `items` with `include`, explicit entries win. If an explicit entr
 
 ## Frontmatter
 
-zpress manages frontmatter automatically. Source files keep their original frontmatter, and zpress merges additional fields at build time.
+ciderpress manages frontmatter automatically. Source files keep their original frontmatter, and ciderpress merges additional fields at build time.
 
 ### Injecting frontmatter
 
@@ -306,9 +305,9 @@ A page's own frontmatter always takes precedence over inherited values.
 
 ## Design Decisions
 
-- **Config-driven, not filesystem-driven** — zpress maps your existing file layout into a sidebar tree via config rather than requiring a specific directory structure. This avoids forcing you to restructure your repo.
+- **Config-driven, not filesystem-driven** — ciderpress maps your existing file layout into a sidebar tree via config rather than requiring a specific directory structure. This avoids forcing you to restructure your repo.
 - **Globs over manual listing** — auto-discovery reduces config maintenance. New files appear in the sidebar automatically.
-- **Frontmatter merge, not overwrite** — source files are never modified. zpress layers config-level frontmatter on top at build time, keeping source of truth in the original markdown.
+- **Frontmatter merge, not overwrite** — source files are never modified. ciderpress layers config-level frontmatter on top at build time, keeping source of truth in the original markdown.
 - **Explicit wins over discovered** — when combining `items` with `include`, explicit entries take precedence, giving you an escape hatch for any file that needs special handling.
 
 ## References

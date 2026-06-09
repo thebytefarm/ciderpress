@@ -1,6 +1,6 @@
 import path from 'node:path'
 
-import type { Paths } from '@zpress/config'
+import type { Paths } from '@ciderpress/config'
 
 export type { Paths }
 
@@ -8,11 +8,11 @@ export type { Paths }
  * Create all derived project paths from a resolved directory.
  *
  * @param dir - Directory path to resolve as the repo root
- * @returns All derived project paths under the `.zpress/` output root
+ * @returns All derived project paths under the `.ciderpress/` output root
  */
 export function createPaths(dir: string): Paths {
   const repoRoot = path.resolve(dir)
-  const outputRoot = path.resolve(repoRoot, '.zpress')
+  const outputRoot = path.resolve(repoRoot, '.ciderpress')
   return {
     repoRoot,
     outputRoot,

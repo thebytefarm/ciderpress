@@ -1,0 +1,35 @@
+/**
+ * CiderpressNavSocialLinks — icon cluster in the topbar right zone.
+ *
+ * Theme-author API:
+ *   --cp-nav-social-gap         spacing between icons (default 4px)
+ *   --cp-nav-social-color       icon colour (idle)
+ *   --cp-nav-social-color-hover icon colour on hover
+ *   --cp-nav-social-size        clickable area (default 32px)
+ */
+.cp-nav-social {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cp-nav-social-gap, 4px);
+  flex-shrink: 0;
+}
+
+.cp-nav-social__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--cp-nav-social-size, 32px);
+  height: var(--cp-nav-social-size, 32px);
+  border-radius: 6px;
+  color: var(--cp-nav-social-color, var(--cp-c-text-2));
+  text-decoration: none;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+}
+
+.cp-nav-social__item:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-nav-social-color-hover, var(--cp-c-brand-1));
+  text-decoration: none;
+}

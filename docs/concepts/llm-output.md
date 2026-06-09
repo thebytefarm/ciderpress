@@ -1,15 +1,13 @@
 ---
 title: LLM Output
-description: How zpress serves documentation as structured text for LLMs, AI agents, and programmatic consumers.
+description: How ciderpress serves documentation as structured text for LLMs, AI agents, and programmatic consumers.
 ---
 
 # LLM Output
 
-How zpress makes your documentation consumable by LLMs, AI agents, and other programmatic tools — automatically, with zero configuration.
-
 ## Overview
 
-Every zpress site exposes three machine-readable interfaces out of the box:
+Every ciderpress site exposes three machine-readable interfaces out of the box:
 
 | Interface         | Endpoint         | Description                                     |
 | ----------------- | ---------------- | ----------------------------------------------- |
@@ -17,11 +15,11 @@ Every zpress site exposes three machine-readable interfaces out of the box:
 | LLMs.txt full     | `/llms-full.txt` | All page content concatenated into one document |
 | Per-page markdown | `{any-page}.md`  | Raw markdown for any individual page            |
 
-These are generated at build time and served alongside your HTML pages. No configuration, no opt-in — they exist on every zpress site.
+These are generated at build time and served alongside your HTML pages. No configuration, no opt-in — they exist on every ciderpress site.
 
 ## LLMs.txt
 
-zpress follows the [llms.txt specification](https://llmstxt.org/) to provide two endpoints that give LLMs and AI tools a structured view of your documentation.
+ciderpress follows the [llms.txt specification](https://llmstxt.org/) to provide two endpoints that give LLMs and AI tools a structured view of your documentation.
 
 ### `/llms.txt` — page index
 
@@ -118,11 +116,14 @@ OpenAPI-generated pages replace the standard raw markdown button with a "Copy Ma
 ## Design Decisions
 
 - **Always on** — machine-readable output requires no configuration. Every site gets it for free because discoverability by AI tools should be a default, not an afterthought.
-- **Build-time generation** — LLMs.txt files are generated during `zpress build`, not served dynamically. This keeps runtime simple and means the files are cacheable by CDNs.
+- **Build-time generation** — LLMs.txt files are generated during `ciderpress build`, not served dynamically. This keeps runtime simple and means the files are cacheable by CDNs.
 - **Per-page `.md` endpoints** — rather than forcing consumers to parse HTML or download the full `llms-full.txt`, individual pages are available as raw markdown. This lets agents fetch only what they need.
+
+## Resources
+
+- [llms.txt specification](https://llmstxt.org/)
 
 ## References
 
-- [llms.txt specification](https://llmstxt.org/)
 - [Content](/concepts/content) — how pages and sections define your site structure
 - [Configuration reference](/reference/configuration) — full config field reference

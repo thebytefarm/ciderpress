@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './split.css'
@@ -59,27 +60,27 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
   const list = bullets ?? []
 
   return (
-    <section className="zp-split">
-      <div className="zp-split__inner">
-        <div className="zp-split__copy">
+    <section className="cp-split">
+      <div className="cp-split__inner">
+        <div className="cp-split__copy">
           {match(eyebrow)
             .with(undefined, () => null)
             .otherwise((e) => (
-              <div className="zp-split__eyebrow">{e}</div>
+              <div className="cp-split__eyebrow">{e}</div>
             ))}
-          <h2 className="zp-split__title">{title}</h2>
+          <h2 className="cp-split__title">{title}</h2>
           {match(body)
             .with(undefined, () => null)
             .otherwise((b) => (
-              <p className="zp-split__body">{b}</p>
+              <p className="cp-split__body">{b}</p>
             ))}
           {match(list.length === 0)
             .with(true, () => null)
             .otherwise(() => (
-              <ul className="zp-split__bullets">
+              <ul className="cp-split__bullets">
                 {list.map((bullet) => (
                   <li key={bullet}>
-                    <span className="zp-split__check">✓</span>
+                    <span className="cp-split__check">✓</span>
                     <span>{bullet}</span>
                   </li>
                 ))}
@@ -93,21 +94,17 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
                 return null
               }
               return (
-                <a className={btnClass(a.theme)} href={href}>
+                <RouteLink className={btnClass(a.theme)} href={href}>
                   {a.text}
-                </a>
+                </RouteLink>
               )
             })}
         </div>
-        <div className="zp-split__visual">{visual}</div>
+        <div className="cp-split__visual">{visual}</div>
       </div>
     </section>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build the CSS class for a split action button.
@@ -118,6 +115,6 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
  */
 function btnClass(theme: 'brand' | 'alt' | undefined): string {
   return match(theme ?? 'brand')
-    .with('brand', () => 'zp-split__btn zp-split__btn--primary')
-    .otherwise(() => 'zp-split__btn')
+    .with('brand', () => 'cp-split__btn cp-split__btn--primary')
+    .otherwise(() => 'cp-split__btn')
 }

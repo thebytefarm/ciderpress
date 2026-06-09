@@ -14,7 +14,7 @@ afterAll(() => {
   fixtures.forEach((f) => f.cleanup())
 })
 
-describe.each(TIERS)('zpress sync (cli) — $name (~$files files)', (tier) => {
+describe.each(TIERS)('ciderpress sync (cli) — $name (~$files files)', (tier) => {
   bench(
     'sync',
     () => {

@@ -2,49 +2,49 @@
  * Theme switcher dropdown styles.
  */
 
-.zp-theme-switcher {
+.cp-theme-switcher {
   position: relative;
   display: inline-flex;
   align-items: center;
   margin-left: 8px;
 }
 
-.zp-theme-switcher__btn {
+.cp-theme-switcher__btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 32px;
   height: 32px;
   padding: 0;
-  border: 1px solid var(--zp-c-border);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius);
-  background: var(--zp-c-bg);
-  color: var(--zp-c-text-2);
+  background: var(--cp-c-bg);
+  color: var(--cp-c-text-2);
   cursor: pointer;
   transition:
     color 0.2s,
     border-color 0.2s;
 }
 
-.zp-theme-switcher__btn:hover {
-  color: var(--zp-c-text-1);
-  border-color: var(--zp-c-brand-1);
+.cp-theme-switcher__btn:hover {
+  color: var(--cp-c-text-1);
+  border-color: var(--cp-c-brand-1);
 }
 
-.zp-theme-switcher__dropdown {
+.cp-theme-switcher__dropdown {
   position: absolute;
   bottom: calc(100% + 8px);
   right: 0;
   z-index: 100;
   min-width: 160px;
   padding: 4px;
-  border: 1px solid var(--zp-c-border);
+  border: 1px solid var(--cp-c-border);
   border-radius: var(--rp-radius);
-  background: var(--zp-c-bg-elv);
+  background: var(--cp-c-bg-elv);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.zp-theme-switcher__option {
+.cp-theme-switcher__option {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -53,40 +53,40 @@
   border: none;
   border-radius: var(--rp-radius-small);
   background: none;
-  color: var(--zp-c-text-2);
+  color: var(--cp-c-text-2);
   font-size: 13px;
-  font-family: var(--zp-font-family-base);
+  font-family: var(--cp-font-family-base);
   cursor: pointer;
   transition:
     background 0.15s,
     color 0.15s;
 }
 
-.zp-theme-switcher__option:hover {
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-1);
+.cp-theme-switcher__option:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
 }
 
-.zp-theme-switcher__option--active {
-  color: var(--zp-c-brand-1);
+.cp-theme-switcher__option--active {
+  color: var(--cp-c-brand-1);
 }
 
-.zp-theme-switcher__swatch {
+.cp-theme-switcher__swatch {
   display: inline-block;
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 1px solid var(--zp-c-border);
+  border: 1px solid var(--cp-c-border);
   flex-shrink: 0;
 }
 
-.zp-theme-switcher__check {
+.cp-theme-switcher__check {
   margin-left: auto;
   font-size: 11px;
   opacity: 0.7;
 }
 
-.zp-theme-switcher__name {
+.cp-theme-switcher__name {
   flex: 1;
   text-align: left;
 }

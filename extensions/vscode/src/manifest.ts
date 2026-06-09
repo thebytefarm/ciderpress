@@ -39,7 +39,7 @@ interface ManifestReaderDeps {
   readonly RelativePattern: new (base: string, pattern: string) => RelativePattern
 }
 
-const MANIFEST_RELATIVE = path.join('.zpress', 'content', '.generated', 'manifest.json')
+const MANIFEST_RELATIVE = path.join('.ciderpress', 'content', '.generated', 'manifest.json')
 
 function readManifest(workspaceRoot: string): Manifest | null {
   const manifestPath = path.join(workspaceRoot, MANIFEST_RELATIVE)
@@ -119,7 +119,7 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
 
   const manifestGlob = new deps.RelativePattern(
     deps.workspaceRoot,
-    '.zpress/content/.generated/manifest.json'
+    '.ciderpress/content/.generated/manifest.json'
   )
   const watcher = deps.createWatcher(manifestGlob)
   watcher.onDidChange(() => reload())
@@ -130,7 +130,6 @@ function createManifestReader(deps: ManifestReaderDeps): ManifestReader {
     getPath: (fsPath: string): string | undefined => state.pathMap.get(fsPath),
     getSourceByUrlPath: (urlPath: string): string | undefined => {
       const normalized = urlPath.startsWith('/') ? urlPath : `/${urlPath}`
-      /* Try exact match first, then without trailing slash */
       const exact = state.urlToSourceMap.get(normalized)
       if (exact) {
         return exact

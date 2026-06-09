@@ -16,7 +16,7 @@ import { SidebarList } from '@rspress/core/theme-original'
 import type React from 'react'
 import { useLayoutEffect, useMemo, useState } from 'react'
 
-import { useZpress } from '../../hooks/use-zpress'
+import { useCiderpress } from '../../hooks/use-ciderpress'
 import { resolveScopedSidebar } from './sidebar-filter'
 
 /**
@@ -41,7 +41,7 @@ export function Sidebar(): React.ReactElement {
   const rawSidebarData = useSidebar()
   const activeMatcher = useActiveMatcher()
   const { pathname: rawPathname } = useLocation()
-  const { standaloneScopePaths } = useZpress()
+  const { standaloneScopePaths } = useCiderpress()
 
   const pathname = decodeURIComponent(rawPathname)
   const scopes = standaloneScopePaths ?? []
@@ -61,10 +61,6 @@ export function Sidebar(): React.ReactElement {
 
   return <SidebarList sidebarData={sidebarData} setSidebarData={setSidebarData} />
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Walk the sidebar tree and uncollapse groups that contain the active path.

@@ -1,103 +1,129 @@
 ---
 title: CLI Commands
-description: Reference for all zpress CLI commands, flags, and behavior.
+description: Reference for all ciderpress CLI commands, flags, and behavior.
 ---
 
 # CLI Commands
 
-All commands are run from your repo root where `zpress.config.ts` lives.
+All commands are run from your repo root where `ciderpress.config.ts` lives.
 
 ```bash
-zpress <command> [flags]
+ciderpress <command> [flags]
 ```
+
+The ten registered commands are: [`setup`](#setup), [`dev`](#dev), [`build`](#build), [`serve`](#serve), [`sync`](#sync), [`check`](#check), [`diff`](#diff), [`draft`](#draft), [`clean`](#clean), [`dump`](#dump).
+
+## Common flags
+
+Several commands share the same option set. Where a per-command table omits a flag, it isn't supported.
+
+| Flag          | Type                | Default | Commands                     | Description                                                             |
+| ------------- | ------------------- | ------- | ---------------------------- | ----------------------------------------------------------------------- |
+| `--quiet`     | `boolean`           | `false` | `sync`, `dev`, `build`       | Suppress non-error output                                               |
+| `--clean`     | `boolean`           | `false` | `dev`, `build`               | Remove build artifacts before running                                   |
+| `--port`      | `number`            | —       | `dev` (6174), `serve` (8080) | Preferred port — falls back to the next free port in a 5-port range     |
+| `--theme`     | `string`            | —       | `dev`, `serve`               | Override `theme.name` for this run without touching `ciderpress.config` |
+| `--colorMode` | `'dark' \| 'light'` | —       | `dev`, `serve`               | Override `theme.variant` for this run                                   |
+| `--vscode`    | `boolean`           | `false` | `dev`, `serve`               | Emit the VS Code extension's chrome trimmings (no topbar, panel layout) |
 
 ## setup
 
-Initialize a zpress config file in the current project.
+Initialize a ciderpress config file in the current project.
 
 ```bash
-zpress setup
+ciderpress setup
 ```
 
-Writes a starter `zpress.config.ts` if one does not already exist. Skips with a warning if the file is already present.
+Derives the project title from `git remote get-url origin` (falling back to the directory name), writes a starter `ciderpress.config.ts`, ensures `.ciderpress/` is gitignored, and generates initial branded SVG assets in `.ciderpress/public/`. Skips with a warning if `ciderpress.config.ts` already exists.
 
 ## sync
 
-Sync documentation sources into the `.zpress/` directory.
+Sync documentation sources into `.ciderpress/`.
 
 ```bash
-zpress sync [--quiet]
+ciderpress sync [--quiet]
 ```
 
 | Flag      | Type      | Default | Description               |
 | --------- | --------- | ------- | ------------------------- |
 | `--quiet` | `boolean` | `false` | Suppress non-error output |
 
-Resolves all entries in the config, copies source files into `.zpress/content/`, merges frontmatter, and generates sidebar and nav JSON files in `.zpress/content/.generated/`.
+Resolves all entries in the config, copies source files into `.ciderpress/content/`, merges frontmatter, and writes `_meta.json` and `_nav.json` files alongside each section.
 
 ## dev
 
 Start the dev server with live reload.
 
 ```bash
-zpress dev [--quiet] [--clean]
+ciderpress dev [--quiet] [--clean] [--port <n>] [--theme <name>] [--colorMode <dark|light>] [--vscode] [--headless]
 ```
 
-| Flag      | Type      | Default | Description                            |
-| --------- | --------- | ------- | -------------------------------------- |
-| `--quiet` | `boolean` | `false` | Suppress non-error output              |
-| `--clean` | `boolean` | `false` | Remove build artifacts before starting |
+| Flag          | Type                | Default | Description                                                         |
+| ------------- | ------------------- | ------- | ------------------------------------------------------------------- |
+| `--quiet`     | `boolean`           | `false` | Suppress non-error output                                           |
+| `--clean`     | `boolean`           | `false` | Remove build artifacts before starting                              |
+| `--port`      | `number`            | `6174`  | Preferred port (falls back to the next free port in a 5-port range) |
+| `--theme`     | `string`            | —       | Override `theme.name` for this run                                  |
+| `--colorMode` | `'dark' \| 'light'` | —       | Override `theme.variant` for this run                               |
+| `--vscode`    | `boolean`           | `false` | Emit the VS Code extension's chrome trimmings                       |
+| `--headless`  | `boolean`           | `false` | Run without the Ink TUI — plain log output                          |
 
 Runs `sync` first, starts a file watcher on all source files, and launches the Rspress dev server. Changes to source markdown files are detected and re-synced automatically.
+
+`--headless` is required when invoking `dev` from a non-TTY shell (CI, Docker, nodemon, background tasks) — the default Ink TUI needs raw-mode stdin and will error otherwise.
 
 ## build
 
 Build the static site for production.
 
 ```bash
-zpress build [--quiet] [--clean]
+ciderpress build [--quiet] [--clean] [--check | --no-check] [--verbose]
 ```
 
-| Flag         | Type      | Default | Description                                             |
-| ------------ | --------- | ------- | ------------------------------------------------------- |
-| `--quiet`    | `boolean` | `false` | Suppress non-error output                               |
-| `--clean`    | `boolean` | `false` | Remove build artifacts before building                  |
-| `--check`    | `boolean` | `true`  | Validate config and check for broken links during build |
-| `--no-check` | `boolean` | —       | Skip config validation and deadlink checks              |
+| Flag                     | Type      | Default | Description                                                             |
+| ------------------------ | --------- | ------- | ----------------------------------------------------------------------- |
+| `--quiet`                | `boolean` | `false` | Suppress non-error output                                               |
+| `--clean`                | `boolean` | `false` | Remove build artifacts before building                                  |
+| `--check` / `--no-check` | `boolean` | `true`  | Validate config and check for broken links during the build             |
+| `--verbose`              | `boolean` | `false` | Surface raw Rspress output during the check pass (otherwise suppressed) |
 
-Runs `sync` first, then builds the Rspress site. Output is written to `.zpress/dist/`.
+Runs `sync` first, then builds the Rspress site. Output is written to `.ciderpress/dist/`. Branded SVG assets (banner, logo, icon) are regenerated as a side effect when `title` is configured.
 
-When `--check` is enabled (the default), config validation and deadlink detection run as part of the build. Use `--no-check` to skip checks and build with standard Rspress output.
+When `--check` is enabled (the default), config validation and deadlink detection run as part of the build. Use `--no-check` to skip checks and build with standard Rspress output. Use `--verbose` to see raw Rspress diagnostics during the check pass.
 
 ## serve
 
 Preview the production build locally.
 
 ```bash
-zpress serve [--no-open]
+ciderpress serve [--no-open] [--port <n>] [--theme <name>] [--colorMode <dark|light>] [--vscode]
 ```
 
-| Flag        | Type      | Default | Description                      |
-| ----------- | --------- | ------- | -------------------------------- |
-| `--no-open` | `boolean` | `false` | Don't open browser automatically |
+| Flag          | Type                | Default | Description                                                         |
+| ------------- | ------------------- | ------- | ------------------------------------------------------------------- |
+| `--no-open`   | `boolean`           | `false` | Don't open the browser automatically                                |
+| `--port`      | `number`            | `8080`  | Preferred port (falls back to the next free port in a 5-port range) |
+| `--theme`     | `string`            | —       | Override `theme.name` for this run                                  |
+| `--colorMode` | `'dark' \| 'light'` | —       | Override `theme.variant` for this run                               |
+| `--vscode`    | `boolean`           | `false` | Emit the VS Code extension's chrome trimmings                       |
 
-Starts a local static file server pointed at `.zpress/dist/`. Requires a prior `zpress build`.
+Starts a local static file server pointed at `.ciderpress/dist/`. Requires a prior `ciderpress build`.
 
 ## clean
 
 Remove build artifacts, synced content, and build cache.
 
 ```bash
-zpress clean
+ciderpress clean
 ```
 
 Deletes the following directories:
 
-| Directory          | Contents     |
-| ------------------ | ------------ |
-| `.zpress/cache/`   | Build cache  |
-| `.zpress/content/` | Synced pages |
-| `.zpress/dist/`    | Build output |
+| Directory              | Contents     |
+| ---------------------- | ------------ |
+| `.ciderpress/cache/`   | Build cache  |
+| `.ciderpress/content/` | Synced pages |
+| `.ciderpress/dist/`    | Build output |
 
 Safe to run at any time — all directories are regenerated by `sync` and `build`.
 
@@ -106,21 +132,33 @@ Safe to run at any time — all directories are regenerated by `sync` and `build
 Show changed files in configured source directories.
 
 ```bash
-zpress diff [--pretty]
+ciderpress diff [--pretty] [--ref <ref>]
 ```
 
-| Flag       | Type      | Default | Description                        |
-| ---------- | --------- | ------- | ---------------------------------- |
-| `--pretty` | `boolean` | `false` | Human-readable output with headers |
+| Flag       | Type      | Default | Description                                                        |
+| ---------- | --------- | ------- | ------------------------------------------------------------------ |
+| `--pretty` | `boolean` | `false` | Human-readable output with headers (default: space-separated list) |
+| `--ref`    | `string`  | —       | Git ref to compare against `HEAD` (e.g. `HEAD^`, `main`)           |
 
-Loads the config, extracts all source directories from `include` fields, and runs `git status` scoped to those paths. By default outputs a space-separated file list to stdout, suitable for piping into other tools or git hooks. Use `--pretty` for labeled, human-readable output.
+Loads the config and extracts every source directory from `include` fields, plus their top-level roots and the config files themselves.
+
+**Default mode (no `--ref`)** runs `git status --short` scoped to those paths and prints a space-separated file list to stdout — suitable for piping into lefthook, scripts, or git hooks.
+
+**Ref mode (`--ref <ref>`)** runs `git diff --name-only <ref> HEAD` and exits with code `1` when changes are detected. This matches the [Vercel `ignoreCommand`](https://vercel.com/docs/projects/project-configuration/ignored-build-step) convention — exit `1` means "proceed with build", exit `0` means "skip build":
+
+```bash
+# vercel.json
+{ "ignoreCommand": "ciderpress diff --ref HEAD^" }
+```
+
+Use `--pretty` for labeled, human-readable output instead of the machine-friendly list.
 
 ## dump
 
 Resolve and print the full site structure as JSON.
 
 ```bash
-zpress dump
+ciderpress dump
 ```
 
 Loads the config, resolves all entries (including glob patterns and recursive discovery), and outputs the resolved navigation tree to stdout. Useful for debugging your site structure.
@@ -132,7 +170,7 @@ Output includes `text`, `link`, `collapsible`, `hidden`, `standalone`, and neste
 Validate config and check for broken links.
 
 ```bash
-zpress check
+ciderpress check
 ```
 
 Validates the config file, syncs content, then runs a build to detect deadlinks. Reports results for both config validation and link checking. Exits with code `1` if any check fails. Useful for CI pipelines.
@@ -142,7 +180,7 @@ Validates the config file, syncs content, then runs a build to detect deadlinks.
 Scaffold a new documentation file from a template.
 
 ```bash
-zpress draft [--type <type>] [--title <title>] [--out <dir>]
+ciderpress draft [--type <type>] [--title <title>] [--out <dir>]
 ```
 
 | Flag      | Type     | Default | Description                         |
@@ -153,12 +191,12 @@ zpress draft [--type <type>] [--title <title>] [--out <dir>]
 
 When `--type` or `--title` are omitted, an interactive prompt lets you select from the available templates and enter a title. The output filename is derived from the title slug (e.g. `"Authentication"` → `authentication.md`).
 
-## generate
+## References
 
-Generate branded banner, logo, and icon SVG assets from the project title.
+- [Configuration](/reference/configuration) — full `ciderpress.config.ts` schema
+- [Frontmatter](/reference/frontmatter) — per-page metadata
+- [VSCode Extension](/reference/vscode-extension) — preview docs inside the editor
 
-```bash
-zpress generate
-```
+## Resources
 
-Reads the `title` (and optional `tagline`) from `zpress.config.ts`, generates banner, logo, and icon SVGs, and writes them to `.zpress/public/`. If no `title` is configured, asset generation is skipped. Files that have been manually customized are not overwritten.
+- [Vercel ignoreCommand](https://vercel.com/docs/projects/project-configuration/ignored-build-step) — exit-code contract used by `diff --ref`

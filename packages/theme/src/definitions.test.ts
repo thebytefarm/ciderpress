@@ -3,23 +3,32 @@ import { describe, it, expect } from 'vitest'
 import {
   COLOR_MODES,
   ICON_COLORS,
+  THEME_ALIASES,
   THEME_NAMES,
   THEME_VARIANTS,
   isBuiltInIconColor,
   isBuiltInTheme,
   resolveDefaultColorMode,
   resolveDefaultVariant,
+  resolveThemeAlias,
   resolveThemeModes,
   resolveThemeVariants,
 } from './definitions.ts'
 
 describe('THEME_NAMES constant', () => {
   it('should contain exactly the built-in theme names', () => {
-    expect(THEME_NAMES).toStrictEqual(['default', 'midnight', 'arcade'])
+    expect(THEME_NAMES).toStrictEqual([
+      'honeycrisp',
+      'grannysmith',
+      'mulled',
+      'amber',
+      'midnight',
+      'arcade',
+    ])
   })
 
-  it('should have exactly 3 entries', () => {
-    expect(THEME_NAMES).toHaveLength(3)
+  it('should have exactly 6 entries', () => {
+    expect(THEME_NAMES).toHaveLength(6)
   })
 })
 
@@ -52,9 +61,43 @@ describe('ICON_COLORS constant', () => {
   })
 })
 
+describe('THEME_ALIASES constant', () => {
+  it('should map legacy default to mulled', () => {
+    expect(THEME_ALIASES['default']).toBe('mulled')
+  })
+})
+
+describe('resolveThemeAlias()', () => {
+  it('should resolve default to mulled', () => {
+    expect(resolveThemeAlias('default')).toBe('mulled')
+  })
+
+  it('should pass canonical names through unchanged', () => {
+    expect(resolveThemeAlias('honeycrisp')).toBe('honeycrisp')
+    expect(resolveThemeAlias('mulled')).toBe('mulled')
+    expect(resolveThemeAlias('midnight')).toBe('midnight')
+  })
+
+  it('should pass unknown names through unchanged', () => {
+    expect(resolveThemeAlias('custom')).toBe('custom')
+  })
+})
+
 describe('isBuiltInTheme()', () => {
-  it('should return true for default', () => {
-    expect(isBuiltInTheme('default')).toBe(true)
+  it('should return true for honeycrisp', () => {
+    expect(isBuiltInTheme('honeycrisp')).toBe(true)
+  })
+
+  it('should return true for grannysmith', () => {
+    expect(isBuiltInTheme('grannysmith')).toBe(true)
+  })
+
+  it('should return true for mulled', () => {
+    expect(isBuiltInTheme('mulled')).toBe(true)
+  })
+
+  it('should return true for amber', () => {
+    expect(isBuiltInTheme('amber')).toBe(true)
   })
 
   it('should return true for midnight', () => {
@@ -63,6 +106,10 @@ describe('isBuiltInTheme()', () => {
 
   it('should return true for arcade', () => {
     expect(isBuiltInTheme('arcade')).toBe(true)
+  })
+
+  it('should accept the legacy default alias as built-in', () => {
+    expect(isBuiltInTheme('default')).toBe(true)
   })
 
   it('should return false for the legacy base name', () => {
@@ -97,8 +144,20 @@ describe('isBuiltInIconColor()', () => {
 })
 
 describe('resolveDefaultVariant()', () => {
-  it('should return dark for default', () => {
-    expect(resolveDefaultVariant('default')).toBe('dark')
+  it('should return dark for honeycrisp', () => {
+    expect(resolveDefaultVariant('honeycrisp')).toBe('dark')
+  })
+
+  it('should return dark for grannysmith', () => {
+    expect(resolveDefaultVariant('grannysmith')).toBe('dark')
+  })
+
+  it('should return dark for mulled', () => {
+    expect(resolveDefaultVariant('mulled')).toBe('dark')
+  })
+
+  it('should return dark for amber', () => {
+    expect(resolveDefaultVariant('amber')).toBe('dark')
   })
 
   it('should return dark for midnight', () => {
@@ -110,13 +169,25 @@ describe('resolveDefaultVariant()', () => {
   })
 
   it('should be aliased by the deprecated resolveDefaultColorMode export', () => {
-    expect(resolveDefaultColorMode('default')).toBe('dark')
+    expect(resolveDefaultColorMode('honeycrisp')).toBe('dark')
   })
 })
 
 describe('resolveThemeVariants()', () => {
-  it('should return both variants for default', () => {
-    expect(resolveThemeVariants('default')).toStrictEqual(['dark', 'light'])
+  it('should return both variants for honeycrisp', () => {
+    expect(resolveThemeVariants('honeycrisp')).toStrictEqual(['dark', 'light'])
+  })
+
+  it('should return both variants for grannysmith', () => {
+    expect(resolveThemeVariants('grannysmith')).toStrictEqual(['dark', 'light'])
+  })
+
+  it('should return both variants for mulled', () => {
+    expect(resolveThemeVariants('mulled')).toStrictEqual(['dark', 'light'])
+  })
+
+  it('should return both variants for amber', () => {
+    expect(resolveThemeVariants('amber')).toStrictEqual(['dark', 'light'])
   })
 
   it('should return only dark for midnight', () => {
@@ -128,6 +199,6 @@ describe('resolveThemeVariants()', () => {
   })
 
   it('should be aliased by the deprecated resolveThemeModes export', () => {
-    expect(resolveThemeModes('default')).toStrictEqual(['dark', 'light'])
+    expect(resolveThemeModes('honeycrisp')).toStrictEqual(['dark', 'light'])
   })
 })

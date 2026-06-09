@@ -14,7 +14,7 @@ export interface MobileNavCTAProps {
   readonly href: string
 }
 
-const HOST_ATTR = 'data-zp-mobile-nav-cta-host'
+const HOST_ATTR = 'data-cp-mobile-nav-cta-host'
 
 /**
  * MobileNavCTA — portals a primary CTA button into Rspress's mobile
@@ -46,7 +46,7 @@ export function MobileNavCTA(props: MobileNavCTAProps): React.ReactElement | nul
       }
       const node = globalThis.document.createElement('div')
       node.setAttribute(HOST_ATTR, '')
-      node.className = 'zp-mobile-nav-cta'
+      node.className = 'cp-mobile-nav-cta'
       const socials = container.querySelector('.rp-social-links')
       if (socials === null) {
         container.append(node)

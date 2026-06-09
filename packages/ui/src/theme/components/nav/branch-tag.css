@@ -2,17 +2,17 @@
  * Branch tag pill — git branch badge positioned in the nav bar.
  */
 
-.zp-branch-tag {
+.cp-branch-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   margin-left: 8px;
   padding: 3px 10px;
   border-radius: 20px;
-  background: var(--zp-c-bg-soft);
-  border: 1px solid var(--zp-c-divider);
-  color: var(--zp-c-text-3);
-  font-family: var(--zp-font-family-mono);
+  background: var(--cp-c-bg-soft);
+  border: 1px solid var(--cp-c-divider);
+  color: var(--cp-c-text-3);
+  font-family: var(--cp-font-family-mono);
   font-size: 11px;
   font-weight: 600;
   line-height: 1;
@@ -24,31 +24,31 @@
     color 0.2s;
 }
 
-.zp-branch-tag:hover {
-  border-color: var(--zp-c-brand-1);
-  color: var(--zp-c-brand-1);
+.cp-branch-tag:hover {
+  border-color: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-1);
   text-decoration: none !important;
 }
 
-.zp-branch-tag:focus-visible {
+.cp-branch-tag:focus-visible {
   outline: 2px solid var(--rp-c-brand);
   outline-offset: 2px;
 }
 
-.zp-branch-tag svg {
+.cp-branch-tag svg {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
 }
 
-.zp-branch-tag__text {
+.cp-branch-tag__text {
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 768px) {
-  .zp-branch-tag__text {
+  .cp-branch-tag__text {
     display: none;
   }
 }

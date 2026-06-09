@@ -1,4 +1,4 @@
-import type { NavItem, ZpressConfig } from '@zpress/config'
+import type { NavItem, CiderpressConfig } from '@ciderpress/config'
 
 import { isEntrySlug } from '../resolve/path.ts'
 import type { ResolvedEntry, RspressNavItem } from '../types.ts'
@@ -9,12 +9,12 @@ import type { ResolvedEntry, RspressNavItem } from '../types.ts'
  * When `config.nav` is `"auto"` (or omitted), produces one nav item per
  * top-level section, linking to its first child page.
  *
- * @param config - zpress config (provides explicit nav or `"auto"`)
+ * @param config - ciderpress config (provides explicit nav or `"auto"`)
  * @param resolved - Resolved entry tree from the sync engine
  * @returns Rspress nav items array
  */
 export function generateNav(
-  config: ZpressConfig,
+  config: CiderpressConfig,
   resolved: readonly ResolvedEntry[]
 ): RspressNavItem[] {
   if (config.nav !== 'auto' && config.nav !== undefined) {
@@ -31,10 +31,6 @@ export function generateNav(
     .map(buildNavEntry)
     .filter((item) => item.link !== undefined)
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Build a NavItem from a resolved entry.

@@ -52,7 +52,7 @@ Thumbs.db
 skills-lock.json
 
 # Headless dev artifacts
-packages/*/.zpress-dev-headless.mjs
+packages/*/.ciderpress-dev-headless.mjs
 
 # Worktrees
 .worktrees/
@@ -63,17 +63,23 @@ packages/*/.zpress-dev-headless.mjs
 # Benchmark fixtures
 .bench-fixtures/
 
+# Scratchpad
+.scratchpad
+
 # Misc
 *.tgz
 *.vsix
 .cache/
 .vercel
 
-# zpress (ignore all except public assets)
-.zpress/*
-!.zpress/public/
+# ciderpress (ignore all except public assets)
+.ciderpress/*
+!.ciderpress/public/
 
 # Visual-parity baselines
 .snapshots/
+
+# Ladle cache (component playground for @ciderpress/ui)
+packages/ui/node_modules/.ladle/
 
 

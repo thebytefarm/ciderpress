@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { z } from 'zod/v3'
+import { z, ZodError } from 'zod'
 
 import { configError, configErrorFromZod } from './errors.ts'
 
@@ -69,6 +69,29 @@ describe('configErrorFromZod()', () => {
       expect(result.errors[0]).toMatchObject({
         path: ['name'],
         message: expect.any(String),
+      })
+    }
+  })
+
+  it('should drop symbol path segments when mapping issues', () => {
+    // Construct a `ZodError` with a synthetic issue whose path contains a
+    // `symbol` segment — covers the `(p): p is string | number` filter that
+    // `safeParse` paths normally never exercise.
+    const symbolKey = Symbol('hidden')
+    const syntheticError = new ZodError([
+      {
+        code: 'custom',
+        path: ['outer', symbolKey, 0, 'leaf'],
+        message: 'symbol path segment must be filtered',
+        input: undefined,
+      },
+    ])
+    const result = configErrorFromZod(syntheticError)
+    expect(result.errors).toBeDefined()
+    if (result.errors) {
+      expect(result.errors[0]).toMatchObject({
+        path: ['outer', 0, 'leaf'],
+        message: 'symbol path segment must be filtered',
       })
     }
   })

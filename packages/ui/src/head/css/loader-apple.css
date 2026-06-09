@@ -1,0 +1,195 @@
+/**
+ * Apple loader — Ciderpress's native loading overlay.
+ *
+ * The pixel-apple animates in four phases over 4.2s:
+ *   1. Holds whole apple
+ *   2. Five discrete bites (chunk-by-chunk, leaf untouched)
+ *   3. Apple snaps back whole + begins a ballerina spin on rotateY
+ *   4. Spin completes, holds, loops
+ *
+ * Pseudo-element layout:
+ *   - html::before  = apple body (red) — bite mask + spin
+ *   - body::after   = leaf + stem      — spin only
+ *   - html::after   = "loading" text
+ *   - body::before  = backdrop (see loader-backdrop.css)
+ *
+ * Both icon pseudos share `cp-apple-cycle` so the body and leaf stay
+ * frame-locked through the spin — the `--bite` track is a no-op for
+ * the leaf since it never references the var.
+ *
+ * Opt-out by setting `loader: 'classic'` in `ciderpress.config.ts` to
+ * switch to the legacy dots-only loader (see loader-dots.css).
+ */
+
+/* `--bite` is the radial-gradient cut radius used by the body mask.
+   Registering it with @property lets keyframes interpolate it
+   smoothly. Supported in Chrome 85+, Safari 16.4+, Firefox 128+. */
+@property --bite {
+  syntax: '<length>';
+  inherits: false;
+  initial-value: 0px;
+}
+
+/* Apple body — red paths only. Bite is a radial-gradient mask centred
+   on the right edge; growing `--bite` carves a crescent.
+   Pixel margins (not em) because icon pseudos inherit `html`'s 16px
+   font-size, not the text pseudo's 28px — keeping em here would stack
+   the icon on top of the text. */
+html::before {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 40px;
+  margin-left: -88px;
+  margin-top: -20px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 40 190 220" shape-rendering="crispEdges"><path d="M90,80h20v10h30v10h30v-10h30v-10h20v10h10v10h10v10h10v90h-10v20h-10v20h-10v10h-10v10h-30v-10h-10v-10h-10v-10h-10v10h-10v10h-10v10h-30v-10h-10v-10h-10v-20h-10v-20h-10v-90h10v-10h10v-10h10v-10zM220,200h10v-30h-10v-10h-10v40h-10v20h-10v20h10v-10h10v-10h10v-20z" fill="%23dc2626"/><path d="M110,80h30v10h-30v-10zM170,80h30v10h-30v-10zM140,90h30v10h-30v-10zM210,160h10v10h10v30h-10v20h-10v10h-10v10h-10v-20h10v-20h10v-40zM150,230h10v10h10v10h10v10h-50v-10h10v-10h10v-10z" fill="%237f1d1d"/></svg>');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  transform-origin: center center;
+  -webkit-mask-image: radial-gradient(
+    circle at right center,
+    transparent 0,
+    transparent var(--bite),
+    #000 calc(var(--bite) + 1px)
+  );
+  mask-image: radial-gradient(
+    circle at right center,
+    transparent 0,
+    transparent var(--bite),
+    #000 calc(var(--bite) + 1px)
+  );
+  animation: cp-apple-cycle 4.2s linear infinite;
+}
+
+/* Leaf + stem — green/brown paths only. Same box as the body so it
+   sits on top of it. Shares the same animation so the rotation stays
+   in lockstep; `--bite` doesn't affect this element because it has
+   no mask referencing it. */
+body::after {
+  content: '';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 36px;
+  height: 40px;
+  margin-left: -88px;
+  margin-top: -20px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 40 190 220" shape-rendering="crispEdges"><path d="M80,40h10v10h-10v-10zM90,50h30v10h10v10h-30v-10h-10v-10z" fill="%2399e550"/><path d="M90,40h30v10h-30v-10zM120,50h10v10h-10v-10zM130,60h10v10h-10v-10z" fill="%236abe30"/><path d="M120,40h20v10h10v20h-10v-10h-10v-10h-10v-10z" fill="%234b692f"/><path d="M160,40h20v10h-10v10h-10v10h-10v-20h10v-10z" fill="%23d9a066"/><path d="M150,70h10v20h-10v-20z" fill="%238f563b"/></svg>');
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  image-rendering: pixelated;
+  z-index: 10000;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+  transform-origin: center center;
+  animation: cp-apple-cycle 4.2s linear infinite;
+}
+
+/* Cycle (4.2s):
+     0    – 0.59s  hold full apple
+     0.59 – 2.10s  five discrete chomps (instant snap + ~290ms hold)
+     2.10 – 2.10s  bite snaps back to 0 — apple goes whole again
+     2.10 – 3.57s  spin 360° around vertical axis (rotateY)
+     3.57 – 4.20s  hold full apple, loop
+   Bite caps at 13px so the apple is gently nibbled rather than
+   demolished — the body only renders ~30px wide in the 36px box, so
+   13px reads as a healthy crescent with plenty of red left.
+   `--bite` snaps to 0 at the same instant the spin starts, so the
+   apple regenerates and spins whole. */
+@keyframes cp-apple-cycle {
+  0%,
+  14% {
+    --bite: 0px;
+    transform: perspective(220px) rotateY(0deg);
+  }
+  14.01% {
+    --bite: 3px;
+  }
+  21% {
+    --bite: 3px;
+  }
+  21.01% {
+    --bite: 6px;
+  }
+  28% {
+    --bite: 6px;
+  }
+  28.01% {
+    --bite: 9px;
+  }
+  35% {
+    --bite: 9px;
+  }
+  35.01% {
+    --bite: 11px;
+  }
+  42% {
+    --bite: 11px;
+  }
+  42.01% {
+    --bite: 13px;
+  }
+  50% {
+    --bite: 13px;
+    transform: perspective(220px) rotateY(0deg);
+  }
+  50.01% {
+    --bite: 0px;
+    transform: perspective(220px) rotateY(0deg);
+  }
+  85% {
+    --bite: 0px;
+    transform: perspective(220px) rotateY(360deg);
+  }
+  100% {
+    --bite: 0px;
+    transform: perspective(220px) rotateY(360deg);
+  }
+}
+
+/* Text — positioned beside the icon, not overlapping. Visible apple
+   ends at ~-54px; text starts at -40px → ~14px gap. The icon margin
+   and text margin are tuned together so the whole apple+text unit
+   reads visually centred (apple-visible-left ≈ -text-visible-right).
+   `line-height: 1` plus `margin-top: -14px` (half of font-size) center
+   the line box vertically on the same baseline as the apple. */
+html::after {
+  content: 'loading';
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 160px;
+  margin-left: -40px;
+  margin-top: -14px;
+  text-align: left;
+  color: var(--cp-c-text-2, #888);
+  font-family: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
+  font-size: 28px;
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+html.cp-loader-fade::before,
+html.cp-loader-fade::after,
+html.cp-loader-fade body::after {
+  opacity: 0;
+}
+
+html[data-cp-ready]::before,
+html[data-cp-ready]::after,
+html[data-cp-ready] body::after {
+  display: none;
+}

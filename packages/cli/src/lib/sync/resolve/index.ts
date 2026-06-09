@@ -1,11 +1,12 @@
 import fs from 'node:fs'
 import path from 'node:path'
 
+import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@ciderpress/config'
+import type { Section, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
-import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@zpress/config'
-import type { Section, Frontmatter } from '@zpress/config'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil, isString } from 'massaman/predicate'
 
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
@@ -48,10 +49,6 @@ export async function resolveEntries(
   return [null, [...collected]]
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Resolve a single section node — dispatches to leaf, virtual, or nested section handler.
  *
@@ -70,17 +67,14 @@ function resolveSection(
 ): Promise<SyncOutcome<ResolvedEntry>> {
   const mergedFm = { ...inheritedFrontmatter, ...section.frontmatter }
 
-  // Leaf page from single file
   if (isSingleFileInclude(section.include) && !section.items) {
     return Promise.resolve(resolveFilePage(section, ctx, mergedFm))
   }
 
-  // Virtual page (inline/generated content)
-  if (section.content !== undefined && section.content !== null && section.path) {
+  if (isNotNil(section.content) && section.path) {
     return Promise.resolve(resolveVirtualPage(section, mergedFm))
   }
 
-  // Nested section — may have glob, explicit items, or both
   return resolveNestedSection(section, ctx, mergedFm, depth)
 }
 
@@ -99,7 +93,7 @@ function resolveFilePage(
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
   const { include } = section
-  if (include === null || include === undefined || typeof include !== 'string') {
+  if (isNil(include) || !isString(include)) {
     return [
       syncError('missing_from', 'resolveFilePage called without single-file section.include'),
       null,
@@ -111,7 +105,7 @@ function resolveFilePage(
     return [syncError('file_not_found', `Source file not found: ${include}`), null]
   }
 
-  if (section.path === null || section.path === undefined) {
+  if (isNil(section.path)) {
     return [
       syncError('missing_link', `resolveFilePage called without section.path for: ${include}`),
       null,
@@ -149,7 +143,7 @@ function resolveVirtualPage(
   section: Section,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
-  if (section.path === undefined || section.path === null) {
+  if (isNil(section.path)) {
     return [syncError('missing_link', 'resolveVirtualPage called without section.path'), null]
   }
 
@@ -187,7 +181,6 @@ async function resolveNestedSection(
   mergedFm: Frontmatter,
   depth: number
 ): Promise<SyncOutcome<ResolvedEntry>> {
-  // 1. Auto-discover from glob
   const globbed = await (() => {
     if (hasAnyGlobInclude(section.include)) {
       if (section.recursive) {
@@ -198,7 +191,6 @@ async function resolveNestedSection(
     return Promise.resolve([] as ResolvedEntry[])
   })()
 
-  // 2. Explicit children
   const explicitResult = await (() => {
     if (section.items) {
       return resolveEntries(section.items, ctx, mergedFm, depth + 1)
@@ -211,12 +203,10 @@ async function resolveNestedSection(
     return [explicitErr, null]
   }
 
-  // 3. Merge, deduplicate (explicit wins over glob), sort
   const children = [...globbed, ...explicit]
   const deduped = deduplicateByLink(children)
   const sorted = sortEntries(deduped, section.sort)
 
-  // Section header can also be a page (has path + single-file include)
   const sectionPage = resolveSectionPage(section, ctx, mergedFm)
 
   // Collapsible: explicit value wins, otherwise auto-collapse below top level
@@ -316,8 +306,8 @@ async function resolveGlob(
 ): Promise<ResolvedEntry[]> {
   const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
 
-  if (section.include === null || section.include === undefined) {
-    log.error('[zpress] resolveGlob called without section.include')
+  if (isNil(section.include)) {
+    log.error('[ciderpress] resolveGlob called without section.include')
     return []
   }
 
@@ -340,7 +330,6 @@ async function resolveGlob(
 
   const prefix = section.path ?? ''
 
-  // Extract titleFrom and titleTransform from title object config
   const titleConfig = match(section.title)
     .when(
       (
@@ -432,8 +421,7 @@ function deriveCommonPrefix(children: readonly ResolvedEntry[]): string | undefi
 function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
   const { result } = entries.reduce<{ seen: Map<string, number>; result: ResolvedEntry[] }>(
     (acc, entry) => {
-      // Only dedup by link — entries without links are always unique
-      if (entry.link === null || entry.link === undefined) {
+      if (isNil(entry.link)) {
         return {
           seen: acc.seen,
           result: [...acc.result, entry],
@@ -448,7 +436,6 @@ function deduplicateByLink(entries: readonly ResolvedEntry[]): ResolvedEntry[] {
           result: [...acc.result, entry],
         }
       }
-      // Later entry wins (explicit items come after glob)
       return {
         seen: acc.seen,
         result: acc.result.map((item, i) => {

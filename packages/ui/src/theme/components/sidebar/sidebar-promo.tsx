@@ -1,5 +1,6 @@
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
 import './sidebar-promo.css'
@@ -40,12 +41,12 @@ export function SidebarPromo(props: SidebarPromoProps): React.ReactElement | nul
     return null
   }
   return (
-    <div className="zp-sidebar-promo">
-      <p className="zp-sidebar-promo__title">{props.title}</p>
-      <p className="zp-sidebar-promo__body">{props.body}</p>
-      <a className="zp-sidebar-promo__cta" href={ctaHref}>
+    <div className="cp-sidebar-promo">
+      <p className="cp-sidebar-promo__title">{props.title}</p>
+      <p className="cp-sidebar-promo__body">{props.body}</p>
+      <RouteLink className="cp-sidebar-promo__cta" href={ctaHref}>
         {props.ctaText}
-      </a>
+      </RouteLink>
     </div>
   )
 }

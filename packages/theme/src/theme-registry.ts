@@ -1,13 +1,12 @@
+import { pickBy } from 'massaman/object'
+import { isNotNil } from 'massaman/predicate'
 import { z } from 'zod'
 
+import { DEFAULT_THEME_NAME, RESERVED_THEME_NAMES } from './constants.ts'
 import { themeNameSchema, tokensSchema } from './schema.ts'
-import type { TokenPath, ZpressTokens } from './tokens.ts'
+import type { TokenPath, CiderpressTokens } from './tokens.ts'
 import { TOKEN_TO_CSS_VAR } from './tokens.ts'
 import type { BuiltInThemeName, ThemeVariant } from './types.ts'
-
-// ---------------------------------------------------------------------------
-// Module-level constants — referenced by the public exports below
-// ---------------------------------------------------------------------------
 
 /**
  * Variant preference order used when `defineTheme` callers omit
@@ -19,21 +18,70 @@ const DEFAULT_VARIANT_ORDER: readonly ThemeVariant[] = ['dark', 'light'] as cons
 /**
  * Name of the framework's default theme — used by `renderThemeCss` to
  * decide which theme also emits the `:root { ... }` FOUC fallback. Kept
- * in lockstep with `BUILT_IN_THEMES.default` and the build-time fallback
- * in `packages/ui/src/config.ts`.
+ * in lockstep with `BUILT_IN_THEMES[DEFAULT_THEME_NAME]` and the build-time
+ * fallback in `packages/ui/src/config.ts`. The legacy `'default'` slug
+ * aliases to this theme via `THEME_ALIASES` in `definitions.ts`.
  */
-const FOUC_ROOT_THEME_NAME = 'default' as const
+const FOUC_ROOT_THEME_NAME: typeof DEFAULT_THEME_NAME = DEFAULT_THEME_NAME
 
 /**
- * Envelope schema for `defineTheme` input. Validates the *shape* — name,
- * variant keys, and `defaultVariant` cross-reference — without parsing
- * the token trees themselves (those go through `tokensSchema` per
- * variant). Same invariants enforced by `zpressThemeInputSchema` in
- * `@zpress/config`; duplicated here because the config package depends
- * on theme, not the other way around. Errors surface with stable paths
- * (`variants`, `defaultVariant`) so consumers can pinpoint the problem.
+ * Refine guard used by `themeInputEnvelopeSchema` to reject
+ * `defineTheme({ name: ... })` calls whose name collides with a reserved
+ * built-in slug or the legacy `'default'` alias.
+ *
+ * @private
+ * @param name - Theme name from the validated envelope
+ * @returns `true` when the name is free to register, `false` otherwise
  */
-const themeInputEnvelopeSchema = z
+function isFreeThemeName(name: string): boolean {
+  if (name === 'default') {
+    return false
+  }
+  return !RESERVED_THEME_NAMES.includes(name)
+}
+
+/**
+ * Human-readable error message emitted when {@link isFreeThemeName} rejects.
+ *
+ * @private
+ * @param name - Reserved theme name the caller tried to register
+ * @returns Error message for the Zod refine
+ */
+function reservedThemeNameMessage(name: string): string {
+  return `theme name "${name}" is reserved by a built-in`
+}
+
+/**
+ * Best-effort recovery of the offending theme name from a Zod refine issue
+ * input. The envelope's outer `.refine` receives the full parsed object, so
+ * the name should always be a string; the fallback only fires if Zod's
+ * internal issue shape ever drifts.
+ *
+ * @private
+ * @param input - Raw `issue.input` from the refine error callback
+ * @returns The reserved name when reachable, `'<reserved>'` otherwise
+ */
+function extractReservedName(input: unknown): string {
+  if (input === null || typeof input !== 'object') {
+    return '<reserved>'
+  }
+  const { name } = input as { readonly name?: unknown }
+  if (typeof name !== 'string') {
+    return '<reserved>'
+  }
+  return name
+}
+
+/**
+ * Base envelope schema — shape, variant keys, and `defaultVariant`
+ * cross-reference. Used internally by {@link BUILT_IN_THEMES} (which legitimately
+ * registers the reserved built-in names) so it must NOT include the
+ * reserved-name refine. The public {@link themeInputEnvelopeSchema} extends
+ * this with the additional reservation guard for user-facing factories.
+ *
+ * @private
+ */
+const baseThemeInputEnvelopeSchema = z
   .object({
     name: z.string(),
     variants: z
@@ -62,6 +110,24 @@ const themeInputEnvelopeSchema = z
   )
 
 /**
+ * Envelope schema for `defineTheme` input. Validates the *shape* — name,
+ * variant keys, `defaultVariant` cross-reference — AND rejects names that
+ * collide with a reserved built-in slug or the legacy `'default'` alias.
+ *
+ * Re-used by `@ciderpress/config`'s schema (imported via `@ciderpress/theme`)
+ * so both packages enforce identical invariants from a single source.
+ * Errors surface with stable paths (`variants`, `defaultVariant`, `name`)
+ * so consumers can pinpoint the problem.
+ */
+export const themeInputEnvelopeSchema = baseThemeInputEnvelopeSchema.refine(
+  (theme) => isFreeThemeName(theme.name),
+  {
+    error: (issue) => reservedThemeNameMessage(extractReservedName(issue.input)),
+    path: ['name'],
+  }
+)
+
+/**
  * Shape of the raw brand-palette entries below. Mirrors the public
  * `BrandPalette` interface re-exported from `brand-colors.ts`, but is declared
  * locally so this module does not pull a value/type import from
@@ -87,20 +153,47 @@ interface RawBrandPalette {
  * brand surface so `RSPRESS_COMPAT_MAP` can pick them up by token path.
  */
 const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Object.freeze({
-  default: {
-    primary: '#7c3aed',
-    hover: '#6d28d9',
-    active: '#5b21b6',
+  honeycrisp: {
+    primary: '#dc2626',
+    hover: '#b91c1c',
+    active: '#7f1d1d',
     fg: '#ffffff',
-    soft: 'rgba(124, 58, 237, 0.14)',
-    light: '#8b5cf6',
-    lighter: '#a78bfa',
+    soft: 'rgba(220, 38, 38, 0.14)',
+    light: '#f87171',
+    lighter: '#fca5a5',
+  },
+  grannysmith: {
+    primary: '#65a30d',
+    hover: '#4d7c0f',
+    active: '#365314',
+    fg: '#ffffff',
+    soft: 'rgba(101, 163, 13, 0.14)',
+    light: '#a3e635',
+    lighter: '#bef264',
+  },
+  mulled: {
+    primary: '#991b1b',
+    hover: '#7f1d1d',
+    active: '#450a0a',
+    fg: '#ffffff',
+    soft: 'rgba(153, 27, 27, 0.14)',
+    light: '#dc2626',
+    lighter: '#f87171',
+  },
+  amber: {
+    primary: '#d97706',
+    hover: '#b45309',
+    active: '#78350f',
+    fg: '#ffffff',
+    soft: 'rgba(217, 119, 6, 0.14)',
+    light: '#fbbf24',
+    lighter: '#fcd34d',
   },
   midnight: {
     primary: '#60a5fa',
     hover: '#3b82f6',
     active: '#2563eb',
-    fg: '#0a0a0a',
+    fg: '#050505',
     soft: 'rgba(96, 165, 250, 0.14)',
     light: '#93c5fd',
     lighter: '#bfdbfe',
@@ -241,11 +334,11 @@ const SHARED_GRADIENT_COLORS = {
 } as const
 
 /**
- * Full mapping of Rspress (`--rp-*`) CSS variables to the zpress token path
+ * Full mapping of Rspress (`--rp-*`) CSS variables to the ciderpress token path
  * that supplies each value. Emitted by `themeToCss` after the canonical
- * `--zp-*` declaration block so every Rspress internal component reads
- * from the zpress design system — Rspress is an implementation detail,
- * zpress tokens are the canonical surface.
+ * `--cp-*` declaration block so every Rspress internal component reads
+ * from the ciderpress design system — Rspress is an implementation detail,
+ * ciderpress tokens are the canonical surface.
  *
  * Grouped by category for readability. New rspress vars should be added
  * here when they appear; rspress vars that map to a missing concept can
@@ -253,8 +346,8 @@ const SHARED_GRADIENT_COLORS = {
  *
  * Surfaces — every page surface flattens to the single `bg` token so the
  * doc layout, sidebar drawer, and home page share one base color.
- * Elevated surfaces (cards, hero panels) keep using `--zp-c-bg-elv` /
- * `--zp-c-bg-soft` directly inside our own component CSS.
+ * Elevated surfaces (cards, hero panels) keep using `--cp-c-bg-elv` /
+ * `--cp-c-bg-soft` directly inside our own component CSS.
  *
  *   --rp-c-bg                 surface.bg
  *   --rp-c-bg-alt             surface.bgAlt        (subtle stripe surfaces)
@@ -303,12 +396,12 @@ const SHARED_GRADIENT_COLORS = {
  * Intentionally unmapped (rspress defaults remain in force):
  *  - `--rp-c-brand-rgb`: needs `r, g, b` tuple, no equivalent token
  *  - `--rp-c-gray*`: rspress internal neutrals, low surface area
- *  - `--rp-container-*` (admonitions): styled by zpress's own MDX overrides
+ *  - `--rp-container-*` (admonitions): styled by ciderpress's own MDX overrides
  *  - `--rp-c-overview-group-*`: superseded by our SectionCard component
  *  - `--rp-code-block-border|color|shadow`, `--rp-code-title-*`,
  *    `--rp-code-line-highlight-color`: rspress's shiki defaults are fine
  *  - `--rp-banner-background`: we don't use rspress's banner
- *  - Layout/size/z-index vars: zpress sets these via `--zp-*` directly on
+ *  - Layout/size/z-index vars: ciderpress sets these via `--cp-*` directly on
  *    its own components; rspress's layout chrome uses its own defaults
  */
 const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
@@ -345,9 +438,29 @@ const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
 const RSPRESS_COMPAT_VAR_NAMES: readonly string[] = Object.freeze(Object.keys(RSPRESS_COMPAT_MAP))
 
 /**
- * Shared OpenAPI / OAS badge palette — light-mode values from the
- * `default` theme. Midnight and arcade override the entire set via
- * their own constants.
+ * Precomputed `[cssVar, segments]` pairs for every Rspress compatibility
+ * variable in `RSPRESS_COMPAT_MAP`.
+ *
+ * Mirrors `TOKEN_RENDER_PLAN` for the `--rp-*` side: splitting each token
+ * path on `.` once at module load avoids re-splitting per declaration per
+ * theme per build.
+ */
+const RSPRESS_RENDER_PLAN: readonly {
+  readonly cssVar: string
+  readonly segments: readonly string[]
+}[] = Object.freeze(
+  RSPRESS_COMPAT_VAR_NAMES.map((cssVar) =>
+    Object.freeze({
+      cssVar,
+      segments: Object.freeze((RSPRESS_COMPAT_MAP[cssVar] as string).split('.')),
+    })
+  )
+)
+
+/**
+ * Shared OpenAPI / OAS badge palette — semantic colors shared across
+ * the apple-named light/dark themes (`honeycrisp`, `grannysmith`).
+ * Midnight and arcade override the entire set via their own constants.
  */
 const SHARED_OAS_COLORS_BASE = {
   get: '#16a34a',
@@ -355,7 +468,7 @@ const SHARED_OAS_COLORS_BASE = {
   put: '#d97706',
   patch: '#d97706',
   delete: '#dc2626',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#dc2626',
 } as const
 
@@ -368,7 +481,7 @@ const MIDNIGHT_OAS_COLORS = {
   put: '#fbbf24',
   patch: '#fbbf24',
   delete: '#f87171',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#f87171',
 } as const
 
@@ -381,7 +494,7 @@ const ARCADE_OAS_COLORS = {
   put: '#ffaa00',
   patch: '#ffaa00',
   delete: '#ff4466',
-  deprecated: 'var(--zp-c-text-3)',
+  deprecated: 'var(--cp-c-text-3)',
   required: '#ff4466',
 } as const
 
@@ -506,11 +619,11 @@ const SHARED_FONTS = {
  * Shared shadow recipes — mirrors `tokens.css` lines L159–L173.
  */
 const SHARED_SHADOWS = {
-  cardHover: '0 2px 12px var(--zp-c-tint-purple-glow)',
+  cardHover: '0 2px 12px var(--cp-c-tint-purple-glow)',
   menu: '0 8px 24px rgba(0, 0, 0, 0.12)',
   tooltip: '0 4px 12px rgba(0, 0, 0, 0.08)',
   heroDemo:
-    '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--zp-c-brand-soft)',
+    '0 0 0 1px rgba(0, 0, 0, 0.5), 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 0 80px var(--cp-c-brand-soft)',
   askAi: '0 8px 24px rgba(0, 0, 0, 0.4), 0 0 0 4px rgba(0, 0, 0, 0.5)',
 } as const
 
@@ -627,21 +740,17 @@ const SHARED_BLURS = {
  * Shared gradient recipes — mirrors `tokens.css` lines L253–L263.
  */
 const SHARED_GRADIENTS = {
-  brand: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-3))',
+  brand: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-3))',
   // Hero title — kept in-hue. The previous multi-stop brand → cyan → purple
   // gradient read as a generic AI landing-page accent; restraining to the
   // brand family makes the hero feel like a real product, not a template.
-  heroTitle: 'linear-gradient(135deg, var(--zp-c-brand-1), var(--zp-c-brand-light))',
+  heroTitle: 'linear-gradient(135deg, var(--cp-c-brand-1), var(--cp-c-brand-light))',
 } as const
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
 /**
- * Legacy alias for {@link ThemeVariant}. Retained inside `@zpress/theme`
- * for one-version migration safety. Removed from `@zpress/core`,
- * `@zpress/config`, and `@zpress/kit` public exports in v1 — new code
+ * Legacy alias for {@link ThemeVariant}. Retained inside `@ciderpress/theme`
+ * for one-version migration safety. Removed from `@ciderpress/core`,
+ * `@ciderpress/config`, and `ciderpress` public exports in v1 — new code
  * should import `ThemeVariant` directly.
  *
  * @deprecated Use {@link ThemeVariant}.
@@ -653,21 +762,21 @@ export type ThemeMode = ThemeVariant
  * keys; a dark-only theme declares only `dark`.
  */
 export interface ThemeVariantTokens {
-  readonly dark?: ZpressTokens
-  readonly light?: ZpressTokens
+  readonly dark?: CiderpressTokens
+  readonly light?: CiderpressTokens
 }
 
 /**
  * Fully resolved theme definition produced by `defineTheme`.
  *
- * A `ZpressTheme` represents one brand identity with one or more variant
+ * A `CiderpressTheme` represents one brand identity with one or more variant
  * token trees. The CSS emitter renders a separate
- * `html[data-zp-theme='{name}'][data-zp-variant='{variant}']` block per
+ * `html[data-cp-theme='{name}'][data-cp-variant='{variant}']` block per
  * variant present in `variants`.
  */
-export interface ZpressTheme {
+export interface CiderpressTheme {
   /**
-   * Identifier — used in the `html[data-zp-theme='{name}']` selector.
+   * Identifier — used in the `html[data-cp-theme='{name}']` selector.
    * Must be a lowercase slug (validated by `themeNameSchema`).
    */
   readonly name: string
@@ -689,14 +798,14 @@ export interface ZpressTheme {
  * may pass raw JSON or a partially-typed object and let Zod produce a
  * clear error.
  */
-export interface ZpressThemeInputVariants {
+export interface CiderpressThemeInputVariants {
   readonly dark?: unknown
   readonly light?: unknown
 }
 
-export interface ZpressThemeInput {
+export interface CiderpressThemeInput {
   /**
-   * Identifier — must match `html[data-zp-theme='{name}']`.
+   * Identifier — must match `html[data-cp-theme='{name}']`.
    */
   readonly name: string
   /**
@@ -704,7 +813,7 @@ export interface ZpressThemeInput {
    * `variants.light` must be present; both are validated against
    * `tokensSchema` at factory time.
    */
-  readonly variants: ZpressThemeInputVariants
+  readonly variants: CiderpressThemeInputVariants
   /**
    * Variant to render initially. Falls back to `'dark'` when both
    * variants are declared, otherwise to the only declared variant.
@@ -714,108 +823,123 @@ export interface ZpressThemeInput {
 
 /**
  * Validate a theme definition through `tokensSchema` and return a deeply
- * frozen `ZpressTheme`.
+ * frozen `CiderpressTheme`.
  *
  * Validation failures surface as `ZodError`s from `tokensSchema.parse` and
  * `themeNameSchema.parse` — that's the documented contract callers need
  * to handle. Successful calls return a frozen object tree.
  *
  * @param input - Theme definition (name + variant token trees)
- * @returns A frozen, fully-typed `ZpressTheme`
+ * @returns A frozen, fully-typed `CiderpressTheme`
  *
  * @example
  * const myTheme = defineTheme({
- *   name: 'sunset',
+ *   name: 'company-brand',
  *   variants: {
  *     dark: { ...allTokens },
  *   },
  * })
  */
-export function defineTheme(input: ZpressThemeInput): ZpressTheme {
-  // Envelope validation first — name shape, at-least-one variant, and
-  // `defaultVariant` cross-reference. Failures surface as `ZodError`s
-  // with stable paths (`variants`, `defaultVariant`, etc.).
+export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
+  // Public entrypoint — runs full envelope validation including the
+  // reserved-name guard before delegating to the internal builder. Failures
+  // surface as `ZodError`s with stable paths (`variants`, `defaultVariant`,
+  // `name`).
   const envelope = themeInputEnvelopeSchema.parse(input)
-  const validatedName: string = themeNameSchema.parse(envelope.name)
-  const variants: Record<ThemeVariant, ZpressTokens | undefined> = {
-    dark: validateVariant(envelope.variants.dark),
-    light: validateVariant(envelope.variants.light),
-  }
-  const presentVariants: readonly ThemeVariant[] = DEFAULT_VARIANT_ORDER.filter(
-    (v) => variants[v] !== undefined
-  )
-  const defaultVariant: ThemeVariant = pickInputDefaultVariant(
-    envelope.defaultVariant,
-    presentVariants
-  )
-  return freezeTheme({
-    name: validatedName,
-    variants: filterPresentVariants(variants),
-    defaultVariant,
-  })
+  return buildTheme(envelope)
 }
 
 /**
- * Render a `ZpressTheme` to a deterministic CSS source covering every
+ * Render a `CiderpressTheme` to a deterministic CSS source covering every
  * variant the theme declares.
  *
  * For each variant V in `theme.variants` the emitter writes one
- * `html[data-zp-theme='{name}'][data-zp-variant='{V}']` block. Iteration
+ * `html[data-cp-theme='{name}'][data-cp-variant='{V}']` block. Iteration
  * order is fixed by `TOKEN_TO_CSS_VAR` (then `RSPRESS_COMPAT_MAP`) so the
  * output is byte-deterministic given the same input.
  *
- * The default theme additionally emits a `:root { ... }` FOUC block that
- * mirrors its default variant — the browser applies it before JS hydrates
- * the `data-zp-*` attributes on `<html>`.
+ * The FOUC-root theme (`FOUC_ROOT_THEME_NAME` — tracks `DEFAULT_THEME_NAME`)
+ * additionally emits a `:root { ... }` block that mirrors its default
+ * variant — the browser applies it before JS hydrates the `data-cp-*`
+ * attributes on `<html>`.
  *
  * @param theme - Theme to render
  * @returns CSS source containing one block per variant
  */
-export function themeToCss(theme: ZpressTheme): string {
+export function themeToCss(theme: CiderpressTheme): string {
   return renderThemeCss(theme)
 }
 
 /**
- * The three first-party themes shipped with zpress.
+ * The first-party themes shipped with ciderpress.
  *
- *  - `default` is the brand-purple theme and ships both `dark` and
- *    `light` variants. The sun/moon toggle swaps between them.
+ *  - `mulled` is the canonical brand — deep cider burgundy palette,
+ *    ships both `dark` and `light` variants. Cream surfaces on light
+ *    and a near-black canvas on dark for an evening/premium read. The
+ *    legacy slug `'default'` aliases to this theme via `THEME_ALIASES`
+ *    in `definitions.ts`.
+ *  - `honeycrisp` is the bright apple-red counterpart — both variants
+ *    supported. The sun/moon toggle swaps between them.
+ *  - `grannysmith` is the green dev-tool-native counterpart — both
+ *    variants supported.
+ *  - `amber` is the warm apple-cider hearth palette — both variants
+ *    supported, parchment surfaces on light and the shared near-black
+ *    canvas on dark.
  *  - `midnight` is an opinionated near-black blue theme — dark only.
  *  - `arcade` is a neon green retro theme — dark only.
  *
- * Built-in token trees are lifted from
- * `packages/ui/src/theme/styles/themes/*.css` plus
- * `packages/ui/src/theme/styles/overrides/tokens.css`. The registry is
- * the single source of truth from this point forward — generated CSS is
- * produced by `packages/ui/scripts/generate-theme-css.mjs`.
+ * Built-in token trees and the generated CSS at
+ * `packages/ui/src/theme/styles/themes/*.css` are produced by
+ * `packages/ui/scripts/generate-theme-css.mjs` — the registry below is
+ * the single source of truth.
  */
-export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, ZpressTheme>> = Object.freeze({
-  default: defineTheme({
-    name: 'default',
+export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, CiderpressTheme>> = Object.freeze({
+  honeycrisp: defineBuiltInTheme({
+    name: 'honeycrisp',
     variants: {
-      dark: buildDefaultDarkTokens(),
-      light: buildDefaultLightTokens(),
+      dark: buildHoneycrispDarkTokens(),
+      light: buildHoneycrispLightTokens(),
     },
     defaultVariant: 'dark',
   }),
-  midnight: defineTheme({
+  grannysmith: defineBuiltInTheme({
+    name: 'grannysmith',
+    variants: {
+      dark: buildGrannysmithDarkTokens(),
+      light: buildGrannysmithLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
+  mulled: defineBuiltInTheme({
+    name: 'mulled',
+    variants: {
+      dark: buildMulledDarkTokens(),
+      light: buildMulledLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
+  amber: defineBuiltInTheme({
+    name: 'amber',
+    variants: {
+      dark: buildAmberDarkTokens(),
+      light: buildAmberLightTokens(),
+    },
+    defaultVariant: 'dark',
+  }),
+  midnight: defineBuiltInTheme({
     name: 'midnight',
     variants: { dark: buildMidnightTokens() },
     defaultVariant: 'dark',
   }),
-  arcade: defineTheme({
+  arcade: defineBuiltInTheme({
     name: 'arcade',
     variants: { dark: buildArcadeTokens() },
     defaultVariant: 'dark',
   }),
 })
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
- * Schema-inferred output type — bridges `ZpressTokens` (the strict surface
+ * Schema-inferred output type — bridges `CiderpressTokens` (the strict surface
  * used at compile time) with whatever `tokensSchema.parse` resolves to
  * internally. Kept type-only.
  *
@@ -824,7 +948,7 @@ export const BUILT_IN_THEMES: Readonly<Record<BuiltInThemeName, ZpressTheme>> = 
 type ParsedTokens = z.infer<typeof tokensSchema>
 
 /**
- * Resolve a precomputed segment array against a `ZpressTokens` tree.
+ * Resolve a precomputed segment array against a `CiderpressTokens` tree.
  *
  * Walks the segments with `.reduce`, never mutates intermediate state, and
  * trusts the `TokenPath` literal union — if a path resolves to `undefined`,
@@ -835,7 +959,7 @@ type ParsedTokens = z.infer<typeof tokensSchema>
  * @param tokens - Token tree to walk
  * @returns The leaf value (string or number) at the resolved path
  */
-function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): string | number {
+function resolveBySegments(segments: readonly string[], tokens: CiderpressTokens): string | number {
   const value = segments.reduce<unknown>(
     (node, segment) => (node as Record<string, unknown>)[segment],
     tokens
@@ -844,7 +968,7 @@ function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): s
 }
 
 /**
- * Render a single `  --zp-*: value;` line for one precomputed token entry.
+ * Render a single `  --cp-*: value;` line for one precomputed token entry.
  *
  * @private
  * @param entry - Precomputed render plan entry (cssVar + segments)
@@ -853,43 +977,49 @@ function resolveBySegments(segments: readonly string[], tokens: ZpressTokens): s
  */
 function renderDeclaration(
   entry: { readonly cssVar: string; readonly segments: readonly string[] },
-  tokens: ZpressTokens
+  tokens: CiderpressTokens
 ): string {
   const value = resolveBySegments(entry.segments, tokens)
   return `  ${entry.cssVar}: ${value};`
 }
 
 /**
- * Render a single `  --rp-*: value;` line for a Rspress compatibility var.
+ * Render a single `  --rp-*: value;` line for a precomputed Rspress
+ * compatibility var entry.
  *
  * @private
- * @param cssVar - The `--rp-*` custom property name
+ * @param entry - Precomputed render plan entry (cssVar + segments)
  * @param tokens - Token tree containing the source value
  * @returns CSS declaration line (no trailing newline)
  */
-function renderRpDeclaration(cssVar: string, tokens: ZpressTokens): string {
-  const path = RSPRESS_COMPAT_MAP[cssVar] as TokenPath
-  const value = resolveBySegments((path as string).split('.'), tokens)
-  return `  ${cssVar}: ${value};`
+function renderRpDeclaration(
+  entry: { readonly cssVar: string; readonly segments: readonly string[] },
+  tokens: CiderpressTokens
+): string {
+  const value = resolveBySegments(entry.segments, tokens)
+  return `  ${entry.cssVar}: ${value};`
 }
 
 /**
- * Render the full declaration body — all `--zp-*` tokens in registry order
+ * Render the full declaration body — all `--cp-*` tokens in registry order
  * followed by every `--rp-*` compatibility var in `RSPRESS_COMPAT_MAP` order.
+ *
+ * Both halves consume precomputed `[cssVar, segments]` plans so dotted token
+ * paths are split exactly once at module load — never per declaration.
  *
  * @private
  * @param tokens - Token tree to render
  * @returns Multi-line CSS body (no surrounding braces)
  */
-function renderDeclarationBody(tokens: ZpressTokens): string {
-  const zpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
-  const rpLines = RSPRESS_COMPAT_VAR_NAMES.map((name) => renderRpDeclaration(name, tokens))
-  return [...zpLines, ...rpLines].join('\n')
+function renderDeclarationBody(tokens: CiderpressTokens): string {
+  const cpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
+  const rpLines = RSPRESS_RENDER_PLAN.map((entry) => renderRpDeclaration(entry, tokens))
+  return [...cpLines, ...rpLines].join('\n')
 }
 
 /**
  * Render the complete CSS for a theme. Emits one
- * `html[data-zp-theme='{name}'][data-zp-variant='{V}']` block per
+ * `html[data-cp-theme='{name}'][data-cp-variant='{V}']` block per
  * variant present on the theme. The framework's default theme
  * (`FOUC_ROOT_THEME_NAME`) additionally emits a `:root { ... }` FOUC
  * fallback block for its default variant.
@@ -898,7 +1028,7 @@ function renderDeclarationBody(tokens: ZpressTokens): string {
  * @param theme - Theme to render
  * @returns CSS source containing one block per variant (plus optional FOUC root)
  */
-function renderThemeCss(theme: ZpressTheme): string {
+function renderThemeCss(theme: CiderpressTheme): string {
   const variantBlocks = DEFAULT_VARIANT_ORDER.flatMap((variant) =>
     renderVariantBlock(theme, variant)
   )
@@ -923,13 +1053,13 @@ function renderThemeCss(theme: ZpressTheme): string {
  * @param variant - Variant to render (`'dark'` or `'light'`)
  * @returns Single-element array on hit, empty array on miss
  */
-function renderVariantBlock(theme: ZpressTheme, variant: ThemeVariant): readonly string[] {
+function renderVariantBlock(theme: CiderpressTheme, variant: ThemeVariant): readonly string[] {
   const tokens = theme.variants[variant]
   if (tokens === undefined) {
     return []
   }
   const body = renderDeclarationBody(tokens)
-  return [`html[data-zp-theme='${theme.name}'][data-zp-variant='${variant}'] {\n${body}\n}\n`]
+  return [`html[data-cp-theme='${theme.name}'][data-cp-variant='${variant}'] {\n${body}\n}\n`]
 }
 
 /**
@@ -940,11 +1070,72 @@ function renderVariantBlock(theme: ZpressTheme, variant: ThemeVariant): readonly
  * @param raw - Raw token tree from `defineTheme` input
  * @returns Validated frozen tokens, or `undefined` when no input was given
  */
-function validateVariant(raw: unknown): ZpressTokens | undefined {
+function validateVariant(raw: unknown): CiderpressTokens | undefined {
   if (raw === undefined) {
     return undefined
   }
-  return tokensSchema.parse(raw) as ZpressTokens
+  return tokensSchema.parse(raw) as CiderpressTokens
+}
+
+/**
+ * Shared shape returned by both envelope schemas after `.parse(...)`. The
+ * `name` is a `string` (validated), the variants are still `unknown` (each
+ * gets parsed against `tokensSchema` per-variant in `buildTheme`), and
+ * `defaultVariant` is the optional initial-variant hint.
+ *
+ * @private
+ */
+interface ParsedEnvelope {
+  readonly name: string
+  readonly variants: { readonly dark?: unknown; readonly light?: unknown }
+  readonly defaultVariant?: ThemeVariant
+}
+
+/**
+ * Internal factory used by `defineTheme` (public) and `defineBuiltInTheme`
+ * (private) — both feed it an already-validated envelope. Runs the
+ * `themeNameSchema` slug check, parses each present variant through
+ * `tokensSchema`, picks the default variant, and freezes the result.
+ *
+ * @private
+ * @param envelope - Envelope already validated by one of the two refines
+ * @returns A frozen, fully-typed `CiderpressTheme`
+ */
+function buildTheme(envelope: ParsedEnvelope): CiderpressTheme {
+  const validatedName: string = themeNameSchema.parse(envelope.name)
+  const variants: Record<ThemeVariant, CiderpressTokens | undefined> = {
+    dark: validateVariant(envelope.variants.dark),
+    light: validateVariant(envelope.variants.light),
+  }
+  const presentVariants: readonly ThemeVariant[] = DEFAULT_VARIANT_ORDER.filter(
+    (v) => variants[v] !== undefined
+  )
+  const defaultVariant: ThemeVariant = pickInputDefaultVariant(
+    envelope.defaultVariant,
+    presentVariants
+  )
+  return freezeTheme({
+    name: validatedName,
+    variants: filterPresentVariants(variants),
+    defaultVariant,
+  })
+}
+
+/**
+ * Internal builder used to register the first-party themes in
+ * {@link BUILT_IN_THEMES}. Bypasses the reserved-name refine on
+ * `themeInputEnvelopeSchema` (which would reject `'honeycrisp'`,
+ * `'grannysmith'`, `'mulled'`, `'amber'`, `'midnight'`, and `'arcade'`)
+ * and goes through the base envelope instead. Not exported — user code
+ * reaches the public factory via `defineTheme`.
+ *
+ * @private
+ * @param input - Theme definition (name + variant token trees)
+ * @returns A frozen, fully-typed `CiderpressTheme`
+ */
+function defineBuiltInTheme(input: CiderpressThemeInput): CiderpressTheme {
+  const envelope = baseThemeInputEnvelopeSchema.parse(input)
+  return buildTheme(envelope)
 }
 
 /**
@@ -981,16 +1172,13 @@ function pickInputDefaultVariant(
  * @returns Frozen variant map containing only declared variants
  */
 function filterPresentVariants(
-  variants: Record<ThemeVariant, ZpressTokens | undefined>
+  variants: Record<ThemeVariant, CiderpressTokens | undefined>
 ): ThemeVariantTokens {
-  const entries = (Object.entries(variants) as readonly [ThemeVariant, ZpressTokens | undefined][])
-    .filter(([, t]) => t !== undefined)
-    .map(([k, t]) => [k, t as ZpressTokens] as const)
-  return Object.freeze(Object.fromEntries(entries)) as ThemeVariantTokens
+  return Object.freeze(pickBy(variants, isNotNil)) as ThemeVariantTokens
 }
 
 /**
- * Freeze the outer `ZpressTheme` shell plus each variant's nested token
+ * Freeze the outer `CiderpressTheme` shell plus each variant's nested token
  * tree. Returns the same references rather than cloning — inputs come
  * from literal object expressions that are not aliased anywhere else.
  *
@@ -998,9 +1186,9 @@ function filterPresentVariants(
  * @param theme - Theme to freeze
  * @returns Same theme, deeply frozen
  */
-function freezeTheme(theme: ZpressTheme): ZpressTheme {
+function freezeTheme(theme: CiderpressTheme): CiderpressTheme {
   const frozenVariants = Object.fromEntries(
-    Object.entries(theme.variants).map(([k, tokens]) => [k, deepFreeze(tokens as ZpressTokens)])
+    Object.entries(theme.variants).map(([k, tokens]) => [k, deepFreeze(tokens as CiderpressTokens)])
   ) as ThemeVariantTokens
   return Object.freeze({
     name: theme.name,
@@ -1051,14 +1239,14 @@ function freezeChildThenReturnParent<T>(parent: T, child: unknown): T {
 }
 
 /**
- * Build the `light` variant of the `default` theme — bright surfaces
- * with the brand-purple palette.
+ * Build the `light` variant of the `honeycrisp` theme — bright surfaces
+ * paired with the apple-red brand palette (`#dc2626`).
  *
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
-function buildDefaultLightTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.default
+function buildHoneycrispLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.honeycrisp
   return {
     colors: {
       brand: {
@@ -1103,9 +1291,9 @@ function buildDefaultLightTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#6d28d9',
-          hoverBg: '#7c3aed',
-          activeBg: '#5b21b6',
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
           text: '#ffffff',
         },
       },
@@ -1134,16 +1322,16 @@ function buildDefaultLightTokens(): ParsedTokens {
 }
 
 /**
- * Build the `dark` variant of the `default` theme — same brand-purple
+ * Build the `dark` variant of the `honeycrisp` theme — same brand-apple-red
  * palette as the light variant, paired with dark surfaces and inverted
- * text. This is the variant zpress renders by default (the framework
+ * text. This is the variant ciderpress renders by default (the framework
  * treats dark as its baseline aesthetic).
  *
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
-function buildDefaultDarkTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.default
+function buildHoneycrispDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.honeycrisp
   return {
     colors: {
       brand: {
@@ -1188,9 +1376,9 @@ function buildDefaultDarkTokens(): ParsedTokens {
       oas: { ...SHARED_OAS_COLORS_BASE },
       button: {
         brand: {
-          bg: '#7c3aed',
-          hoverBg: '#8b5cf6',
-          activeBg: '#6d28d9',
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
           text: '#ffffff',
         },
       },
@@ -1219,8 +1407,516 @@ function buildDefaultDarkTokens(): ParsedTokens {
 }
 
 /**
- * Build the `midnight` theme token tree from the CSS at
- * `packages/ui/src/theme/styles/themes/midnight.css`.
+ * Build the `light` variant of the `grannysmith` theme — bright surfaces
+ * with the brand-apple-green palette. Mirrors `honeycrisp` light surfaces
+ * (canvas / text / borders) with grannysmith brand colors swapped in so
+ * the two apple themes are visually consistent at the chrome level.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildGrannysmithLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.grannysmith
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#ffffff',
+        bgAlt: '#f9f9f9',
+        bgElv: '#f5f5f5',
+        bgSoft: '#f0f0f0',
+        bgIcon: '#cccccc',
+        homeBg: '#ffffff',
+        overlayFaint: 'rgba(0, 0, 0, 0.1)',
+        gutter: '#f5f5f5',
+        codeBlockBg: '#f5f5f5',
+      },
+      text: {
+        text1: '#1a1a1a',
+        text2: 'rgba(26, 26, 26, 0.72)',
+        text3: 'rgba(26, 26, 26, 0.48)',
+      },
+      border: {
+        border: '#d0d0d0',
+        divider: '#e2e2e2',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `grannysmith` theme — dark surfaces
+ * matching `honeycrisp` paired with the green brand palette.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildGrannysmithDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.grannysmith
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `light` variant of the `mulled` theme — warm cream surfaces
+ * with a deep burgundy brand. The light variant leans into the
+ * mulled-cider "evening / premium" mood by pairing parchment canvas
+ * (`#fbf6f4`) with deep red accents.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildMulledLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.mulled
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#fbf6f4',
+        bgAlt: '#f5edea',
+        bgElv: '#f0e4e0',
+        bgSoft: '#ead9d4',
+        bgIcon: '#caa2a2',
+        homeBg: '#fbf6f4',
+        overlayFaint: 'rgba(42, 6, 6, 0.08)',
+        gutter: '#f5edea',
+        codeBlockBg: '#f5edea',
+      },
+      text: {
+        text1: '#2a0606',
+        text2: 'rgba(42, 6, 6, 0.72)',
+        text3: 'rgba(42, 6, 6, 0.48)',
+      },
+      border: {
+        border: '#d5b8b8',
+        divider: '#e6d2d2',
+        sidebarAltBorderDark: '#5a3030',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `mulled` theme — near-black canvas
+ * with the deep burgundy brand. The dark variant mirrors the surface
+ * palette used by `honeycrisp` / `grannysmith` so the apple themes
+ * stay visually consistent at the chrome level on dark.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildMulledDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.mulled
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `light` variant of the `amber` theme — warm parchment surfaces
+ * with a hearth-amber brand. Leans into the "apple cider amber" mood by
+ * pairing a cream canvas (`#fffaf2`) with deep-roast brown ink.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildAmberLightTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.amber
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#fffaf2',
+        bgAlt: '#fdf4e1',
+        bgElv: '#f7ebd0',
+        bgSoft: '#f0dfb8',
+        bgIcon: '#caa97a',
+        homeBg: '#fffaf2',
+        overlayFaint: 'rgba(58, 31, 4, 0.08)',
+        gutter: '#fdf4e1',
+        codeBlockBg: '#fdf4e1',
+      },
+      text: {
+        text1: '#3a1f04',
+        text2: 'rgba(58, 31, 4, 0.72)',
+        text3: 'rgba(58, 31, 4, 0.48)',
+      },
+      border: {
+        border: '#d5c2a3',
+        divider: '#e6d8b8',
+        sidebarAltBorderDark: '#5a4020',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.hover,
+          hoverBg: brand.primary,
+          activeBg: brand.active,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `dark` variant of the `amber` theme — shared near-black canvas
+ * paired with the hearth-amber brand. Mirrors the surface palette used by
+ * `honeycrisp` / `grannysmith` / `mulled` so the apple themes stay visually
+ * consistent at the chrome level on dark.
+ *
+ * @private
+ * @returns Untyped token object suitable for `tokensSchema.parse`
+ */
+function buildAmberDarkTokens(): ParsedTokens {
+  const brand = BRAND_PALETTES.amber
+  return {
+    colors: {
+      brand: {
+        primary: brand.primary,
+        hover: brand.hover,
+        active: brand.active,
+        fg: brand.fg,
+        soft: brand.soft,
+        onBrand: '#ffffff',
+        light: brand.light,
+        lighter: brand.lighter,
+      },
+      semantic: { ...SHARED_SEMANTIC_COLORS },
+      surface: {
+        bg: '#0a0a0a',
+        bgAlt: '#0f0f0f',
+        bgElv: '#161616',
+        bgSoft: '#1c1c1c',
+        bgIcon: '#2a2a2a',
+        homeBg: '#0a0a0a',
+        overlayFaint: 'rgba(255, 255, 255, 0.06)',
+        gutter: '#0f0f0f',
+        codeBlockBg: '#141414',
+      },
+      text: {
+        text1: '#f5f5f5',
+        text2: 'rgba(245, 245, 245, 0.72)',
+        text3: 'rgba(245, 245, 245, 0.48)',
+      },
+      border: {
+        border: '#2a2a2a',
+        divider: '#1e1e1e',
+        sidebarAltBorderDark: '#484848',
+      },
+      tint: { ...SHARED_TINT_COLORS },
+      terminal: { ...SHARED_TERMINAL_COLORS },
+      window: { ...SHARED_WINDOW_COLORS },
+      badge: { ...SHARED_BADGE_COLORS },
+      scrollbar: { ...SHARED_SCROLLBAR_COLORS },
+      syntax: { ...SHARED_SYNTAX_COLORS },
+      gradient: { ...SHARED_GRADIENT_COLORS },
+      oas: { ...SHARED_OAS_COLORS_BASE },
+      button: {
+        brand: {
+          bg: brand.primary,
+          hoverBg: brand.light,
+          activeBg: brand.hover,
+          text: '#ffffff',
+        },
+      },
+    },
+    spacing: { ...SHARED_SPACING },
+    radii: { ...SHARED_RADII },
+    fonts: {
+      family: { ...SHARED_FONTS.family },
+      weight: { ...SHARED_FONTS.weight },
+      size: { ...SHARED_FONTS.size },
+    },
+    shadows: { ...SHARED_SHADOWS },
+    motion: {
+      duration: { ...SHARED_MOTION.duration },
+      easing: { ...SHARED_MOTION.easing },
+    },
+    zIndex: { ...SHARED_Z_INDEX },
+    lineHeights: { ...SHARED_LINE_HEIGHTS },
+    letterSpacings: { ...SHARED_LETTER_SPACINGS },
+    opacities: { ...SHARED_OPACITIES },
+    sizes: { ...SHARED_SIZES },
+    breakpoints: { ...SHARED_BREAKPOINTS },
+    blurs: { ...SHARED_BLURS },
+    gradients: { ...SHARED_GRADIENTS },
+  }
+}
+
+/**
+ * Build the `midnight` theme token tree — an opinionated near-black
+ * canvas (one step above pure black) with a cool blue brand accent. The
+ * surface palette is intentionally darker than every other built-in.
  *
  * @private
  * @returns Untyped token object suitable for `tokensSchema.parse`
@@ -1241,15 +1937,15 @@ function buildMidnightTokens(): ParsedTokens {
       },
       semantic: { ...SHARED_SEMANTIC_COLORS },
       surface: {
-        bg: '#0f0f0f',
-        bgAlt: '#121212',
-        bgElv: '#161616',
-        bgSoft: '#1a1a1a',
-        bgIcon: '#2a2a2a',
-        homeBg: '#0f0f0f',
+        bg: '#050505',
+        bgAlt: '#080808',
+        bgElv: '#0d0d0d',
+        bgSoft: '#111111',
+        bgIcon: '#1f1f1f',
+        homeBg: '#050505',
         overlayFaint: 'rgba(255, 255, 255, 0.08)',
-        gutter: '#121212',
-        codeBlockBg: '#121212',
+        gutter: '#080808',
+        codeBlockBg: '#080808',
       },
       text: {
         text1: '#f0f0f0',
@@ -1257,9 +1953,9 @@ function buildMidnightTokens(): ParsedTokens {
         text3: 'rgba(240, 240, 240, 0.48)',
       },
       border: {
-        border: '#282828',
-        divider: '#1e1e1e',
-        sidebarAltBorderDark: '#484848',
+        border: '#1f1f1f',
+        divider: '#141414',
+        sidebarAltBorderDark: '#3a3a3a',
       },
       tint: { ...SHARED_TINT_COLORS },
       terminal: { ...SHARED_TERMINAL_COLORS },

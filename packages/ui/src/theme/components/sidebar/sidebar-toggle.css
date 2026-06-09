@@ -1,4 +1,4 @@
-.zp-sidebar-toggle {
+.cp-sidebar-toggle {
   /* Pinned to the far-left of the nav, matching the mockup hamburger
      position. The nav itself is set to position: relative below. */
   position: absolute;
@@ -12,14 +12,14 @@
   place-items: center;
   border: 0;
   background: transparent;
-  border-radius: var(--zp-radius-card);
-  color: var(--zp-c-text-2);
+  border-radius: var(--cp-radius-card);
+  color: var(--cp-c-text-2);
   cursor: pointer;
   transition: all 0.15s ease;
   padding: 0;
 }
 
-/* Hide Rspress's mobile hamburger always — our `.zp-sidebar-toggle`
+/* Hide Rspress's mobile hamburger always — our `.cp-sidebar-toggle`
    owns the role of "menu trigger" across all widths. On mobile our
    toggle programmatically forwards the click to Rspress's hamburger
    (its handler is preserved, only the visual is hidden) so the
@@ -48,9 +48,9 @@ html .rp-sidebar-menu__left::before {
     no-repeat center / contain;
 }
 
-.zp-sidebar-toggle:hover {
-  background: var(--zp-c-bg-soft);
-  color: var(--zp-c-text-1);
+.cp-sidebar-toggle:hover {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
 }
 
 /* Pin the nav to the top of the viewport AND make it the positioning
@@ -68,13 +68,31 @@ html .rspress-nav__left {
   padding-left: 36px;
 }
 
-/* When collapsed, hide the sidebar + placeholder. Doc / outline reflow
-   into the freed space automatically because Rspress sidebar uses sticky
-   positioning + flex layout. (`.rp-doc-layout__menu` is hidden globally
-   above so it doesn't need to be repeated here.) */
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__sidebar,
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__sidebar-placeholder {
-  display: none !important;
+/* When collapsed, hide the sidebar + placeholder. Scoped to >=1280px
+   where the sidebar is a sticky desktop rail; at ≤1279px the sidebar
+   is a fixed overlay drawer (rules below), where the same
+   `display: none` would also hide the drawer state and
+   `<CiderpressDocsBar />`'s "Menu" button would have nothing to open.
+   Threshold mirrors the Outline rail's collapse-vs-drawer cutoff so
+   sidebar and outline switch modes in lockstep. */
+@media (min-width: 1280px) {
+  html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__sidebar,
+  html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__sidebar-placeholder {
+    display: none !important;
+  }
+}
+
+/* Mirror collapse behaviour for the outline rail. Rspress turns the
+   outline into a fixed overlay drawer at ≤1279px (see
+   `DocLayout/index.css` `@media (width <= 1279px)`), so the
+   collapse-via-display-none only applies above that breakpoint —
+   otherwise opening the drawer via `<CiderpressDocsBar />` would
+   silently no-op. */
+@media (min-width: 1280px) {
+  html[data-cp-outline-collapsed='true'] .rp-doc-layout__outline,
+  html[data-cp-outline-collapsed='true'] .rp-doc-layout__outline-placeholder {
+    display: none !important;
+  }
 }
 
 /* Rspress's mobile nav-screen renders dividers around sections like
@@ -87,32 +105,77 @@ html .rp-nav-screen-divider:last-child {
   display: none;
 }
 
-/* Mobile slide-over: overlay the entire viewport so the menu covers
-   the navbar AND the announcement bar, instead of starting below them.
-   Without this, the banner+nav take ~84px at the top that the user
-   can still see (and accidentally tap) while the menu is open.
-   Applies to both Rspress's nav screen (`.rp-nav-screen` — top-nav
-   items) and the doc sidebar slide-over. */
-@media (max-width: 768px) {
-  html .rp-doc-layout__sidebar,
+/* ── Sidebar drawer mode (<=1279px) ─────────────────────────────
+   Rspress ships drawer-base rules natively only at <=768px (its
+   `DocLayout/index.css` `@media (width <= 768px)` sets `position:
+   fixed`, `transform: translate3d(-100%, 0, 0)`, opacity transitions,
+   etc). This block extends that drawer behaviour up to 1279px so the
+   sidebar flips to mobile in lockstep with the Outline rail (which
+   already drawers at <=1279px). Selector chains `html` for higher
+   specificity than Rspress's single-class rules.
+
+   The slide-over overlays the entire viewport (top: 0, full height)
+   so the drawer covers the navbar AND announcement bar — without
+   this they'd stay tappable above an open drawer. Applies to both
+   the doc sidebar and Rspress's nav screen (top-nav slide-over). */
+@media (max-width: 1279px) {
+  html .rp-doc-layout__sidebar {
+    position: fixed;
+    top: 0 !important;
+    left: 0;
+    bottom: 0;
+    width: var(--rp-sidebar-width, 260px);
+    /* Override Rspress's base `height + max-height: calc(100vh -
+       var(--rp-nav-height))` rule (NOT media-scoped, so it caps us
+       even at this breakpoint). Both height and max-height pinned to
+       the full dynamic viewport so the drawer covers navbar +
+       announcement + docs bar. */
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin-top: 0;
+    /* No `padding-bottom` — the sticky `.cp-sidebar-bottom` band pins
+       to the bottom of the content box (padding excluded). Any padding
+       here would shift the band up by the same amount, leaving the
+       promo floating mid-drawer with empty space below it. */
+    background: var(--cp-c-bg-elv);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate3d(-100%, 0, 0);
+    transition:
+      opacity 0.25s,
+      transform 0.5s cubic-bezier(0.19, 1, 0.22, 1),
+      visibility 0s linear 0.5s;
+    z-index: 100 !important;
+    overflow: auto scroll;
+  }
+
+  html .rp-doc-layout__sidebar--open {
+    opacity: 1;
+    visibility: visible;
+    transform: translate3d(0, 0, 0);
+    transition:
+      opacity 0.25s,
+      transform 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
   html .rp-nav-screen {
     top: 0 !important;
     height: 100vh !important;
     height: 100dvh !important;
     z-index: 100 !important;
-    background: var(--zp-c-bg-elv);
+    background: var(--cp-c-bg-elv);
   }
 }
 
 /* When collapsed: cap the doc reading width and center it within the
    available space (rail width minus outline). Prevents the prose from
    stretching edge-to-edge and makes the layout feel intentional. */
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__doc {
-  max-width: var(--zp-content-collapsed-max, 1000px) !important;
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__doc {
+  max-width: var(--cp-content-collapsed-max, 1000px) !important;
   margin: 0 auto !important;
 }
 
-html[data-zp-sidebar-collapsed='true'] .rp-doc-layout__doc-container {
-  max-width: var(--zp-content-collapsed-max, 1000px);
+html[data-cp-sidebar-collapsed='true'] .rp-doc-layout__doc-container {
+  max-width: var(--cp-content-collapsed-max, 1000px);
   margin: 0 auto;
 }

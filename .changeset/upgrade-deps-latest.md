@@ -1,10 +1,10 @@
 ---
-'@zpress/kit': patch
-'@zpress/cli': patch
-'@zpress/config': patch
-'@zpress/ui': patch
-'@zpress/theme': patch
-'@zpress/templates': patch
+'ciderpress': patch
+'@ciderpress/cli': patch
+'@ciderpress/config': patch
+'@ciderpress/ui': patch
+'@ciderpress/theme': patch
+'@ciderpress/templates': patch
 ---
 
 Upgrade dependencies to latest across the workspace.

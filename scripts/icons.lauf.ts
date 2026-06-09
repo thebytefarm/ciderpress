@@ -3,8 +3,6 @@ import { join } from 'node:path'
 
 import { lauf, z } from 'laufen'
 
-// ── Types ────────────────────────────────────────────────────
-
 interface IconSet {
   readonly prefix: string
   readonly icons: Readonly<Record<string, unknown>>
@@ -15,8 +13,6 @@ interface GeneratedOutput {
   readonly prefixes: readonly string[]
   readonly ids: readonly string[]
 }
-
-// ── Constants ────────────────────────────────────────────────
 
 const HEADER = '// @auto-generated — do not edit. Regenerate with: lauf run icons'
 
@@ -31,8 +27,6 @@ const ICON_SET_PACKAGES: readonly string[] = [
   'skill-icons',
   'vscode-icons',
 ]
-
-// ── Parsing ──────────────────────────────────────────────────
 
 function loadIconSet(basePath: string, name: string): IconSet {
   const raw = readFileSync(join(basePath, name, 'icons.json'), 'utf8')
@@ -51,8 +45,6 @@ function collectAllIcons(basePath: string): GeneratedOutput {
   const ids = sets.flatMap(extractIds)
   return { prefixes, ids }
 }
-
-// ── Rendering ────────────────────────────────────────────────
 
 function renderOutput(output: GeneratedOutput): string {
   const prefixUnion = output.prefixes.map((p) => `'${p}'`).join(' | ')
@@ -75,8 +67,6 @@ function renderOutput(output: GeneratedOutput): string {
   ].join('\n')
 }
 
-// ── Script ───────────────────────────────────────────────────
-
 export default lauf({
   description: 'Generate typed icon IDs from bundled @iconify-json sets',
   args: {
@@ -94,7 +84,7 @@ export default lauf({
     }
 
     const content = renderOutput(output)
-    const outPath = join(ctx.root, 'packages/core/src/icons.generated.ts')
+    const outPath = join(ctx.root, 'packages/config/src/icons.generated.ts')
 
     writeFileSync(outPath, content)
 

@@ -1,5 +1,5 @@
 {
-  "name": "zpress-monorepo",
+  "name": "ciderpress-monorepo",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -11,7 +11,7 @@
     "format:fix": "oxfmt --write",
     "lint": "oxlint --ignore-pattern node_modules --ignore-pattern benchmarks --ignore-pattern examples",
     "lint:fix": "oxlint --fix --ignore-pattern node_modules --ignore-pattern benchmarks --ignore-pattern examples",
-    "test": "turbo run test",
+    "test": "turbo run test --filter='./packages/*'",
     "check": "turbo run typecheck //#lint //#format",
     "validate": "turbo run typecheck //#lint //#format --ui=stream",
     "changeset": "changeset",
@@ -19,17 +19,22 @@
     "postversion": "oxfmt --write",
     "prerelease": "turbo run build",
     "release": "changeset publish",
-    "docs:dev": "node packages/zpress/dist/cli.mjs dev",
-    "docs:build": "node packages/zpress/dist/cli.mjs build",
-    "docs:serve": "node packages/zpress/dist/cli.mjs serve",
+    "docs:dev": "node packages/ciderpress/dist/cli.mjs dev",
+    "docs:build": "node packages/ciderpress/dist/cli.mjs build",
+    "docs:serve": "node packages/ciderpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
     "dev": "turbo run dev",
-    "stories": "pnpm --filter @zpress/cli stories",
+    "stories": "pnpm --filter @ciderpress/cli stories",
+    "ladle": "pnpm --filter @ciderpress/ui ladle",
     "bench": "pnpm --filter benchmarks bench",
-    "bench:run": "pnpm --filter benchmarks bench:run"
+    "bench:run": "pnpm --filter benchmarks bench:run",
+    "e2e": "pnpm --filter e2e test",
+    "e2e:ui": "pnpm --filter e2e test:ui",
+    "e2e:update": "pnpm --filter e2e test:update",
+    "e2e:install": "pnpm --filter e2e install:browsers"
   },
   "dependencies": {
-    "@zpress/kit": "workspace:*"
+    "ciderpress": "workspace:*"
   },
   "devDependencies": {
     "@changesets/cli": "^2.31.0",

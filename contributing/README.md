@@ -1,6 +1,6 @@
 # Contributing
 
-Welcome to the zpress contributing docs. This directory contains standards, templates, and guides for working in this codebase.
+Welcome to the ciderpress contributing docs. This directory contains standards, templates, and guides for working in this codebase.
 
 ## How to Use
 
@@ -55,4 +55,4 @@ Welcome to the zpress contributing docs. This directory contains standards, temp
 
 - [Getting Started](./guides/getting-started.md) -- Local setup, reading order, Claude Code configuration
 - [Developing a Feature](./guides/developing-a-feature.md) -- Branch, code, test, changeset, PR, merge
-- [Publishing VS Code Extension](./guides/publishing-vscode-extension.md) -- Package and publish the zpress VS Code extension
+- [Publishing VS Code Extension](./guides/publishing-vscode-extension.md) -- Package and publish the ciderpress VS Code extension

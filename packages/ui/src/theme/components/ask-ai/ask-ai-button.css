@@ -1,52 +1,52 @@
-.zp-ask-ai {
+.cp-ask-ai {
   position: fixed;
-  bottom: var(--zp-s-20);
-  right: var(--zp-s-20);
-  z-index: var(--zp-z-floating);
+  bottom: var(--cp-s-20);
+  right: var(--cp-s-20);
+  z-index: var(--cp-z-floating);
   display: inline-flex;
   align-items: center;
-  gap: var(--zp-s-8);
-  padding: var(--zp-s-10) var(--zp-s-14);
-  background: var(--zp-c-bg-soft);
-  border: 1px solid var(--zp-c-border);
-  border-radius: var(--zp-radius-pill);
-  color: var(--zp-c-text-1);
-  font-family: var(--zp-font-family-base);
-  font-size: var(--zp-fs-ask-ai);
+  gap: var(--cp-s-8);
+  padding: var(--cp-s-10) var(--cp-s-14);
+  background: var(--cp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-pill);
+  color: var(--cp-c-text-1);
+  font-family: var(--cp-font-family-base);
+  font-size: var(--cp-fs-ask-ai);
   font-weight: 500;
   cursor: pointer;
-  box-shadow: var(--zp-shadow-ask-ai);
-  backdrop-filter: blur(var(--zp-blur-base));
-  transition: border-color var(--zp-duration-fast) var(--zp-ease-base);
+  box-shadow: var(--cp-shadow-ask-ai);
+  backdrop-filter: blur(var(--cp-blur-base));
+  transition: border-color var(--cp-duration-fast) var(--cp-ease-base);
 }
 
-.zp-ask-ai:hover {
-  border-color: var(--zp-c-brand-soft);
+.cp-ask-ai:hover {
+  border-color: var(--cp-c-brand-soft);
 }
 
-.zp-ask-ai__icon {
-  width: var(--zp-size-ask-ai-icon);
-  height: var(--zp-size-ask-ai-icon);
+.cp-ask-ai__icon {
+  width: var(--cp-size-ask-ai-icon);
+  height: var(--cp-size-ask-ai-icon);
   border-radius: 50%;
-  background: var(--zp-gradient-brand);
+  background: var(--cp-gradient-brand);
   display: grid;
   place-items: center;
-  color: var(--zp-c-brand-fg);
-  font-family: var(--zp-font-family-mono);
-  font-size: var(--zp-fs-ask-ai-mark);
+  color: var(--cp-c-brand-fg);
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-ask-ai-mark);
   font-weight: 700;
 }
 
-.zp-ask-ai__label {
+.cp-ask-ai__label {
   white-space: nowrap;
 }
 
-.zp-ask-ai__shortcut {
-  font-family: var(--zp-font-family-mono);
-  font-size: var(--zp-fs-ask-ai-shortcut);
-  color: var(--zp-c-text-3);
-  padding: var(--zp-s-1) var(--zp-s-5);
-  border: 1px solid var(--zp-c-border);
-  border-radius: var(--zp-radius-xs-sm);
-  margin-left: var(--zp-s-4);
+.cp-ask-ai__shortcut {
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-ask-ai-shortcut);
+  color: var(--cp-c-text-3);
+  padding: var(--cp-s-1) var(--cp-s-5);
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-xs-sm);
+  margin-left: var(--cp-s-4);
 }

@@ -1,10 +1,10 @@
 # Architecture
 
-High-level overview of how zpress is structured, its design philosophy, and how data flows through the system.
+High-level overview of how ciderpress is structured, its design philosophy, and how data flows through the system.
 
 ## Overview
 
-zpress is a documentation framework for monorepos. It takes a single config file, syncs markdown content into a structured output directory, and builds a static site via [Rspress](https://rspress.dev). The information architecture -- sections, navigation, sidebar, landing pages -- is derived entirely from the config.
+ciderpress is a documentation framework for monorepos. It takes a single config file, syncs markdown content into a structured output directory, and builds a static site via [Rspress](https://rspress.dev). The information architecture -- sections, navigation, sidebar, landing pages -- is derived entirely from the config.
 
 The codebase follows a functional, immutable, composition-first design. There are no classes, no `let`, no `throw` statements, and no loops. Errors are returned as `Result` tuples. Side effects (process exit, terminal output) are pushed to the outermost edges.
 
@@ -12,35 +12,33 @@ The codebase follows a functional, immutable, composition-first design. There ar
 
 ```tree
 packages/
-├── core/            # Sync engine, config loading, sidebar/nav generation
-├── cli/             # CLI commands (dev, build, serve, check, diff, draft, clean, setup, dump)
+├── cli/             # CLI commands + sync engine (dev, build, serve, check, diff, draft, clean, setup, dump, sync)
 ├── ui/              # Rspress plugin, theme components, styles
-├── config/          # @zpress/config — c12-based config loading, Zod validation
-├── templates/       # @zpress/templates — Liquid template registry for draft command
-├── theme/           # @zpress/theme — theme definitions and schema
-└── zpress/          # @zpress/kit — public wrapper (re-exports core + ui + cli)
+├── config/          # @ciderpress/config — c12-based config loading, Zod validation
+├── templates/       # @ciderpress/templates — Liquid template registry for draft command
+├── theme/           # @ciderpress/theme — theme definitions and schema
+└── ciderpress/      # ciderpress — public wrapper (re-exports config + ui + cli bin)
 ```
 
-| Package             | Purpose                                                                 |
-| ------------------- | ----------------------------------------------------------------------- |
-| `@zpress/core`      | Config loading, entry resolution, sync engine, sidebar/nav gen          |
-| `@zpress/cli`       | CLI commands: dev, build, serve, check, diff, draft, clean, setup, dump |
-| `@zpress/ui`        | Rspress plugin, React theme components, CSS overrides                   |
-| `@zpress/config`    | Config schema (Zod), type definitions, c12-based loading                |
-| `@zpress/templates` | Liquid template registry for the `draft` command                        |
-| `@zpress/theme`     | Theme definitions and schema                                            |
-| `@zpress/kit`       | Public package: `.` and `./config` entry points + `zpress` CLI bin      |
+| Package                 | Purpose                                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------- |
+| `@ciderpress/cli`       | CLI commands + sync engine: dev, build, serve, check, diff, draft, clean, setup, dump, sync |
+| `@ciderpress/ui`        | Rspress plugin, React theme components, CSS overrides                                       |
+| `@ciderpress/config`    | Config schema (Zod), type definitions, c12-based loading                                    |
+| `@ciderpress/templates` | Liquid template registry for the `draft` command                                            |
+| `@ciderpress/theme`     | Theme definitions and schema                                                                |
+| `ciderpress`            | Public package: `.` and `./config` entry points + `ciderpress` CLI bin                      |
 
-### `@zpress/kit` (wrapper)
+### `ciderpress` (wrapper)
 
 The public-facing package. Two entry points and a CLI bin:
 
-| Entry      | Purpose                                   |
-| ---------- | ----------------------------------------- |
-| `.`        | Full API: core types + sync + UI + plugin |
-| `./config` | Lightweight: just `defineConfig` + types  |
+| Entry      | Purpose                                                                     |
+| ---------- | --------------------------------------------------------------------------- |
+| `.`        | Public API: `defineConfig`, `defineTheme`, `hasGlobChars`, `CiderpressLogo` |
+| `./config` | Lightweight: just `defineConfig` + types                                    |
 
-The `zpress` CLI bin is provided by this package and delegates to `@zpress/cli`. Users import `defineConfig` from `@zpress/kit` (or `@zpress/kit/config`) in their config file.
+The `ciderpress` CLI bin is provided by this package and delegates to `@ciderpress/cli`. Users import `defineConfig` from `ciderpress` (or `ciderpress/config`) in their config file.
 
 ## Layers
 
@@ -72,6 +70,7 @@ flowchart TB
         CLEAN(["clean"])
         SETUP(["setup"])
         DUMP(["dump"])
+        SYNC(["sync"])
     end
 
     subgraph core ["Core Layer"]
@@ -90,13 +89,13 @@ flowchart TB
         RSPRESS_CFG(["rspress config"])
     end
 
-    subgraph output [".zpress/"]
+    subgraph output [".ciderpress/"]
         CONTENT(["content/"])
         GENERATED([".generated/"])
         DIST(["dist/"])
     end
 
-    DEV & BUILD --> CONFIG
+    DEV & BUILD & SYNC --> CONFIG
     CONFIG --> RESOLVE --> COPY --> CONTENT
     RESOLVE --> SIDEBAR & NAV & HOME --> GENERATED
     RSPRESS_CFG --> GENERATED
@@ -106,7 +105,7 @@ flowchart TB
     classDef agent fill:#313244,stroke:#a6e3a1,stroke-width:2px,color:#cdd6f4
     classDef external fill:#313244,stroke:#f5c2e7,stroke-width:2px,color:#cdd6f4
 
-    class DEV,BUILD,SERVE,CHECK,DIFF,DRAFT,CLEAN,SETUP,DUMP external
+    class DEV,BUILD,SERVE,CHECK,DIFF,DRAFT,CLEAN,SETUP,DUMP,SYNC external
     class CONFIG,RESOLVE,COPY,SIDEBAR,NAV,HOME,MANIFEST core
     class PLUGIN,THEME,RSPRESS_CFG agent
     class CONTENT,GENERATED,DIST agent
@@ -119,48 +118,49 @@ flowchart TB
 
 ### CLI Layer
 
-**Package:** `@zpress/cli`
+**Package:** `@ciderpress/cli`
 
-The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing and `@kidd-cli/core/logger` for styled terminal output. Commands orchestrate the core sync engine and Rspress build APIs. See [CLI Reference](../references/cli.md) for command details.
+The command-line interface. Uses [`@kidd-cli/core`](https://github.com/kidd-framework/kidd-cli) for command routing. Styled terminal output goes through [`@clack/prompts`](https://www.clack.cc) (see `packages/cli/src/lib/sync/index.ts:7`). Commands orchestrate the core sync engine and Rspress build APIs. See [CLI Reference](../references/cli.md) for command details.
 
 ### Core Layer
 
-**Package:** `@zpress/core`
+**Package:** `@ciderpress/cli` (sync engine lives at `packages/cli/src/lib/sync/`)
 
-The sync engine and config system. See [Engine](./engine/overview.md) for pipeline details.
+The sync engine. Config loading lives separately in `@ciderpress/config`. See [Engine](./engine/overview.md) for pipeline details.
 
-| Module                       | Purpose                                                   |
-| ---------------------------- | --------------------------------------------------------- |
-| `config.ts`                  | Config file discovery and loading via c12                 |
-| `define-config.ts`           | Config validation at the boundary                         |
-| `paths.ts`                   | Path constants for `.zpress/` output structure            |
-| `sync/index.ts`              | Main sync pipeline orchestrator                           |
-| `sync/errors.ts`             | SyncError and ConfigError definitions                     |
-| `sync/types.ts`              | Sync-specific type definitions                            |
-| `sync/copy.ts`               | Page writing with frontmatter injection and hash tracking |
-| `sync/home.ts`               | Default home page generation                              |
-| `sync/manifest.ts`           | Incremental sync tracking via content hashes              |
-| `sync/openapi.ts`            | OpenAPI spec sync (dereference, MDX generation)           |
-| `sync/images.ts`             | Image discovery, copy, and path rewriting                 |
-| `sync/planning.ts`           | Planning page discovery from `.planning/` directory       |
-| `sync/rewrite-links.ts`      | Relative link rewriting during copy                       |
-| `sync/strip-xml.ts`          | XML tag stripping for planning documents                  |
-| `sync/workspace.ts`          | Workspace item synthesis and card enrichment              |
-| `sync/collect-workspaces.ts` | Workspace item collection from config                     |
-| `sync/resolve/index.ts`      | Entry tree resolution (globs, text derivation, sorting)   |
-| `sync/resolve/path.ts`       | Path resolution utilities                                 |
-| `sync/resolve/recursive.ts`  | Recursive directory resolution                            |
-| `sync/resolve/sort.ts`       | Entry sorting strategies                                  |
-| `sync/resolve/text.ts`       | Text derivation from filename/heading/frontmatter         |
-| `sync/sidebar/index.ts`      | Sidebar and nav JSON generation                           |
-| `sync/sidebar/multi.ts`      | Multi-sidebar namespace building                          |
-| `sync/sidebar/inject.ts`     | Virtual landing page generation (MDX)                     |
-| `sync/sidebar/landing.ts`    | Landing page MDX generation                               |
-| `banner/index.ts`            | SVG asset generation (banner, logo, icon)                 |
+| Module                           | Purpose                                                                                  |
+| -------------------------------- | ---------------------------------------------------------------------------------------- |
+| `lib/paths.ts`                   | Path constants for `.ciderpress/` output structure                                       |
+| `lib/sync/index.ts`              | Main sync pipeline orchestrator                                                          |
+| `lib/sync/errors.ts`             | SyncError and ConfigError definitions                                                    |
+| `lib/sync/types.ts`              | Sync-specific type definitions                                                           |
+| `lib/sync/copy.ts`               | Page writing with frontmatter injection and hash tracking                                |
+| `lib/sync/home.ts`               | Default home page generation                                                             |
+| `lib/sync/manifest.ts`           | Incremental sync tracking via content hashes                                             |
+| `lib/sync/openapi.ts`            | OpenAPI spec sync (dereference, MDX generation)                                          |
+| `lib/sync/openapi-spec.ts`       | OpenAPI spec loading and dereferencing                                                   |
+| `lib/sync/openapi-markdown.ts`   | OpenAPI operation MDX generation                                                         |
+| `lib/sync/images.ts`             | Image discovery, copy, and path rewriting                                                |
+| `lib/sync/planning.ts`           | Planning page discovery from `.planning/` directory                                      |
+| `lib/sync/rewrite-links.ts`      | Relative link rewriting during copy                                                      |
+| `lib/sync/strip-xml.ts`          | XML tag stripping for planning documents                                                 |
+| `lib/sync/workspace.ts`          | Workspace item synthesis and card enrichment                                             |
+| `lib/sync/frontmatter.ts`        | Frontmatter `parse(raw)` and `stringify(content, data)` (merge + hash live in `copy.ts`) |
+| `lib/sync/resolve/index.ts`      | Entry tree resolution (globs, text derivation, sorting)                                  |
+| `lib/sync/resolve/path.ts`       | Path resolution utilities                                                                |
+| `lib/sync/resolve/recursive.ts`  | Recursive directory resolution                                                           |
+| `lib/sync/resolve/sort.ts`       | Entry sorting strategies                                                                 |
+| `lib/sync/resolve/text.ts`       | Text derivation from filename/heading/frontmatter                                        |
+| `lib/sync/sidebar/index.ts`      | Sidebar and nav JSON generation                                                          |
+| `lib/sync/sidebar/inject.ts`     | Virtual landing page generation (MDX)                                                    |
+| `lib/sync/sidebar/landing.ts`    | Landing page MDX generation                                                              |
+| `lib/sync/sidebar/meta.ts`       | Sidebar meta resolution                                                                  |
+| `lib/sync/sidebar/write-meta.ts` | Sidebar meta serialization                                                               |
+| `lib/banner/index.ts`            | SVG asset generation (banner, logo, icon)                                                |
 
 ### UI Layer
 
-**Package:** `@zpress/ui`
+**Package:** `@ciderpress/ui`
 
 The Rspress theme and plugin:
 
@@ -193,10 +193,10 @@ The Rspress theme and plugin:
   }
 }}%%
 sequenceDiagram
-    participant User as zpress.config.ts
+    participant User as ciderpress.config.ts
     participant CLI as CLI
     participant Sync as Sync Engine
-    participant FS as .zpress/
+    participant FS as .ciderpress/
     participant Rspress as Rspress
 
     rect rgb(49, 50, 68)
@@ -208,30 +208,33 @@ sequenceDiagram
     rect rgb(49, 50, 68)
         Note over CLI,FS: Sync
         CLI->>Sync: sync(config, paths)
+        Sync->>Sync: Discover planning pages
+        Sync->>Sync: Sync OpenAPI specs (dereference, MDX gen)
         Sync->>Sync: Resolve entries (globs, text, frontmatter)
-        Sync->>Sync: Generate sidebar + nav JSON
-        Sync->>Sync: Inject landing pages (MDX)
-        Sync->>FS: Write content/ + .generated/
+        Sync->>FS: Write content/ pages (incremental)
+        Sync->>FS: Write _meta.json per dir + _nav.json (Rspress-consumed)
+        Sync->>FS: Write .generated/workspaces.json + scopes.json (UI-consumed)
+        Sync->>FS: Write .generated/sidebar.json + nav.json (debug snapshots)
     end
 
     rect rgb(49, 50, 68)
         Note over FS,Rspress: Build
         CLI->>Rspress: build() or dev()
-        Rspress->>FS: Read content + sidebar + nav
-        Rspress->>Rspress: Render with zpress theme
+        Rspress->>FS: Read content/ + _meta.json + _nav.json
+        Rspress->>Rspress: Render with ciderpress theme
         Rspress-->>FS: Write dist/ (static site)
     end
 ```
 
 ## Error Handling
 
-zpress uses the `Result<T, E>` tuple pattern for expected failures:
+ciderpress uses the `Result<T, E>` tuple pattern for expected failures:
 
-| Layer     | Strategy                      | Type                                  |
-| --------- | ----------------------------- | ------------------------------------- |
-| Core/sync | `Result<T, E>` tuples         | `[error, null]` or `[null, value]`    |
-| Config    | Validate-and-exit at boundary | `process.exit(1)` with message        |
-| CLI       | Catch and report              | `@kidd-cli/core/logger` error display |
+| Layer     | Strategy                                                                      | Type                                                           |
+| --------- | ----------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| Core/sync | `Result<T, E>` tuples                                                         | `[error, null]` or `[null, value]`                             |
+| Config    | Returns `Result<T, ConfigError>` at boundary; CLI consumes and exits          | `[ConfigError, null]` or `[null, CiderpressConfig]`            |
+| CLI       | Consumes Result tuples, reports via `@clack/prompts`, calls `process.exit(1)` | `process.exit(1)` after logging (e.g. `dev-headless.ts:43-46`) |
 
 ## Design Decisions
 

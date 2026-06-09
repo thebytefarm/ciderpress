@@ -1,11 +1,11 @@
 ---
 title: Frontmatter Fields
-description: Complete reference for all frontmatter fields supported by zpress pages.
+description: Complete reference for all frontmatter fields supported by ciderpress pages.
 ---
 
 # Frontmatter Fields
 
-zpress pages support standard Rspress frontmatter fields. Frontmatter is defined in YAML at the top of markdown files or injected via the `frontmatter` field in config entries.
+ciderpress pages support standard Rspress frontmatter fields. Frontmatter is defined in YAML at the top of markdown files or injected via the `frontmatter` field in config entries.
 
 ```md
 ---

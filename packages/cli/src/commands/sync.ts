@@ -1,5 +1,5 @@
+import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
 import { z } from 'zod'
 
 import { createPaths } from '../lib/paths.ts'
@@ -8,7 +8,7 @@ import { sync } from '../lib/sync/index.ts'
 /**
  * Registers the `sync` CLI command — runs the sync engine and exits.
  *
- * Loads config, syncs all content to `.zpress/content/`, and reports results.
+ * Loads config, syncs all content to `.ciderpress/content/`, and reports results.
  * Useful for CI pipelines and benchmarking where dev server or build is not needed.
  */
 export default command({
@@ -20,7 +20,7 @@ export default command({
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())
     if (!ctx.args.quiet) {
-      ctx.log.intro('zpress sync')
+      ctx.log.intro('ciderpress sync')
     }
 
     const [configErr, config] = await loadConfig(paths.repoRoot)

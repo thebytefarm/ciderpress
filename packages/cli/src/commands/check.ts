@@ -1,5 +1,5 @@
+import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
-import { loadConfig } from '@zpress/config/loader'
 
 import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
 import { createPaths } from '../lib/paths.ts'
@@ -13,7 +13,7 @@ export default command({
   description: 'Validate config and check for broken links',
   handler: async (ctx) => {
     const paths = createPaths(process.cwd())
-    ctx.log.intro('zpress check')
+    ctx.log.intro('ciderpress check')
 
     // Config validation — loadConfig validates via validateConfig and
     // returns a Result tuple. No process.exit, no process overrides.
@@ -29,7 +29,6 @@ export default command({
       process.exit(1)
     }
 
-    // Sync content (quiet — no per-file output)
     ctx.log.step('Syncing content...')
     const syncResult = await sync(config, { paths, quiet: true })
     if (syncResult.error) {
@@ -40,11 +39,9 @@ export default command({
       `Synced (${syncResult.pagesWritten} written, ${syncResult.pagesSkipped} unchanged)`
     )
 
-    // Deadlink detection via build
     ctx.log.step('Checking for broken links...')
     const buildResult = await runBuildCheck({ config, paths })
 
-    // Present results
     const passed = presentResults({ configResult, buildResult, logger: ctx.log })
 
     if (passed) {

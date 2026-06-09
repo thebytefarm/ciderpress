@@ -7,6 +7,8 @@ description: Copy-paste template for writing how-to guide documentation.
 
 Template for how-to guides — task-oriented documentation that walks the reader through completing a specific goal.
 
+Scaffold this template with `ciderpress draft --type guide`.
+
 ## Rules
 
 - H1 starts with a verb (Add, Create, Set Up, Run, Debug, Write, Configure, Deploy)

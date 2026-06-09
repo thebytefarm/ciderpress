@@ -4,27 +4,31 @@
  * Covers the entire viewport with the theme background color.
  * Lifecycle:
  *   1. Visible by default (opacity 1)
- *   2. .zp-loader-fade → opacity transitions to 0 over 200ms
- *   3. [data-zp-ready] → hard removed (display none)
+ *   2. .cp-loader-fade → opacity transitions to 0 over 200ms
+ *   3. [data-cp-ready] → hard removed (display none)
+ *
+ * Lives on `body::before` (not `html::before`) so the loader's icon
+ * pseudo (`html::before` in loader-dots.css) can run its own bite +
+ * spin animation without dragging the backdrop along for the ride.
  */
 
-/* Warning: uses html pseudo-elements which are globally scoped.
-   Avoid defining html::before in theme CSS to prevent conflicts. */
-html::before {
+/* Warning: uses body pseudo-elements which are globally scoped.
+   Avoid defining body::before in theme CSS to prevent conflicts. */
+body::before {
   content: '';
   position: fixed;
   inset: 0;
-  background-color: var(--zp-c-bg, #fff);
+  background-color: var(--cp-c-bg, #fff);
   z-index: 9998;
   pointer-events: none;
   opacity: 1;
   transition: opacity 0.2s ease;
 }
 
-html.zp-loader-fade::before {
+html.cp-loader-fade body::before {
   opacity: 0;
 }
 
-html[data-zp-ready]::before {
+html[data-cp-ready] body::before {
   display: none;
 }

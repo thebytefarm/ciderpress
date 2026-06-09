@@ -20,7 +20,7 @@ type AssetResult = readonly [AssetError, null] | readonly [null, string]
 export function readCss(relativePath: string): string {
   const [error, content] = readAsset(relativePath)
   if (error) {
-    process.stderr.write(`[zpress] ${error.message}\n`)
+    process.stderr.write(`[ciderpress] ${error.message}\n`)
     return ''
   }
   return content
@@ -36,15 +36,11 @@ export function readCss(relativePath: string): string {
 export function readJs(relativePath: string): string {
   const [error, content] = readAsset(relativePath)
   if (error) {
-    process.stderr.write(`[zpress] ${error.message}\n`)
+    process.stderr.write(`[ciderpress] ${error.message}\n`)
     return ''
   }
   return content
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Resolve path relative to dist/head/.

@@ -1,6 +1,7 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 import type { HeroAction } from './hero'
 
@@ -33,27 +34,23 @@ export function CTA(props: CTAProps): React.ReactElement {
   const list = actions ?? []
 
   return (
-    <section className="zp-cta">
-      <div className="zp-cta__inner">
-        <h2 className="zp-cta__title">{title}</h2>
+    <section className="cp-cta">
+      <div className="cp-cta__inner">
+        <h2 className="cp-cta__title">{title}</h2>
         {match(subtitle)
           .with(undefined, () => null)
           .otherwise((s) => (
-            <p className="zp-cta__sub">{s}</p>
+            <p className="cp-cta__sub">{s}</p>
           ))}
         {match(list.length === 0)
           .with(true, () => null)
           .otherwise(() => (
-            <div className="zp-cta__row">{list.map(renderAction)}</div>
+            <div className="cp-cta__row">{list.map(renderAction)}</div>
           ))}
       </div>
     </section>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Render a single CTA action.
@@ -69,12 +66,12 @@ function renderAction(action: HeroAction, index: number): React.ReactElement | n
     return null
   }
   const className = match(action.theme ?? 'brand')
-    .with('brand', () => 'zp-cta__btn zp-cta__btn--primary')
-    .otherwise(() => 'zp-cta__btn')
+    .with('brand', () => 'cp-cta__btn cp-cta__btn--primary')
+    .otherwise(() => 'cp-cta__btn')
 
   return (
-    <a key={`${href}:${index}`} href={href} className={className}>
+    <RouteLink key={`${href}:${index}`} href={href} className={className}>
       {action.text}
-    </a>
+    </RouteLink>
   )
 }

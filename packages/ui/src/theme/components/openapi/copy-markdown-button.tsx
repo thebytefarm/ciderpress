@@ -34,7 +34,7 @@ export function CopyMarkdownButton({
   )
 
   return (
-    <div className="zp-oas-copy-markdown">
+    <div className="cp-oas-copy-markdown">
       <LlmsCopyButton text="Copy Markdown" onClick={handleClick} />
     </div>
   )

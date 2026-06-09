@@ -5,7 +5,7 @@ description: Render LaTeX math expressions inline and in blocks.
 
 # Math (KaTeX)
 
-zpress bundles `rspress-plugin-katex` for LaTeX math rendering. No configuration required.
+ciderpress bundles `rspress-plugin-katex` for LaTeX math rendering. No configuration required.
 
 ## Inline math
 

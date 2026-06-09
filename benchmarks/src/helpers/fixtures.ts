@@ -78,7 +78,7 @@ export interface GenerateFixtureOptions {
  * Generate a fixture project with deterministic markdown files.
  *
  * Creates a temp directory inside the repo (so workspace deps resolve),
- * writes a zpress config and distributes markdown files across sections
+ * writes a ciderpress config and distributes markdown files across sections
  * and subdirectories automatically.
  *
  * Sections default to `clamp(ceil(files / 50), 2, 15)`.
@@ -98,7 +98,6 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
   fs.mkdirSync(fixturesDir, { recursive: true })
   const dir = fs.mkdtempSync(path.join(fixturesDir, 'bench-'))
 
-  // Build unique section names
   const sectionNames = Array.from({ length: sectionCount }, (_, i) => {
     const base = DIRECTORY_NAMES[i % DIRECTORY_NAMES.length]
     if (i < DIRECTORY_NAMES.length) {
@@ -107,7 +106,6 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
     return `${base}-${Math.floor(i / DIRECTORY_NAMES.length) + 1}`
   })
 
-  // Write zpress.config.ts
   const sectionConfigs = sectionNames
     .map(
       (name) => `    {
@@ -120,8 +118,8 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
     .join(',\n')
 
   fs.writeFileSync(
-    path.join(dir, 'zpress.config.ts'),
-    `import { defineConfig } from '@zpress/kit'
+    path.join(dir, 'ciderpress.config.ts'),
+    `import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'Benchmark Fixture',
@@ -133,7 +131,6 @@ ${sectionConfigs}
     'utf8'
   )
 
-  // Write package.json so workspace deps resolve
   fs.writeFileSync(
     path.join(dir, 'package.json'),
     JSON.stringify(
@@ -141,7 +138,7 @@ ${sectionConfigs}
         name: 'bench-fixture',
         private: true,
         type: 'module',
-        dependencies: { '@zpress/kit': 'workspace:*' },
+        dependencies: { ciderpress: 'workspace:*' },
       },
       null,
       2
@@ -158,7 +155,6 @@ ${sectionConfigs}
     const sectionFiles = Math.ceil(remaining / sectionsLeft)
     remaining -= sectionFiles
 
-    // Distribute this section's files across directories
     let sectionRemaining = sectionFiles
     const dirNames = Array.from(
       { length: dirsPerSection },

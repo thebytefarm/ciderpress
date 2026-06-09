@@ -1,6 +1,7 @@
-import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@zpress/config'
-import type { IconColor, Section, Workspace } from '@zpress/config'
+import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import type { IconColor, Section, Workspace } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 import { linkToOutputPath } from '../resolve/path.ts'
 import type { ResolvedEntry } from '../types.ts'
@@ -13,83 +14,186 @@ import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
  * Landing pages with React components use `.mdx` extension;
  * simple text pages stay as `.md`.
  *
+ * Pure: returns a new tree rather than mutating `entries`. The recursion
+ * threads `colorIndex` through each call so cycling icon colors remain
+ * deterministic without a mutable counter.
+ *
  * @param entries - Resolved entry tree to walk
  * @param configSections - Original config sections for metadata lookup
  * @param workspaces - Workspace items for generating workspace landing pages
- * @param colorIndex - Mutable color index counter for cycling icon colors
- * @returns Void; mutates entries in-place
+ * @returns New resolved entry tree with landing pages injected
  */
 export function injectLandingPages(
   entries: readonly ResolvedEntry[],
   configSections: readonly Section[],
-  workspaces: readonly Workspace[],
-  colorIndex: { value: number } = { value: 0 }
-): void {
-  entries.reduce<void>((_, entry) => {
-    if (entry.link && !entry.page && entry.landing !== false) {
-      const configSection = findConfigSection(configSections, entry.link)
-      const description: string | undefined = resolveDescription(configSection)
-
-      const hasSelfLinkedChild = checkHasSelfLinkedChild(entry.items, entry.link)
-
-      if (entry.items && entry.items.length > 0 && !hasSelfLinkedChild) {
-        // Generate landing page from child entries (MDX — has React components)
-        const color: IconColor = ICON_COLORS[colorIndex.value % ICON_COLORS.length]
-        colorIndex.value += 1
-
-        const children = entry.items
-        entry.page = {
-          content: () => generateLandingContent(entry.title, description, children, color),
-          outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
-          frontmatter: {},
-        }
-      } else if (!entry.items || entry.items.length === 0) {
-        // Check for workspace items matching this section's link prefix
-        const matching = workspaces.filter((item) => item.path.startsWith(`${entry.link}/`))
-
-        if (matching.length > 0) {
-          const segments = entry.link.split('/')
-          const lastSegment = segments.findLast((seg) => seg.length > 0)
-          const scope = `${lastSegment}/`
-          entry.page = {
-            content: () => generateWorkspaceLandingPage(entry.title, description, matching, scope),
-            outputPath: linkToOutputPath(entry.link).replace(/\.md$/, '.mdx'),
-            frontmatter: {},
-          }
-        }
-
-        if (matching.length === 0) {
-          const entryLink = entry.link
-          const exact = workspaces.find((item) => item.path === entryLink)
-          if (exact) {
-            const titleStr = match(exact.title)
-              .with(P.string, (t) => t)
-              .otherwise(String)
-            // Simple text page — no React components, stays as .md
-            entry.page = {
-              content: () => `# ${titleStr}\n\n${exact.description}\n`,
-              outputPath: linkToOutputPath(entryLink),
-              frontmatter: {},
-            }
-          }
-        }
-      }
-    }
-
-    if (entry.items) {
-      injectLandingPages(
-        entry.items as readonly ResolvedEntry[],
-        configSections,
-        workspaces,
-        colorIndex
-      )
-    }
-  }, undefined as void)
+  workspaces: readonly Workspace[]
+): readonly ResolvedEntry[] {
+  const { entries: result } = injectMany({
+    entries,
+    configSections,
+    workspaces,
+    colorIndex: 0,
+  })
+  return result
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
+/**
+ * Recursion frame for `injectMany` / `injectOne`. Threads the current
+ * `colorIndex` through the tree so cycling icon colors stay deterministic
+ * without a mutable counter.
+ *
+ * @private
+ */
+interface InjectFrame {
+  readonly entries: readonly ResolvedEntry[]
+  readonly configSections: readonly Section[]
+  readonly workspaces: readonly Workspace[]
+  readonly colorIndex: number
+}
+
+/**
+ * Result of an `injectMany` / `injectOne` pass — the rebuilt subtree
+ * and the next color-index the parent should use for its next child.
+ *
+ * @private
+ */
+interface InjectResult {
+  readonly entries: readonly ResolvedEntry[]
+  readonly nextColorIndex: number
+}
+
+/**
+ * Recursively inject landing pages across an array of entries, threading
+ * the color index so siblings continue cycling from where the previous
+ * sibling left off.
+ *
+ * @private
+ * @param frame - Current recursion state (entries + threaded color index)
+ * @returns Rebuilt entry array and the next available color index
+ */
+function injectMany(frame: InjectFrame): InjectResult {
+  return frame.entries.reduce<InjectResult>(
+    (acc, entry) => {
+      const { entry: rebuilt, nextColorIndex } = injectOne({
+        entry,
+        configSections: frame.configSections,
+        workspaces: frame.workspaces,
+        colorIndex: acc.nextColorIndex,
+      })
+      return {
+        entries: [...acc.entries, rebuilt],
+        nextColorIndex,
+      }
+    },
+    { entries: [], nextColorIndex: frame.colorIndex }
+  )
+}
+
+/**
+ * Frame for a single-entry inject pass.
+ *
+ * @private
+ */
+interface InjectOneFrame {
+  readonly entry: ResolvedEntry
+  readonly configSections: readonly Section[]
+  readonly workspaces: readonly Workspace[]
+  readonly colorIndex: number
+}
+
+/**
+ * Result of injecting a single entry — the rebuilt entry and the next
+ * color index after any landing-page color was consumed.
+ *
+ * @private
+ */
+interface InjectOneResult {
+  readonly entry: ResolvedEntry
+  readonly nextColorIndex: number
+}
+
+/**
+ * Rebuild a single entry with an injected landing page when applicable.
+ * Recurses into `entry.items` so the entire subtree is replaced rather
+ * than mutated.
+ *
+ * @private
+ * @param frame - Current single-entry inject frame
+ * @returns Rebuilt entry and next color index
+ */
+function injectOne(frame: InjectOneFrame): InjectOneResult {
+  const { entry, configSections, workspaces, colorIndex } = frame
+
+  // Recurse into children first so the rebuilt subtree is available when
+  // we decide whether to inject a landing page for this entry.
+  const childResult = match(entry.items)
+    .with(P.nonNullable, (items) =>
+      injectMany({ entries: items, configSections, workspaces, colorIndex })
+    )
+    .otherwise(() => ({
+      entries: undefined as readonly ResolvedEntry[] | undefined,
+      nextColorIndex: colorIndex,
+    }))
+
+  const baseEntry: ResolvedEntry = match(childResult.entries)
+    .with(P.nonNullable, (children) => ({ ...entry, items: children }))
+    .otherwise(() => entry)
+
+  const shouldInject = Boolean(entry.link) && !entry.page && entry.landing !== false
+  if (!shouldInject) {
+    return { entry: baseEntry, nextColorIndex: childResult.nextColorIndex }
+  }
+
+  const link = entry.link as string
+  const configSection = findConfigSection(configSections, link)
+  const description: string | undefined = resolveDescription(configSection)
+  const rebuiltItems = childResult.entries
+  const hasSelfLinkedChild = checkHasSelfLinkedChild(rebuiltItems, link)
+
+  if (rebuiltItems && rebuiltItems.length > 0 && !hasSelfLinkedChild) {
+    const color: IconColor = ICON_COLORS[childResult.nextColorIndex % ICON_COLORS.length]
+    const children = rebuiltItems
+    const page: ResolvedEntry['page'] = {
+      content: () => generateLandingContent(entry.title, description, children, color),
+      outputPath: linkToOutputPath(link).replace(/\.md$/, '.mdx'),
+      frontmatter: {},
+    }
+    return {
+      entry: { ...baseEntry, page },
+      nextColorIndex: childResult.nextColorIndex + 1,
+    }
+  }
+
+  if (!rebuiltItems || rebuiltItems.length === 0) {
+    const matching = workspaces.filter((item) => item.path.startsWith(`${link}/`))
+    if (matching.length > 0) {
+      const segments = link.split('/')
+      const lastSegment = segments.findLast((seg) => seg.length > 0)
+      const scope = `${lastSegment}/`
+      const page: ResolvedEntry['page'] = {
+        content: () => generateWorkspaceLandingPage(entry.title, description, matching, scope),
+        outputPath: linkToOutputPath(link).replace(/\.md$/, '.mdx'),
+        frontmatter: {},
+      }
+      return { entry: { ...baseEntry, page }, nextColorIndex: childResult.nextColorIndex }
+    }
+
+    const exact = workspaces.find((item) => item.path === link)
+    if (exact) {
+      const titleStr = match(exact.title)
+        .with(P.string, (t) => t)
+        .otherwise(String)
+      const page: ResolvedEntry['page'] = {
+        content: () => `# ${titleStr}\n\n${exact.description}\n`,
+        outputPath: linkToOutputPath(link),
+        frontmatter: {},
+      }
+      return { entry: { ...baseEntry, page }, nextColorIndex: childResult.nextColorIndex }
+    }
+  }
+
+  return { entry: baseEntry, nextColorIndex: childResult.nextColorIndex }
+}
 
 /**
  * Generate a workspace-style landing page MDX from workspace items.
@@ -107,7 +211,7 @@ function generateWorkspaceLandingPage(
   items: readonly Workspace[],
   scopePrefix: string
 ): string {
-  const imports = "import { WorkspaceCard, WorkspaceGrid } from '@zpress/ui/theme'\n\n"
+  const imports = "import { WorkspaceCard, WorkspaceGrid } from '@ciderpress/ui/theme'\n\n"
 
   const cards = items.map((item) => {
     const tags: readonly string[] | undefined = resolveTags(item.tags)
@@ -147,9 +251,9 @@ function findConfigSection(sections: readonly Section[], link: string): Section 
     return direct
   }
   const nested = sections
-    .filter((section) => section.items !== null && section.items !== undefined)
+    .filter((section) => isNotNil(section.items))
     .map((section) => findConfigSection(section.items as readonly Section[], link))
-    .find((result) => result !== null && result !== undefined)
+    .find((result) => isNotNil(result))
   return nested
 }
 
@@ -161,7 +265,7 @@ function findConfigSection(sections: readonly Section[], link: string): Section 
  * @returns Description string, or undefined
  */
 function resolveDescription(configSection: Section | undefined): string | undefined {
-  if (configSection === null || configSection === undefined) {
+  if (isNil(configSection)) {
     return undefined
   }
 

@@ -1,10 +1,13 @@
-import { useFrontmatter } from '@rspress/core/runtime'
+import type { SiteEditConfig, SiteReportConfig } from '@ciderpress/config'
+import { useFrontmatter, useSite } from '@rspress/core/runtime'
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
-import type { SiteEditConfig, SiteReportConfig } from '@zpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
+import { useEffect } from 'react'
 
-import { useZpress } from '../../hooks/use-zpress'
+import { useCiderpress } from '../../hooks/use-ciderpress'
+import { useNavItems } from '../../hooks/use-nav-items'
+import { readSocialLinks } from '../../lib/read-social-links'
 import { AnnouncementBar } from '../announcement/announcement-bar'
 import { ContentFooterPortal } from '../content-footer/content-footer-portal'
 import { Feedback } from '../content-footer/feedback'
@@ -13,39 +16,50 @@ import { MetaActions } from '../content-footer/meta-actions'
 import { SiteFooter } from '../footer/site-footer'
 import { SidebarLinks } from '../sidebar/sidebar-links'
 import { SidebarPromo } from '../sidebar/sidebar-promo'
-import { SidebarToggle } from '../sidebar/sidebar-toggle'
-import { BranchTag } from './branch-tag'
-import { MobileNavCTA } from './mobile-nav-cta'
-import { TopbarCTA } from './topbar-cta'
-import { VersionChip } from './version-chip'
-import { VscodeTag } from './vscode-tag'
-
-declare const __ZPRESS_VSCODE__: boolean
+import { CiderpressDocsBar } from './ciderpress-docs-bar'
+import { CiderpressHeader } from './ciderpress-header'
+import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
+import { FloatingBranchIndicator } from './floating-branch-indicator'
 
 /**
- * Custom Layout override for zpress.
+ * Custom Layout override for ciderpress.
  *
- * Wires the chrome described by `config.site`:
- * - AnnouncementBar via the `top` slot (when `site.announcement` is set)
- * - SidebarToggle + VersionChip + BranchTag (+ VscodeTag) on the topbar left
- * - Topbar CTA on the topbar right (when `site.topbarCta` is set)
- * - SidebarLinks (above/below) from config
- * - SidebarPromo at the bottom of the sidebar (when `site.sidebarPromo` is set)
- * - SiteFooter via the `bottom` slot (docs only — home renders it inside PageRail)
- * - MetaActions edit/report links (when `site.edit` / `site.report` are set)
+ * Renders `<CiderpressHeader />` as the entire site header chrome
+ * (Rspress's `.rp-nav` is hidden via CSS in `ciderpress-header.css`).
+ * `<OriginalLayout />` is kept around purely to render Rspress's
+ * sidebar + article body + footer; every nav-related slot is fed
+ * `null` so Rspress doesn't render its own chrome.
+ *
+ * Slots still in use:
+ * - `beforeSidebar`: SidebarLinks (above) and the `.cp-sidebar-top` band
+ * - `afterSidebar`: SidebarLinks (below) plus SidebarPromo
+ * - `afterDoc`: Feedback + MetaActions portalled into the doc footer
+ * - `bottom`: SiteFooter on doc pages
  *
  * @returns React element with the custom layout
  */
 export function Layout(): React.ReactElement {
-  const { sidebarAbove, sidebarBelow, site } = useZpress()
-  const {
-    announcement,
-    version,
-    topbarCta,
-    sidebarPromo: sidebarPromoConfig,
-    edit,
-    report,
-  } = site ?? {}
+  // Rspress's `.rp-nav` is visually hidden via `ciderpress-header.css`
+  // but stays in the a11y tree, producing duplicate `banner` landmarks
+  // alongside our `<CiderpressHeader>`. Mark it aria-hidden after mount
+  // so screen readers ignore it. The element lives for the layout's
+  // lifetime, so no cleanup is required.
+  useEffect(() => {
+    const rpNav = document.querySelector('.rp-nav')
+    if (rpNav !== null) {
+      rpNav.setAttribute('aria-hidden', 'true')
+    }
+  }, [])
+
+  const { sidebarAbove, sidebarBelow, site } = useCiderpress()
+  const { site: rspressSite } = useSite()
+  const configNavItems = readNavItems(rspressSite)
+  const scrapedNavItems = useNavItems()
+  const navItems = match(configNavItems.length > 0)
+    .with(true, () => configNavItems)
+    .otherwise(() => scrapedNavItems)
+  const socialLinks = readSocialLinks(rspressSite)
+  const { announcement, topbarCta, sidebarPromo: sidebarPromoConfig, edit, report } = site ?? {}
   const { frontmatter } = useFrontmatter()
   const fmRecord = frontmatter as Record<string, unknown>
   const isHome = fmRecord.pageType === 'home'
@@ -63,52 +77,12 @@ export function Layout(): React.ReactElement {
       </AnnouncementBar>
     ))
 
-  // Sidebar toggle goes at the far left of the topbar — same slot the
-  // mockup uses for its hamburger. Doc pages only.
-  const sidebarToggle = match(isHome)
-    .with(true, () => null)
-    .otherwise(() => <SidebarToggle />)
-
-  const versionChip = match(version)
-    .with(undefined, () => null)
-    .otherwise((v) => <VersionChip version={v} />)
-
-  const navSlot = match(__ZPRESS_VSCODE__)
-    .with(true, () => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {sidebarToggle}
-        {versionChip}
-        <BranchTag />
-        <VscodeTag />
-      </div>
-    ))
-    .otherwise(() => (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        {sidebarToggle}
-        {versionChip}
-        <BranchTag />
-      </div>
-    ))
-
-  const ctaButtons = match(topbarCta)
-    .with(undefined, () => null)
-    .otherwise((cta) => (
-      <>
-        <TopbarCTA text={cta.text} href={cta.href} />
-        <MobileNavCTA text={cta.text} href={cta.href} />
-      </>
-    ))
-
-  const afterNavSlot = (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>{ctaButtons}</div>
-  )
-
   const aboveItems = sidebarAbove ?? []
   const belowItems = sidebarBelow ?? []
 
   const beforeSidebar = match(aboveItems.length > 0)
     .with(true, () => (
-      <div className="zp-sidebar-top">
+      <div className="cp-sidebar-top">
         <SidebarLinks items={aboveItems} position="above" />
       </div>
     ))
@@ -124,35 +98,20 @@ export function Layout(): React.ReactElement {
     .with(true, () => <SidebarLinks items={belowItems} position="below" />)
     .otherwise(() => null)
 
-  // Wrap below-links + promo in a single sticky bottom region so they hug
-  // the viewport bottom while the nav tree scrolls between them and the
-  // sticky top region. Only render the wrapper when there's something to
-  // pin — otherwise the sidebar scrolls cleanly with no empty band.
   const afterSidebar = match(belowLinks === null && sidebarPromo === null)
     .with(true, () => null)
     .otherwise(() => (
-      <div className="zp-sidebar-bottom">
+      <div className="cp-sidebar-bottom">
         {belowLinks}
         {sidebarPromo}
       </div>
     ))
 
-  // Home pages render SiteFooter inside their PageRail; blank pages are
-  // chromeless by design (no nav, no footer); doc pages render the footer
-  // here via the bottom slot so it's full-width below the gutter rail.
   const bottomSlot = match(isHome || isBlank)
     .with(true, () => null)
     .otherwise(() => <SiteFooter />)
 
-  // Content footer: feedback widget + meta-actions. Portals into Rspress's
-  // built-in `.rp-doc-footer` so it lives inside the doc rail at the reading
-  // width. Rspress renders its own `.rp-prev-next-page` pager below — we
-  // style it via CSS rather than duplicating it here.
-  const metaActions = collectMetaActions({
-    edit,
-    report,
-    pagePath,
-  })
+  const metaActions = collectMetaActions({ edit, report, pagePath })
 
   const afterDocSlot = (
     <ContentFooterPortal>
@@ -162,30 +121,60 @@ export function Layout(): React.ReactElement {
   )
 
   return (
-    <OriginalLayout
-      top={announcementSlot}
-      beforeNavMenu={navSlot}
-      afterNavMenu={afterNavSlot}
-      beforeSidebar={beforeSidebar}
-      afterSidebar={afterSidebar}
-      afterDoc={afterDocSlot}
-      bottom={bottomSlot}
-    />
+    <>
+      <CiderpressHeader
+        announcement={announcementSlot}
+        navItems={navItems}
+        socialLinks={socialLinks}
+        topbarCta={topbarCta}
+        isHome={isHome}
+      />
+      <OriginalLayout
+        top={null}
+        beforeNavMenu={null}
+        afterNavMenu={null}
+        beforeSidebar={beforeSidebar}
+        afterSidebar={afterSidebar}
+        beforeDoc={<CiderpressDocsBar />}
+        afterDoc={afterDocSlot}
+        bottom={bottomSlot}
+      />
+      <FloatingBranchIndicator />
+    </>
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
+/**
+ * Pull the primary nav menu items off Rspress's `site` shape. The
+ * Rspress `SiteData` type doesn't expose `nav` at compile time, so we
+ * read through an indexed access and validate the shape at runtime.
+ *
+ * @private
+ * @param site - Rspress site data
+ * @returns Array of nav items (empty array when not configured)
+ */
+function readNavItems(site: unknown): readonly CiderpressNavMenuItem[] {
+  const candidate = (site as { readonly nav?: unknown }).nav
+  if (!Array.isArray(candidate)) {
+    return []
+  }
+  return candidate.filter(
+    (item): item is CiderpressNavMenuItem =>
+      typeof item === 'object' &&
+      item !== null &&
+      typeof (item as { text?: unknown }).text === 'string' &&
+      typeof (item as { link?: unknown }).link === 'string'
+  )
+}
 
 /**
- * Build the list of `MetaAction`s to render under each doc page, derived
- * from `site.edit` and `site.report`. Returns an empty array when neither
- * is configured — `MetaActions` then renders nothing.
+ * Build the list of `MetaAction`s to render under each doc page,
+ * derived from `site.edit` and `site.report`. Returns an empty array
+ * when neither is configured.
  *
  * @private
  * @param params - Site edit/report config plus current page path
- * @returns Ordered list of meta actions (edit first, report second)
+ * @returns Ordered list of meta actions
  */
 function collectMetaActions(params: {
   readonly edit: SiteEditConfig | undefined
@@ -215,13 +204,7 @@ function collectMetaActions(params: {
 }
 
 /**
- * Compose the "edit this page" URL from `SiteEditConfig` and the current
- * page path.
- *
  * @private
- * @param edit - Resolved edit config
- * @param pagePath - Relative path of the current page (may be empty)
- * @returns Fully qualified GitHub edit URL
  */
 function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
   if (edit.repo.startsWith('http')) {
@@ -236,11 +219,7 @@ function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
 }
 
 /**
- * Compose the "report an issue" URL from `SiteReportConfig`.
- *
  * @private
- * @param report - Resolved report config
- * @returns Fully qualified GitHub issues URL
  */
 function buildReportUrl(report: SiteReportConfig): string {
   if (report.repo.startsWith('http')) {
@@ -250,10 +229,7 @@ function buildReportUrl(report: SiteReportConfig): string {
 }
 
 /**
- * Pencil icon for the Edit-on-GitHub action.
- *
  * @private
- * @returns SVG element.
  */
 function EditIcon(): React.ReactElement {
   return (
@@ -272,10 +248,7 @@ function EditIcon(): React.ReactElement {
 }
 
 /**
- * Alert icon for the Report-an-issue action.
- *
  * @private
- * @returns SVG element.
  */
 function AlertIcon(): React.ReactElement {
   return (

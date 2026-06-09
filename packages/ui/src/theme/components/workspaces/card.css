@@ -4,83 +4,83 @@
  */
 
 /* ── Workspace section ───────────────────────────────────── */
-.zp-workspace-section {
+.cp-workspace-section {
   max-width: 1152px;
   margin: 0 auto;
   padding-bottom: 64px;
 }
 
-.zp-workspace-section h2 {
+.cp-workspace-section h2 {
   font-size: 18px;
   font-weight: 600;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   margin-bottom: 4px;
-  color: var(--zp-c-text-2);
+  color: var(--cp-c-text-2);
 }
 
-.zp-workspace-section__desc {
+.cp-workspace-section__desc {
   margin: 0 0 16px;
   font-size: 14px;
-  color: var(--zp-c-text-3);
+  color: var(--cp-c-text-3);
   line-height: 1.5;
 }
 
-.zp-workspace-grid {
+.cp-workspace-grid {
   display: grid;
-  grid-template-columns: repeat(var(--zp-workspace-cols, 2), 1fr);
+  grid-template-columns: repeat(var(--cp-workspace-cols, 2), 1fr);
   gap: 12px;
   margin-bottom: 40px;
 }
 
 /* ── Workspace card layout ───────────────────────────────── */
-.zp-workspace-card {
+.cp-workspace-card {
   display: flex;
   flex-direction: column;
 }
 
-.zp-workspace-card__header {
+.cp-workspace-card__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.zp-workspace-card__identity {
+.cp-workspace-card__identity {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.zp-workspace-card__title {
+.cp-workspace-card__title {
   display: flex;
   flex-direction: column;
   line-height: 1.2;
 }
 
-.zp-workspace-card__scope {
-  font-family: var(--zp-font-family-mono);
+.cp-workspace-card__scope {
+  font-family: var(--cp-font-family-mono);
   font-size: 11px;
-  color: var(--zp-c-text-3);
+  color: var(--cp-c-text-3);
 }
 
-.zp-workspace-card__name {
-  font-family: var(--zp-font-family-mono);
+.cp-workspace-card__name {
+  font-family: var(--cp-font-family-mono);
   font-size: 15px;
   font-weight: 700;
-  color: var(--zp-c-text-1);
+  color: var(--cp-c-text-1);
 }
 
-.zp-workspace-card__desc {
+.cp-workspace-card__desc {
   font-size: 13px;
-  color: var(--zp-c-text-2);
+  color: var(--cp-c-text-2);
   line-height: 1.5;
   flex: 1;
 }
 
 /* ── Truncation ─────────────────────────────────────────── */
-.zp-workspace-card__name.zp-clamp,
-.zp-workspace-card__desc.zp-clamp {
+.cp-workspace-card__name.cp-clamp,
+.cp-workspace-card__desc.cp-clamp {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   overflow: hidden;
@@ -88,49 +88,49 @@
 }
 
 /* ── Deploy badge ────────────────────────────────────────── */
-.zp-workspace-card__badge {
+.cp-workspace-card__badge {
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 4px 6px;
   border-radius: 6px;
-  background: var(--zp-c-bg);
-  border: 1px solid var(--zp-c-divider);
+  background: var(--cp-c-bg);
+  border: 1px solid var(--cp-c-divider);
 }
 
-.zp-workspace-card__badge-logo {
+.cp-workspace-card__badge-logo {
   height: 16px;
   width: auto;
   opacity: 0.75;
   transition: opacity 0.2s;
 }
 
-.zp-card:hover .zp-workspace-card__badge-logo {
+.cp-card:hover .cp-workspace-card__badge-logo {
   opacity: 1;
 }
 
 /* ── Tech tags ───────────────────────────────────────────── */
-.zp-workspace-card__tags {
+.cp-workspace-card__tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
   margin-top: 10px;
 }
 
-.zp-tag {
+.cp-tag {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-family: var(--zp-font-family-mono);
+  font-family: var(--cp-font-family-mono);
   font-size: 11px;
   padding: 2px 8px;
   border-radius: var(--rp-radius-small);
-  background: var(--zp-c-bg);
-  color: var(--zp-c-text-3);
-  border: 1px solid var(--zp-c-divider);
+  background: var(--cp-c-bg);
+  color: var(--cp-c-text-3);
+  border: 1px solid var(--cp-c-divider);
 }
 
-.zp-tag svg {
+.cp-tag svg {
   width: 14px;
   height: 14px;
   flex-shrink: 0;
@@ -138,14 +138,14 @@
 
 /* ── Responsive ──────────────────────────────────────────── */
 @media (max-width: 1184px) {
-  .zp-workspace-section {
+  .cp-workspace-section {
     padding-left: 16px;
     padding-right: 16px;
   }
 }
 
 @media (max-width: 768px) {
-  .zp-workspace-grid {
+  .cp-workspace-grid {
     grid-template-columns: 1fr;
   }
 }

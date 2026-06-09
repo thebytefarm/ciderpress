@@ -11,6 +11,7 @@ import { join } from 'node:path'
 
 import { Liquid } from 'liquidjs'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 import {
   extractBodyExample,
@@ -137,10 +138,6 @@ export function renderOverviewMarkdown(input: OverviewInput): string {
   return engine.parseAndRenderSync(overviewTemplate, data)
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Load a Liquid template from the package templates directory.
  *
@@ -216,7 +213,7 @@ function flattenRequestBody(requestBody: Record<string, unknown> | undefined):
   const description = requestBody['description'] as string | undefined
   const content = requestBody['content'] as Record<string, Record<string, unknown>> | undefined
 
-  if (content === null || content === undefined) {
+  if (isNil(content)) {
     return { description, contentType: 'application/json', schema: null, example: null }
   }
 
@@ -474,12 +471,10 @@ function renderObjectSchema(
  * @returns Type string or dash placeholder
  */
 function extractParamType(param: Record<string, unknown>): string {
-  // OpenAPI 3.x: param.schema.type
   const schema = param['schema'] as Record<string, unknown> | undefined
   if (schema !== undefined && schema['type'] !== undefined) {
     return String(schema['type'])
   }
-  // Swagger 2.0: param.type (directly on parameter)
   return String(param['type'] ?? '—')
 }
 
@@ -491,9 +486,8 @@ function extractParamType(param: Record<string, unknown>): string {
  * @returns Schema object or null
  */
 function extractResponseSchema(response: Record<string, unknown>): Record<string, unknown> | null {
-  // OpenAPI 3.x: response.content[mediaType].schema
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
-  if (content !== null && content !== undefined) {
+  if (isNotNil(content)) {
     const entries = Object.entries(content)
     if (entries.length > 0) {
       const [[, mediaType]] = entries
@@ -501,7 +495,6 @@ function extractResponseSchema(response: Record<string, unknown>): Record<string
     }
   }
 
-  // Swagger 2.0: response.schema (no content wrapper)
   const directSchema = response['schema'] as Record<string, unknown> | undefined
   return match(directSchema)
     .with(P.nonNullable, (s) => s)

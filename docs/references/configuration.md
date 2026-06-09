@@ -1,14 +1,14 @@
 ---
 title: Configuration
-description: Complete reference for zpress.config.ts fields, entry shapes, and workspace metadata.
+description: Complete reference for ciderpress.config.ts fields, entry shapes, and workspace metadata.
 ---
 
 # Configuration
 
-All configuration lives in `zpress.config.ts` at your repo root. Use `defineConfig` for type safety and autocompletion.
+All configuration lives in `ciderpress.config.ts` at your repo root. Use `defineConfig` for type safety and autocompletion.
 
 ```ts
-import { defineConfig } from '@zpress/kit'
+import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'My Docs',
@@ -17,32 +17,89 @@ export default defineConfig({
 })
 ```
 
-Configuration is loaded via [c12](https://github.com/unjs/c12), which supports `.ts`, `.js`, `.mjs`, and `.json` formats.
+Configuration is loaded via [c12](https://github.com/unjs/c12). Supported file formats: `.ts`, `.mts`, `.js`, `.mjs`, `.json`, `.jsonc`, `.yml`, `.yaml`.
+
+## Canonical example
+
+A representative config exercising the most commonly used fields. Every field has its own section below.
+
+```ts
+import { defineConfig } from 'ciderpress'
+
+export default defineConfig({
+  title: 'Acme Docs',
+  description: 'Documentation for the Acme platform',
+  tagline: 'Ship faster with the Acme SDK',
+  icon: 'pixelarticons:book-open',
+  loader: 'apple',
+  theme: { name: 'base', variant: 'dark' },
+  socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/acme' }],
+  actions: [
+    { theme: 'brand', text: 'Get Started', link: '/getting-started' },
+    { theme: 'alt', text: 'View on GitHub', link: 'https://github.com/acme' },
+  ],
+  apps: [
+    {
+      title: 'API',
+      icon: { id: 'devicon:hono', color: 'blue' },
+      description: 'REST API with typed routes',
+      tags: ['hono', 'typescript'],
+      path: '/apps/api',
+      include: 'apps/api/docs/*.md',
+    },
+  ],
+  packages: [
+    {
+      title: 'SDK',
+      icon: { id: 'devicon:typescript', color: 'blue' },
+      description: 'Typed client for the Acme API',
+      tags: ['typescript'],
+      path: '/packages/sdk',
+      include: 'packages/sdk/docs/*.md',
+    },
+  ],
+  sections: [
+    {
+      title: 'Getting Started',
+      path: '/getting-started',
+      description: 'Install, configure, and ship your first integration.',
+      landing: true,
+      include: 'docs/getting-started/*.md',
+    },
+  ],
+})
+```
 
 ## Top-level fields
 
-| Field         | Type                  | Default    | Description                                                                                    |
-| ------------- | --------------------- | ---------- | ---------------------------------------------------------------------------------------------- |
-| `title`       | `string`              | —          | Site title shown in browser tab and home page                                                  |
-| `description` | `string`              | —          | Meta description and home page hero headline                                                   |
-| `tagline`     | `string`              | —          | Hero tagline below the headline on the home page                                               |
-| `sections`    | `Section[]`           | (required) | Information architecture tree                                                                  |
-| `nav`         | `'auto' \| NavItem[]` | `'auto'`   | Top navigation bar                                                                             |
-| `theme`       | `ThemeConfig`         | —          | Theme configuration (name, color mode, color overrides)                                        |
-| `themes`      | `ZpressThemeInput[]`  | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes) |
-| `site`        | `SiteConfig`          | —          | Site chrome — version chip, edit/report links, sidebar promo, topbar CTA, announcement, footer |
-| `features`    | `Feature[]`           | —          | Explicit home page feature cards (replaces auto-gen)                                           |
-| `actions`     | `HeroAction[]`        | —          | Home page hero call-to-action buttons                                                          |
-| `sidebar`     | `SidebarConfig`       | —          | Persistent links above/below the sidebar nav tree                                              |
-| `workspaces`  | `WorkspaceCategory[]` | —          | Named groups of workspace items for home/landing pages                                         |
-| `openapi`     | `OpenAPIConfig`       | —          | OpenAPI spec integration for interactive API docs                                              |
-| `exclude`     | `string[]`            | —          | Glob patterns excluded globally across all sources                                             |
-| `home`        | `HomeConfig`          | —          | Home page layout (eyebrow, trust strip, CTA band, grid columns)                                |
-| `socialLinks` | `SocialLink[]`        | —          | Social media links displayed in the navigation bar                                             |
-| `footer`      | `FooterConfig`        | —          | Footer message, copyright text, and social link visibility                                     |
-| `icon`        | `string`              | —          | Path to a custom favicon served from `.zpress/public/`. Defaults to auto-generated `/icon.svg` |
+| Field         | Type                     | Default    | Description                                                                                                 |
+| ------------- | ------------------------ | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| `title`       | `string`                 | —          | Site title shown in browser tab and home page                                                               |
+| `description` | `string`                 | —          | Meta description and home page hero headline                                                                |
+| `tagline`     | `string`                 | —          | Hero tagline below the headline on the home page                                                            |
+| `sections`    | `Section[]`              | (required) | Information architecture tree                                                                               |
+| `nav`         | `'auto' \| NavItem[]`    | `'auto'`   | Top navigation bar                                                                                          |
+| `theme`       | `ThemeConfig`            | —          | Theme configuration (name, variant, switcher, color overrides)                                              |
+| `themes`      | `CiderpressThemeInput[]` | —          | Custom themes registered alongside the built-ins. See [Themes](/concepts/themes#custom-themes)              |
+| `site`        | `SiteConfig`             | —          | Site chrome — version chip, edit/report links, sidebar promo, topbar CTA, announcement, footer              |
+| `loader`      | `'apple' \| 'classic'`   | `'apple'`  | Inline FOUC loader style                                                                                    |
+| `icon`        | `IconId`                 | —          | Brand icon (Iconify `'prefix:name'`) rendered next to the site title in the topbar. No `{ id, color }` form |
+| `logo`        | `string \| LogoFn`       | —          | Brand logo — image path or `({ theme }) => LogoImage \| ReactNode`                                          |
+| `features`    | `Feature[]`              | —          | Explicit home page feature cards (replaces auto-gen)                                                        |
+| `actions`     | `HeroAction[]`           | —          | Home page hero call-to-action buttons (max 2)                                                               |
+| `sidebar`     | `SidebarConfig`          | —          | Persistent links above/below the sidebar nav tree                                                           |
+| `apps`        | `Workspace[]`            | —          | Standalone applications and runnable services. Drives home/landing cards and intro pages                    |
+| `packages`    | `Workspace[]`            | —          | Reusable modules (libraries, SDKs, configs). Drives home/landing cards and intro pages                      |
+| `workspaces`  | `WorkspaceGroup[]`       | —          | Custom named groups of workspace items, rendered after `apps` and `packages`                                |
+| `openapi`     | `OpenAPIConfig`          | —          | OpenAPI spec integration for interactive API docs                                                           |
+| `exclude`     | `string[]`               | —          | Glob patterns excluded globally across all sources                                                          |
+| `home`        | `HomeConfig`             | —          | Home page layout (eyebrow, trust strip, CTA band, grid columns)                                             |
+| `socialLinks` | `SocialLink[]`           | —          | Social media links displayed in the navigation bar                                                          |
+| `footer`      | `FooterConfig`           | —          | Footer message, copyright text, and social link visibility                                                  |
 
-## Entry
+`apps`, `packages`, and `workspaces` use the same `Workspace` shape (see [Workspace](#workspace)) — they only differ in label and discovery order on the home page. Pick `apps` for things that deploy or run, `packages` for shared modules, and `workspaces` for arbitrary custom groups.
+
+## Section
 
 Each node in `sections` is a `Section`. What you provide determines what it is:
 
@@ -76,42 +133,60 @@ Each node in `sections` is a `Section`. What you provide determines what it is:
 }
 ```
 
-**Section — auto-discovered from glob:**
+**Section — auto-discovered from glob with landing:**
 
 ```ts
-{ title: 'Guides', path: '/guides', include: 'docs/guides/*.md' }
+{
+  title: 'Guides',
+  path: '/guides',
+  description: 'Step-by-step walkthroughs.',
+  landing: true,
+  include: 'docs/guides/*.md',
+}
 ```
 
 ### Section fields
 
-| Field         | Type                                               | Description                                     |
-| ------------- | -------------------------------------------------- | ----------------------------------------------- |
-| `title`       | `TitleConfig`                                      | Display name or derived title config            |
-| `path`        | `string`                                           | Output URL path                                 |
-| `include`     | `string \| string[]`                               | Source file path(s) or glob pattern(s)          |
-| `content`     | `string \| (() => string \| Promise<string>)`      | Inline or generated markdown content            |
-| `items`       | `Section[]`                                        | Explicit child entries                          |
-| `landing`     | `boolean`                                          | Enable/disable landing page generation          |
-| `collapsible` | `boolean`                                          | Make sidebar section collapsible                |
-| `exclude`     | `string[]`                                         | Exclude globs scoped to this entry              |
-| `hidden`      | `boolean`                                          | Hide from sidebar (page still routable)         |
-| `frontmatter` | `Frontmatter`                                      | Injected YAML frontmatter                       |
-| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator` | Sort order for discovered children              |
-| `recursive`   | `boolean`                                          | Directory-based nesting for recursive globs     |
-| `entryFile`   | `string`                                           | Section header filename (default: `"overview"`) |
-| `icon`        | `IconConfig`                                       | Icon for cards and landing pages                |
-| `card`        | `CardConfig`                                       | Landing page card metadata                      |
-| `standalone`  | `boolean`                                          | Separate sidebar namespace (requires `path`)    |
+| Field         | Type                                                         | Required | Description                                                                             |
+| ------------- | ------------------------------------------------------------ | -------- | --------------------------------------------------------------------------------------- |
+| `title`       | `TitleConfig`                                                | yes      | Display name or derived title config                                                    |
+| `description` | `string`                                                     | no       | One-line description rendered on the auto-generated landing page                        |
+| `path`        | `string`                                                     | no       | Output URL path                                                                         |
+| `include`     | `string \| string[]`                                         | no       | Source file path(s) or glob pattern(s)                                                  |
+| `content`     | `string \| (() => string \| Promise<string>)`                | no       | Inline or generated markdown content                                                    |
+| `items`       | `Section[]`                                                  | no       | Explicit child entries                                                                  |
+| `landing`     | `boolean`                                                    | no       | Enable/disable landing page generation                                                  |
+| `collapsible` | `boolean`                                                    | no       | Make sidebar section collapsible                                                        |
+| `exclude`     | `string[]`                                                   | no       | Exclude globs scoped to this entry                                                      |
+| `hidden`      | `boolean`                                                    | no       | Hide from sidebar (page still routable)                                                 |
+| `frontmatter` | `Frontmatter`                                                | no       | Injected YAML frontmatter                                                               |
+| `sort`        | `'default' \| 'alpha' \| 'filename' \| 'none' \| comparator` | no       | Sort order for discovered children                                                      |
+| `recursive`   | `boolean`                                                    | no       | Directory-based nesting for recursive globs                                             |
+| `entryFile`   | `string`                                                     | no       | Section header filename (default: `"overview"`)                                         |
+| `icon`        | `IconConfig`                                                 | no       | Icon for cards and landing pages                                                        |
+| `card`        | `CardConfig`                                                 | no       | Landing page card metadata                                                              |
+| `standalone`  | `boolean`                                                    | no       | Separate sidebar namespace (requires `path`)                                            |
+| `root`        | `boolean`                                                    | no       | Mark this section as the active sidebar root — topbar treats it as the active workspace |
 
-`TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles.
+`TitleConfig` is either a plain `string` or `{ from: 'auto' | 'filename' | 'heading' | 'frontmatter', transform?: (text, slug) => string }` for derived titles. **Only `Section.title` accepts `TitleConfig`** — every other `title` field in this reference is a plain `string`.
 
 `IconConfig` is either a plain Iconify identifier string (e.g. `'devicon:hono'`) or an object `{ id: string, color: string }` for explicit color control. See [Icon Colors](/reference/icons/colors) for available color values.
 
-The `sort` field accepts `'default'`, `'alpha'`, `'filename'`, or a custom comparator function with the signature `(a: ResolvedPage, b: ResolvedPage) => number` where each `ResolvedPage` has `title`, `link`, and `frontmatter` properties. The `'default'` strategy pins intro files (`introduction`, `intro`, `overview`, `readme`) to the top, then sorts alphabetically. This is the implicit default when `sort` is omitted.
+The `sort` field accepts:
+
+| Value        | Behavior                                                                                                                           |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `'default'`  | Sections first, then pin intro files (`introduction`, `intro`, `overview`, `index`, `readme`), then alphabetical title             |
+| `'alpha'`    | Alphabetical by title                                                                                                              |
+| `'filename'` | Alphabetical by source filename                                                                                                    |
+| `'none'`     | Preserve glob-discovery order                                                                                                      |
+| comparator   | `(a: ResolvedPage, b: ResolvedPage) => number` — sort by your own rule. Each `ResolvedPage` has `title`, `link`, and `frontmatter` |
+
+`'default'` is the implicit fallback when `sort` is omitted. Sections (entries with children) always sort before leaf pages regardless of pin status.
 
 ## Workspace
 
-Metadata for a monorepo app or package. Drives home page cards, landing page cards, and introduction content. Workspaces are grouped under `WorkspaceCategory` entries in the top-level `workspaces` array.
+Metadata for a monorepo app, package, or custom workspace. Drives home page cards, landing page cards, and the auto-generated introduction page. The same shape is used by `apps`, `packages`, and the `items` of every `WorkspaceGroup`.
 
 ```ts
 {
@@ -120,31 +195,31 @@ Metadata for a monorepo app or package. Drives home page cards, landing page car
   description: 'REST API with typed routes',
   tags: ['hono', 'typescript'],
   path: '/apps/api',
-  include: 'docs/*.md',
+  include: 'apps/api/docs/*.md',
   sort: 'alpha',
 }
 ```
 
-| Field         | Type                                               | Required | Description                                                     |
-| ------------- | -------------------------------------------------- | -------- | --------------------------------------------------------------- |
-| `title`       | `TitleConfig`                                      | yes      | Display name or derived title config                            |
-| `icon`        | `IconConfig`                                       | no       | Iconify identifier or `{ id: IconId, color: IconColor }` object |
-| `description` | `string`                                           | yes      | Short description for cards                                     |
-| `tags`        | `string[]`                                         | no       | Technology tags (kebab-case)                                    |
-| `badge`       | `{ src: string; alt: string }`                     | no       | Deploy badge image                                              |
-| `path`        | `string`                                           | yes      | URL prefix for this workspace's documentation                   |
-| `include`     | `string \| string[]`                               | no       | Source file path(s) or glob pattern(s) for content discovery    |
-| `sort`        | `'default' \| 'alpha' \| 'filename' \| comparator` | no       | Sort order for discovered content                               |
-| `exclude`     | `string[]`                                         | no       | Glob patterns excluded from discovery                           |
-| `recursive`   | `boolean`                                          | no       | Directory-based nesting for recursive globs                     |
-| `entryFile`   | `string`                                           | no       | Section header filename (default: `"overview"`)                 |
-| `frontmatter` | `Frontmatter`                                      | no       | Injected YAML frontmatter for all discovered pages              |
-| `items`       | `Section[]`                                        | no       | Explicit child sections                                         |
-| `openapi`     | `OpenAPIConfig`                                    | no       | OpenAPI spec integration for this workspace                     |
+| Field         | Type                                                         | Required | Description                                                               |
+| ------------- | ------------------------------------------------------------ | -------- | ------------------------------------------------------------------------- |
+| `title`       | `string`                                                     | yes      | Display name                                                              |
+| `icon`        | `IconConfig`                                                 | no       | Iconify identifier or `{ id, color }` object                              |
+| `description` | `string`                                                     | yes      | Short description for cards                                               |
+| `tags`        | `string[]`                                                   | no       | Technology tags — case-insensitive, mapped to icons via the tech registry |
+| `badge`       | `{ src: string; alt: string }`                               | no       | Deploy badge image                                                        |
+| `path`        | `string`                                                     | yes      | URL prefix for this workspace's documentation                             |
+| `include`     | `string \| string[]`                                         | no       | Source file path(s) or glob pattern(s) for content discovery              |
+| `sort`        | `'default' \| 'alpha' \| 'filename' \| 'none' \| comparator` | no       | Sort order for discovered content                                         |
+| `exclude`     | `string[]`                                                   | no       | Glob patterns excluded from discovery                                     |
+| `recursive`   | `boolean`                                                    | no       | Directory-based nesting for recursive globs                               |
+| `entryFile`   | `string`                                                     | no       | Section header filename (default: `"overview"`)                           |
+| `frontmatter` | `Frontmatter`                                                | no       | Injected YAML frontmatter for all discovered pages                        |
+| `items`       | `Section[]`                                                  | no       | Explicit child sections                                                   |
+| `openapi`     | `OpenAPIConfig`                                              | no       | OpenAPI spec integration for this workspace                               |
 
-## WorkspaceCategory
+## WorkspaceGroup
 
-Named groups of workspace items. Each category receives card and landing page treatment on the home page.
+A named group of workspace items, rendered as a card cluster on the home page and as its own auto-generated landing page. Use `apps` and `packages` for the common cases — reach for `workspaces` (an array of `WorkspaceGroup`) only when you need custom group labels like "Integrations" or "Plugins".
 
 ```ts
 {
@@ -157,13 +232,13 @@ Named groups of workspace items. Each category receives card and landing page tr
 }
 ```
 
-| Field         | Type          | Required | Description                                            |
-| ------------- | ------------- | -------- | ------------------------------------------------------ |
-| `title`       | `TitleConfig` | yes      | Group display name                                     |
-| `description` | `string`      | no       | Short description                                      |
-| `icon`        | `string`      | yes      | Iconify identifier                                     |
-| `items`       | `Workspace[]` | yes      | Workspace items in this group                          |
-| `link`        | `string`      | no       | URL prefix override (defaults to `/${slugify(title)}`) |
+| Field         | Type          | Required | Description                                                                                 |
+| ------------- | ------------- | -------- | ------------------------------------------------------------------------------------------- |
+| `title`       | `string`      | yes      | Group display name                                                                          |
+| `description` | `string`      | no       | Short description                                                                           |
+| `icon`        | `IconId`      | yes      | Iconify identifier — plain `'prefix:name'` string only, does **not** accept `{ id, color }` |
+| `items`       | `Workspace[]` | yes      | Workspace items in this group (must contain at least one workspace)                         |
+| `link`        | `string`      | no       | URL prefix override (defaults to `/${slugify(title)}`)                                      |
 
 ## CardConfig
 
@@ -179,13 +254,13 @@ Controls how an entry appears as a card on its parent section's auto-generated l
 }
 ```
 
-| Field         | Type                           | Description                                                     |
-| ------------- | ------------------------------ | --------------------------------------------------------------- |
-| `icon`        | `IconConfig`                   | Iconify identifier or `{ id: IconId, color: IconColor }` object |
-| `scope`       | `string`                       | Scope label above the card name                                 |
-| `description` | `string`                       | Short description (overrides auto-extracted)                    |
-| `tags`        | `string[]`                     | Technology tag badges                                           |
-| `badge`       | `{ src: string; alt: string }` | Deploy badge image                                              |
+| Field         | Type                           | Description                                  |
+| ------------- | ------------------------------ | -------------------------------------------- |
+| `icon`        | `IconConfig`                   | Iconify identifier or `{ id, color }` object |
+| `scope`       | `string`                       | Scope label above the card name              |
+| `description` | `string`                       | Short description (overrides auto-extracted) |
+| `tags`        | `string[]`                     | Technology tag badges                        |
+| `badge`       | `{ src: string; alt: string }` | Deploy badge image                           |
 
 ## NavItem
 
@@ -215,19 +290,19 @@ Explicit feature card for the home page. Replaces the auto-generated cards deriv
 features: [
   {
     title: 'Getting Started',
-    description: 'Set up zpress and create your first site.',
+    description: 'Set up ciderpress and create your first site.',
     link: '/getting-started',
     icon: 'pixelarticons:speed-fast',
   },
 ]
 ```
 
-| Field         | Type          | Description                                 |
-| ------------- | ------------- | ------------------------------------------- |
-| `title`       | `TitleConfig` | Card title (string or derived title config) |
-| `description` | `string`      | Short description below title               |
-| `link`        | `string`      | Click target URL                            |
-| `icon`        | `string`      | Iconify identifier                          |
+| Field         | Type         | Description                                  |
+| ------------- | ------------ | -------------------------------------------- |
+| `title`       | `string`     | Card title                                   |
+| `description` | `string`     | Short description below title                |
+| `link`        | `string`     | Click target URL                             |
+| `icon`        | `IconConfig` | Iconify identifier or `{ id, color }` object |
 
 ## OpenAPIConfig
 
@@ -298,7 +373,7 @@ Home page layout — hero eyebrow, trust strip, final CTA band, and card-grid la
 
 ```ts
 home: {
-  eyebrow: '★ open source · v1.0 · MIT',
+  eyebrow: 'open source · v1.0 · MIT',
   features: { columns: 3, truncate: { description: 2 } },
   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
   trust: {
@@ -310,7 +385,7 @@ home: {
     subtitle: 'One CLI. Three minutes. Production-ready.',
     actions: [
       { theme: 'brand', text: 'Get started', link: '/getting-started/quick-start' },
-      { theme: 'alt', text: 'Star on GitHub →', link: 'https://github.com/acme/docs' },
+      { theme: 'alt', text: 'Star on GitHub', link: 'https://github.com/acme/docs' },
     ],
   },
 }
@@ -342,11 +417,11 @@ Each `HomeGridConfig` has:
 
 `HomeCtaConfig`:
 
-| Field      | Type           | Description                                           |
-| ---------- | -------------- | ----------------------------------------------------- |
-| `title`    | `string`       | CTA headline                                          |
-| `subtitle` | `string`       | Optional supporting text                              |
-| `actions`  | `HeroAction[]` | Up to two CTA buttons (same shape as `actions` above) |
+| Field      | Type           | Description                                                      |
+| ---------- | -------------- | ---------------------------------------------------------------- |
+| `title`    | `string`       | CTA headline                                                     |
+| `subtitle` | `string`       | Optional supporting text                                         |
+| `actions`  | `HeroAction[]` | Up to two CTA buttons (max 2; same shape as top-level `actions`) |
 
 ## SiteConfig
 
@@ -362,7 +437,7 @@ site: {
     body:  'Hosted Acme in two clicks.',
     cta:   { text: 'Start free', href: 'https://acme.io' },
   },
-  topbarCta: { text: 'Get started →', href: '/getting-started' },
+  topbarCta: { text: 'Get started', href: '/getting-started' },
   announcement: {
     id: 'v1',
     lead: 'NEW',
@@ -374,7 +449,7 @@ site: {
       { heading: 'Product', links: [{ text: 'Features', href: '/features' }] },
       { heading: 'Community', links: [{ text: 'GitHub', href: 'https://github.com/acme' }] },
     ],
-    tagline: 'Built with zpress',
+    tagline: 'Built with ciderpress',
   },
 }
 ```
@@ -464,7 +539,17 @@ socialLinks: [
 | `mode`    | `'link' \| 'text' \| 'img' \| 'dom'` | yes      | How the content is rendered                          |
 | `content` | `string`                             | yes      | URL, text, image source, or HTML depending on `mode` |
 
-Built-in icon names: `github`, `discord`, `x`, `slack`, `linkedin`, `youtube`, `npm`, `gitlab`, `bluesky`, `facebook`, `instagram`.
+Built-in `SocialLinkIcon` values (the canonical list — see `SOCIAL_LINK_ICONS` in `@ciderpress/config`):
+
+```ts
+import type { SocialLinkIcon } from '@ciderpress/config'
+
+// 'lark' | 'discord' | 'facebook' | 'github' | 'instagram' | 'linkedin'
+// | 'slack' | 'x' | 'youtube' | 'wechat' | 'qq' | 'juejin' | 'zhihu'
+// | 'bilibili' | 'weibo' | 'gitlab' | 'X' | 'bluesky' | 'npm'
+```
+
+Capital `X` is a separate accepted alias for `x`. Any icon outside this set must be supplied as `{ svg: '<svg>...</svg>' }`.
 
 ## FooterConfig
 
@@ -472,7 +557,7 @@ Footer displayed below all page content.
 
 ```ts
 footer: {
-  message: 'Built with zpress',
+  message: 'Built with ciderpress',
   copyright: 'Copyright © 2025 Acme Inc.',
   socials: true,
 }
@@ -483,3 +568,15 @@ footer: {
 | `message`   | `string`  | Footer message text                                |
 | `copyright` | `string`  | Copyright notice                                   |
 | `socials`   | `boolean` | Show social links from `socialLinks` in the footer |
+
+## References
+
+- [Frontmatter](/reference/frontmatter) — per-page metadata schema
+- [CLI Commands](/reference/cli) — flags and behavior for every command
+- [Icon Colors](/reference/icons/colors) — color values accepted by `IconConfig`
+- [Themes](/concepts/themes#custom-themes) — registering custom themes via `themes`
+- [Workspaces](/concepts/workspaces) — when to use `apps`, `packages`, or `workspaces`
+
+## Resources
+
+- [c12](https://github.com/unjs/c12) — the config loader used under the hood

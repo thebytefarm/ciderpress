@@ -39,7 +39,7 @@ export function runScript({ name, workspace, dryRun }: RunScriptParams): RunResu
 }
 
 // Usage is self-documenting
-runScript({ name: 'build', workspace: 'packages/core', dryRun: false })
+runScript({ name: 'build', workspace: 'packages/lib', dryRun: false })
 ```
 
 ```ts
@@ -67,7 +67,7 @@ function runScript(name: string, workspace: string, dryRun: boolean): RunResult 
 }
 
 // Easy to swap by mistake
-runScript('packages/core', 'build', false)
+runScript('packages/lib', 'build', false)
 ```
 
 ### Document All Functions with JSDoc
@@ -142,12 +142,12 @@ function buildScriptCommand(script: Script, args: readonly string[]): string {
 
 ```ts
 // Pure business logic separated from side effects
-function validateConfig(config: ZpressConfig): ValidationResult {
+function validateConfig(config: CiderpressConfig): ValidationResult {
   // ...
 }
 
 // Side effects isolated in handler
-async function handleInit(config: ZpressConfig) {
+async function handleInit(config: CiderpressConfig) {
   const validation = validateConfig(config) // Pure
 
   if (!validation.ok) {
@@ -178,10 +178,20 @@ Prefer small, focused functions that can be composed together. Use early returns
 #### Correct
 
 ```ts
-// Small, focused functions
-const normalize = (s: string) => s.trim().toLowerCase()
-const validate = (s: string) => s.length > 0
-const format = (s: string) => s.charAt(0).toUpperCase() + s.slice(1)
+// Small, focused functions — top-level bindings must be declarations
+// (oxlint `func-style: ["error", "declaration"]`). Inline arrows inside
+// `map`/`filter`/etc. are fine; only top-level `const = (...) => ...` is banned.
+function normalize(s: string): string {
+  return s.trim().toLowerCase()
+}
+
+function validate(s: string): boolean {
+  return s.length > 0
+}
+
+function format(s: string): string {
+  return s.charAt(0).toUpperCase() + s.slice(1)
+}
 
 // Composed together
 function processName(input: string): string | null {

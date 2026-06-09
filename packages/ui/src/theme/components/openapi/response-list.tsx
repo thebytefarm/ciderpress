@@ -25,16 +25,12 @@ export function ResponseList({ responses }: ResponseListProps): React.ReactEleme
   const entries = Object.entries(responses)
 
   return (
-    <div className="zp-oas-responses">
-      <div className="zp-oas-responses__title">Responses</div>
+    <div className="cp-oas-responses">
+      <div className="cp-oas-responses__title">Responses</div>
       {entries.map(renderResponseItem)}
     </div>
   )
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Determine the CSS class for a status code badge.
@@ -45,10 +41,10 @@ export function ResponseList({ responses }: ResponseListProps): React.ReactEleme
  */
 function statusClass(code: string): string {
   return match(code.charAt(0))
-    .with('2', () => 'zp-oas-response__status--2xx')
-    .with('3', () => 'zp-oas-response__status--3xx')
-    .with('4', () => 'zp-oas-response__status--4xx')
-    .with('5', () => 'zp-oas-response__status--5xx')
+    .with('2', () => 'cp-oas-response__status--2xx')
+    .with('3', () => 'cp-oas-response__status--3xx')
+    .with('4', () => 'cp-oas-response__status--4xx')
+    .with('5', () => 'cp-oas-response__status--5xx')
     .otherwise(() => '')
 }
 
@@ -60,7 +56,6 @@ function statusClass(code: string): string {
  * @returns Schema object or null
  */
 function extractSchema(response: Record<string, unknown>): Record<string, unknown> | null {
-  // OpenAPI 3.x: response.content[mediaType].schema
   const content = response['content'] as Record<string, Record<string, unknown>> | undefined
   const contentSchema = match(content)
     .with(P.nonNullable, (c) => {
@@ -81,7 +76,6 @@ function extractSchema(response: Record<string, unknown>): Record<string, unknow
     return contentSchema
   }
 
-  // Swagger 2.0: response.schema (no content wrapper)
   return match(response['schema'] as Record<string, unknown> | undefined)
     .with(P.nonNullable, (s) => s)
     .otherwise(() => null)
@@ -101,17 +95,17 @@ function renderResponseItem([code, value]: readonly [string, unknown]): React.Re
 
   const schemaEl = match(schema)
     .with(P.nonNullable, (s) => <SchemaViewer schema={s} />)
-    .otherwise(() => <div className="zp-oas-response__description">No response body</div>)
+    .otherwise(() => <div className="cp-oas-response__description">No response body</div>)
 
   return (
-    <Disclosure key={code} className="zp-oas-response">
-      <Button className="zp-oas-response__trigger" slot="trigger">
-        <span className={`zp-oas-response__status ${statusClass(code)}`}>{code}</span>
-        <span className="zp-oas-response__description">{description}</span>
-        <ChevronIcon className="zp-oas-response__chevron" />
+    <Disclosure key={code} className="cp-oas-response">
+      <Button className="cp-oas-response__trigger" slot="trigger">
+        <span className={`cp-oas-response__status ${statusClass(code)}`}>{code}</span>
+        <span className="cp-oas-response__description">{description}</span>
+        <ChevronIcon className="cp-oas-response__chevron" />
       </Button>
       <DisclosurePanel>
-        <div className="zp-oas-response__content">{schemaEl}</div>
+        <div className="cp-oas-response__content">{schemaEl}</div>
       </DisclosurePanel>
     </Disclosure>
   )

@@ -1,3 +1,4 @@
+import { DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import { match, P } from 'massaman/match'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -5,8 +6,8 @@ import { Icon } from '../shared/icon.tsx'
 
 import './theme-switcher.css'
 
-declare const __ZPRESS_THEME_SWITCHER__: boolean
-declare const __ZPRESS_THEME_REGISTRY__: string
+declare const __CIDERPRESS_THEME_SWITCHER__: boolean
+declare const __CIDERPRESS_THEME_REGISTRY__: string
 
 type Variant = 'dark' | 'light'
 
@@ -18,19 +19,19 @@ interface ThemeOption {
   readonly defaultVariant: Variant
 }
 
-const THEME_OPTIONS: readonly ThemeOption[] = parseThemeRegistry(__ZPRESS_THEME_REGISTRY__)
+const THEME_OPTIONS: readonly ThemeOption[] = parseThemeRegistry(__CIDERPRESS_THEME_REGISTRY__)
 
 const VALID_THEME_NAMES = new Set(THEME_OPTIONS.map((t) => t.name))
 
 const FALLBACK_THEME = match(THEME_OPTIONS[0])
-  .with(P.nullish, () => 'default')
+  .with(P.nullish, () => DEFAULT_THEME_NAME as string)
   .otherwise((entry) => entry.name)
 
 /**
  * ThemeSwitcher — dropdown button for switching between registered themes.
- * Only renders when `__ZPRESS_THEME_SWITCHER__` build-time define is true.
+ * Only renders when `__CIDERPRESS_THEME_SWITCHER__` build-time define is true.
  *
- * Switching a theme updates `data-zp-theme` and `data-zp-variants` on
+ * Switching a theme updates `data-cp-theme` and `data-cp-variants` on
  * `<html>`. When the newly active theme does not declare the user's
  * previously selected variant, falls back to the new theme's
  * `defaultVariant` and mirrors that to Rspress's `.rp-dark` class.
@@ -74,14 +75,14 @@ export function ThemeSwitcher(): React.ReactElement | null {
     }
   }, [])
 
-  if (!__ZPRESS_THEME_SWITCHER__) {
+  if (!__CIDERPRESS_THEME_SWITCHER__) {
     return null
   }
 
   return (
-    <div className="zp-theme-switcher" ref={containerRef}>
+    <div className="cp-theme-switcher" ref={containerRef}>
       <button
-        className="zp-theme-switcher__btn"
+        className="cp-theme-switcher__btn"
         onClick={handleToggle}
         aria-label="Switch theme"
         type="button"
@@ -89,7 +90,7 @@ export function ThemeSwitcher(): React.ReactElement | null {
         <Icon icon="mdi:palette-outline" width={16} height={16} />
       </button>
       {isOpen && (
-        <div className="zp-theme-switcher__dropdown">
+        <div className="cp-theme-switcher__dropdown">
           {THEME_OPTIONS.map((theme) => (
             <button
               key={theme.name}
@@ -98,12 +99,12 @@ export function ThemeSwitcher(): React.ReactElement | null {
               type="button"
             >
               <span
-                className="zp-theme-switcher__swatch"
+                className="cp-theme-switcher__swatch"
                 style={{ backgroundColor: theme.swatch }}
               />
-              <span className="zp-theme-switcher__name">{theme.label}</span>
+              <span className="cp-theme-switcher__name">{theme.label}</span>
               {activeTheme === theme.name && (
-                <span className="zp-theme-switcher__check">{'✓'}</span>
+                <span className="cp-theme-switcher__check">{'✓'}</span>
               )}
             </button>
           ))}
@@ -113,13 +114,9 @@ export function ThemeSwitcher(): React.ReactElement | null {
   )
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Resolve the active theme name for first render. Reads
- * `localStorage['zpress-theme']` when available; falls back to the first
+ * `localStorage['ciderpress-theme']` when available; falls back to the first
  * registered theme when the value is missing or stale.
  *
  * @private
@@ -130,7 +127,7 @@ function initialThemeName(): string {
     return FALLBACK_THEME
   }
   try {
-    return sanitizeThemeName(globalThis.localStorage.getItem('zpress-theme'))
+    return sanitizeThemeName(globalThis.localStorage.getItem('ciderpress-theme'))
   } catch {
     return FALLBACK_THEME
   }
@@ -162,9 +159,9 @@ function sanitizeThemeName(raw: string | null): string {
  */
 function optionClassName(isActive: boolean): string {
   if (isActive) {
-    return 'zp-theme-switcher__option zp-theme-switcher__option--active'
+    return 'cp-theme-switcher__option cp-theme-switcher__option--active'
   }
-  return 'zp-theme-switcher__option'
+  return 'cp-theme-switcher__option'
 }
 
 /**
@@ -175,8 +172,8 @@ function optionClassName(isActive: boolean): string {
  * applied — and Rspress's `.rp-dark` class is mirrored accordingly so
  * its built-in components stay aligned.
  *
- * Keep the persistence keys (`zpress-theme`, `zpress-variant`,
- * `rspress-theme-appearance`) and the `.rp-dark` / `data-zp-*` mirror
+ * Keep the persistence keys (`ciderpress-theme`, `ciderpress-variant`,
+ * `rspress-theme-appearance`) and the `.rp-dark` / `data-cp-*` mirror
  * logic in sync with:
  *   - `packages/ui/src/config.ts` → `buildHeadScriptBody` (head IIFE)
  *   - `theme-provider.tsx` → `resolveActiveVariant` / `applyVariant`
@@ -186,10 +183,10 @@ function optionClassName(isActive: boolean): string {
  */
 function applyTheme(theme: ThemeOption): void {
   const html = document.documentElement
-  html.dataset.zpTheme = theme.name
-  html.dataset.zpVariants = theme.variants.join(' ')
+  html.dataset.cpTheme = theme.name
+  html.dataset.cpVariants = theme.variants.join(' ')
   try {
-    localStorage.setItem('zpress-theme', theme.name)
+    localStorage.setItem('ciderpress-theme', theme.name)
   } catch {
     // storage unavailable
   }
@@ -197,7 +194,7 @@ function applyTheme(theme: ThemeOption): void {
   const currentVariant = readCurrentVariant(html)
   const nextVariant = resolveNextVariant(currentVariant, theme)
 
-  html.dataset.zpVariant = nextVariant
+  html.dataset.cpVariant = nextVariant
   if (nextVariant === 'dark') {
     html.classList.add('rp-dark', 'dark')
     html.dataset.dark = 'true'
@@ -207,7 +204,7 @@ function applyTheme(theme: ThemeOption): void {
   }
   try {
     localStorage.setItem('rspress-theme-appearance', nextVariant)
-    localStorage.setItem('zpress-variant', nextVariant)
+    localStorage.setItem('ciderpress-variant', nextVariant)
   } catch {
     // storage unavailable
   }
@@ -234,7 +231,7 @@ function resolveNextVariant(current: Variant | null, theme: ThemeOption): Varian
 }
 
 /**
- * Read the current `data-zp-variant` from `<html>` as a typed value.
+ * Read the current `data-cp-variant` from `<html>` as a typed value.
  * Returns `null` when no attribute is present or the value isn't a
  * known variant.
  *
@@ -243,7 +240,7 @@ function resolveNextVariant(current: Variant | null, theme: ThemeOption): Varian
  * @returns Current variant or `null`
  */
 function readCurrentVariant(html: HTMLElement): Variant | null {
-  const raw = html.dataset.zpVariant
+  const raw = html.dataset.cpVariant
   if (raw === 'dark' || raw === 'light') {
     return raw
   }
@@ -251,7 +248,7 @@ function readCurrentVariant(html: HTMLElement): Variant | null {
 }
 
 /**
- * Parse the `__ZPRESS_THEME_REGISTRY__` build-time define into a typed
+ * Parse the `__CIDERPRESS_THEME_REGISTRY__` build-time define into a typed
  * list of theme options. Falls back to an empty list when the define is
  * missing or malformed — the switcher then renders no options.
  *

@@ -2,10 +2,11 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
+import type { Section, CiderpressConfig } from '@ciderpress/config'
+import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { log } from '@clack/prompts'
-import type { Section, ZpressConfig } from '@zpress/config'
-import { collectAllWorkspaceItems } from '@zpress/config'
 import { match, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 import { generateAssets } from '../banner/index.ts'
 import type { AssetConfig } from '../banner/types.ts'
@@ -61,11 +62,11 @@ export interface SyncOptions {
  * Resolves sections, copies pages, generates sidebar/nav, syncs OpenAPI specs,
  * and manages the incremental manifest for change tracking.
  *
- * @param config - Validated zpress config
+ * @param config - Validated ciderpress config
  * @param options - Sync options including resolved paths and quiet flag
  * @returns Sync result with counts of pages written, skipped, and removed
  */
-export async function sync(config: ZpressConfig, options: SyncOptions): Promise<SyncResult> {
+export async function sync(config: CiderpressConfig, options: SyncOptions): Promise<SyncResult> {
   const start = performance.now()
   const quiet = resolveQuiet(options.quiet)
 
@@ -74,23 +75,19 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   await fs.mkdir(outDir, { recursive: true })
   await fs.mkdir(path.resolve(outDir, '.generated'), { recursive: true })
 
-  // Generate banner/logo/icon SVGs (skips user-customized files automatically)
   const assetConfig = buildAssetConfig(config)
   const assetConfigHash = createHash('sha256').update(JSON.stringify(assetConfig)).digest('hex')
 
   const previousManifest = await loadManifest(outDir)
 
-  // Skip asset generation entirely when config hasn't changed
   const assetConfigChanged =
-    previousManifest === null ||
-    previousManifest === undefined ||
-    previousManifest.assetConfigHash !== assetConfigHash
+    isNil(previousManifest) || previousManifest.assetConfigHash !== assetConfigHash
   if (assetConfigChanged) {
     await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
   }
 
   // Copy public assets into content/public/ so Rspress can resolve them
-  // (Rspress looks for public/ inside the root directory, which is .zpress/content/)
+  // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
 
   const ctx: SyncContext = {
@@ -103,11 +100,9 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     openapiCache: options.openapiCache,
   }
 
-  // 0. Synthesize workspace sections from apps/packages/workspaces config
   const workspaceSections = synthesizeWorkspaceSections(config)
   const allSections: Section[] = [...config.sections, ...workspaceSections]
 
-  // 1. Resolve the section tree
   const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
   if (resolveErr) {
     return {
@@ -119,17 +114,14 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     }
   }
 
-  // 1.25 Enrich sections with workspace card metadata from workspaces config
-  const resolved = enrichWorkspaceCards(rawResolved, config)
+  const enriched = enrichWorkspaceCards(rawResolved, config)
 
-  // 1.5 Inject auto-generated landing pages for sections with path but no page
+  // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  injectLandingPages(resolved, allSections, workspaces)
+  const resolved = injectLandingPages(enriched, allSections, workspaces)
 
-  // 2. Collect all pages from the tree
   const sectionPages = collectPages(resolved)
 
-  // 2.1 Write workspace data (always — independent of home page strategy)
   const workspaceResult = buildWorkspaceData(config)
   const sectionScopePaths = collectStandaloneScopePaths(resolved)
   await fs.writeFile(
@@ -138,7 +130,6 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     'utf8'
   )
 
-  // 2.2 Auto-generate home page when no explicit index.md exists
   const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
   const homeResult = await match(hasExplicitHome)
     .with(true, () => Promise.resolve(null))
@@ -155,13 +146,10 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     ])
     .otherwise(() => sectionPages)
 
-  // 2.5 Discover planning pages (hidden — not in sidebar/nav)
   const planningPages = await discoverPlanningPages(ctx)
 
-  // 2.6 Sync OpenAPI specs
   const openapiResult = await syncAllOpenAPI(ctx)
 
-  // 2.7 Write scopes.json — section standalone scopes + root-level OpenAPI scopes
   const openapiScopePaths = collectOpenapiScopePaths(openapiResult.sidebar)
   const standaloneScopePaths = [...sectionScopePaths, ...openapiScopePaths]
   await fs.writeFile(
@@ -170,16 +158,11 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     'utf8'
   )
 
-  // 3. Copy/generate all pages (sections + home + planning + openapi)
   const allPages = [...pages, ...planningPages, ...openapiResult.pages]
 
-  // Detect structural changes — skip mtime optimization when page count changes
   const skipMtimeOptimization =
-    previousManifest !== null &&
-    previousManifest !== undefined &&
-    allPages.length !== previousManifest.resolvedCount
+    isNotNil(previousManifest) && allPages.length !== previousManifest.resolvedCount
 
-  // Build source-to-output map for link rewriting
   const sourceMap = buildSourceMap({ pages: allPages, repoRoot })
   const copyCtx: SyncContext = { ...ctx, sourceMap, skipMtimeOptimization }
 
@@ -198,7 +181,6 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     })
   )
 
-  // Build manifest from collected results
   const manifestFiles = Object.fromEntries(
     pageResults.map(({ entry }) => [entry.outputPath, entry])
   )
@@ -215,12 +197,23 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     { written: 0, skipped: 0 }
   )
 
-  // 5. Clean stale files
-  const removed = await match(previousManifest)
+  // `cleanStaleFiles` returns `{ attempted, removed, failed }` so we can
+  // surface per-path failures to the user without aborting the sync.
+  const cleanResult = await match(previousManifest)
     .with(P.nonNullable, async (m) => await cleanStaleFiles(outDir, m, ctx.manifest))
-    .otherwise(() => Promise.resolve(0))
+    .otherwise(() => Promise.resolve({ attempted: 0, removed: 0, failed: [] as const }))
+  const { removed, attempted: cleanAttempted, failed: cleanFailed } = cleanResult
+  if (!quiet && cleanFailed.length > 0) {
+    log.warn(
+      `Failed to remove ${cleanFailed.length} stale file(s); ` +
+        `${removed}/${cleanAttempted} succeeded`
+    )
+    // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect log per failure
+    cleanFailed.forEach((f) => {
+      log.warn(`  ${f.path}: ${f.reason}`)
+    })
+  }
 
-  // 6. Generate nav + write Rspress-native _meta.json / _nav.json
   const nav = generateNav(config, resolved)
   await writeMetaFiles({
     contentDir: outDir,
@@ -229,9 +222,9 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     openapiEntries: openapiResult.sidebar,
   })
 
-  // 6.1 Write sidebar.json + nav.json snapshots for tooling / debugging.
-  // Rspress no longer reads these (sidebar/nav come from _meta.json/_nav.json),
-  // but they provide a single-file view of the resolved structure.
+  // Rspress no longer reads sidebar.json/nav.json (sidebar/nav come from
+  // _meta.json/_nav.json), but they provide a single-file view of the
+  // resolved structure for tooling and debugging.
   await Promise.all([
     fs.writeFile(
       path.resolve(outDir, '.generated/sidebar.json'),
@@ -241,7 +234,6 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
     fs.writeFile(path.resolve(outDir, '.generated/nav.json'), JSON.stringify(nav, null, 2), 'utf8'),
   ])
 
-  // 7. Save manifest with incremental metadata
   const manifest = {
     ...ctx.manifest,
     assetConfigHash,
@@ -250,8 +242,7 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
   }
   await saveManifest(outDir, manifest)
 
-  // 8. Write bare-bones README in .zpress/ root
-  await writeZpressReadme(options.paths.outputRoot)
+  await writeCiderpressReadme(options.paths.outputRoot)
 
   const elapsed = performance.now() - start
   if (!quiet) {
@@ -262,10 +253,6 @@ export async function sync(config: ZpressConfig, options: SyncOptions): Promise<
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Recursively collect all page data from a resolved entry tree.
@@ -285,17 +272,17 @@ function collectPages(entries: readonly ResolvedEntry[]): PageData[] {
 }
 
 /**
- * Write a bare-bones README.md in the .zpress/ root explaining the directory.
+ * Write a bare-bones README.md in the .ciderpress/ root explaining the directory.
  *
  * @private
- * @param outputRoot - Absolute path to the .zpress/ directory
+ * @param outputRoot - Absolute path to the .ciderpress/ directory
  * @returns Promise that resolves when the file is written
  */
-async function writeZpressReadme(outputRoot: string): Promise<void> {
+async function writeCiderpressReadme(outputRoot: string): Promise<void> {
   const readmePath = path.resolve(outputRoot, 'README.md')
-  const content = `# .zpress
+  const content = `# .ciderpress
 
-This directory is managed by zpress. It contains the
+This directory is managed by ciderpress. It contains the
 materialized documentation site — synced content, build artifacts, and static assets.
 
 | Directory   | Description                                    |
@@ -308,9 +295,9 @@ materialized documentation site — synced content, build artifacts, and static 
 ## Commands
 
 \`\`\`bash
-zpress sync    # Sync docs into content/
-zpress dev     # Start dev server
-zpress build   # Build static site
+ciderpress sync    # Sync docs into content/
+ciderpress dev     # Start dev server
+ciderpress build   # Build static site
 \`\`\`
 
 > **Do not edit files in \`content/\`** — they are regenerated on every sync.
@@ -355,7 +342,7 @@ async function copyAll(src: string, dest: string): Promise<void> {
  * @returns Resolved boolean value
  */
 function resolveQuiet(quiet: boolean | undefined | null): boolean {
-  if (quiet !== undefined && quiet !== null) {
+  if (isNotNil(quiet)) {
     return quiet
   }
   return false
@@ -408,14 +395,14 @@ function collectOpenapiScopePaths(entries: readonly OpenAPISidebarEntry[]): read
 }
 
 /**
- * Extract an `AssetConfig` from the zpress config.
+ * Extract an `AssetConfig` from the ciderpress config.
  * Falls back to 'Documentation' when no title is set.
  *
  * @private
- * @param config - Zpress config object
+ * @param config - Ciderpress config object
  * @returns Asset config with title and optional tagline
  */
-function buildAssetConfig(config: ZpressConfig): AssetConfig {
+function buildAssetConfig(config: CiderpressConfig): AssetConfig {
   return { title: config.title ?? 'Documentation', tagline: config.tagline }
 }
 

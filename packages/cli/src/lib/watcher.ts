@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto'
 import { watch } from 'node:fs'
 import path from 'node:path'
 
-import type { ZpressConfig } from '@zpress/config'
-import { loadConfig } from '@zpress/config/loader'
+import type { CiderpressConfig } from '@ciderpress/config'
+import { loadConfig } from '@ciderpress/config/loader'
 import { toError } from 'massaman/conversion'
 import { debounce } from 'massaman/function'
 
@@ -19,7 +19,7 @@ const MARKDOWN_EXTENSIONS = ['.md', '.mdx'] as const
  * Directories to ignore — any event whose path contains one of these
  * segments is silently dropped.
  */
-const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist', '.turbo'])
+const IGNORED_DIRS = new Set(['node_modules', '.git', '.ciderpress', 'bundle', 'dist', '.turbo'])
 
 /**
  * Create a file watcher that re-syncs documentation on changes.
@@ -30,7 +30,7 @@ const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist
  * OS level, so there are zero EMFILE concerns.
  *
  * @param params - Watcher configuration
- * @param params.initialConfig - Initial zpress config to use for syncing
+ * @param params.initialConfig - Initial ciderpress config to use for syncing
  * @param params.paths - Resolved project paths
  * @param params.callbacks - Callbacks for status changes, sync results, and file changes
  * @param params.onConfigReload - Optional async callback invoked after config reload and sync complete, receives new config
@@ -38,15 +38,15 @@ const IGNORED_DIRS = new Set(['node_modules', '.git', '.zpress', 'bundle', 'dist
  * @returns Closeable and resyncable watcher handle
  */
 export function createWatcher(params: {
-  readonly initialConfig: ZpressConfig
+  readonly initialConfig: CiderpressConfig
   readonly paths: Paths
   readonly callbacks: WatcherCallbacks
-  readonly onConfigReload?: (newConfig: ZpressConfig) => Promise<void>
+  readonly onConfigReload?: (newConfig: CiderpressConfig) => Promise<void>
   readonly openapiCache?: Map<string, unknown>
 }): WatcherHandle {
   const { initialConfig, paths, callbacks, onConfigReload, openapiCache } = params
   const { repoRoot } = paths
-  const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `zpress.config${ext}`))
+  const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `ciderpress.config${ext}`))
   // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
   let config = initialConfig
 
@@ -118,8 +118,13 @@ export function createWatcher(params: {
           const shouldReload = pendingReloadConfig
           pendingReloadConfig = null
           // Intentionally not awaited — queues the next sync cycle without
-          // blocking the finally block. Errors are caught by triggerSync's own try/catch.
-          triggerSync(shouldReload)
+          // blocking the finally block. Errors are caught by triggerSync's
+          // own try/catch; the extra .catch here defends against rejections
+          // that escape (e.g. synchronous throws before the inner try).
+          // oxlint-disable-next-line promise/prefer-await-to-callbacks -- awaiting would block the finally
+          triggerSync(shouldReload).catch((error: unknown) => {
+            callbacks.onError(`Sync error: ${toError(error).message}`)
+          })
         }
       }
     }
@@ -181,10 +186,6 @@ export function createWatcher(params: {
   }
 }
 
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
-
 /**
  * Check whether a file path has a markdown extension.
  *
@@ -215,11 +216,11 @@ function isIgnored(filePath: string): boolean {
  * theme CSS, or other Rsbuild-level config require a restart.
  *
  * @private
- * @param prev - Previous zpress config
- * @param next - New zpress config after reload
+ * @param prev - Previous ciderpress config
+ * @param next - New ciderpress config after reload
  * @returns True if the server must restart
  */
-function needsServerRestart(prev: ZpressConfig, next: ZpressConfig): boolean {
+function needsServerRestart(prev: CiderpressConfig, next: CiderpressConfig): boolean {
   return restartRelevantHash(prev) !== restartRelevantHash(next)
 }
 
@@ -234,10 +235,10 @@ function needsServerRestart(prev: ZpressConfig, next: ZpressConfig): boolean {
  * feature cards, and workspace cards via `themeConfig.home`.
  *
  * @private
- * @param config - Zpress config to hash
+ * @param config - Ciderpress config to hash
  * @returns SHA-256 hex digest of restart-relevant fields
  */
-function restartRelevantHash(config: ZpressConfig): string {
+function restartRelevantHash(config: CiderpressConfig): string {
   const relevant = {
     title: config.title,
     description: config.description,

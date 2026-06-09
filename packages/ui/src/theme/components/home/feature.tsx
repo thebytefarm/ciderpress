@@ -1,25 +1,25 @@
+import type { HomeGridConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
-import type { HomeGridConfig } from '@zpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
-import { useZpress } from '../../hooks/use-zpress'
+import { useCiderpress } from '../../hooks/use-ciderpress'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
 /**
- * Custom HomeFeature override for zpress.
+ * Custom HomeFeature override for ciderpress.
  * Uses useFrontmatter() hook to read features and renders with FeatureCard/FeatureGrid styling.
  *
  * @returns React element with feature grid or null
  */
 export function HomeFeature(): React.ReactElement | null {
   const { frontmatter } = useFrontmatter()
-  const { home } = useZpress()
+  const { home } = useCiderpress()
   const gridConfig = home && home.features
 
   // Rspress types frontmatter as its own FrontMatterMeta shape which does not
-  // include zpress-specific `features`. The double cast is necessary because
+  // include ciderpress-specific `features`. The double cast is necessary because
   // no shared Zod schema exists for frontmatter validation at runtime.
   const features = (frontmatter as Record<string, unknown>).features as
     | readonly FeatureItem[]
@@ -29,16 +29,16 @@ export function HomeFeature(): React.ReactElement | null {
     .with(
       P.when((f): f is readonly FeatureItem[] => Array.isArray(f) && f.length > 0),
       (items) => (
-        <div className="zp-feature-section">
-          <div className="zp-feature-section-head">
-            <div className="zp-feature-section-head__eyebrow">Features</div>
-            <h2 className="zp-feature-section-head__title">Built for the way you ship.</h2>
-            <p className="zp-feature-section-head__sub">
+        <div className="cp-feature-section">
+          <div className="cp-feature-section-head">
+            <div className="cp-feature-section-head__eyebrow">Features</div>
+            <h2 className="cp-feature-section-head__title">Built for the way you ship.</h2>
+            <p className="cp-feature-section-head__sub">
               Everything you need, nothing you don&apos;t. Configured in TypeScript, validated at
               boot.
             </p>
           </div>
-          <div className="zp-feature-grid">
+          <div className="cp-feature-grid">
             {items.map((f, i) => renderFeature(f, i, gridConfig))}
           </div>
         </div>
@@ -46,10 +46,6 @@ export function HomeFeature(): React.ReactElement | null {
     )
     .otherwise(() => null)
 }
-
-// ---------------------------------------------------------------------------
-// Private
-// ---------------------------------------------------------------------------
 
 /**
  * Render a single feature as a FeatureCard element.

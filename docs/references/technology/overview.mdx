@@ -3,11 +3,13 @@ title: Technology Tags
 description: How technology tags map to icons on workspace cards.
 ---
 
-import { Icon, TechIconTable } from '@zpress/ui/theme'
+import { Icon, TechIconTable } from '@ciderpress/ui/theme'
+
+{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}
 
 # Technology Tags
 
-Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. zpress ships with a curated map of **169 technologies** that auto-resolve to the correct icon and display label.
+Workspace cards display technology tags — small labels with an icon and name that indicate the tech stack of an app or package. ciderpress ships with a curated map of **170 technologies** that auto-resolve to the correct icon and display label.
 
 ## How it works
 
@@ -36,6 +38,25 @@ Tags are organized into the following categories:
 | [Languages](/reference/technology/languages)           | 25    | TypeScript, etc.               |
 | [Frameworks](/reference/technology/frameworks)         | 31    | React, Hono, Flutter, etc.     |
 | [Databases](/reference/technology/databases)           | 21    | PostgreSQL, Prisma, etc.       |
-| [Infrastructure](/reference/technology/infrastructure) | 34    | Vercel, Docker, Grafana, etc.  |
+| [Infrastructure](/reference/technology/infrastructure) | 35    | Vercel, Docker, Grafana, etc.  |
 | [Tooling](/reference/technology/tooling)               | 33    | Vite, Tailwind CSS, Jest, etc. |
 | [Integrations](/reference/technology/integrations)     | 25    | OAuth, OpenAI, Strapi, etc.    |
+
+## Adding a new tag
+
+Add an entry to the `TECH_ICONS` constant in `packages/ui/src/theme/icons/tech-map.ts`:
+
+```ts
+export const TECH_ICONS = {
+  // ...existing entries
+  'my-tech': { icon: 'simple-icons:mytech', label: 'My Tech' },
+} as const satisfies Record<string, { readonly icon: string; readonly label: string }>
+```
+
+Then regenerate these docs:
+
+```bash
+lauf run docs
+```
+
+Prefer `devicon` for new entries — it provides colored brand logos for most technologies. Fall back to `logos`, `vscode-icons`, or `material-icon-theme` when devicon has no match, and `simple-icons` as a last resort (monochrome).

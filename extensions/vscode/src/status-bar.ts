@@ -8,19 +8,19 @@ type StatusBarConfig = Readonly<
 
 const STATUS_CONFIG: StatusBarConfig = {
   stopped: {
-    text: '$(book) zpress',
+    text: '$(book) ciderpress',
     tooltip: 'Start docs preview server',
   },
   starting: {
-    text: '$(sync~spin) zpress',
+    text: '$(sync~spin) ciderpress',
     tooltip: 'Building docs site...',
   },
   running: {
-    text: '$(check) zpress',
+    text: '$(check) ciderpress',
     tooltip: 'Docs server running — click to stop',
   },
   stopping: {
-    text: '$(sync~spin) zpress',
+    text: '$(sync~spin) ciderpress',
     tooltip: 'Stopping server...',
   },
 }
@@ -36,7 +36,7 @@ function createStatusBarItem(
   createItem: (alignment: StatusBarAlignment, priority: number) => StatusBarItem
 ): StatusBar {
   const item = createItem(2 /* StatusBarAlignment.Right */, 100)
-  item.command = 'zpress.toggle'
+  item.command = 'ciderpress.toggle'
   item.text = STATUS_CONFIG.stopped.text
   item.tooltip = STATUS_CONFIG.stopped.tooltip
   item.show()
