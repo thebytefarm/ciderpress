@@ -1,145 +1,191 @@
 #!/usr/bin/env bash
 # publish-initial.sh
 #
-# Auto-discovers all publishable packages, checks npm for each,
-# and publishes any that are missing as v0.1.0 (no provenance).
+# Local equivalent of the CI release flow for ciderpress: consumes pending
+# changesets, bumps versions, builds, publishes every publishable package
+# with the dist-tag inferred from .changeset/pre.json, and creates git tags.
+#
+# Use this once to bootstrap the first publish of `ciderpress` and
+# `@ciderpress/*` before npm trusted publishing is configured. After this
+# succeeds, configure trusted publishers and let CI handle subsequent releases.
 #
 # Usage:
-#   ./scripts/publish-initial.sh
+#   ./scripts/publish-initial.sh              # do it
+#   ./scripts/publish-initial.sh --dry-run    # show resulting versions, revert
+#   ./scripts/publish-initial.sh --push       # also push branch + tags at the end
 #
-# Safe to re-run — already-published packages are skipped.
-# After running, configure npm trusted publishers so CI can use provenance:
-#   https://www.npmjs.com/package/<pkg>/access
+# Requires: `npm login` first. Clean git tree.
 
 set -euo pipefail
 
-PACKAGES_DIR="packages"
+DRY_RUN=false
+PUSH=false
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=true ;;
+    --push)    PUSH=true ;;
+    -h|--help)
+      sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+      exit 0
+      ;;
+    *) echo "unknown flag: $arg" >&2; exit 2 ;;
+  esac
+done
 
-# Verify npm auth before doing anything
-echo "==> Checking npm auth..."
-if ! npm whoami &>/dev/null; then
-  echo ""
-  echo "    Not logged in to npm. Run:"
-  echo "      npm login"
-  echo "    then re-run this script."
-  exit 1
-fi
-NPM_USER=$(npm whoami)
-echo "    logged in as: ${NPM_USER}"
-PUBLISHED=()
-SKIPPED=()
-TAGS_TO_PUSH=()
-INITIAL_VERSION="0.1.0"
+# ---- helpers ---------------------------------------------------------------
+
+step() { printf "\n==> %s\n" "$*"; }
+fail() { printf "\nERROR: %s\n" "$*" >&2; exit 1; }
 
 pkg_field() {
   node -e "process.stdout.write(String(require('./$1').$2 ?? ''))"
 }
 
-npm_published_version() {
-  npm view "$1" version 2>/dev/null || true
+publishable_packages() {
+  local pj private has_pc
+  for d in packages/*/; do
+    pj="${d}package.json"
+    [[ -f "$pj" ]] || continue
+    private=$(pkg_field "$pj" "private")
+    has_pc=$(node -e "process.stdout.write(String(!!require('./${pj}').publishConfig))")
+    [[ "$private" == "true" ]] && continue
+    [[ "$has_pc" != "true" ]] && continue
+    pkg_field "$pj" "name"
+    echo
+  done
 }
 
-handle_package() {
-  local pkg_dir="$1"
-  local pkg_json="${pkg_dir}/package.json"
-
-  [[ -f "$pkg_json" ]] || return
-
-  local name is_private has_publish_config
-  name=$(pkg_field "$pkg_json" "name")
-  is_private=$(pkg_field "$pkg_json" "private")
-  has_publish_config=$(node -e "process.stdout.write(String(!!require('./${pkg_json}').publishConfig))")
-
-  # skip private or non-publishable packages
-  [[ "$is_private" == "true" ]] && return
-  [[ "$has_publish_config" != "true" ]] && return
-
-  local npm_version
-  npm_version=$(npm_published_version "$name")
-
-  if [[ -n "$npm_version" ]]; then
-    SKIPPED+=("${name}@${npm_version}")
-    return
-  fi
-
-  echo ""
-  echo "  => ${name} (not on npm — publishing as ${INITIAL_VERSION})"
-
-  # stash the current version so we can restore it after publishing
-  local current_version
-  current_version=$(pkg_field "$pkg_json" "version")
-
-  # temporarily set to 0.1.0 if needed
-  if [[ "$current_version" != "$INITIAL_VERSION" ]]; then
+set_provenance() {
+  local desired="$1" # "true" or "false"
+  local pj
+  for d in packages/*/; do
+    pj="${d}package.json"
+    [[ -f "$pj" ]] || continue
     node -e "
       const fs = require('fs');
-      const p = JSON.parse(fs.readFileSync('${pkg_json}', 'utf8'));
-      p.version = '${INITIAL_VERSION}';
-      fs.writeFileSync('${pkg_json}', JSON.stringify(p, null, 2) + '\n');
+      const p = JSON.parse(fs.readFileSync('${pj}','utf8'));
+      if (p.publishConfig && 'provenance' in p.publishConfig) {
+        p.publishConfig.provenance = ${desired};
+        fs.writeFileSync('${pj}', JSON.stringify(p, null, 2) + '\n');
+      }
     "
-    echo "     version: ${current_version} -> ${INITIAL_VERSION}"
-  fi
-
-  echo "     building..."
-  pnpm --filter "$name" build
-
-  echo "     publishing..."
-  pnpm --filter "$name" exec npm publish --access public --no-provenance
-
-  # restore original version
-  if [[ "$current_version" != "$INITIAL_VERSION" ]]; then
-    node -e "
-      const fs = require('fs');
-      const p = JSON.parse(fs.readFileSync('${pkg_json}', 'utf8'));
-      p.version = '${current_version}';
-      fs.writeFileSync('${pkg_json}', JSON.stringify(p, null, 2) + '\n');
-    "
-    echo "     version restored: ${current_version}"
-  fi
-
-  local tag="${name}@${INITIAL_VERSION}"
-  if git tag "$tag" 2>/dev/null; then
-    TAGS_TO_PUSH+=("$tag")
-    echo "     tagged: ${tag}"
-  else
-    echo "     tag ${tag} already exists, skipping"
-  fi
-
-  PUBLISHED+=("$tag")
+  done
 }
 
-echo "==> Scanning packages for unpublished..."
+restore_on_exit() {
+  set_provenance true
+}
 
-for pkg_dir in "${PACKAGES_DIR}"/*/; do
-  handle_package "${pkg_dir%/}"
-done
+# ---- preflight -------------------------------------------------------------
 
-if [[ ${#SKIPPED[@]} -gt 0 ]]; then
-  echo ""
-  echo "==> Already published (skipped):"
-  for s in "${SKIPPED[@]}"; do echo "     ${s}"; done
+step "Preflight"
+
+if ! npm whoami &>/dev/null; then
+  fail "Not logged in to npm. Run: npm login"
 fi
+echo "    npm user:    $(npm whoami)"
 
-if [[ ${#PUBLISHED[@]} -eq 0 ]]; then
+if [[ -n "$(git status --porcelain)" ]]; then
+  fail "Git tree is not clean. Commit or stash changes first."
+fi
+echo "    git tree:    clean"
+
+current_branch=$(git rev-parse --abbrev-ref HEAD)
+echo "    git branch:  ${current_branch}"
+
+pending=$(ls .changeset/*.md 2>/dev/null | grep -v README || true)
+if [[ -z "$pending" ]]; then
   echo ""
-  echo "==> All packages already published. Nothing to do."
+  echo "    No pending changesets — nothing to release."
   exit 0
 fi
 
-echo ""
-echo "==> Published:"
-for p in "${PUBLISHED[@]}"; do echo "     ${p}"; done
+step "Pending changesets"
+echo "$pending" | sed 's|^\.changeset/|    |'
 
-if [[ ${#TAGS_TO_PUSH[@]} -gt 0 ]]; then
+step "Publishable packages"
+publishable_packages | sed 's/^/    /'
+
+if [[ -f .changeset/pre.json ]]; then
+  pre_mode=$(node -p "require('./.changeset/pre.json').mode")
+  pre_tag=$(node -p "require('./.changeset/pre.json').tag")
   echo ""
-  echo "==> Pushing tags to origin..."
-  git push origin "${TAGS_TO_PUSH[@]}"
-  echo "    GitHub will create releases automatically from the new tags."
+  echo "    pre mode:    ${pre_mode}"
+  echo "    dist-tag:    ${pre_tag}"
 fi
 
+# ---- dry run ---------------------------------------------------------------
+
+if [[ "$DRY_RUN" == "true" ]]; then
+  step "Dry run: applying changeset version to inspect resulting versions"
+  pnpm changeset version >/dev/null
+
+  echo ""
+  echo "    Resulting versions:"
+  for d in packages/*/; do
+    pj="${d}package.json"
+    [[ -f "$pj" ]] || continue
+    name=$(pkg_field "$pj" "name")
+    version=$(pkg_field "$pj" "version")
+    private=$(pkg_field "$pj" "private")
+    [[ "$private" == "true" ]] && continue
+    printf "      %-32s %s\n" "$name" "$version"
+  done
+
+  step "Reverting (dry run)"
+  git checkout -- .changeset packages/*/package.json packages/*/CHANGELOG.md 2>/dev/null || true
+  git clean -fd .changeset packages/*/ 2>/dev/null || true
+  echo "    Done. Re-run without --dry-run to publish."
+  exit 0
+fi
+
+# ---- the real run ----------------------------------------------------------
+
+step "Consuming changesets and bumping versions"
+pnpm changeset version
+
+step "Building all packages"
+pnpm run prerelease
+
+step "Disabling publishConfig.provenance for local publish (no OIDC)"
+set_provenance false
+trap restore_on_exit EXIT
+
+step "Publishing"
+# changeset publish honors .changeset/pre.json (dist-tag) and creates
+# per-package git tags by default.
+pnpm changeset publish
+
+step "Restoring publishConfig.provenance for CI"
+set_provenance true
+trap - EXIT
+
+step "Committing version bump"
+git add -A
+git commit -m "chore(repo): version packages (rc)" \
+           -m "Local bootstrap release via scripts/publish-initial.sh"
+
+step "Created git tags"
+git tag --points-at HEAD | sed 's/^/    /' || true
+
+if [[ "$PUSH" == "true" ]]; then
+  step "Pushing branch and tags"
+  git push origin "$current_branch"
+  git push origin --tags
+else
+  step "Skipping push (pass --push to push)"
+  echo "    To finish:"
+  echo "      git push origin ${current_branch}"
+  echo "      git push origin --tags"
+fi
+
+step "Done"
 echo ""
-echo "==> Done. Next: add trusted publishers on npm so CI can use provenance:"
-for p in "${PUBLISHED[@]}"; do
-  pkg_name="${p%@*}"
-  echo "    https://www.npmjs.com/package/${pkg_name}/access"
+echo "Next steps:"
+echo "  1. Configure trusted publishers on npm so CI can use provenance:"
+publishable_packages | while read -r name; do
+  [[ -z "$name" ]] && continue
+  echo "       https://www.npmjs.com/package/${name}/access"
 done
+echo "  2. Close the open changesets release PR — it has been superseded."
+echo "  3. Future releases: merge the changesets bot PR, CI will publish."
