@@ -12,5 +12,10 @@
     "@ciderpress/ui": "0.9.1",
     "ciderpress": "0.2.23"
   },
-  "changesets": ["upgrade-deps-latest", "v1-rc1-fixes", "v1-release"]
+  "changesets": [
+    "ciderpress-v1-rc",
+    "upgrade-deps-latest",
+    "v1-rc1-fixes",
+    "v1-release"
+  ]
 }
