@@ -6,8 +6,6 @@ import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import React, { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { CiderpressLogo } from '../shared/ciderpress-logo'
-
 import './nav-logo.css'
 
 /**
@@ -37,7 +35,7 @@ const FALLBACK_COLORS = Object.freeze({
 })
 
 /**
- * `NavLogo` — Rspress-aware logo slot that handles all three logo configs.
+ * `NavLogo` — Rspress-aware logo slot for function-form `logo` configs.
  *
  * - Reads `userConfig.logo` from the bundled user config via the
  *   `@ciderpress/internal/user-config` alias.
@@ -52,7 +50,10 @@ const FALLBACK_COLORS = Object.freeze({
  * - `logo` is a function → call with the live `LogoContext`. If the return
  *   value is a `LogoImage`-shaped object, spread onto `<img>`. Otherwise
  *   render as a React node.
- * - `logo` is missing → render the default themed `<CiderpressLogo />`.
+ * - `logo` is missing → render `null`; Rspress paints the auto-generated
+ *   `/logo.svg` (written to the public dir by the banner module, derived
+ *   from the project title). Users who want the framework's themed wordmark
+ *   opt in via `logo: ({ theme }) => <CiderpressLogo />`.
  *
  * @returns Portaled logo element or null
  */
@@ -116,13 +117,11 @@ export function NavLogo(): React.ReactElement | null {
 
   const logoConfig = readLogoConfig(userConfigModule)
 
-  // String-form user logos are handled by Rspress's native <img>. NavLogo
-  // takes over for both the default case (theme-aware CiderpressLogo SVG) and
-  // function-form logos (user-defined render). The static `/logo.svg` from
-  // Rspress's <img> renders immediately on first paint; once NavLogo's
-  // portal mounts, CSS hides the static img so only the theme-aware version
-  // shows. Theme color flips via `currentColor` reading from `--rp-c-brand`.
-  if (typeof logoConfig === 'string') {
+  // String-form user logos and the missing-logo default both ride Rspress's
+  // native <img>. resolveLogo() in @ciderpress/ui/config maps the missing
+  // case to the auto-generated /logo.svg path. Only function-form logos
+  // need this portal — they re-render when the theme/variant changes.
+  if (typeof logoConfig !== 'function') {
     return null
   }
 
@@ -130,13 +129,7 @@ export function NavLogo(): React.ReactElement | null {
     return null
   }
 
-  // Raw-copied file — plain conditional, no ts-pattern (see packages/ui/CLAUDE.md).
-  const rendered =
-    typeof logoConfig === 'function' ? (
-      renderLogoFn({ fn: logoConfig, theme: themeContext })
-    ) : (
-      <CiderpressLogo />
-    )
+  const rendered = renderLogoFn({ fn: logoConfig, theme: themeContext })
 
   return createPortal(<span className="cp-nav-logo">{rendered}</span>, target)
 }

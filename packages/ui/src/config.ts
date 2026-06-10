@@ -160,7 +160,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     title: config.title ?? 'ciderpress',
     description: config.description ?? 'Documentation',
 
-    icon: config.icon ?? '/icon.svg',
+    icon: config.favicon ?? '/icon.svg',
     // String logos pass through to Rspress's stock `<img>` rendering.
     // Function logos and the default-branded fallback render via the
     // <NavLogo /> globalUIComponent which portals into `.rp-nav__title__link`.

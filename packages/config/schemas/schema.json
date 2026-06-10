@@ -213,6 +213,12 @@
         {}
       ]
     },
+    "banner": {
+      "type": "string"
+    },
+    "favicon": {
+      "type": "string"
+    },
     "tagline": {
       "type": "string"
     },

@@ -113,7 +113,7 @@ export async function generateDefaultHomePage(
       .with(P.nonNullable, (a) => a)
       .otherwise(() => [{ theme: 'brand', text: 'Get Started', link: firstLink }]),
     image: {
-      src: '/banner.svg',
+      src: config.banner ?? '/banner.svg',
       alt: title,
     },
   }

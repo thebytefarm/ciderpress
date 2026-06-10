@@ -378,6 +378,8 @@ export const ciderpressConfigSchema = z
       .optional(),
     icon: iconIdSchema.optional(),
     logo: logoConfigSchema.optional(),
+    banner: z.string().optional(),
+    favicon: z.string().optional(),
     tagline: z.string().optional(),
     apps: z.array(workspaceItemSchema).optional(),
     packages: z.array(workspaceItemSchema).optional(),
