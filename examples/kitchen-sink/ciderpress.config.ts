@@ -1,12 +1,17 @@
-import React from 'react'
-import { CiderpressLogo, defineConfig } from 'ciderpress'
+import { defineConfig } from 'ciderpress'
+
+const acmeLogoSvg = (color: string): string =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40"><text x="0" y="30" font-family="monospace" font-size="32" font-weight="700" fill="${color}">ACME</text></svg>`
 
 export default defineConfig({
   title: 'Acme Platform',
   description: 'The Acme Monorepo Documentation',
   tagline: 'Everything you need to build, ship, and scale.',
   theme: { name: 'arcade' },
-  logo: () => React.createElement(CiderpressLogo),
+  logo: ({ theme }) => ({
+    src: `data:image/svg+xml;utf8,${encodeURIComponent(acmeLogoSvg(theme.colors.brand))}`,
+    alt: 'Acme Platform',
+  }),
   home: {
     features: { truncate: { description: 2 } },
     workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
