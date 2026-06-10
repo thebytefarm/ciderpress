@@ -13,6 +13,9 @@
 #   ./scripts/publish-initial.sh              # do it
 #   ./scripts/publish-initial.sh --dry-run    # show resulting versions, revert
 #   ./scripts/publish-initial.sh --push       # also push branch + tags at the end
+#   ./scripts/publish-initial.sh --latest     # also point npm dist-tag `latest` at each published version
+#
+# Flags compose: `--latest --push` is fine.
 #
 # Requires: `npm login` first. Clean git tree.
 
@@ -20,12 +23,14 @@ set -euo pipefail
 
 DRY_RUN=false
 PUSH=false
+LATEST=false
 for arg in "$@"; do
   case "$arg" in
     --dry-run) DRY_RUN=true ;;
     --push)    PUSH=true ;;
+    --latest)  LATEST=true ;;
     -h|--help)
-      sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'
+      sed -n '2,21p' "$0" | sed 's/^# \{0,1\}//'
       exit 0
       ;;
     *) echo "unknown flag: $arg" >&2; exit 2 ;;
@@ -159,6 +164,22 @@ pnpm changeset publish
 step "Restoring publishConfig.provenance for CI"
 set_provenance true
 trap - EXIT
+
+if [[ "$LATEST" == "true" ]]; then
+  step "Pointing dist-tag 'latest' at the freshly published versions"
+  for d in packages/*/; do
+    pj="${d}package.json"
+    [[ -f "$pj" ]] || continue
+    private=$(pkg_field "$pj" "private")
+    has_pc=$(node -e "process.stdout.write(String(!!require('./${pj}').publishConfig))")
+    [[ "$private" == "true" ]] && continue
+    [[ "$has_pc" != "true" ]] && continue
+    name=$(pkg_field "$pj" "name")
+    version=$(pkg_field "$pj" "version")
+    echo "    npm dist-tag add ${name}@${version} latest"
+    npm dist-tag add "${name}@${version}" latest
+  done
+fi
 
 step "Committing version bump"
 git add -A
