@@ -8,6 +8,14 @@
  * in the site bundle when this theme entry is loaded.
  */
 
+// Rspress DocLayout grid/sidebar CSS. We re-export `CiderpressDocLayout as DocLayout`
+// below, which shadows the original `DocLayout` re-export from `@rspress/core/theme-original`
+// and lets the bundler tree-shake out Rspress's `DocLayout/index.js` — and with it the
+// sibling `./index.css` side-effect import that defines `.rp-doc-layout__container` flex,
+// `.rp-doc-layout__sidebar` sticky width/height, and the outline rail. Import it directly
+// here so it survives bundling.
+import '@rspress/core/dist/theme/layout/DocLayout/index.css'
+
 import './styles/layers.css'
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
