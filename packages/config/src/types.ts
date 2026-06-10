@@ -1376,7 +1376,9 @@ export interface CiderpressConfig {
   /**
    * Brand logo rendered in the topbar. Three forms:
    *
-   * - **omit** — render the default themed `<CiderpressLogo />` wordmark.
+   * - **omit** — render the auto-generated `/logo.svg` written to the public
+   *   dir by the banner module (derived from the project title). Commit your
+   *   own `public/logo.svg` to override permanently.
    * - `string` — image path; forwarded to Rspress's `logo` field as-is.
    * - `({ theme }) => LogoImage | ReactNode` — function called at render
    *   time with the live theme context. Return a `LogoImage` (image-props
@@ -1399,6 +1401,33 @@ export interface CiderpressConfig {
    * ```
    */
   readonly logo?: LogoConfig
+  /**
+   * Hero banner image path used on the home page and workspace landing
+   * pages. Defaults to `/banner.svg` (auto-generated from the project
+   * title at sync time; commit your own `public/banner.svg` to override).
+   * Set this to point at a different path — a custom SVG, a PNG, or a
+   * CDN URL.
+   *
+   * @example
+   * ```ts
+   * banner: '/assets/hero.png'
+   * banner: 'https://cdn.example.com/banner.svg'
+   * ```
+   */
+  readonly banner?: string
+  /**
+   * Favicon image path. Defaults to `/icon.svg` (auto-generated from the
+   * project title at sync time; commit your own `public/icon.svg` to
+   * override). Distinct from `icon`, which is the Iconify id for the
+   * inline mark next to the topbar title.
+   *
+   * @example
+   * ```ts
+   * favicon: '/favicon.ico'
+   * favicon: '/assets/favicon.svg'
+   * ```
+   */
+  readonly favicon?: string
   /**
    * Short marketing tagline rendered under the site title on the home hero.
    */
