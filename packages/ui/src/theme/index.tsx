@@ -19,7 +19,6 @@ import '@rspress/core/dist/theme/components/Sidebar/SidebarDivider.css'
 import '@rspress/core/dist/theme/components/Sidebar/SidebarGroup.css'
 import '@rspress/core/dist/theme/components/Sidebar/SidebarItem.css'
 import '@rspress/core/dist/theme/components/Sidebar/SidebarSectionHeader.css'
-
 import './styles/layers.css'
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
