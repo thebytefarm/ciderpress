@@ -26,7 +26,11 @@ export default defineConfig({
       sort: 'alpha',
     },
   ],
-  nav: 'auto',
+  nav: [
+    { title: 'Docs', link: '/getting-started' },
+    { title: 'API', link: '/api-reference' },
+    { title: 'Guides', link: '/guides' },
+  ],
   footer: {
     message: 'Built with ciderpress',
     copyright: 'Copyright © 2025 my-lib',

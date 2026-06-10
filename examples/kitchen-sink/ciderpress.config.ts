@@ -189,7 +189,30 @@ export default defineConfig({
       { text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link', style: 'alt' },
     ],
   },
-  nav: 'auto',
+  nav: [
+    { title: 'Getting Started', link: '/getting-started' },
+    {
+      title: 'Docs',
+      items: [
+        { title: 'Architecture', link: '/architecture' },
+        { title: 'Guides', link: '/guides' },
+        { title: 'API Reference', link: '/references/api' },
+        { title: 'CLI Reference', link: '/references/cli' },
+      ],
+    },
+    {
+      title: 'Products',
+      items: [
+        { title: 'Web', link: '/apps/web' },
+        { title: 'API', link: '/apps/api' },
+        { title: 'UI', link: '/packages/ui' },
+        { title: 'DB', link: '/packages/db' },
+        { title: 'Stripe', link: '/integrations/stripe' },
+        { title: 'Docker', link: '/infrastructure/docker' },
+      ],
+    },
+    { title: 'Contributing', link: '/contributing' },
+  ],
   socialLinks: [
     { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
     { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },

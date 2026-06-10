@@ -292,11 +292,47 @@ export default defineConfig({
 
   nav: [
     { title: 'Getting Started', link: '/introduction' },
-    { title: 'Guides', link: '/guides' },
-    { title: 'Concepts', link: '/concepts' },
-    { title: 'AI', link: '/ai/overview' },
-    { title: 'Apps', link: '/apps' },
-    { title: 'Packages', link: '/packages' },
+    {
+      title: 'Docs',
+      items: [
+        { title: 'Guides', link: '/guides' },
+        { title: 'Concepts', link: '/concepts' },
+        { title: 'Architecture', link: '/architecture' },
+        { title: 'Commands', link: '/commands' },
+        { title: 'Structure', link: '/structure' },
+      ],
+    },
+    {
+      title: 'AI',
+      items: [
+        { title: 'Overview', link: '/ai/overview' },
+        { title: 'Best Practices', link: '/ai/best-practices' },
+        { title: 'Coding Agents', link: '/ai/coding-agents' },
+        { title: 'Concepts', link: '/ai/concepts' },
+        { title: 'Ecosystem', link: '/ai/ecosystem' },
+      ],
+    },
+    {
+      title: 'Workspace',
+      items: [
+        { title: 'API', link: '/apps/api' },
+        { title: 'Console', link: '/apps/console' },
+        { title: 'Workers', link: '/apps/workers' },
+        { title: 'Database', link: '/libs/database' },
+        { title: 'AI Library', link: '/libs/ai' },
+        { title: 'Auth', link: '/libs/auth' },
+      ],
+    },
+    {
+      title: 'Operations',
+      items: [
+        { title: 'Development', link: '/development/overview' },
+        { title: 'Standards', link: '/development/standards' },
+        { title: 'Tools', link: '/development/tools' },
+        { title: 'Security', link: '/security' },
+        { title: 'Troubleshooting', link: '/troubleshooting' },
+      ],
+    },
   ],
 
   socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/acme' }],
