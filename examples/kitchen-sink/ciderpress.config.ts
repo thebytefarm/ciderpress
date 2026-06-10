@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'Acme Platform',
   description: 'The Acme Monorepo Documentation',
   tagline: 'Everything you need to build, ship, and scale.',
+  theme: { name: 'arcade' },
   home: {
     features: { truncate: { description: 2 } },
     workspaces: { columns: 2, truncate: { title: 1, description: 2 } },

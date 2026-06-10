@@ -5,6 +5,8 @@ export default defineConfig({
   description: 'Internal Engineering Documentation',
   tagline: 'Everything you need to build, ship, and scale.',
 
+  theme: { name: 'midnight' },
+
   home: {
     features: { truncate: { description: 2 } },
     workspaces: { columns: 2, truncate: { title: 1, description: 2 } },

@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'my-lib',
   description: 'A simple utility library',
   tagline: 'Lightweight utilities for everyday TypeScript.',
+  theme: { name: 'grannysmith' },
   sections: [
     {
       title: 'Getting Started',
@@ -26,4 +27,8 @@ export default defineConfig({
     },
   ],
   nav: 'auto',
+  footer: {
+    message: 'Built with ciderpress',
+    copyright: 'Copyright © 2025 my-lib',
+  },
 })
