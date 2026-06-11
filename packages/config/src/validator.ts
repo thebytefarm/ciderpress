@@ -399,6 +399,15 @@ function validateIconConfig(icon: IconConfig | undefined, context: string): Conf
     return [null, true]
   }
 
+  // Image form — `{ src, alt? }`. Accepted as-is; the renderer pipes
+  // `src` straight into an `<img>` element.
+  if ('src' in icon) {
+    if (typeof icon.src !== 'string' || icon.src.length === 0) {
+      return [configError('invalid_icon', `${context}: icon.src must be a non-empty string`), null]
+    }
+    return [null, true]
+  }
+
   if (!icon.id || !icon.id.includes(':')) {
     return [
       configError(

@@ -35,25 +35,53 @@ export type IconPrefix =
 export type IconId = `${IconPrefix}:${string}`
 
 /**
+ * Image-form icon — points at a static asset (SVG, PNG, …) shipped in
+ * the project's `public/` directory or a CDN URL. Use when the brand
+ * mark isn't in any installed Iconify set.
+ *
+ * @example
+ * ```ts
+ * icon: { src: '/icon.svg', alt: 'maltty' }
+ * ```
+ */
+export interface IconImage {
+  /**
+   * Absolute path or URL to the image asset. Relative paths resolve
+   * against the site root (e.g. `/icon.svg` → `public/icon.svg`).
+   */
+  readonly src: string
+  /**
+   * Alt text for screen readers. Defaults to an empty string (decorative).
+   */
+  readonly alt?: string
+}
+
+/**
  * Unified icon configuration.
  *
- * Accepts either:
- * - **String**: Iconify identifier (e.g. `"devicon:hono"`, `"pixelarticons:device-mobile"`)
- *   - Color defaults to purple (first in rotation)
- *   - Find icons at https://icon-sets.iconify.design/
- * - **Object**: `{ id: IconId, color: IconColor }`
- *   - Explicit color from 8-color palette
+ * Accepts three forms:
  *
- * Auto-generated section cards rotate through these colors:
+ * - **Iconify id** (`"devicon:hono"`) — string from an installed icon set.
+ *   Color defaults to purple. Browse icons at https://icon-sets.iconify.design/
+ * - **Iconify object** (`{ id, color }`) — explicit color from the 8-colour palette.
+ * - **Image object** (`{ src, alt }`) — static image (SVG/PNG/…) shipped in
+ *   the project's `public/` directory or a CDN URL. Bypasses Iconify entirely.
+ *
+ * For inline React JSX as an icon, use `logo` instead — it accepts a
+ * function returning `ReactNode` and re-renders on theme changes.
+ *
+ * Auto-generated section cards rotate through these colors when an
+ * Iconify icon is used:
  * purple → blue → green → amber → cyan → red → pink → slate
  *
  * @example
  * ```ts
- * icon: 'devicon:react'  // Uses purple (default)
- * icon: { id: 'devicon:nextjs', color: 'blue' }  // Explicit blue
+ * icon: 'devicon:react'                            // Iconify, purple
+ * icon: { id: 'devicon:nextjs', color: 'blue' }    // Iconify, blue
+ * icon: { src: '/icon.svg', alt: 'maltty' }        // Static image
  * ```
  */
-export type IconConfig = IconId | { readonly id: IconId; readonly color: IconColor }
+export type IconConfig = IconId | { readonly id: IconId; readonly color?: IconColor } | IconImage
 
 /**
  * File-system path (absolute or relative).
@@ -1296,6 +1324,71 @@ export interface LogoImage {
 export type LogoFn = (params: { readonly theme: LogoContext }) => LogoImage | React.ReactNode
 
 /**
+ * Custom FOUC loader configuration.
+ *
+ * Renders during the brief window before React hydrates. The glyph is
+ * painted via critical CSS injected in `<head>`, so `content` must be
+ * something the browser can paint without React — an inline SVG string
+ * or a path/URL to an image asset.
+ *
+ * For React JSX-based loading screens, render them inside the page
+ * shell (post-hydration) instead — by then the FOUC window is closed
+ * and there is nothing left to cover.
+ *
+ * @example
+ * ```ts
+ * loader: {
+ *   content: readFileSync('./assets/loader.svg', 'utf8'),
+ *   label: 'brewing',
+ *   maxDisplayMs: 4000,
+ * }
+ * ```
+ */
+export interface LoaderConfig {
+  /**
+   * Loader glyph. Accepts:
+   *
+   * - **Inline SVG markup** (starts with `<svg`) — encoded as a data URI
+   *   and used as the loader's `background-image`.
+   * - **Asset path or URL** (`'/loader.svg'`, `'https://…'`) — used
+   *   directly as `background-image`.
+   */
+  readonly content: string
+  /**
+   * Text label rendered next to the glyph. Defaults to `'loading'`.
+   * Pass an empty string to suppress the label entirely.
+   */
+  readonly label?: string
+  /**
+   * Minimum time (ms) the loader stays visible before fading out. Keeps
+   * the flash from feeling jittery on fast first paints. Defaults to
+   * `150`.
+   */
+  readonly minDisplayMs?: number
+  /**
+   * Maximum time (ms) before the loader is forcibly dismissed,
+   * regardless of React hydration state. Catches the case where the JS
+   * bundle never executes (e.g. static dist served over plain http with
+   * no service worker). Defaults to `5000`.
+   */
+  readonly maxDisplayMs?: number
+}
+
+/**
+ * Favicon configuration. Accepts either:
+ *
+ * - **String** — absolute path or URL to the favicon asset. Shorthand
+ *   for `{ src }`.
+ * - **Object** — `{ src, type }` with an optional explicit MIME type
+ *   (e.g. `'image/png'`). Use when the path doesn't end in a recognised
+ *   extension.
+ *
+ * Setting this field disables the runtime favicon retinting that
+ * normally swaps `<link rel="icon">` to a themed pixel-apple data-URI.
+ */
+export type FaviconConfig = string | { readonly src: string; readonly type?: string }
+
+/**
  * Logo configuration accepted on `CiderpressConfig.logo`.
  *
  * - `string` — image path (forwarded to Rspress's `logo` field as-is).
@@ -1355,24 +1448,35 @@ export interface CiderpressConfig {
    */
   readonly themes?: readonly CiderpressThemeInput[]
   /**
-   * Inline FOUC loader style.
+   * Inline FOUC loader.
    *
-   * Two variants ship out of the box:
-   *   - `'apple'` (default) — Ciderpress's native pixel-apple animation:
-   *     five discrete bites, ballerina-spin on the vertical axis, with
-   *     the leaf surviving the bites.
+   * Five forms:
+   *   - omit (default) — the `'apple'` preset.
+   *   - `'apple'` — Ciderpress's native pixel-apple animation: five
+   *     discrete bites, ballerina-spin on the vertical axis, with the
+   *     leaf surviving the bites. **Carries ciderpress branding** — use
+   *     a custom `LoaderConfig` for white-labelled sites.
    *   - `'classic'` — legacy dots loader cycling `loading`, `loading.`,
    *     `loading..`, `loading...` every 300ms.
+   *   - `false` — no loader at all. The page paints whatever's behind
+   *     it during the brief FOUC window.
+   *   - `LoaderConfig` — custom SVG glyph, optional label, and timing
+   *     overrides. See {@link LoaderConfig}.
    *
-   * Both styles share the same backdrop and lifecycle (`cp-loader-fade`,
-   * `data-cp-ready`). Omitting the field gets you `'apple'`.
+   * All non-`false` styles share the same backdrop and lifecycle
+   * (`cp-loader-fade`, `data-cp-ready`). A `maxDisplayMs` fallback in
+   * the inline head script guarantees the loader dismisses even when
+   * the React bundle never hydrates (e.g. static dist served over plain
+   * http with no service worker).
    */
-  readonly loader?: 'apple' | 'classic'
+  readonly loader?: false | 'apple' | 'classic' | LoaderConfig
   /**
-   * Brand icon rendered next to the site title in the topbar. Iconify id
-   * only — the topbar logo position does not accept colored icon configs.
+   * Brand icon rendered next to the site title in the topbar.
+   *
+   * Accepts any {@link IconConfig} value — Iconify id, `{ id, color }`,
+   * or `{ src, alt }` for a custom image asset.
    */
-  readonly icon?: IconId
+  readonly icon?: IconConfig
   /**
    * Brand logo rendered in the topbar. Three forms:
    *
@@ -1416,18 +1520,23 @@ export interface CiderpressConfig {
    */
   readonly banner?: string
   /**
-   * Favicon image path. Defaults to `/icon.svg` (auto-generated from the
-   * project title at sync time; commit your own `public/icon.svg` to
-   * override). Distinct from `icon`, which is the Iconify id for the
-   * inline mark next to the topbar title.
+   * Favicon image path. Defaults to `/icon.svg` (auto-generated from
+   * the project title at sync time; commit your own `public/icon.svg`
+   * to override). Distinct from `icon`, which is the inline mark next
+   * to the topbar title.
+   *
+   * Setting this field disables the runtime favicon retinting that
+   * swaps `<link rel="icon">` to a themed ciderpress pixel-apple — your
+   * asset wins instead.
    *
    * @example
    * ```ts
    * favicon: '/favicon.ico'
    * favicon: '/assets/favicon.svg'
+   * favicon: { src: '/favicon.png', type: 'image/png' }
    * ```
    */
-  readonly favicon?: string
+  readonly favicon?: FaviconConfig
   /**
    * Short marketing tagline rendered under the site title on the home hero.
    */

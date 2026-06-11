@@ -2,7 +2,8 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { Card } from '../shared/card'
-import { Icon } from '../shared/icon'
+import { CardIcon } from '../shared/card-icon'
+import type { CardIconInput } from '../shared/resolve-card-icon'
 import { resolveCardIcon } from '../shared/resolve-card-icon'
 import { TechTag } from '../shared/tech-tag'
 
@@ -16,9 +17,10 @@ export interface WorkspaceCardProps {
    */
   readonly href: string
   /**
-   * Icon config — Iconify identifier string or `{ id, color }` object.
+   * Icon config — Iconify identifier string, `{ id, color }` object, or
+   * `{ kind: 'image', src, alt }` for a static image asset.
    */
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: CardIconInput
   /**
    * Scope prefix shown above the name (e.g. "apps/").
    */
@@ -67,12 +69,8 @@ export function WorkspaceCard({
   const resolved = resolveCardIcon(icon)
 
   const iconEl = match(resolved)
-    .with(P.nonNullable, (r) => <Icon icon={r.id} />)
+    .with(P.nonNullable, (r) => <CardIcon resolved={r} className="cp-card__icon" />)
     .otherwise(() => null)
-
-  const iconColor = match(resolved)
-    .with(P.nonNullable, (r) => r.color)
-    .otherwise(() => 'purple')
 
   const scopeEl = match(scope)
     .with(
@@ -117,7 +115,7 @@ export function WorkspaceCard({
     <Card href={href} className="cp-workspace-card">
       <div className="cp-workspace-card__header">
         <div className="cp-workspace-card__identity">
-          <span className={`cp-card__icon cp-card__icon--${iconColor}`}>{iconEl}</span>
+          {iconEl}
           <div className="cp-workspace-card__title">
             {scopeEl}
             <span

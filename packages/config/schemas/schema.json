@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.1/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.3/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -195,15 +195,82 @@
       }
     },
     "loader": {
-      "type": "string",
-      "enum": [
-        "apple",
-        "classic"
+      "anyOf": [
+        {
+          "type": "boolean",
+          "const": false
+        },
+        {
+          "type": "string",
+          "enum": [
+            "apple",
+            "classic"
+          ]
+        },
+        {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string"
+            },
+            "label": {
+              "type": "string"
+            },
+            "minDisplayMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            },
+            "maxDisplayMs": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9007199254740991
+            }
+          },
+          "required": [
+            "content"
+          ],
+          "additionalProperties": false
+        }
       ],
-      "description": "Inline FOUC loader style. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader (loading, loading., loading.., loading...)."
+      "description": "Inline FOUC loader. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader. `false` disables the loader. Pass a `LoaderConfig` object for a custom SVG glyph + label."
     },
     "icon": {
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "color": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "id"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "src": {
+              "type": "string"
+            },
+            "alt": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "logo": {
       "anyOf": [
@@ -217,7 +284,26 @@
       "type": "string"
     },
     "favicon": {
-      "type": "string"
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "src": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "src"
+          ],
+          "additionalProperties": false
+        }
+      ]
     },
     "tagline": {
       "type": "string"
@@ -246,8 +332,22 @@
                   }
                 },
                 "required": [
-                  "id",
-                  "color"
+                  "id"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src"
                 ],
                 "additionalProperties": false
               }
@@ -489,8 +589,22 @@
                   }
                 },
                 "required": [
-                  "id",
-                  "color"
+                  "id"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src"
                 ],
                 "additionalProperties": false
               }
@@ -747,8 +861,22 @@
                         }
                       },
                       "required": [
-                        "id",
-                        "color"
+                        "id"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "src": {
+                          "type": "string"
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "src"
                       ],
                       "additionalProperties": false
                     }
@@ -1008,8 +1136,22 @@
                   }
                 },
                 "required": [
-                  "id",
-                  "color"
+                  "id"
+                ],
+                "additionalProperties": false
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src"
                 ],
                 "additionalProperties": false
               }
@@ -1081,8 +1223,22 @@
                       }
                     },
                     "required": [
-                      "id",
-                      "color"
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "src": {
+                        "type": "string"
+                      },
+                      "alt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "src"
                     ],
                     "additionalProperties": false
                   }
@@ -1139,8 +1295,22 @@
                       }
                     },
                     "required": [
-                      "id",
-                      "color"
+                      "id"
+                    ],
+                    "additionalProperties": false
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "src": {
+                        "type": "string"
+                      },
+                      "alt": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "src"
                     ],
                     "additionalProperties": false
                   }
@@ -1858,8 +2028,22 @@
                 }
               },
               "required": [
-                "id",
-                "color"
+                "id"
+              ],
+              "additionalProperties": false
+            },
+            {
+              "type": "object",
+              "properties": {
+                "src": {
+                  "type": "string"
+                },
+                "alt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "src"
               ],
               "additionalProperties": false
             }
@@ -1884,8 +2068,22 @@
                     }
                   },
                   "required": [
-                    "id",
-                    "color"
+                    "id"
+                  ],
+                  "additionalProperties": false
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "src": {
+                      "type": "string"
+                    },
+                    "alt": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "src"
                   ],
                   "additionalProperties": false
                 }

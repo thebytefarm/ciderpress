@@ -64,4 +64,32 @@ describe('getThemeCss()', () => {
   it('should contain apple loader CSS by default for built-in themes', () => {
     expect(getThemeCss('honeycrisp')).toContain(APPLE_LOADER_CSS)
   })
+
+  it('should emit no loader CSS when loader=false', () => {
+    const css = getThemeCss('honeycrisp', false)
+    expect(css).not.toContain('/* mock css/loader-backdrop.css */')
+    expect(css).not.toContain('/* mock css/loader-apple.css */')
+    expect(css).not.toContain('/* mock css/loader-dots.css */')
+  })
+
+  it('should inline custom loader content as a data URI when given inline SVG markup', () => {
+    const css = getThemeCss('honeycrisp', {
+      content: '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="10"/></svg>',
+      label: 'brewing',
+    })
+    expect(css).toContain('/* mock css/loader-backdrop.css */')
+    expect(css).toContain('data:image/svg+xml;utf8,')
+    expect(css).toContain("content: 'brewing'")
+    expect(css).not.toContain('/* mock css/loader-apple.css */')
+  })
+
+  it('should use a custom loader asset path verbatim in url(...)', () => {
+    const css = getThemeCss('honeycrisp', { content: '/assets/loader.svg' })
+    expect(css).toContain('background-image: url("/assets/loader.svg")')
+  })
+
+  it('should suppress the label rule entirely when label is an empty string', () => {
+    const css = getThemeCss('honeycrisp', { content: '/loader.svg', label: '' })
+    expect(css).not.toContain('html::after')
+  })
 })

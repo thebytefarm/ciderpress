@@ -2,7 +2,13 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { Feature, Section, Workspace, CiderpressConfig } from '@ciderpress/config'
+import type {
+  Feature,
+  Section,
+  SerializedIcon,
+  Workspace,
+  CiderpressConfig,
+} from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
@@ -15,7 +21,7 @@ import { resolveSectionTitle } from './resolve/text.ts'
 export interface HomeWorkspaceCardData {
   readonly title: string
   readonly href: string
-  readonly icon: string | { readonly id: string; readonly color: string } | undefined
+  readonly icon: SerializedIcon | undefined
   readonly scope: string | undefined
   readonly description: string | undefined
   readonly tags: readonly string[]
@@ -231,7 +237,7 @@ interface ResolvedFeature {
   readonly title: string
   readonly details: string
   readonly link: string | undefined
-  readonly icon: string | { readonly id: string; readonly color: string } | null
+  readonly icon: SerializedIcon | null
 }
 
 /**
@@ -243,7 +249,7 @@ interface FrontmatterFeature {
   readonly title: string
   readonly details: string
   readonly link?: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: SerializedIcon
 }
 
 /**

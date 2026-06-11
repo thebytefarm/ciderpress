@@ -1,17 +1,17 @@
-import type { FooterConfig, HomeConfig, SiteConfig } from '@ciderpress/config'
+import type { FooterConfig, HomeConfig, SerializedIcon, SiteConfig } from '@ciderpress/config'
 import { useSite } from '@rspress/core/runtime'
 
 export interface CiderpressSidebarItem {
   readonly text?: string
   readonly link?: string
-  readonly icon?: string
+  readonly icon?: SerializedIcon
   readonly items?: readonly CiderpressSidebarItem[]
 }
 
 export interface CiderpressSidebarLink {
   readonly text: string
   readonly link: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: SerializedIcon
   readonly style?: 'brand' | 'alt' | 'ghost'
   readonly shape?: 'square' | 'rounded' | 'circle'
 }
@@ -19,7 +19,7 @@ export interface CiderpressSidebarLink {
 export interface WorkspaceCardData {
   readonly title: string
   readonly href: string
-  readonly icon: string | { readonly id: string; readonly color: string } | undefined
+  readonly icon: SerializedIcon | undefined
   readonly scope: string | undefined
   readonly description: string | undefined
   readonly tags: readonly string[]

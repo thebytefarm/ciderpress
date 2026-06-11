@@ -5,6 +5,9 @@ export type {
   IconPrefix,
   IconId,
   IconConfig,
+  IconImage,
+  FaviconConfig,
+  LoaderConfig,
   ThemeColors,
   ThemeConfig,
   CiderpressThemeInput,
@@ -60,7 +63,12 @@ export type {
 } from './errors.ts'
 
 export { resolveIcon, resolveOptionalIcon, serializeIcon } from './icon.ts'
-export type { ResolvedIcon } from './icon.ts'
+export type {
+  ResolvedIcon,
+  ResolvedIconifyIcon,
+  ResolvedImageIcon,
+  SerializedIcon,
+} from './icon.ts'
 
 export { ICON_PREFIXES, VALID_ICON_IDS } from './icons.generated.ts'
 

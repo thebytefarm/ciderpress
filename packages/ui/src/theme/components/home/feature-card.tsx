@@ -3,14 +3,15 @@ import type React from 'react'
 
 import './feature-card.css'
 import { Card } from '../shared/card'
-import { Icon } from '../shared/icon'
+import { CardIcon } from '../shared/card-icon'
+import type { CardIconInput } from '../shared/resolve-card-icon'
 import { resolveCardIcon } from '../shared/resolve-card-icon'
 
 export interface FeatureCardProps {
   readonly title: string
   readonly description: string
   readonly href?: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: CardIconInput
   readonly span?: 2 | 3 | 4 | 6
   readonly titleLines?: number
   readonly descriptionLines?: number
@@ -23,7 +24,7 @@ export interface FeatureItem {
   readonly title: string
   readonly details: string
   readonly link?: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: CardIconInput
   readonly span?: 2 | 3 | 4 | 6
 }
 
@@ -46,11 +47,7 @@ export function FeatureCard({
   const resolved = resolveCardIcon(icon)
 
   const iconEl = match(resolved)
-    .with(P.nonNullable, (r) => (
-      <span className={`cp-card__icon cp-card__icon--${r.color}`}>
-        <Icon icon={r.id} />
-      </span>
-    ))
+    .with(P.nonNullable, (r) => <CardIcon resolved={r} className="cp-card__icon" />)
     .otherwise(() => null)
 
   const linkTail = match(href)

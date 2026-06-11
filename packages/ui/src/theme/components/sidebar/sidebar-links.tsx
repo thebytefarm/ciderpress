@@ -10,7 +10,10 @@ import './sidebar-links.css'
 interface SidebarLinkItem {
   readonly text: string
   readonly link: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?:
+    | string
+    | { readonly id: string; readonly color: string }
+    | { readonly kind: 'image'; readonly src: string; readonly alt: string }
   readonly style?: 'brand' | 'alt' | 'ghost'
   readonly shape?: 'square' | 'rounded' | 'circle'
 }
@@ -51,7 +54,10 @@ export function SidebarLinks(props: SidebarLinksProps): React.ReactElement | nul
 function renderIcon(icon: SidebarLinkItem['icon']): React.ReactElement | null {
   return match(icon)
     .with(P.string, (id) => <Icon icon={id} className="cp-sidebar-link-icon" />)
-    .with({ id: P.string, color: P.string }, (i) => (
+    .with({ kind: 'image' }, (img) => (
+      <img src={img.src} alt={img.alt} className="cp-sidebar-link-icon cp-sidebar-link-icon--img" />
+    ))
+    .with({ id: P.string }, (i) => (
       <Icon icon={i.id} className="cp-sidebar-link-icon" style={{ color: i.color }} />
     ))
     .otherwise(() => null)

@@ -2,14 +2,15 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { Card } from './card'
-import { Icon } from './icon'
+import { CardIcon } from './card-icon'
+import type { CardIconInput } from './resolve-card-icon'
 import { resolveCardIcon } from './resolve-card-icon'
 
 export interface SectionCardProps {
   readonly href: string
   readonly title: string
   readonly description?: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: CardIconInput
 }
 
 /**
@@ -25,7 +26,11 @@ export function SectionCard({
   description,
   icon = 'pixelarticons:file',
 }: SectionCardProps): React.ReactElement {
-  const resolved = resolveCardIcon(icon) ?? { id: 'pixelarticons:file', color: 'purple' }
+  const resolved = resolveCardIcon(icon) ?? {
+    kind: 'iconify' as const,
+    id: 'pixelarticons:file',
+    color: 'purple',
+  }
   const descEl = match(description)
     .with(P.nonNullable, (d) => <span className="cp-section-card__desc">{d}</span>)
     .otherwise(() => null)
@@ -33,9 +38,7 @@ export function SectionCard({
   return (
     <Card href={href} className="cp-section-card">
       <div className="cp-section-card__header">
-        <span className={`cp-section-card__icon cp-section-card__icon--${resolved.color}`}>
-          <Icon icon={resolved.id} />
-        </span>
+        <CardIcon resolved={resolved} className="cp-section-card__icon" />
         <span className="cp-section-card__title">{title}</span>
       </div>
       {descEl}

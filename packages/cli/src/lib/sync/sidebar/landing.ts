@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 
 import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { IconColor } from '@ciderpress/config'
+import type { IconColor, SerializedIcon } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
@@ -21,9 +21,10 @@ export interface WorkspaceCardData {
    */
   readonly title: string
   /**
-   * Icon config — Iconify identifier string or `{ id, color }` object.
+   * Icon config — Iconify identifier string, `{ id, color }` object, or
+   * `{ kind: 'image', src, alt }` for a static image asset.
    */
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: SerializedIcon
   /**
    * Scope label shown above the name (e.g. 'apps/').
    */
@@ -152,9 +153,9 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
   const iconId = match(hasChildren)
     .with(true, () => 'pixelarticons:folder')
     .otherwise(() => 'pixelarticons:file')
-  const icon: string | { readonly id: string; readonly color: string } = match(iconColor)
-    .with('purple', () => iconId)
-    .otherwise(() => ({ id: iconId, color: iconColor }))
+  const icon: SerializedIcon = match(iconColor)
+    .with('purple', () => iconId as SerializedIcon)
+    .otherwise(() => ({ id: iconId, color: iconColor }) as SerializedIcon)
   const description = await resolveDescription(entry)
 
   const baseProps = [
@@ -285,11 +286,14 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
  * @param icon - Icon config value (string or object)
  * @returns Array with the icon JSX prop string
  */
-function serializeIconProp(
-  icon: string | { readonly id: string; readonly color: string }
-): readonly string[] {
+function serializeIconProp(icon: SerializedIcon): readonly string[] {
   if (isString(icon)) {
     return [`icon="${icon}"`]
+  }
+  if ('kind' in icon) {
+    const src = escapeJsxProp(icon.src)
+    const alt = escapeJsxProp(icon.alt)
+    return [`icon={{ kind: "image", src: "${src}", alt: "${alt}" }}`]
   }
   return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
 }

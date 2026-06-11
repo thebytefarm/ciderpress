@@ -11,6 +11,9 @@ declare const __CIDERPRESS_DEFAULT_VARIANT__: string
 declare const __CIDERPRESS_THEME_COLORS__: string
 declare const __CIDERPRESS_THEME_DARK_COLORS__: string
 declare const __CIDERPRESS_THEME_REGISTRY__: string
+declare const __CIDERPRESS_HAS_USER_FAVICON__: boolean
+declare const __CIDERPRESS_LOADER_MIN_MS__: number
+declare const __CIDERPRESS_LOADER_MAX_MS__: number
 
 interface RegistryEntry {
   readonly name: string
@@ -123,9 +126,19 @@ const COLOR_VAR_MAP: Readonly<Record<ThemeColorKey, readonly string[]>> = Object
 const ALL_CSS_VARS: readonly string[] = Object.values(COLOR_VAR_MAP).flat()
 
 /**
- * Minimum time (ms) the loading overlay stays visible before fading out.
+ * Minimum time (ms) the loading overlay stays visible before fading
+ * out. Resolved at build time from `config.loader.minDisplayMs` —
+ * defaults to 150ms in `packages/ui/src/config.ts`.
  */
-const LOADER_MIN_DISPLAY_MS = 150
+const LOADER_MIN_DISPLAY_MS = __CIDERPRESS_LOADER_MIN_MS__
+
+/**
+ * Forced-dismiss timeout (ms) — already enforced by the head script's
+ * fallback timer, but re-asserted here so the React-driven dismissal
+ * still fires inside the same budget on slow hydration. Resolved at
+ * build time from `config.loader.maxDisplayMs`.
+ */
+const LOADER_MAX_DISPLAY_MS = __CIDERPRESS_LOADER_MAX_MS__
 
 /**
  * Duration (ms) of the CSS fade-out transition. Must match the
@@ -199,12 +212,14 @@ export function ThemeProvider(): React.ReactElement | null {
       applyColorOverrides(html, darkColors)
     }
 
-    // Sync the document favicon with the active theme's brand colour.
-    // Browsers cache static icon assets and ignore CSS, so the only way to
-    // keep the tab mark in lockstep with the chosen theme is to swap
-    // `<link rel="icon">` to a data-URI SVG carrying the resolved
-    // `--cp-c-brand-1`.
-    syncThemeFavicon(html)
+    // Sync the document favicon with the active theme's brand colour —
+    // only when the user has NOT set their own `favicon` in config. When
+    // they have, Rspress already points `<link rel="icon">` at the
+    // user's asset, and overwriting it with the themed apple data-URI
+    // would silently restore ciderpress branding.
+    if (!__CIDERPRESS_HAS_USER_FAVICON__) {
+      syncThemeFavicon(html)
+    }
 
     // Observe `.rp-dark` class changes so Rspress's built-in dark toggle
     // stays the single source of truth for variant flips. The new variant
@@ -253,8 +268,11 @@ export function ThemeProvider(): React.ReactElement | null {
       }
       // Re-sync the favicon — brand colour is constant across variants for
       // built-in themes, but surface overrides on the dark variant can
-      // affect the chip background colour we bake into the SVG.
-      syncThemeFavicon(html)
+      // affect the chip background colour we bake into the SVG. Skipped
+      // when the user supplied their own favicon (see initial sync above).
+      if (!__CIDERPRESS_HAS_USER_FAVICON__) {
+        syncThemeFavicon(html)
+      }
     })
     observer.observe(html, { attributes: true, attributeFilter: ['class'] })
 
@@ -628,9 +646,23 @@ function dismissLoader(html: HTMLElement): () => void {
     clearDotsInterval()
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
 
+  // Belt-and-suspenders fallback inside the React path: cap the React-
+  // driven dismissal at `LOADER_MAX_DISPLAY_MS` so even if the layout
+  // effect mounts but a downstream effect blocks (e.g. a long
+  // synchronous theme migration), the loader still goes away. The head
+  // script enforces the same cap for the no-hydration case.
+  const fallbackTimer = setTimeout(() => {
+    if (html.dataset.cpReady !== 'true') {
+      html.classList.add('cp-loader-fade')
+      html.dataset.cpReady = 'true'
+      clearDotsInterval()
+    }
+  }, LOADER_MAX_DISPLAY_MS)
+
   return () => {
     clearTimeout(fadeTimer)
     clearTimeout(removeTimer)
+    clearTimeout(fallbackTimer)
     html.classList.remove('cp-loader-fade')
     clearDotsInterval()
   }

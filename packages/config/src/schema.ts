@@ -99,9 +99,32 @@ const iconIdSchema: z.ZodType<IconId> = z
   .string()
   .refine((v) => v.includes(':')) as z.ZodType<IconId>
 
+const iconImageSchema = z.object({ src: z.string(), alt: z.string().optional() }).strict()
+
 const iconConfigSchema = z.union([
   iconIdSchema,
-  z.object({ id: iconIdSchema, color: z.string() }).strict(),
+  z.object({ id: iconIdSchema, color: z.string().optional() }).strict(),
+  iconImageSchema,
+])
+
+const loaderConfigSchema = z
+  .object({
+    content: z.string(),
+    label: z.string().optional(),
+    minDisplayMs: z.number().int().min(0).optional(),
+    maxDisplayMs: z.number().int().min(0).optional(),
+  })
+  .strict()
+
+const loaderFieldSchema = z.union([
+  z.literal(false),
+  z.enum(['apple', 'classic']),
+  loaderConfigSchema,
+])
+
+const faviconConfigSchema = z.union([
+  z.string(),
+  z.object({ src: z.string(), type: z.string().optional() }).strict(),
 ])
 
 const cardConfigSchema = z
@@ -370,16 +393,15 @@ export const ciderpressConfigSchema = z
     description: z.string().optional(),
     theme: themeConfigSchema.optional(),
     themes: z.array(ciderpressThemeInputSchema).optional(),
-    loader: z
-      .enum(['apple', 'classic'])
+    loader: loaderFieldSchema
       .describe(
-        "Inline FOUC loader style. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader (loading, loading., loading.., loading...)."
+        "Inline FOUC loader. `'apple'` (default) is Ciderpress's native pixel-apple animation. `'classic'` is the legacy dots loader. `false` disables the loader. Pass a `LoaderConfig` object for a custom SVG glyph + label."
       )
       .optional(),
-    icon: iconIdSchema.optional(),
+    icon: iconConfigSchema.optional(),
     logo: logoConfigSchema.optional(),
     banner: z.string().optional(),
-    favicon: z.string().optional(),
+    favicon: faviconConfigSchema.optional(),
     tagline: z.string().optional(),
     apps: z.array(workspaceItemSchema).optional(),
     packages: z.array(workspaceItemSchema).optional(),

@@ -6,12 +6,16 @@ import { fileURLToPath } from 'node:url'
 
 import type {
   BuiltInThemeName,
+  FaviconConfig,
   HomeConfig,
+  LoaderConfig,
   Paths,
+  SerializedIcon,
   ThemeColors,
   ThemeName,
   CiderpressConfig,
 } from '@ciderpress/config'
+import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
 import {
   BUILT_IN_THEMES,
   DEFAULT_THEME_NAME,
@@ -49,7 +53,32 @@ interface HeadScriptOptions {
   readonly themeName: string
   readonly vscode: boolean
   readonly registry: readonly ThemeRegistryEntry[]
+  /**
+   * Forced-dismiss timer (ms). Catches the case where the React bundle
+   * never hydrates — the head script flips `data-cp-ready` after this
+   * duration regardless of `ThemeProvider`.
+   */
+  readonly loaderMaxMs: number
+  /**
+   * Inject the dots-loader animation JS. Only relevant when `loader === 'classic'`;
+   * the apple loader and custom loaders animate purely via CSS.
+   */
+  readonly useDotsLoader: boolean
 }
+
+/**
+ * Default minimum loader display in ms — keeps the fade from feeling
+ * jittery on fast first paints.
+ */
+const DEFAULT_LOADER_MIN_MS = 150
+
+/**
+ * Default forced-dismiss timeout in ms. The head script flips
+ * `data-cp-ready` after this duration if the React bundle never
+ * hydrates, so the loader never stays stuck on static dist served over
+ * plain http with no service worker.
+ */
+const DEFAULT_LOADER_MAX_MS = 5000
 
 /**
  * Serialized theme registry entry consumed by the theme switcher and
@@ -111,18 +140,21 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeDarkColors = resolveThemeDarkColors(config)
 
   const userThemesCss = userThemes.map(themeToCss).join('')
-  const loaderStyle = config.loader ?? 'apple'
+  const loaderStyle = resolveLoaderStyle(config.loader)
   const themeCss = getThemeCss(themeName, loaderStyle) + userThemesCss
   const themeRegistry: readonly ThemeRegistryEntry[] = [
     ...BUILT_IN_THEME_REGISTRY,
     ...userThemes.map(buildRegistryEntry),
   ]
   const isVscode = vscode === true
+  const loaderMaxMs = resolveLoaderMaxMs(config.loader)
   const headScriptBody = buildHeadScriptBody({
     variant,
     themeName,
     vscode: isVscode,
     registry: themeRegistry,
+    loaderMaxMs,
+    useDotsLoader: loaderStyle === 'classic',
   })
 
   // Force a single React instance across all compiled theme components.
@@ -160,7 +192,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     title: config.title ?? 'ciderpress',
     description: config.description ?? 'Documentation',
 
-    icon: config.favicon ?? '/icon.svg',
+    icon: resolveFaviconPath(config.favicon),
     // String logos pass through to Rspress's stock `<img>` rendering.
     // Function logos and the default-branded fallback render via the
     // <NavLogo /> globalUIComponent which portals into `.rp-nav__title__link`.
@@ -244,6 +276,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           __CIDERPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
           __CIDERPRESS_THEME_REGISTRY__: JSON.stringify(JSON.stringify(themeRegistry)),
           __CIDERPRESS_VSCODE__: JSON.stringify(isVscode),
+          __CIDERPRESS_HAS_USER_FAVICON__: JSON.stringify(config.favicon !== undefined),
+          __CIDERPRESS_LOADER_MIN_MS__: JSON.stringify(resolveLoaderMinMs(config.loader)),
+          __CIDERPRESS_LOADER_MAX_MS__: JSON.stringify(resolveLoaderMaxMs(config.loader)),
         },
       },
       output: {
@@ -555,15 +590,21 @@ function resolveSidebarLinks(params: {
 }): readonly {
   text: string
   link: string
-  icon?: string | { id: string; color: string }
+  icon?: SerializedIcon
   style?: 'brand' | 'alt' | 'ghost'
   shape?: 'square' | 'rounded' | 'circle'
 }[] {
   const items = params.config.sidebar && params.config.sidebar[params.position]
-  if (items) {
-    return items
+  if (!items) {
+    return []
   }
-  return []
+  return items.map((item) => ({
+    text: item.text,
+    link: item.link,
+    icon: serializeIcon(resolveOptionalIcon(item.icon)),
+    style: item.style,
+    shape: item.shape,
+  }))
 }
 
 /**
@@ -658,7 +699,96 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
     }
     return ''
   })()
-  return [resolveJs, vscodeJs, LOADER_DOTS_JS].filter(Boolean).join(';')
+
+  // Forced-dismiss fallback. The React bundle's `ThemeProvider` is the
+  // primary dismissal path; this timer is a belt-and-suspenders cover
+  // for the case where hydration never runs (static dist served over
+  // plain http with no service worker, an errored bundle, etc.). The
+  // setTimeout flips `data-cp-ready` after `loaderMaxMs` so the loader
+  // can't get visually stuck.
+  const fallbackJs = `setTimeout(function(){var d=document.documentElement;if(d.dataset.cpReady!=='true'){d.classList.add('cp-loader-fade');setTimeout(function(){d.dataset.cpReady='true'},220)}},${options.loaderMaxMs})`
+
+  const loaderJs = match(options.useDotsLoader)
+    .with(true, () => LOADER_DOTS_JS)
+    .otherwise(() => '')
+  return [resolveJs, vscodeJs, loaderJs, fallbackJs].filter(Boolean).join(';')
+}
+
+/**
+ * Normalize `config.loader` into the `LoaderStyle` consumed by
+ * `getThemeCss`. Defaults to `'apple'` when omitted; `false` flows
+ * through unchanged; `LoaderConfig` objects flow through unchanged.
+ *
+ * @private
+ * @param loader - Raw `config.loader` value
+ * @returns Resolved `LoaderStyle`
+ */
+function resolveLoaderStyle(
+  loader: CiderpressConfig['loader']
+): false | 'apple' | 'classic' | LoaderConfig {
+  if (loader === undefined) {
+    return 'apple'
+  }
+  return loader
+}
+
+/**
+ * Resolve the minimum loader display time in ms.
+ *
+ * @private
+ * @param loader - Raw `config.loader` value
+ * @returns Minimum display time in ms
+ */
+export function resolveLoaderMinMs(loader: CiderpressConfig['loader']): number {
+  if (isLoaderConfig(loader) && typeof loader.minDisplayMs === 'number') {
+    return loader.minDisplayMs
+  }
+  return DEFAULT_LOADER_MIN_MS
+}
+
+/**
+ * Resolve the forced-dismiss timeout in ms.
+ *
+ * @private
+ * @param loader - Raw `config.loader` value
+ * @returns Forced-dismiss timeout in ms
+ */
+export function resolveLoaderMaxMs(loader: CiderpressConfig['loader']): number {
+  if (isLoaderConfig(loader) && typeof loader.maxDisplayMs === 'number') {
+    return loader.maxDisplayMs
+  }
+  return DEFAULT_LOADER_MAX_MS
+}
+
+/**
+ * Type guard for the `LoaderConfig` object form. Used to safely read
+ * `minDisplayMs` / `maxDisplayMs` off raw config values.
+ *
+ * @private
+ * @param loader - Raw `config.loader` value
+ * @returns True when `loader` is the `LoaderConfig` object form
+ */
+function isLoaderConfig(loader: CiderpressConfig['loader']): loader is LoaderConfig {
+  return typeof loader === 'object' && loader !== null
+}
+
+/**
+ * Resolve the favicon path Rspress writes to `<link rel="icon">`.
+ * Accepts the `FaviconConfig` union — string shorthand or `{ src, type }`
+ * object — and returns the resolved string path.
+ *
+ * @private
+ * @param favicon - Raw `config.favicon` value
+ * @returns Favicon path string
+ */
+function resolveFaviconPath(favicon: FaviconConfig | undefined): string {
+  if (favicon === undefined) {
+    return '/icon.svg'
+  }
+  if (typeof favicon === 'string') {
+    return favicon
+  }
+  return favicon.src
 }
 
 /**

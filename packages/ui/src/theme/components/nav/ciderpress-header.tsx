@@ -2,13 +2,13 @@ import { clsx } from 'clsx'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
-import { CiderpressLogo } from '../shared/ciderpress-logo'
 import { CiderpressNavHamburger } from './ciderpress-nav-hamburger'
 import { CiderpressNavMenu } from './ciderpress-nav-menu'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
 import { CiderpressNavSearch } from './ciderpress-nav-search'
 import { CiderpressNavSocialLinks } from './ciderpress-nav-social-links'
 import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
+import { HeaderLogo } from './header-logo'
 import { NavDivider } from './nav-divider'
 import { TopbarCTA } from './topbar-cta'
 import { VariantToggle } from './variant-toggle'
@@ -78,7 +78,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
           topbarCta={props.topbarCta}
         />
         <RouteLink href="/" className="cp-header-logo" aria-label="Home">
-          <CiderpressLogo />
+          <HeaderLogo />
         </RouteLink>
 
         {/* Right cluster wrapper. Grows from a zero basis so its width
