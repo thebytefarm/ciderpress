@@ -29,6 +29,7 @@ jobs:
       - run: pnpm install
 
       - name: Create release PR or publish
+        id: changesets
         uses: changesets/action@v1
         with:
           version: pnpm run version
@@ -38,3 +39,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_CONFIG_PROVENANCE: true
+
+      # While in `pre` mode, changesets publishes under `--tag rc`, leaving
+      # `npm install <pkg>` stuck on whatever was on `latest` first. Since RCs
+      # are what users are installing today, re-point `latest` (and `rc`) at
+      # every just-published version, and force the wrapper's GitHub release
+      # to be the repo's Latest (GitHub otherwise skips prereleases).
+      - name: Promote published RCs to npm latest + GitHub Latest
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PUBLISHED: ${{ steps.changesets.outputs.publishedPackages }}
+        run: |
+          set -euo pipefail
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          echo "$PUBLISHED" | jq -c '.[]' | while read -r pkg; do
+            name=$(echo "$pkg" | jq -r '.name')
+            version=$(echo "$pkg" | jq -r '.version')
+            echo "Promoting ${name}@${version} -> latest, rc"
+            npm dist-tag add "${name}@${version}" latest
+            npm dist-tag add "${name}@${version}" rc
+            if [ "$name" = "ciderpress" ]; then
+              echo "Marking ${name}@${version} as GitHub Latest"
+              gh release edit "${name}@${version}" --prerelease=false --latest=true --repo "$GITHUB_REPOSITORY"
+            fi
+          done
