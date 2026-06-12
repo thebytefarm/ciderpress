@@ -32,8 +32,7 @@ Thumbs.db
 
 # Editor directories and files
 .idea/
-.vscode/
-!/.vscode/
+.vscode/settings.json
 *.swp
 *.swo
 *~
@@ -72,9 +71,9 @@ packages/*/.ciderpress-dev-headless.mjs
 .cache/
 .vercel
 
-# ciderpress (ignore all except public assets)
-.ciderpress/*
-!.ciderpress/public/
+# ciderpress (ignore all except public assets, at any depth)
+**/.ciderpress/*
+!**/.ciderpress/public/
 
 # Visual-parity baselines
 .snapshots/
