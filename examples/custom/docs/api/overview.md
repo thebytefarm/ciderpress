@@ -11,13 +11,13 @@ the official SDKs.
 
 ## Base URL
 
-```
+```text
 https://api.acme.dev/v1
 ```
 
 Preview deploys get a stable subdomain per workspace:
 
-```
+```text
 https://api.<workspace>.preview.acme.dev/v1
 ```
 

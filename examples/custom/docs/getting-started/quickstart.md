@@ -1,6 +1,6 @@
 ---
 title: Quickstart
-description: From signup to your first deploy in 12 minutes.
+description: From signup to your first deploy in under fifteen minutes.
 ---
 
 # Quickstart

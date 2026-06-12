@@ -1,3 +1,4 @@
+import type { SerializedIcon } from '@ciderpress/config'
 import { Link } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
 import type React from 'react'
@@ -10,10 +11,7 @@ import './sidebar-links.css'
 interface SidebarLinkItem {
   readonly text: string
   readonly link: string
-  readonly icon?:
-    | string
-    | { readonly id: string; readonly color: string }
-    | { readonly kind: 'image'; readonly src: string; readonly alt: string }
+  readonly icon?: SerializedIcon
   readonly style?: 'brand' | 'alt' | 'ghost'
   readonly shape?: 'square' | 'rounded' | 'circle'
 }

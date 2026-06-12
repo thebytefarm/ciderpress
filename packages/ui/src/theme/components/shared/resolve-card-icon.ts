@@ -1,4 +1,5 @@
 import type { SerializedIcon } from '@ciderpress/config'
+import { match } from 'massaman/match'
 
 /**
  * Render-ready image icon — `src` plus `alt`.
@@ -52,11 +53,17 @@ export function resolveCardIcon(icon: CardIconInput): ResolvedCardIcon | undefin
   if (typeof icon === 'string') {
     return { kind: 'iconify', id: icon, color: 'purple' }
   }
-  if ('kind' in icon) {
-    // Defence-in-depth: even if a downstream caller hand-builds the
-    // object and forgets `alt`, fall back to an empty string so React
-    // never sees `alt={undefined}` (which silences screen readers).
-    return { kind: 'image', src: icon.src, alt: icon.alt ?? '' }
-  }
-  return { kind: 'iconify', id: icon.id, color: icon.color }
+  // Match on the discriminant value rather than `'kind' in icon` so a
+  // future variant that also carries a `kind` field (or a malformed
+  // runtime input) can't silently slip into the image branch.
+  return match(icon)
+    .with({ kind: 'image' }, (img) => ({
+      kind: 'image' as const,
+      src: img.src,
+      // Defence-in-depth: even if a downstream caller hand-builds the
+      // object and forgets `alt`, fall back to an empty string so React
+      // never sees `alt={undefined}` (which silences screen readers).
+      alt: img.alt ?? '',
+    }))
+    .otherwise((i) => ({ kind: 'iconify' as const, id: i.id, color: i.color }))
 }

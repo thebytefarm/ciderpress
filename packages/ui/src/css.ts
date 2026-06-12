@@ -165,10 +165,16 @@ function resolveGlyphUrl(content: string): string {
   // content as raw text terminated by the literal `&lt;/style&gt;` bytes — if any
   // user-supplied content slipped that substring through, it would break out
   // of the style element and the trailing bytes would parse as HTML.
+  // Raw line terminators (LF/CR/FF) inside a `url("...")` token break the
+  // string and invalidate every following declaration, so encode them as
+  // CSS hex escapes alongside `<`, quotes, and backslashes.
   const safe = content
     .replaceAll('\\', String.raw`\\`)
     .replaceAll('"', String.raw`\"`)
     .replaceAll('<', String.raw`\3c `)
+    .replaceAll('\n', String.raw`\A `)
+    .replaceAll('\r', String.raw`\D `)
+    .replaceAll('\f', String.raw`\C `)
   return `url("${safe}")`
 }
 
@@ -184,11 +190,16 @@ function resolveGlyphUrl(content: string): string {
 function buildLabelCss(label: string): string {
   // `&lt;` is escaped as CSS hex `\3c ` so the byte sequence `&lt;/style&gt;` never
   // appears in the inline &lt;style&gt; body. The CSS parser decodes `\3c` to `&lt;`
-  // when applying the rule, so the visible label is unchanged.
+  // when applying the rule, so the visible label is unchanged. Raw line
+  // terminators (LF/CR/FF) terminate the `content: '...'` string and
+  // invalidate the whole rule, so encode them as CSS hex escapes too.
   const escaped = label
     .replaceAll('\\', String.raw`\\`)
     .replaceAll("'", String.raw`\'`)
     .replaceAll('<', String.raw`\3c `)
+    .replaceAll('\n', String.raw`\A `)
+    .replaceAll('\r', String.raw`\D `)
+    .replaceAll('\f', String.raw`\C `)
   return `html::after {
   content: '${escaped}';
   position: fixed;

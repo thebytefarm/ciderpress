@@ -28,7 +28,7 @@ import {
 } from '@ciderpress/theme'
 import type { ThemeVariant, CiderpressTheme } from '@ciderpress/theme'
 import type { UserConfig } from '@rspress/core'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
 import supersub from 'rspress-plugin-supersub'
@@ -195,13 +195,18 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     description: config.description ?? 'Documentation',
 
     icon: resolveFaviconPath(config.favicon),
-    // `logo` and `logoText` are intentionally suppressed. Rspress's
-    // built-in nav (`.rp-nav`) is visually hidden by CSS in
-    // `ciderpress-header.css`, and `<HeaderLogo />` paints the visible
-    // brand inside `cp-header-logo` by reading `config.logo` from the
-    // bundled user config. Letting Rspress also fetch a logo image
-    // would produce a wasted network request into the hidden nav.
-    logo: '',
+    // `<HeaderLogo />` paints the visible brand inside `cp-header-logo`
+    // by reading `config.logo` from the bundled user config, and
+    // Rspress's built-in nav (`.rp-nav`) is visually hidden by CSS in
+    // `ciderpress-header.css` — so this `logo` field never paints
+    // pixels. Forward the static string form anyway so downstream
+    // tooling that inspects the resolved Rspress config (plugins, the
+    // OpenGraph image generator) sees the user's intended asset. The
+    // function form is non-serialisable for that audience; pass an
+    // empty string there.
+    logo: match(config.logo)
+      .with(P.string, (l) => l)
+      .otherwise(() => ''),
     logoText: '',
 
     themeDir: path.resolve(import.meta.dirname, 'theme'),

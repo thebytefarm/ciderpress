@@ -86,6 +86,12 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
   }
 
+  // Wipe `outDir/public` first so deleted user assets (e.g. a removed
+  // `repoRoot/public/logo.svg`) don't linger and silently override the
+  // freshly generated set on the next build. `copyAll` is append-only,
+  // so without this `fs.rm` stale files persist across syncs.
+  await fs.rm(path.resolve(outDir, 'public'), { recursive: true, force: true })
+
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))

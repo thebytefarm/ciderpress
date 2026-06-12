@@ -35,9 +35,18 @@ export function HomeFeature(): React.ReactElement | null {
   const fm = frontmatter as Record<string, unknown>
   const features = fm.features as readonly FeatureItem[] | undefined
   const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
-  const headingEyebrow = (heading && heading.eyebrow) ?? DEFAULT_HEADING_EYEBROW
-  const headingTitle = (heading && heading.title) ?? DEFAULT_HEADING_TITLE
-  const headingSubtitle = (heading && heading.subtitle) ?? DEFAULT_HEADING_SUBTITLE
+  // Frontmatter is unvalidated user content — a `featuresHeading.title: {}`
+  // would otherwise render as `[object Object]` in the H2. Treat any
+  // non-string value as missing and fall through to the framework default.
+  const headingEyebrow = match(heading && heading.eyebrow)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_EYEBROW)
+  const headingTitle = match(heading && heading.title)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_TITLE)
+  const headingSubtitle = match(heading && heading.subtitle)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_SUBTITLE)
 
   return match(features)
     .with(

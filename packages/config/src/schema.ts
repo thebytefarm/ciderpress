@@ -380,6 +380,7 @@ const homeConfigSchema = z
       .refine((ids) => new Set(ids).size === ids.length, {
         message: 'home.layout must not contain duplicate section ids',
       })
+      .meta({ uniqueItems: true })
       .optional(),
   })
   .strict()

@@ -38,7 +38,7 @@
     "example:custom": "pnpm --filter example-custom docs:dev",
     "example:custom:build": "pnpm --filter example-custom docs:build",
     "example:custom:serve": "pnpm --filter example-custom docs:serve",
-    "clean:examples": "pnpm dlx rimraf examples/*/.ciderpress",
+    "clean:examples": "pnpm exec rimraf examples/*/.ciderpress",
     "bench": "pnpm --filter benchmarks bench",
     "bench:run": "pnpm --filter benchmarks bench:run",
     "e2e": "pnpm --filter e2e test",

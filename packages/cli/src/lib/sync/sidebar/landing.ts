@@ -299,12 +299,16 @@ function serializeIconProp(icon: SerializedIcon): readonly string[] {
   if (isString(icon)) {
     return [`icon="${icon}"`]
   }
-  if ('kind' in icon) {
-    const src = escapeJsxProp(icon.src)
-    const alt = escapeJsxProp(icon.alt)
-    return [`icon={{ kind: "image", src: "${src}", alt: "${alt}" }}`]
-  }
-  return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
+  // Match on the discriminant value rather than `'kind' in icon` so a
+  // future variant that also carries a `kind` field (or a malformed
+  // runtime input) can't silently slip into the image branch.
+  return match(icon)
+    .with({ kind: 'image' }, (img) => {
+      const src = escapeJsxProp(img.src)
+      const alt = escapeJsxProp(img.alt)
+      return [`icon={{ kind: "image", src: "${src}", alt: "${alt}" }}`]
+    })
+    .otherwise((i) => [`icon={{ id: "${i.id}", color: "${i.color}" }}`])
 }
 
 /**

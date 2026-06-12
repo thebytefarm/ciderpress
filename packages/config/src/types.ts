@@ -891,7 +891,7 @@ export interface HomeSectionHeading {
  * `truncate`, `heading`) and exists as a separate name purely for
  * documentation clarity — the runtime shape is identical.
  */
-export interface HomeFeaturesConfig extends HomeGridConfig {}
+export type HomeFeaturesConfig = HomeGridConfig
 
 /**
  * Hero demo block — the visual rendered next to the hero copy.

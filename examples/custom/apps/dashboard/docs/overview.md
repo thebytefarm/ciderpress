@@ -13,7 +13,7 @@ inspection, and feature-flag administration.
 
 - Next.js 15 with the App Router
 - React Server Components for everything above the fold
-- Tanstack Query for client-side state
+- TanStack Query for client-side state
 - A typed gRPC-over-HTTP client targeting the edge runtime
 
 ## Routes

@@ -37,7 +37,7 @@ are intentionally absent. Use Acme's managed equivalents:
 
 Routes are file-based:
 
-```
+```text
 handlers/
   index.ts         → GET  /
   customers.ts     → GET  /customers, POST /customers
