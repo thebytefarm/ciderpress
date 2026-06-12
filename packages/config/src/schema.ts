@@ -364,6 +364,8 @@ const splitConfigSchema = z
   })
   .strict()
 
+const homeSectionIdSchema = z.enum(['hero', 'trust', 'features', 'split', 'workspaces', 'cta'])
+
 const homeConfigSchema = z
   .object({
     features: homeGridConfigWithHeadingSchema.optional(),
@@ -373,6 +375,12 @@ const homeConfigSchema = z
     eyebrow: z.string().optional(),
     trust: trustConfigSchema.optional(),
     cta: ctaConfigSchema.optional(),
+    layout: z
+      .array(homeSectionIdSchema)
+      .refine((ids) => new Set(ids).size === ids.length, {
+        message: 'home.layout must not contain duplicate section ids',
+      })
+      .optional(),
   })
   .strict()
 

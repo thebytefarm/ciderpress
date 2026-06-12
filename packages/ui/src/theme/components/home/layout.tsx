@@ -1,7 +1,8 @@
-import type { HeroDemoConfig, SplitConfig } from '@ciderpress/config'
+import type { HeroDemoConfig, HomeSectionId, SplitConfig } from '@ciderpress/config'
+import { DEFAULT_HOME_LAYOUT } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
-import type React from 'react'
+import React from 'react'
 
 import { SiteFooter } from '../footer/site-footer'
 import { CTA } from './cta'
@@ -148,18 +149,38 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     ))
     .exhaustive()
 
+  // Section render order. `home.layout` (when provided) controls both
+  // order and visibility — sections omitted from the array are not
+  // rendered. The framework default (`DEFAULT_HOME_LAYOUT`) preserves
+  // the historical fixed order. Unknown ids are ignored at render time
+  // (the schema rejects them at config-load anyway).
+  const layout = (fm.layout as readonly HomeSectionId[] | undefined) ?? DEFAULT_HOME_LAYOUT
+  const sectionsById: Readonly<Record<HomeSectionId, React.ReactNode>> = {
+    hero: (
+      <>
+        {props.beforeHero}
+        {heroSection}
+        {props.afterHero}
+      </>
+    ),
+    trust: trustSection,
+    features: (
+      <>
+        {props.beforeFeatures}
+        <HomeFeature />
+        {props.afterFeatures}
+      </>
+    ),
+    split: splitSection,
+    workspaces: <HomeWorkspaces />,
+    cta: ctaSection,
+  }
+
   return (
     <PageRail>
-      {props.beforeHero}
-      {heroSection}
-      {props.afterHero}
-      {trustSection}
-      {props.beforeFeatures}
-      <HomeFeature />
-      {props.afterFeatures}
-      {splitSection}
-      <HomeWorkspaces />
-      {ctaSection}
+      {layout.map((id) => (
+        <React.Fragment key={id}>{sectionsById[id]}</React.Fragment>
+      ))}
       <SiteFooter />
     </PageRail>
   )

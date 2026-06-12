@@ -1054,6 +1054,27 @@ export interface SplitVisual {
 }
 
 /**
+ * Identifier for one of the built-in home-page sections. Used by
+ * `home.layout` to control render order and visibility.
+ */
+export type HomeSectionId = 'hero' | 'trust' | 'features' | 'split' | 'workspaces' | 'cta'
+
+/**
+ * Default render order for `home.layout` when the field is omitted —
+ * matches the historical fixed order before `home.layout` was added.
+ * Exposed as a `readonly` constant so consumers writing custom
+ * layouts can splice in / omit sections without retyping the list.
+ */
+export const DEFAULT_HOME_LAYOUT: readonly HomeSectionId[] = Object.freeze([
+  'hero',
+  'trust',
+  'features',
+  'split',
+  'workspaces',
+  'cta',
+])
+
+/**
  * Home page layout customization.
  *
  * Schema: `homeConfigSchema` in schema.ts validates this shape.
@@ -1068,6 +1089,7 @@ export interface SplitVisual {
  *   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
  *   trust: { lead: 'Used by', names: ['Acme', 'Globex'] },
  *   cta: { title: 'Ready to ship?', actions: [...] },
+ *   layout: ['hero', 'cta', 'features', 'workspaces'],
  * }
  * ```
  */
@@ -1111,6 +1133,25 @@ export interface HomeConfig {
    * Final CTA band rendered just above the footer.
    */
   readonly cta?: HomeCtaConfig
+  /**
+   * Render order for the home-page sections. Omit to use the
+   * framework default (`hero → trust → features → split → workspaces
+   * → cta`); set to an array of section ids to reorder, suppress, or
+   * both — sections not listed are not rendered. Duplicate ids are
+   * rejected by the schema.
+   *
+   * For more flexibility (custom sections, JSX layouts), provide an
+   * `index.md` in your content tree with `pageType: home` and import
+   * components from `@ciderpress/ui/theme`. The sync engine skips the
+   * auto-generated home page whenever an explicit `index.md` exists.
+   *
+   * @example
+   * ```ts
+   * // Put the CTA above the features grid and drop the trust strip
+   * layout: ['hero', 'cta', 'features', 'workspaces']
+   * ```
+   */
+  readonly layout?: readonly HomeSectionId[]
 }
 
 /**

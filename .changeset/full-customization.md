@@ -5,106 +5,193 @@
 '@ciderpress/ui': minor
 ---
 
-**Full custom branding.** Six surfaces that previously forced ciderpress's
-own branding through are now user-overridable, so a product docs site can
-ship with zero ciderpress wordmark or pixel-apple visible.
+**Full custom branding.** Every brand surface on a ciderpress site is
+now user-overridable, plus the home page can be reordered and have
+sections suppressed without writing custom MDX.
 
-### Topbar icon chip (new)
+## Topbar icon chip
 
-`config.icon` now actually renders. The field had a JSDoc claim but no
-implementation — `<HeaderIcon />` now paints it as a small chip immediately
-before `<HeaderLogo />` inside `cp-header-logo`. Accepts the same
-`IconConfig` union as cards: Iconify id, `{ id, color }`, or `{ src, alt }`
-for a static asset.
+`config.icon` now actually renders — a small chip painted by
+`<HeaderIcon />` immediately before `<HeaderLogo />` inside
+`cp-header-logo`. Pair with `logo` for the canonical two-slot identity
+(small mark + wordmark). Accepts the same `IconConfig` union as cards.
 
 ```ts
-icon: 'devicon:react'                          // Iconify
-icon: { id: 'devicon:nextjs', color: 'blue' }  // Iconify, explicit colour
-icon: { src: '/icon.svg', alt: 'maltty' }      // Image
+defineConfig({
+  // Single slot — most sites pick this.
+  logo: '/logo.svg',
+
+  // Two-slot pattern — small mark + wordmark.
+  icon: { src: '/mark.svg', alt: 'Acme' },
+  logo: '/wordmark.svg',
+})
 ```
 
-Pairs with `logo` for the canonical two-slot brand identity (icon chip +
-wordmark) — Stripe / Vercel / Rspress-docs pattern.
+## Loader
 
-### Logo on landing pages
-
-`config.logo` now wires through to the visible header on every page —
-including landing pages, where Rspress's nav slot was collapsing the user's
-logo to 1×1. `<CiderpressLogo />` remains the fallback when `logo` is omitted.
-
-### Custom loader
-
-`loader` accepts four forms:
-
-- `'apple'` (default) — the ciderpress pixel-apple animation.
-- `'classic'` — the legacy dots loader.
-- `false` — no loader chrome at all.
-- `LoaderConfig` — custom SVG glyph + label + timing.
+`config.loader` accepts four forms:
 
 ```ts
+loader: 'apple'                          // default — ciderpress pixel apple
+loader: 'classic'                        // legacy dots loader
+loader: false                            // no loader at all
 loader: {
-  content: readFileSync('./assets/loader.svg', 'utf8'),
+  content: '<svg>...</svg>',             // inline SVG markup, OR
+  // content: '/loader.svg',             // asset path
   label: 'brewing',
+  minDisplayMs: 150,
   maxDisplayMs: 4000,
 }
 ```
 
-A fallback dismissal timer in the inline head script guarantees the loader
-disappears even when the React bundle never hydrates (static dist over plain
-http with no service worker).
+A fallback dismissal timer in the inline head script guarantees
+`data-cp-ready` flips even when the React bundle never hydrates (static
+dist over plain http with no service worker). Cross-field validation
+rejects configs where `maxDisplayMs < minDisplayMs + 200`.
 
-### User favicon wins
-
-Setting `config.favicon` now disables the runtime favicon retinting that
-swapped `<link rel="icon">` to a themed pixel-apple data URI. The user's
-asset stays put. `favicon` also accepts `{ src }` in object form for
-forward compatibility with future per-link metadata.
-
-### Image-form icons
-
-`IconConfig` now accepts `{ src, alt }` alongside Iconify identifiers.
-Image icons render as `<img>` in workspace cards, section cards, feature
-cards, sidebar links, and the top-level topbar mark.
+## Favicon
 
 ```ts
-icon: { src: '/icon.svg', alt: 'maltty' }
+favicon: '/favicon.svg'                  // string shorthand
+favicon: { src: '/favicon', type: 'image/svg+xml' }   // explicit MIME
 ```
 
-For inline React JSX, keep using `logo: ({ theme }) => <YourMark />` —
-that path already supports ReactNode and re-renders on theme changes.
+Setting `favicon` disables the runtime favicon retinting that otherwise
+swaps `<link rel="icon">` to a themed pixel-apple data URI. The
+optional `type` field emits a second `<link rel="icon" type="...">` so
+extension-less URLs still resolve to the right MIME.
 
-### Security hardening
+## Icons broadened
 
-The custom-loader CSS builder hex-escapes `<` characters in both `label`
-and asset-URL `content`, so a payload containing `</style>` can never
-break out of the inline `<style>` tag injected in `<head>`. The inline-SVG
-content path was already safe via `encodeURIComponent`. The JSX-prop
-escaper in the sync engine now also escapes backslash, blocking
-trailing-backslash escape sequences in image-form icon `src`/`alt`.
+```ts
+icon: 'devicon:react'                          // Iconify (purple default)
+icon: { id: 'devicon:nextjs', color: 'blue' }  // Iconify, explicit colour
+icon: { src: '/icon.svg', alt: 'maltty' }      // Image — new
+```
 
-### Loader timer correctness
+The image form is honoured on the topbar icon chip, workspace cards,
+section cards, feature cards, and sidebar links.
 
-- `minDisplayMs` + `maxDisplayMs` are cross-field validated: `max` must
-  be at least `min + 200ms` (the CSS fade transition), rejecting configs
-  that would dismiss the loader before paint.
-- The forced-dismiss fallback is now skipped entirely when `loader: false`
-  so user CSS hooked on the `data-cp-ready` dismissal lifecycle stays quiet.
-- The React-side duplicate fallback timer was removed — the inline head
-  script's timer is the single source of truth.
+## Home page — section opt-outs and customisation
 
-### Footer brand mark
+```ts
+home: {
+  // Suppress the framework's `pnpm ciderpress dev` terminal demo
+  heroDemo: false,
 
-The site footer's brand chip no longer falls back to the framework
-`<CiderpressMark />` apple. When `site.footer.brandMark` is omitted, the
-chip renders `<img src="/icon.svg">` — the auto-generated mark derived
-from `config.title` at sync time, or the user's `public/icon.svg` when
-one is shipped. Any user with a `public/icon.svg` (or who lets
-ciderpress generate one) gets a non-apple footer out of the box.
+  // Or replace it with an image (dashboard screenshot, product shot, …)
+  heroDemo: { src: '/dashboard.svg', alt: 'Acme dashboard' },
 
-### Icon-config consolidation
+  // Or replace it with a structured terminal carrying your own command + output
+  heroDemo: {
+    windowTitle: '~/code/acme — acme dev',
+    command: 'acme dev',
+    lines: [
+      { kind: 'ok',   text: 'edge runtime ready in us-east-1' },
+      { kind: 'info', text: 'watching ./handlers' },
+      { kind: 'cmt',  text: 'handlers.ts changed — rebuilt in 8ms' },
+      { kind: 'err',  text: 'webhook delivery failed — retrying' },
+    ],
+  },
 
-`SerializedIcon` and `ResolvedIcon` are now exported from the wrapper
-`ciderpress` package so downstream tooling (custom MDX, third-party
-themes) can type icon objects without reaching into `@ciderpress/config`.
-The `@ciderpress/ui` shared resolver imports `SerializedIcon` directly —
-the duplicate `CardIconInput` alias was dropped.
+  // Suppress the "Acme Docs" sample-config split block
+  split: false,
+
+  // Or replace it with your own copy + code preview
+  split: {
+    eyebrow: 'Configuration',
+    title: 'One file. Validated at boot.',
+    body: 'Acme services are described in TypeScript; Zod validates on deploy.',
+    bullets: ['Typed handlers', 'Schema drift caught early', 'Per-env overrides'],
+    cta: { text: 'Read docs', link: '/getting-started/configuration' },
+    visual: {
+      language: 'ts',
+      code: "import { defineConfig } from '@acme/sdk'\n\nexport default defineConfig({ ... })",
+    },
+  },
+
+  // Override the hardcoded "Features" eyebrow + "Built for the way you ship." title.
+  // Same shape applies on `home.workspaces.heading`.
+  features: {
+    columns: 3,
+    heading: {
+      eyebrow: 'What you get',
+      title: 'Built for the engineers who ship.',
+      subtitle: 'Typed SDK, OpenAPI spec, edge runtime — wired together.',
+    },
+  },
+  workspaces: {
+    columns: 2,
+    heading: { eyebrow: 'Apps & Packages', title: 'Everything in the monorepo.' },
+  },
+}
+```
+
+## Home page — section order
+
+`home.layout` controls render order and visibility. Omit a section
+from the array to suppress it. Default is `['hero', 'trust',
+'features', 'split', 'workspaces', 'cta']`.
+
+```ts
+home: {
+  // Push the conversion above the fold; drop the trust strip
+  layout: ['hero', 'cta', 'features', 'workspaces', 'split'],
+}
+```
+
+The schema rejects duplicates and unknown ids.
+
+## Home page — full custom MDX
+
+For full control (custom sections, JSX in arbitrary positions), add a
+section that mounts at `/` and write your own MDX. The sync engine
+detects an explicit `index.md` and skips the auto-generated home page.
+All home components are importable from `@ciderpress/ui/theme`.
+
+```mdx
+---
+pageType: home
+---
+import { Hero, FeatureGrid, FeatureCard, PageRail, CTA } from '@ciderpress/ui/theme'
+
+<PageRail>
+  <Hero title="Acme Corp" actions={[{ theme: 'brand', text: 'Get started', link: '/start' }]} />
+  <MyCustomBand />
+  <FeatureGrid>
+    <FeatureCard title="One" description="..." />
+    <FeatureCard title="Two" description="..." />
+  </FeatureGrid>
+  <CTA title="Ready?" actions={[{ theme: 'brand', text: 'Sign up', link: '/signup' }]} />
+</PageRail>
+```
+
+## Footer brand mark
+
+The site footer no longer falls back to the ciderpress apple. When
+`site.footer.brandMark` is omitted, the chip renders `<img
+src="/icon.svg">` — your custom mark or the auto-generated one derived
+from `config.title`.
+
+## Security + correctness
+
+- CSS `</style>` injection blocked in `loader.label` and `loader.content` —
+  `<` is hex-escaped (`\3c `) so the byte sequence `</style>` never
+  appears in the inline `<style>` tag.
+- `escapeJsxProp` now escapes backslash, blocking trailing-backslash
+  escapes in image-form icon `src` / `alt`.
+- Empty `src: ''` rejected at the schema layer.
+- Layouts short-circuit on `import.meta.env.SSG_MD` so the
+  Copy-Markdown button no longer pulls topbar logo / search button /
+  nav items into every copied page.
+
+## Acme example
+
+The `examples/custom/` directory ships a realistic mid-size product
+docs site (Acme Corp) that exercises every new field — custom logo,
+favicon, dashboard-style hero demo, custom split, reordered sections,
+six feature cards, three workspace items, a three-column footer.
+Verified: zero "ciderpress" strings in the rendered HTML.
+
+Run `pnpm example:custom`, `pnpm example:custom:build`, or `pnpm
+example:custom:serve`.

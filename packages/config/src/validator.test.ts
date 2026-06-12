@@ -129,6 +129,30 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
+  it('should accept home.layout as a section render-order array', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { layout: ['hero', 'cta', 'features', 'workspaces'] },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject home.layout with duplicate section ids', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { layout: ['hero', 'features', 'hero'] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject home.layout with unknown section ids', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { layout: ['hero', 'unknown-section'] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
   it('should accept home.features.heading.eyebrow + workspaces heading', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,

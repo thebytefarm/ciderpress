@@ -1,3 +1,5 @@
+export { DEFAULT_HOME_LAYOUT } from './types.ts'
+
 export type {
   CiderpressConfig,
   ThemeName,
@@ -28,6 +30,7 @@ export type {
   HomeConfig,
   HomeFeaturesConfig,
   HomeSectionHeading,
+  HomeSectionId,
   HomeTrustConfig,
   HomeCtaConfig,
   HeroDemoConfig,

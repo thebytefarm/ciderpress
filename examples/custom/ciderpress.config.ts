@@ -119,6 +119,10 @@ export default defineConfig({
         { theme: 'alt', text: 'API reference', link: '/api/overview' },
       ],
     },
+    // Custom section order — push the CTA up under the hero so the
+    // primary conversion sits before any further reading. Trust strip
+    // is dropped (we don't have names yet).
+    layout: ['hero', 'cta', 'features', 'workspaces', 'split'],
   },
 
   // Hero CTA + supporting features.

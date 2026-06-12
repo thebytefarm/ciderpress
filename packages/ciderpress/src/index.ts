@@ -1,4 +1,5 @@
 export {
+  DEFAULT_HOME_LAYOUT,
   defineConfig,
   defineTheme,
   hasGlobChars,
@@ -28,6 +29,7 @@ export type {
   HomeConfig,
   HomeFeaturesConfig,
   HomeSectionHeading,
+  HomeSectionId,
   HomeTrustConfig,
   HomeCtaConfig,
   HeroDemoConfig,

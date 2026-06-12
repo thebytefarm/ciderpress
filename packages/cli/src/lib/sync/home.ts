@@ -112,6 +112,7 @@ export async function generateDefaultHomePage(
     split,
     features: featuresConfig,
     workspaces: workspacesConfig,
+    layout,
   } = config.home ?? {}
   const featuresHeading = featuresConfig && featuresConfig.heading
   const workspacesHeading = workspacesConfig && workspacesConfig.heading
@@ -163,6 +164,11 @@ export async function generateDefaultHomePage(
     // the object shape and renders it via HomeSplit.
     ...match(split)
       .with(P.nonNullable, (s) => ({ split: s }))
+      .otherwise(() => ({})),
+    // `home.layout` is plumbed into frontmatter as-is so the HomeLayout
+    // component can drive section render order from a single source.
+    ...match(layout)
+      .with(P.nonNullable, (l) => ({ layout: l }))
       .otherwise(() => ({})),
   }
 

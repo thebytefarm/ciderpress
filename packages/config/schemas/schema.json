@@ -1709,6 +1709,20 @@
             }
           },
           "additionalProperties": false
+        },
+        "layout": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "hero",
+              "trust",
+              "features",
+              "split",
+              "workspaces",
+              "cta"
+            ]
+          }
         }
       },
       "additionalProperties": false
