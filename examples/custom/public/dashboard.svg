@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 460" role="img" aria-label="Acme Corp dashboard preview">
+  <defs>
+    <linearGradient id="acme-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0b1220"/>
+      <stop offset="100%" stop-color="#0a0d18"/>
+    </linearGradient>
+    <linearGradient id="acme-brand" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="acme-chart" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="acme-line" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- window frame -->
+  <rect x="0" y="0" width="720" height="460" rx="12" fill="url(#acme-bg)"/>
+
+  <!-- titlebar -->
+  <rect x="0" y="0" width="720" height="32" rx="12" fill="#0d1424"/>
+  <rect x="0" y="20" width="720" height="12" fill="#0d1424"/>
+  <circle cx="18" cy="16" r="5" fill="#ff5f57"/>
+  <circle cx="36" cy="16" r="5" fill="#febc2e"/>
+  <circle cx="54" cy="16" r="5" fill="#28c840"/>
+  <text x="360" y="20" text-anchor="middle" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" fill="#64748b">dashboard.acme.dev — billing</text>
+
+  <!-- sidebar -->
+  <rect x="0" y="32" width="160" height="428" fill="#0b121f"/>
+  <g transform="translate(16 52)">
+    <rect x="0" y="0" width="20" height="20" rx="4" fill="url(#acme-brand)"/>
+    <path d="M5 16 L10 5 L15 16 M7 13 L13 13" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="28" y="14" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12" font-weight="700" fill="#e2e8f0">Acme</text>
+  </g>
+
+  <!-- sidebar nav -->
+  <g font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" fill="#cbd5e1">
+    <rect x="10" y="90" width="140" height="26" rx="6" fill="#1e293b"/>
+    <circle cx="22" cy="103" r="2.5" fill="#0ea5e9"/>
+    <text x="32" y="107">Overview</text>
+
+    <circle cx="22" cy="129" r="2.5" fill="#475569"/>
+    <text x="32" y="133" fill="#94a3b8">Customers</text>
+
+    <circle cx="22" cy="155" r="2.5" fill="#475569"/>
+    <text x="32" y="159" fill="#94a3b8">Billing</text>
+
+    <circle cx="22" cy="181" r="2.5" fill="#475569"/>
+    <text x="32" y="185" fill="#94a3b8">Audit log</text>
+
+    <circle cx="22" cy="207" r="2.5" fill="#475569"/>
+    <text x="32" y="211" fill="#94a3b8">Webhooks</text>
+
+    <circle cx="22" cy="233" r="2.5" fill="#475569"/>
+    <text x="32" y="237" fill="#94a3b8">Team</text>
+
+    <text x="20" y="290" font-size="9" font-weight="700" letter-spacing="0.08em" fill="#475569">WORKSPACE</text>
+    <circle cx="22" cy="313" r="2.5" fill="#475569"/>
+    <text x="32" y="317" fill="#94a3b8">Settings</text>
+    <circle cx="22" cy="339" r="2.5" fill="#475569"/>
+    <text x="32" y="343" fill="#94a3b8">Integrations</text>
+  </g>
+
+  <!-- main: header bar -->
+  <text x="184" y="68" font-family="ui-sans-serif, system-ui, sans-serif" font-size="18" font-weight="800" fill="#f1f5f9">Overview</text>
+  <text x="184" y="86" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" fill="#64748b">Past 30 days</text>
+
+  <!-- search pill -->
+  <rect x="520" y="52" width="180" height="28" rx="14" fill="#0d1424" stroke="#1e293b"/>
+  <circle cx="538" cy="66" r="4" fill="none" stroke="#64748b" stroke-width="1.4"/>
+  <path d="M541.5 69.5 L545 73" stroke="#64748b" stroke-width="1.4" stroke-linecap="round"/>
+  <text x="552" y="70" font-family="ui-sans-serif, system-ui, sans-serif" font-size="11" font-weight="500" fill="#64748b">Search customers, invoices…</text>
+
+  <!-- KPI cards -->
+  <g font-family="ui-sans-serif, system-ui, sans-serif">
+    <rect x="184" y="104" width="170" height="74" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="200" y="124" font-size="10" font-weight="600" letter-spacing="0.06em" fill="#64748b">MRR</text>
+    <text x="200" y="150" font-size="22" font-weight="800" fill="#f1f5f9">$182,440</text>
+    <text x="200" y="167" font-size="10" font-weight="600" fill="#34d399">▲ 12.4% vs last month</text>
+
+    <rect x="362" y="104" width="170" height="74" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="378" y="124" font-size="10" font-weight="600" letter-spacing="0.06em" fill="#64748b">ACTIVE CUSTOMERS</text>
+    <text x="378" y="150" font-size="22" font-weight="800" fill="#f1f5f9">3,128</text>
+    <text x="378" y="167" font-size="10" font-weight="600" fill="#34d399">▲ 287 new this month</text>
+
+    <rect x="540" y="104" width="160" height="74" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="556" y="124" font-size="10" font-weight="600" letter-spacing="0.06em" fill="#64748b">P95 LATENCY</text>
+    <text x="556" y="150" font-size="22" font-weight="800" fill="#f1f5f9">42ms</text>
+    <text x="556" y="167" font-size="10" font-weight="600" fill="#fbbf24">● within SLA budget</text>
+  </g>
+
+  <!-- chart card -->
+  <g font-family="ui-sans-serif, system-ui, sans-serif">
+    <rect x="184" y="194" width="348" height="178" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="200" y="216" font-size="12" font-weight="700" fill="#e2e8f0">Revenue</text>
+    <text x="200" y="232" font-size="10" font-weight="500" fill="#64748b">USD · daily</text>
+
+    <!-- chart axes -->
+    <g stroke="#1e293b" stroke-width="1">
+      <line x1="200" y1="346" x2="516" y2="346"/>
+      <line x1="200" y1="316" x2="516" y2="316" stroke-dasharray="2 4"/>
+      <line x1="200" y1="286" x2="516" y2="286" stroke-dasharray="2 4"/>
+      <line x1="200" y1="256" x2="516" y2="256" stroke-dasharray="2 4"/>
+    </g>
+
+    <!-- area + line -->
+    <path d="M200 318 L228 308 L256 314 L284 296 L312 304 L340 282 L368 290 L396 270 L424 258 L452 268 L480 248 L508 238 L516 240 L516 346 L200 346 Z" fill="url(#acme-chart)"/>
+    <path d="M200 318 L228 308 L256 314 L284 296 L312 304 L340 282 L368 290 L396 270 L424 258 L452 268 L480 248 L508 238 L516 240" fill="none" stroke="url(#acme-line)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="508" cy="238" r="3.5" fill="#0ea5e9" stroke="#0a0d18" stroke-width="2"/>
+
+    <!-- x-axis labels -->
+    <g font-size="9" font-weight="500" fill="#475569">
+      <text x="200" y="362">Sep 1</text>
+      <text x="280" y="362">Sep 10</text>
+      <text x="360" y="362">Sep 20</text>
+      <text x="490" y="362">Today</text>
+    </g>
+  </g>
+
+  <!-- recent activity card -->
+  <g font-family="ui-sans-serif, system-ui, sans-serif">
+    <rect x="540" y="194" width="160" height="178" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="556" y="216" font-size="12" font-weight="700" fill="#e2e8f0">Webhooks</text>
+    <text x="556" y="232" font-size="10" font-weight="500" fill="#64748b">Last 30 min</text>
+
+    <!-- rows -->
+    <g font-size="10">
+      <circle cx="560" cy="256" r="3" fill="#34d399"/>
+      <text x="570" y="259" font-weight="600" fill="#cbd5e1">invoice.paid</text>
+      <text x="688" y="259" font-weight="500" fill="#64748b" text-anchor="end">2m</text>
+
+      <circle cx="560" cy="278" r="3" fill="#34d399"/>
+      <text x="570" y="281" font-weight="600" fill="#cbd5e1">customer.created</text>
+      <text x="688" y="281" font-weight="500" fill="#64748b" text-anchor="end">5m</text>
+
+      <circle cx="560" cy="300" r="3" fill="#f87171"/>
+      <text x="570" y="303" font-weight="600" fill="#cbd5e1">charge.failed</text>
+      <text x="688" y="303" font-weight="500" fill="#64748b" text-anchor="end">8m</text>
+
+      <circle cx="560" cy="322" r="3" fill="#34d399"/>
+      <text x="570" y="325" font-weight="600" fill="#cbd5e1">invoice.paid</text>
+      <text x="688" y="325" font-weight="500" fill="#64748b" text-anchor="end">12m</text>
+
+      <circle cx="560" cy="344" r="3" fill="#fbbf24"/>
+      <text x="570" y="347" font-weight="600" fill="#cbd5e1">webhook.retried</text>
+      <text x="688" y="347" font-weight="500" fill="#64748b" text-anchor="end">18m</text>
+    </g>
+  </g>
+
+  <!-- bottom row: traffic + status -->
+  <g font-family="ui-sans-serif, system-ui, sans-serif">
+    <rect x="184" y="384" width="516" height="60" rx="8" fill="#0f172a" stroke="#1e293b"/>
+    <text x="200" y="404" font-size="10" font-weight="700" letter-spacing="0.06em" fill="#94a3b8">REGIONS · LIVE</text>
+
+    <g font-size="10" font-weight="600">
+      <circle cx="206" cy="426" r="3" fill="#34d399"/>
+      <text x="214" y="430" fill="#cbd5e1">us-east</text>
+
+      <circle cx="276" cy="426" r="3" fill="#34d399"/>
+      <text x="284" y="430" fill="#cbd5e1">us-west</text>
+
+      <circle cx="346" cy="426" r="3" fill="#34d399"/>
+      <text x="354" y="430" fill="#cbd5e1">eu-west</text>
+
+      <circle cx="416" cy="426" r="3" fill="#fbbf24"/>
+      <text x="424" y="430" fill="#cbd5e1">ap-south · degraded</text>
+
+      <circle cx="556" cy="426" r="3" fill="#34d399"/>
+      <text x="564" y="430" fill="#cbd5e1">sa-east</text>
+
+      <text x="688" y="430" text-anchor="end" font-weight="700" fill="#34d399">99.98%</text>
+    </g>
+  </g>
+</svg>

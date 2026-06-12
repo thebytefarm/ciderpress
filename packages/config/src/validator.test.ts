@@ -81,6 +81,71 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
+  it('should accept favicon object with explicit MIME type', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      favicon: { src: '/favicon', type: 'image/svg+xml' },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.heroDemo as a structured terminal', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        heroDemo: {
+          windowTitle: '~/code/acme — acme dev',
+          command: 'acme dev',
+          lines: [
+            { kind: 'ok', text: 'edge runtime ready' },
+            { kind: 'cmt', text: 'handlers.ts changed — rebuilt' },
+          ],
+        },
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.heroDemo as an image', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { heroDemo: { src: '/cli.svg', alt: 'CLI' } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.split as a custom config with code visual', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        split: {
+          eyebrow: 'Configuration',
+          title: 'One config',
+          bullets: ['typed', 'validated'],
+          visual: { code: 'export default {}', language: 'ts' },
+        },
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.features.heading.eyebrow + workspaces heading', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        features: {
+          columns: 3,
+          heading: { eyebrow: 'Features', title: 'What you get' },
+        },
+        workspaces: {
+          columns: 2,
+          heading: { title: 'Everything in the monorepo' },
+        },
+      },
+    })
+    expect(error).toBeNull()
+  })
+
   it('should reject empty favicon src', () => {
     const [error] = validateConfig({ ...whiteLabelConfig, favicon: '' })
     expect(error).toMatchObject({ type: 'validation_failed' })

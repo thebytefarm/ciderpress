@@ -1,5 +1,6 @@
+import type { HeroDemoConfig, SplitConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { SiteFooter } from '../footer/site-footer'
@@ -8,8 +9,10 @@ import { HomeFeature } from './feature'
 import { Hero } from './hero'
 import type { HeroAction } from './hero'
 import { HeroDemo } from './hero-demo'
+import { CustomHeroDemo } from './hero-demo-custom'
 import { PageRail } from './page-rail'
 import { HomeSplit } from './split'
+import { CustomSplitVisual } from './split-visual-custom'
 import { TrustStrip } from './trust-strip'
 import { HomeWorkspaces } from './workspaces'
 
@@ -52,16 +55,34 @@ interface FrontmatterCTA {
  */
 export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const { frontmatter } = useFrontmatter()
+
+  // SSG-MD short-circuit: the React tree is walked by
+  // `react-render-to-markdown` to produce `.md` files served to
+  // `<LlmsCopyButton />`. Rendering the home shell would dump hero
+  // text, demo blocks, and footer columns into every copied page.
+  // Return an empty fragment for SSG-MD — the home page has no
+  // canonical markdown body. The `useFrontmatter` hook above runs in
+  // both passes so hook order stays consistent.
+  if (import.meta.env.SSG_MD) {
+    return <></>
+  }
+
   const fm = frontmatter as Record<string, unknown>
 
   const hero = fm.hero as FrontmatterHero | undefined
   const trust = fm.trust as FrontmatterTrust | undefined
   const cta = fm.cta as FrontmatterCTA | undefined
-  // White-label opt-outs. Sync engine writes `heroDemo: false` / `split: false`
-  // into frontmatter when `config.home.heroDemo === false` / `config.home.split
-  // === false` so the layout can suppress the hardcoded framework chunks.
-  const heroDemoEnabled = fm.heroDemo !== false
-  const splitEnabled = fm.split !== false
+  // heroDemo / split frontmatter:
+  //   undefined → render the framework default
+  //   false     → suppress entirely
+  //   object    → render the user-supplied custom variant
+  const heroDemoFm = fm.heroDemo as false | HeroDemoConfig | undefined
+  const splitFm = fm.split as false | SplitConfig | undefined
+
+  const heroDemoEl = match(heroDemoFm)
+    .with(false, () => null)
+    .with(undefined, () => <HeroDemo />)
+    .otherwise((d) => <CustomHeroDemo config={d} />)
 
   const heroSection = match(hero)
     .with(undefined, () => null)
@@ -71,9 +92,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         title={renderTitle(h.text ?? h.name ?? '')}
         tagline={h.tagline}
         actions={h.actions}
-        demo={match(heroDemoEnabled)
-          .with(true, () => <HeroDemo />)
-          .otherwise(() => null)}
+        demo={heroDemoEl}
       />
     ))
 
@@ -94,9 +113,9 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         .otherwise(() => <CTA title={c.title ?? ''} subtitle={c.subtitle} actions={c.actions} />)
     )
 
-  const splitSection = match(splitEnabled)
+  const splitSection = match(splitFm)
     .with(false, () => null)
-    .otherwise(() => (
+    .with(undefined, () => (
       <HomeSplit
         eyebrow="Configuration"
         title="One file. Validated. Type-safe."
@@ -111,6 +130,23 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         visual={<ConfigPreview />}
       />
     ))
+    .with(P.nonNullable, (s) => (
+      <HomeSplit
+        eyebrow={s.eyebrow}
+        title={s.title}
+        body={s.body}
+        bullets={s.bullets ?? []}
+        action={match(s.cta)
+          .with(undefined, () => undefined)
+          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.link }))}
+        visual={match(s.visual)
+          .with(undefined, () => null)
+          .otherwise((v) => (
+            <CustomSplitVisual code={v.code} language={v.language} />
+          ))}
+      />
+    ))
+    .exhaustive()
 
   return (
     <PageRail>

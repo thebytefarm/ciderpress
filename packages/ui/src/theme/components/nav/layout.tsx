@@ -120,6 +120,30 @@ export function Layout(): React.ReactElement {
     </ContentFooterPortal>
   )
 
+  // Rspress's SSG-MD pipeline renders the React tree through
+  // `react-render-to-markdown` to produce the `.md` files served to
+  // `<LlmsCopyButton />`. If we render our chrome (header, docs bar,
+  // footer slot wrappers) during that pass, the topbar logo, search,
+  // and nav items all get serialized as markdown and end up at the
+  // top of the copied content. Short-circuit to just the article body
+  // via `<OriginalLayout />` (Rspress's stock layout already returns a
+  // Fragment-only output for SSG-MD). The visible HTML SSG path
+  // (`SSG_MD` undefined) still gets the full chrome.
+  if (import.meta.env.SSG_MD) {
+    return (
+      <OriginalLayout
+        top={null}
+        beforeNavMenu={null}
+        afterNavMenu={null}
+        beforeSidebar={null}
+        afterSidebar={null}
+        beforeDoc={null}
+        afterDoc={null}
+        bottom={null}
+      />
+    )
+  }
+
   return (
     <>
       <CiderpressHeader

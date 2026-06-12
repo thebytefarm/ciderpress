@@ -64,3 +64,30 @@
 .cp-hero-demo__file {
   color: var(--cp-c-tint-amber-bright-fg);
 }
+
+/* Image-form hero demo — the frame chrome (rounded corners + brand-soft
+   glow shadow) stays; the `<img>` simply fills the surface. The hero
+   slot already constrains aspect ratio. */
+.cp-hero-demo--image {
+  padding: 0;
+}
+
+.cp-hero-demo__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: inherit;
+}
+
+/* Custom Split visual `<pre>` shares the `.cp-split__code` surface with
+   the default `ConfigPreview` block — same padding, font, scrolling. */
+.cp-split__code {
+  margin: 0;
+  padding: var(--cp-s-20) var(--cp-s-24);
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-code);
+  line-height: var(--cp-lh-code);
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--cp-c-text-1);
+}

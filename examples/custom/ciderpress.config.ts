@@ -42,9 +42,10 @@ export default defineConfig({
   // single; some product sites layer a separate chip).
   logo: '/logo.svg',
 
-  // Tab mark. Setting this suppresses the runtime favicon retinting that
-  // otherwise swaps `<link rel="icon">` to a themed pixel-apple data URI.
-  favicon: '/favicon.svg',
+  // Tab mark — object form exercises the explicit `type` field. Setting
+  // `favicon` suppresses the runtime favicon retinting that otherwise
+  // swaps `<link rel="icon">` to a themed pixel-apple data URI.
+  favicon: { src: '/favicon.svg', type: 'image/svg+xml' },
 
   // Custom FOUC loader. Inline SVG content + brand-aligned label.
   loader: {
@@ -56,20 +57,67 @@ export default defineConfig({
 
   theme: { name: 'midnight' },
 
-  // White-label the home page: suppress the framework's hardcoded
-  // HeroDemo (terminal showing `pnpm ciderpress dev`) and HomeSplit
-  // (the "Acme Docs" sample config block), and replace the features
-  // section heading with brand-aligned copy.
+  // Fully custom-branded home page. Exercises every customization
+  // surface so the rendered HTML contains zero ciderpress strings and
+  // every framework default chunk is replaced with brand-aligned copy.
   home: {
-    heroDemo: false,
-    split: false,
+    // Dashboard-style hero demo — image variant. Renders the
+    // dashboard.svg preview inside the framework's framed hero slot
+    // (rounded corners + brand-soft glow preserved).
+    heroDemo: { src: '/dashboard.svg', alt: 'Acme Corp control plane' },
+    // Custom Split section. Replaces the framework's "Acme Docs"
+    // example with Acme's actual SDK config preview.
+    split: {
+      eyebrow: 'Type-safe by default',
+      title: 'One config. Validated at boot.',
+      body: 'Acme services are described by acme.config.ts. The SDK validates against your live database schema on deploy — drift never ships.',
+      bullets: [
+        'Typed handlers, typed events, typed database',
+        'Schema drift caught at typecheck time',
+        'Feature flags + audit retention next to code',
+        'Per-environment overrides without forking',
+      ],
+      cta: { text: 'Read configuration', link: '/getting-started/configuration' },
+      visual: {
+        language: 'ts',
+        code: [
+          "import { defineConfig } from '@acme/sdk'",
+          '',
+          'export default defineConfig({',
+          "  name: 'billing',",
+          "  regions: ['us-east', 'eu-west'],",
+          '  database: { pool: { min: 2, max: 16 } },',
+          '  flags: {',
+          "    invoice_v2: { default: false, owner: 'platform@acme.co' },",
+          '  },',
+          '})',
+        ].join('\n'),
+      },
+    },
     features: {
       columns: 3,
       heading: {
-        title: 'What you get on day one',
+        eyebrow: 'What you get',
+        title: 'Built for the engineers who ship.',
         subtitle:
           'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
       },
+    },
+    workspaces: {
+      columns: 2,
+      heading: {
+        eyebrow: 'Apps & Packages',
+        title: 'Everything in the monorepo.',
+        subtitle: 'Browse the dashboard app, the edge runtime, and the official SDK.',
+      },
+    },
+    cta: {
+      title: 'Ready to ship?',
+      subtitle: 'Install the CLI and have a service deployed in under fifteen minutes.',
+      actions: [
+        { theme: 'brand', text: 'Quickstart', link: '/getting-started/quickstart' },
+        { theme: 'alt', text: 'API reference', link: '/api/overview' },
+      ],
     },
   },
 

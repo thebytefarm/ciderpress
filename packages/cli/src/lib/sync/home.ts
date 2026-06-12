@@ -104,8 +104,17 @@ export async function generateDefaultHomePage(
   // Landing-page extensions live on the typed `HomeConfig` now — no more
   // `Record<string, unknown>` casts. Destructure with a defaulted empty
   // object so optional fields surface as `undefined` cleanly.
-  const { eyebrow, trust, cta, heroDemo, split, features: featuresConfig } = config.home ?? {}
+  const {
+    eyebrow,
+    trust,
+    cta,
+    heroDemo,
+    split,
+    features: featuresConfig,
+    workspaces: workspacesConfig,
+  } = config.home ?? {}
   const featuresHeading = featuresConfig && featuresConfig.heading
+  const workspacesHeading = workspacesConfig && workspacesConfig.heading
 
   const heroConfig: Record<string, unknown> = {
     name: title,
@@ -134,17 +143,26 @@ export async function generateDefaultHomePage(
     ...match(featuresHeading)
       .with(P.nonNullable, (h) => ({ featuresHeading: h }))
       .otherwise(() => ({})),
+    ...match(workspacesHeading)
+      .with(P.nonNullable, (h) => ({ workspacesHeading: h }))
+      .otherwise(() => ({})),
     ...match(trust)
       .with(P.nonNullable, (t) => ({ trust: t }))
       .otherwise(() => ({})),
     ...match(cta)
       .with(P.nonNullable, (c) => ({ cta: c }))
       .otherwise(() => ({})),
+    // heroDemo flows through verbatim — `false` suppresses the slot,
+    // an object selects between image and structured terminal variants
+    // at render time. The HomeLayout handles both via discriminator.
     ...match(heroDemo)
-      .with(false, () => ({ heroDemo: false as const }))
+      .with(P.nonNullable, (h) => ({ heroDemo: h }))
       .otherwise(() => ({})),
+    // split flows through verbatim — `false` suppresses the slot, an
+    // object overrides every framework-default copy. HomeLayout reads
+    // the object shape and renders it via HomeSplit.
     ...match(split)
-      .with(false, () => ({ split: false as const }))
+      .with(P.nonNullable, (s) => ({ split: s }))
       .otherwise(() => ({})),
   }
 

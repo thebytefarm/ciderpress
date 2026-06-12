@@ -8,10 +8,12 @@ import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
 interface FrontmatterFeaturesHeading {
+  readonly eyebrow?: string
   readonly title?: string
   readonly subtitle?: string
 }
 
+const DEFAULT_HEADING_EYEBROW = 'Features'
 const DEFAULT_HEADING_TITLE = 'Built for the way you ship.'
 const DEFAULT_HEADING_SUBTITLE =
   "Everything you need, nothing you don't. Configured in TypeScript, validated at boot."
@@ -33,6 +35,7 @@ export function HomeFeature(): React.ReactElement | null {
   const fm = frontmatter as Record<string, unknown>
   const features = fm.features as readonly FeatureItem[] | undefined
   const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
+  const headingEyebrow = (heading && heading.eyebrow) ?? DEFAULT_HEADING_EYEBROW
   const headingTitle = (heading && heading.title) ?? DEFAULT_HEADING_TITLE
   const headingSubtitle = (heading && heading.subtitle) ?? DEFAULT_HEADING_SUBTITLE
 
@@ -42,7 +45,7 @@ export function HomeFeature(): React.ReactElement | null {
       (items) => (
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
-            <div className="cp-feature-section-head__eyebrow">Features</div>
+            <div className="cp-feature-section-head__eyebrow">{headingEyebrow}</div>
             <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
             <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
           </div>

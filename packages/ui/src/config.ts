@@ -227,6 +227,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       })(),
       html: {
         tags: [
+          ...resolveFaviconLinkTags(config.favicon),
           {
             tag: 'style',
             children: themeCss,
@@ -787,6 +788,39 @@ function resolveFaviconPath(favicon: FaviconConfig | undefined): string {
     return favicon
   }
   return favicon.src
+}
+
+/**
+ * Build any extra `<link rel="icon">` head tags needed to honour
+ * `config.favicon`'s `type` field. Rspress's built-in `icon` field
+ * emits a `<link>` with auto-derived `type` from the file extension —
+ * if the user supplied an explicit `type` we add a second link tag
+ * with the exact MIME they asked for so browsers always pick it.
+ *
+ * @private
+ * @param favicon - Raw `config.favicon` value
+ * @returns Head tag entries (zero or one)
+ */
+function resolveFaviconLinkTags(favicon: FaviconConfig | undefined): readonly {
+  readonly tag: string
+  readonly attrs: Record<string, string>
+  readonly head: true
+  readonly append: false
+}[] {
+  if (favicon === undefined || typeof favicon === 'string') {
+    return []
+  }
+  if (favicon.type === undefined) {
+    return []
+  }
+  return [
+    {
+      tag: 'link',
+      attrs: { rel: 'icon', href: favicon.src, type: favicon.type },
+      head: true,
+      append: false,
+    },
+  ]
 }
 
 /**

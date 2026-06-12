@@ -806,6 +806,11 @@ export interface HomeGridConfig {
    * applied.
    */
   readonly truncate?: TruncateConfig
+  /**
+   * Heading rendered above the grid. Omit to use the framework default
+   * (or no heading for the workspaces grid).
+   */
+  readonly heading?: HomeSectionHeading
 }
 
 /**
@@ -860,9 +865,14 @@ export interface HomeCtaConfig {
 }
 
 /**
- * Section heading shown above a home-page block (features, etc.).
+ * Section heading shown above a home-page block (features, workspaces, etc.).
  */
 export interface HomeSectionHeading {
+  /**
+   * Eyebrow kicker rendered above the title (small uppercase label —
+   * e.g. "Features", "Apps & Packages").
+   */
+  readonly eyebrow?: string
   /**
    * Heading title — replaces the framework default (e.g. "Built for
    * the way you ship.").
@@ -877,16 +887,170 @@ export interface HomeSectionHeading {
 /**
  * Grid layout + heading customisation for the home-page features block.
  *
- * The grid fields (`columns`, `truncate`) are inherited from
- * {@link HomeGridConfig}; `heading` overrides the framework default
- * title rendered above the cards.
+ * Carries the standard {@link HomeGridConfig} fields (`columns`,
+ * `truncate`, `heading`) and exists as a separate name purely for
+ * documentation clarity — the runtime shape is identical.
  */
-export interface HomeFeaturesConfig extends HomeGridConfig {
+export interface HomeFeaturesConfig extends HomeGridConfig {}
+
+/**
+ * Hero demo block — the visual rendered next to the hero copy.
+ *
+ * Three concrete shapes:
+ *
+ * - **Image** (`{ src, alt? }`) — paint a single image inside the
+ *   slot's framed container (rounded corners + brand-soft glow shadow
+ *   are preserved). Use for product screenshots, illustration assets,
+ *   or marketing GIFs.
+ * - **Structured terminal** (`{ windowTitle, command, lines }`) — keep
+ *   the framework's terminal-style chrome but render your own commands
+ *   and output. Each `lines` entry carries a `kind` discriminating the
+ *   visual style of the line (`'ok' | 'info' | 'cmt' | 'err'`).
+ *
+ * @example
+ * ```ts
+ * heroDemo: { src: '/cli.svg', alt: 'maltty CLI' }
+ *
+ * heroDemo: {
+ *   windowTitle: '~/code/acme — acme dev',
+ *   command: 'acme dev',
+ *   lines: [
+ *     { kind: 'ok', text: 'edge runtime booting in us-east-1' },
+ *     { kind: 'info', text: 'watching ./handlers, ./prisma' },
+ *     { kind: 'ok', text: 'ready on http://localhost:4321' },
+ *   ],
+ * }
+ * ```
+ */
+export type HeroDemoConfig = HeroDemoImage | HeroDemoTerminal
+
+/**
+ * Image-form hero demo — `<img>` painted inside the demo container.
+ */
+export interface HeroDemoImage {
   /**
-   * Heading rendered above the features grid. Omit to use the framework
-   * default ("Built for the way you ship.").
+   * Absolute path or URL to the image asset.
    */
-  readonly heading?: HomeSectionHeading
+  readonly src: string
+  /**
+   * Alt text for screen readers. Defaults to empty string (decorative)
+   * if omitted.
+   */
+  readonly alt?: string
+  /**
+   * Explicit width — defaults to `100%` of the container.
+   */
+  readonly width?: number | string
+  /**
+   * Explicit height — defaults to `auto`.
+   */
+  readonly height?: number | string
+}
+
+/**
+ * Structured terminal-form hero demo — keeps the framework's terminal
+ * chrome but uses the supplied command + output lines.
+ */
+export interface HeroDemoTerminal {
+  /**
+   * Title shown in the fake window's title bar (e.g. project path +
+   * command). Defaults to the framework default when omitted.
+   */
+  readonly windowTitle?: string
+  /**
+   * Command rendered after the `$ ` prompt at the top of the output.
+   */
+  readonly command: string
+  /**
+   * Output lines rendered below the command, each tagged with a kind
+   * that controls its visual style.
+   */
+  readonly lines: readonly HeroDemoLine[]
+}
+
+/**
+ * Single line in a structured `HeroDemoTerminal`.
+ */
+export interface HeroDemoLine {
+  /**
+   * Line style:
+   * - `'ok'`   — success marker (✓ / ▸)
+   * - `'info'` — informational marker (▸)
+   * - `'cmt'`  — comment / hint line
+   * - `'err'`  — error / warning marker (✗)
+   */
+  readonly kind: 'ok' | 'info' | 'cmt' | 'err'
+  /**
+   * Line text. Renders verbatim with the prefix glyph in front.
+   */
+  readonly text: string
+}
+
+/**
+ * "Show and tell" Split block — title + bullets + visual sample.
+ *
+ * @example
+ * ```ts
+ * split: {
+ *   eyebrow: 'Configuration',
+ *   title: 'One file. Validated. Type-safe.',
+ *   body: 'Describe your service in code; Zod validates at boot.',
+ *   bullets: [
+ *     'Type-safe config with full IntelliSense',
+ *     'Hot-reloads on every save',
+ *   ],
+ *   cta: { text: 'Read the docs', link: '/getting-started/configuration' },
+ *   visual: {
+ *     language: 'ts',
+ *     code: "import { defineConfig } from '@acme/sdk'\n\nexport default defineConfig({ ... })",
+ *   },
+ * }
+ * ```
+ */
+export interface SplitConfig {
+  /**
+   * Eyebrow kicker above the title.
+   */
+  readonly eyebrow?: string
+  /**
+   * Section title — required.
+   */
+  readonly title: string
+  /**
+   * Body copy rendered under the title.
+   */
+  readonly body?: string
+  /**
+   * Bulleted checkmark list rendered under the body.
+   */
+  readonly bullets?: readonly string[]
+  /**
+   * CTA button rendered at the bottom of the copy column.
+   */
+  readonly cta?: {
+    readonly text: string
+    readonly link: string
+  }
+  /**
+   * Visual rendered in the right column. Code blocks are syntax-
+   * highlighted with the supplied language hint.
+   */
+  readonly visual?: SplitVisual
+}
+
+/**
+ * Visual paired with a `SplitConfig` copy column.
+ */
+export interface SplitVisual {
+  /**
+   * Code snippet rendered as a syntax-highlighted preview.
+   */
+  readonly code: string
+  /**
+   * Language identifier for syntax highlighting (e.g. `'ts'`, `'tsx'`,
+   * `'json'`). Defaults to `'ts'`.
+   */
+  readonly language?: string
 }
 
 /**
@@ -918,19 +1082,23 @@ export interface HomeConfig {
    */
   readonly workspaces?: HomeGridConfig
   /**
-   * Hero demo block — the terminal-style preview rendered next to the
-   * hero copy. Set to `false` to suppress it entirely (recommended for
-   * white-labelled sites; the default block shows literal
-   * `pnpm ciderpress dev` output).
+   * Hero demo block — the visual rendered next to the hero copy.
+   *
+   * - omit → framework default (terminal showing `pnpm ciderpress dev`).
+   * - `false` → suppress entirely.
+   * - `HeroDemoImage` (`{ src, alt }`) → image painted inside the slot.
+   * - `HeroDemoTerminal` (`{ command, lines }`) → keep the terminal
+   *   chrome but render your own output.
    */
-  readonly heroDemo?: false
+  readonly heroDemo?: false | HeroDemoConfig
   /**
-   * "Show and tell" Split section under the features grid — title +
-   * bullets + sample config preview. Set to `false` to suppress it
-   * entirely (the default block ships hardcoded ciderpress copy and an
-   * "Acme Docs" sample config).
+   * "Show and tell" Split section under the features grid.
+   *
+   * - omit → framework default (Acme Docs sample config).
+   * - `false` → suppress entirely.
+   * - `SplitConfig` → fully custom eyebrow / title / bullets / cta / visual.
    */
-  readonly split?: false
+  readonly split?: false | SplitConfig
   /**
    * Eyebrow text shown above the hero title (e.g. version chip).
    */
@@ -1426,16 +1594,16 @@ export interface LoaderConfig {
  *
  * - **String** — absolute path or URL to the favicon asset. Shorthand
  *   for `{ src }`.
- * - **Object** — `{ src }`. The object form exists for forward
- *   compatibility; the rendered `<link rel="icon">` is emitted via
- *   Rspress's `icon` field which doesn't surface an explicit `type`
- *   attribute, so callers should rely on the file extension (e.g.
- *   `/favicon.svg`, `/favicon.png`) for browser MIME inference.
+ * - **Object** — `{ src, type? }`. The optional `type` is emitted as
+ *   an explicit `<link rel="icon" type="...">` attribute alongside
+ *   Rspress's auto-generated link, so callers can override the MIME
+ *   type when the file extension wouldn't be enough (e.g. an SVG
+ *   served without a `.svg` suffix from a CDN).
  *
  * Setting this field disables the runtime favicon retinting that
  * normally swaps `<link rel="icon">` to a themed pixel-apple data-URI.
  */
-export type FaviconConfig = string | { readonly src: string }
+export type FaviconConfig = string | { readonly src: string; readonly type?: string }
 
 /**
  * Logo configuration accepted on `CiderpressConfig.logo`.

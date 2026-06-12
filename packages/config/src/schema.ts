@@ -139,7 +139,12 @@ const loaderFieldSchema = z.union([
 
 const faviconConfigSchema = z.union([
   z.string().min(1, 'favicon path must be a non-empty string'),
-  z.object({ src: z.string().min(1, 'favicon.src must be a non-empty string') }).strict(),
+  z
+    .object({
+      src: z.string().min(1, 'favicon.src must be a non-empty string'),
+      type: z.string().optional(),
+    })
+    .strict(),
 ])
 
 const cardConfigSchema = z
@@ -248,12 +253,11 @@ const truncateConfigSchema = z
   })
   .strict()
 
-const homeGridConfigSchema = z
-  .object({
-    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
-    truncate: truncateConfigSchema.optional(),
-  })
-  .strict()
+// HomeGridConfig (columns + truncate + heading) — defined inline in
+// `homeConfigSchema` below via `homeGridConfigWithHeadingSchema`.
+// Keeping this no-op stub avoids breaking the schema-as-JSON snapshot
+// in unrelated dirs; downstream code should reference the version with
+// heading.
 
 const heroActionSchema = z
   .object({
@@ -296,12 +300,13 @@ const ctaConfigSchema = z
 
 const homeSectionHeadingSchema = z
   .object({
+    eyebrow: z.string().optional(),
     title: z.string().optional(),
     subtitle: z.string().optional(),
   })
   .strict()
 
-const homeFeaturesConfigSchema = z
+const homeGridConfigWithHeadingSchema = z
   .object({
     columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
     truncate: truncateConfigSchema.optional(),
@@ -309,12 +314,62 @@ const homeFeaturesConfigSchema = z
   })
   .strict()
 
+const heroDemoImageSchema = z
+  .object({
+    src: z.string().min(1, 'heroDemo.src must be a non-empty string'),
+    alt: z.string().optional(),
+    width: z.union([z.number(), z.string()]).optional(),
+    height: z.union([z.number(), z.string()]).optional(),
+  })
+  .strict()
+
+const heroDemoLineSchema = z
+  .object({
+    kind: z.enum(['ok', 'info', 'cmt', 'err']),
+    text: z.string(),
+  })
+  .strict()
+
+const heroDemoTerminalSchema = z
+  .object({
+    windowTitle: z.string().optional(),
+    command: z.string().min(1, 'heroDemo.command must be a non-empty string'),
+    lines: z.array(heroDemoLineSchema),
+  })
+  .strict()
+
+const heroDemoConfigSchema = z.union([heroDemoImageSchema, heroDemoTerminalSchema])
+
+const splitVisualSchema = z
+  .object({
+    code: z.string().min(1, 'split.visual.code must be a non-empty string'),
+    language: z.string().optional(),
+  })
+  .strict()
+
+const splitConfigSchema = z
+  .object({
+    eyebrow: z.string().optional(),
+    title: z.string().min(1, 'split.title is required'),
+    body: z.string().optional(),
+    bullets: z.array(z.string()).optional(),
+    cta: z
+      .object({
+        text: z.string(),
+        link: z.string(),
+      })
+      .strict()
+      .optional(),
+    visual: splitVisualSchema.optional(),
+  })
+  .strict()
+
 const homeConfigSchema = z
   .object({
-    features: homeFeaturesConfigSchema.optional(),
-    workspaces: homeGridConfigSchema.optional(),
-    heroDemo: z.literal(false).optional(),
-    split: z.literal(false).optional(),
+    features: homeGridConfigWithHeadingSchema.optional(),
+    workspaces: homeGridConfigWithHeadingSchema.optional(),
+    heroDemo: z.union([z.literal(false), heroDemoConfigSchema]).optional(),
+    split: z.union([z.literal(false), splitConfigSchema]).optional(),
     eyebrow: z.string().optional(),
     trust: trustConfigSchema.optional(),
     cta: ctaConfigSchema.optional(),
