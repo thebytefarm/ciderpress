@@ -1,4 +1,5 @@
-import { defineConfig } from 'ciderpress'
+import { CiderpressLogo, defineConfig } from 'ciderpress'
+import { createElement } from 'react'
 
 export default defineConfig({
   title: 'ciderpress',
@@ -9,6 +10,12 @@ export default defineConfig({
     name: 'honeycrisp',
     switcher: true,
   },
+  // Inline SVG wordmark that inherits `var(--rp-c-brand)` via
+  // `fill="currentColor"` — retints automatically when the user flips
+  // theme or variant without a re-render or sync rebuild. Replaces the
+  // auto-generated `/logo.svg`, which bakes a single brand hex at sync
+  // time and can't read the live CSS context once loaded via `<img>`.
+  logo: () => createElement(CiderpressLogo),
   site: {
     version: 'v1.0',
     topbarCta: { text: 'Get started →', href: '/getting-started/quick-start' },
