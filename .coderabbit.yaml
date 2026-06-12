@@ -1,27 +1,23 @@
-# yaml-language-server: $schema=https://www.coderabbit.ai/integrations/schema.v2.json
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
 
 language: en-US
-early_access: true
+early_access: false
+enable_free_tier: true
+tone_instructions: Be direct and technical. Flag bugs, security issues, breaking changes, and standard violations only. Skip style, subjective suggestions, pre-existing issues, and anything oxlint/oxfmt/tsgo already catches.
 
 reviews:
   profile: assertive
   request_changes_workflow: true
   high_level_summary: false
-  high_level_summary_in_walkthrough: false
-  review_status: false
-  review_details: false
-  commit_status: true
-  fail_commit_status: false
+  poem: false
+  review_status: true
   collapse_walkthrough: true
   changed_files_summary: false
   sequence_diagrams: false
-  estimate_code_review_effort: false
-  assess_linked_issues: false
   related_issues: false
   related_prs: false
   suggested_labels: false
   suggested_reviewers: false
-  poem: false
   in_progress_fortune: false
   enable_prompt_for_ai_agents: true
 
@@ -29,9 +25,12 @@ reviews:
     enabled: true
     auto_incremental_review: true
     drafts: false
+    base_branches:
+      - '.*'
     ignore_title_keywords:
-      - WIP
-      - DO NOT MERGE
+      - 'WIP'
+      - 'DO NOT MERGE'
+      - 'DRAFT'
 
   finishing_touches:
     docstrings:
@@ -40,55 +39,223 @@ reviews:
       enabled: false
 
   path_filters:
-    - '!**/dist/**'
     - '!**/node_modules/**'
+    - '!**/dist/**'
+    - '!**/.turbo/**'
+    - '!**/.rspress/**'
+    - '!**/.ciderpress/**'
+    - '!**/coverage/**'
+    - '!**/.generated/**'
+    - '!**/.bench-fixtures/**'
+    - '!**/.snapshots/**'
+    - '!**/.superpowers/**'
+    - '!**/.scratchpad/**'
+    - '!**/.worktrees/**'
+    - '!**/*.generated.*'
+    - '!**/*.d.ts'
+    - '!**/.claude/**'
+    - '!**/.changeset/config.json'
+    - '!**/fixtures/**'
     - '!pnpm-lock.yaml'
     - '!**/*.snap'
+    - '!patches/**'
 
   path_instructions:
+    - path: '**'
+      instructions: |
+        Review-only — never apply edits, never suggest committable patches, never run finishing touches.
+        Comment on issues; the author resolves them.
+
+        Flag only:
+        - **Bugs** the type system and tests can't catch (logic errors, race conditions, wrong assumptions)
+        - **Security issues** with concrete risk (injection, auth bypass, secrets exposure)
+        - **Breaking changes** in `@ciderpress/*` public surface area (removed/renamed exports, changed type signatures)
+        - **Standard violations** — cite the specific file under `contributing/standards/`
+
+        Do NOT flag:
+        - Anything oxlint, oxfmt, or tsgo already catches (style, formatting, type errors, the full functional doctrine: `let`/`class`/`throw`/`for`/`while`/`?.`/`!`/ternaries/loops/etc.). The toolchain enforces these.
+        - Subjective suggestions or pre-existing issues
+        - "No ternaries" or "no optional chaining" as contradictory — they're intentional, project-wide, and enforced by oxlint
+        - React class components (no one writes those) or other things that would never plausibly appear in a PR
+
+        Canonical references:
+        - `AGENTS.md` — repo boundaries (`CLAUDE.md` is a symlink to it; never edit `CLAUDE.md`)
+        - `contributing/standards/typescript/{coding-style,conditionals,design-patterns,errors,functions,naming,state,testing,types,utilities}.md`
+        - `contributing/standards/documentation/{writing,formatting,diagrams}.md`
+        - `contributing/standards/git-commits.md`, `git-pulls.md`
+
     - path: 'packages/**/*.{ts,tsx}'
       instructions: |
-        This project enforces strict functional TypeScript. Flag violations of:
-        - No `let` — only `const`. No reassignment, no mutation.
-        - No loops (`for`, `while`, `do...while`, `for...in`, `for...of`) — use `map`, `filter`, `reduce`, `flatMap`, or `es-toolkit`.
-        - No classes — use plain objects, closures, and factory functions.
-        - No `this` — never reference `this`.
-        - No `throw` — return errors as `Result<T, E> = readonly [E, null] | readonly [null, T]` tuples.
-        - No expression statements — every expression must be used (assigned, returned, or passed).
-        - No `any` — use `unknown`, generics, or proper types.
-        - No non-null assertions (`!`) — use explicit null checks.
-        - No optional chaining (`?.`) — use explicit `if`/`else` or pattern matching.
-        - No ternaries (`?:`) — use `if`/`else` or `ts-pattern` `match` expressions. `??` (nullish coalescing) IS allowed.
-        - Immutable data — no mutating objects or arrays after creation.
-        - All public properties must be `readonly`.
-        - Prefer `node:` protocol for Node.js builtins.
-        - Use `es-toolkit` over hand-rolling utility functions.
-        - Every exported function needs explicit return types and full JSDoc.
+        Focus on things oxlint can't catch:
+        - Mutations smuggled through references (e.g., pushing into an array returned from a function, mutating a Zod-validated object after parse)
+        - `throw` inside callbacks / promise chains that escape the surface lint rule
+        - Hand-rolled utilities that already exist in `es-toolkit` (cite `contributing/standards/typescript/utilities.md`)
+        - Drift from the `*Params` / `*Options` object-arg convention
+        - Public exports missing JSDoc (`@param`, `@returns`) or explicit return types
+        - Cross-package coupling that should go through `@ciderpress/*` re-exports
+
     - path: 'packages/**/src/**/*.ts'
       instructions: |
-        Error handling uses Result tuples, never exceptions:
-        - `type Result<T, E> = readonly [E, null] | readonly [null, T]`
-        - Success: `[null, value]`, Failure: `[error, null]`
-        - Always check the error element before accessing the value.
-        - Use `ts-pattern` `match` for exhaustive error variant handling.
+        Result-tuple discipline per `contributing/standards/typescript/errors.md`:
+        - Domain error types must carry `_tag` + `type`/`reason` — flag generic `Error`-only returns at module boundaries
+        - Multi-variant errors should use `ts-pattern` `match`, not chained `if`
+        - Async wrappers must catch and convert to `[error, null]` — flag uncaught `await`s at module boundaries
+        - Zod validation at module boundaries; flag boundaries that accept unvalidated input
+
+    - path: 'packages/**/*.test.{ts,tsx}'
+      instructions: |
+        Per `contributing/standards/typescript/testing.md`, flag:
+        - Tests that assert on implementation details instead of behavior
+        - Mocks of internal modules (mock at boundaries: FS, network, timers)
+        - Shared mutable state across tests
+        - Snapshot-only assertions with no behavioral check
+        - `it.skip` without a reason comment
+
+    - path: 'packages/cli/**'
+      instructions: |
+        `@ciderpress/cli` is published and runs on Windows/macOS/Linux. Flag cross-platform bugs:
+        - `.split('/')`/`.split('\\')` for path parsing — use `path.basename`/`path.dirname` from `node:path`
+        - Hardcoded `/` or `\\` separators or string concatenation — use `path.join`/`path.resolve`/`path.sep`
+        - `.pop()` on split path segments — use `path.basename`
+        - POSIX-only assumptions in file, symlink, or glob handling
+        - Zod schemas with hardcoded separators (e.g. `.regex(/\//)`, `.startsWith('/')`)
+        - `process.exit()` outside the entrypoint
+        - Errors not surfaced as `Result` tuples at command boundaries
+
+    - path: 'packages/config/**'
+      instructions: |
+        `@ciderpress/config`. Flag:
+        - Backwards-incompatible schema changes not explicitly called out in the PR
+        - Module boundaries that skip Zod validation
+        - Implicit defaults (should be explicit)
+
+    - path: 'packages/templates/**'
+      instructions: |
+        `@ciderpress/templates`. Flag:
+        - Drift between built-in and custom template surfaces
+        - Backwards-incompatible changes to public template factory APIs
+        - Template metadata that doesn't match the established shape
+
+    - path: 'packages/theme/**'
+      instructions: |
+        `@ciderpress/theme`. Flag:
+        - Loosened theme type constraints
+        - Token naming that departs from existing built-ins
+
+    - path: 'packages/ui/**'
+      instructions: |
+        `@ciderpress/ui` is the Rspress plugin + React components. Flag:
+        - Rspress plugin hooks that deviate from the framework's lifecycle ordering
+        - Global CSS leaks (styles that aren't scoped via CSS modules / module-local class names)
+        - Components missing explicit prop types
+
+    - path: 'packages/ciderpress/**'
+      instructions: |
+        Public wrapper. The re-export surface is the publicly-consumed API. Flag:
+        - Removed, renamed, or re-signed exports
+        - Implementation code that should live in an internal `@ciderpress/*` package, not here
+
+    - path: '**/package.json'
+      instructions: |
+        Flag:
+        - Major version bumps without referenced changelog / migration notes
+        - Peer dependency incompatibilities
+        - Known security advisories on the added/upgraded dep
+        - Version drift across the monorepo for the same dep
+        - Deps that don't fit the documented stack (Rspress, React, es-toolkit, ts-pattern, c12, chokidar, gray-matter, @kidd-cli/core, @clack/prompts, Rslib)
+        - Major bumps that require code changes not included in the PR
+        - Additions of ESLint, Prettier, or `tsc` — this repo uses oxlint, oxfmt, tsgo
+
+    - path: '**/tsconfig.json'
+      instructions: |
+        Root `tsconfig.json` is canonical — packages extend it. Flag:
+        - Loosened `strict` flags
+        - Per-package overrides without a stated reason
+
     - path: '**/*.md'
       instructions: |
-        Documentation in this repo is for external consumers of the ciderpress documentation framework.
-        Ensure clarity, accuracy, and consistency with the existing docs tone.
+        Per `contributing/standards/documentation/{writing,formatting,diagrams}.md`, flag:
+        - Relative internal links written as absolute URLs (or external links written as relative)
+        - Mixed Resources (external) and References (internal) sections
+        - Emojis when the doc doesn't explicitly call for them
+
+    - path: 'ciderpress.config.ts'
+      instructions: |
+        Live docs site config (dogfooded). Flag:
+        - Config shape that doesn't match the exported types in `@ciderpress/config`
+        - Section/nav/sidebar overrides that conflict with auto-generated content
+        - Theme not in the documented built-ins and not a valid custom theme
+
+    - path: 'examples/**'
+      instructions: |
+        Examples are runnable references. Flag:
+        - Committed `.ciderpress/` artifacts (they're gitignored — only `public/` is tracked)
+        - Example configs that don't match `@ciderpress/config`'s current shape
+
+    - path: '.github/workflows/**/*.{yml,yaml}'
+      instructions: |
+        Flag:
+        - Broken pnpm/turbo caching
+        - Changesets workflow integration regressions
+        - Overly broad permissions
+        - Hardcoded secrets (use GitHub Secrets)
+
+    - path: '.changeset/*.md'
+      instructions: |
+        Flag:
+        - Wrong bump type for the change (major/minor/patch)
+        - Wrong `@ciderpress/*` package(s) targeted
+        - Description that's internal jargon, not user-facing release-note prose
+
+    - path: 'AGENTS.md'
+      instructions: |
+        `CLAUDE.md` is a symlink to this — never edit `CLAUDE.md`, only `AGENTS.md`. Flag:
+        - Boundary rules (Always / Ask first / Never) that are too vague to enforce
+        - Tech stack entries out of sync with `package.json`
+        - Broken `<rules>` cross-refs to `contributing/standards/` files
+
+    - path: 'contributing/**/*.md'
+      instructions: |
+        Standards docs. Flag:
+        - Examples that violate the standard they're demonstrating
+        - Inconsistency with sibling standard files
+        - Aspirational rules (not actually enforced anywhere)
+        - Material changes that leave `AGENTS.md` references stale
 
   tools:
+    github-checks:
+      enabled: true
+      timeout_ms: 90000
+    # oxc disabled — CI runs oxlint already; CR shouldn't duplicate
+    oxc:
+      enabled: false
+    gitleaks:
+      enabled: true
+    actionlint:
+      enabled: true
     shellcheck:
+      enabled: true
+    semgrep:
       enabled: true
     markdownlint:
       enabled: true
     languagetool:
       enabled: true
-      level: picky
-    biome:
-      enabled: true
-    github-checks:
-      enabled: true
-      timeout_ms: 90000
+      level: default
 
 chat:
   auto_reply: true
+  art: false
+
+knowledge_base:
+  opt_out: false
+  web_search:
+    enabled: true
+  code_guidelines:
+    enabled: true
+  learnings:
+    scope: auto
+  issues:
+    scope: auto
+  pull_requests:
+    scope: auto
