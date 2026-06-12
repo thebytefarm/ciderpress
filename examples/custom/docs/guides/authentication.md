@@ -75,6 +75,8 @@ export const wipe = route({
   method: 'POST',
   path: '/admin/wipe',
   require: { role: 'admin' },
-  handler: async (ctx) => { /* … */ },
+  handler: async (ctx) => {
+    /* … */
+  },
 })
 ```

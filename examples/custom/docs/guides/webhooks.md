@@ -51,15 +51,15 @@ Acme retries failed deliveries with exponential backoff for up to 24
 hours. After that, the event lands in your DLQ — viewable in the
 dashboard under **Webhooks → Failures**.
 
-| Attempt | Delay |
-|---------|-------|
-| 1 | immediate |
-| 2 | 30s |
-| 3 | 5m |
-| 4 | 30m |
-| 5 | 2h |
-| 6 | 6h |
-| 7 | 24h |
+| Attempt | Delay     |
+| ------- | --------- |
+| 1       | immediate |
+| 2       | 30s       |
+| 3       | 5m        |
+| 4       | 30m       |
+| 5       | 2h        |
+| 6       | 6h        |
+| 7       | 24h       |
 
 Acknowledge with any `2xx` response within 10 seconds. Anything else
 counts as a failure.

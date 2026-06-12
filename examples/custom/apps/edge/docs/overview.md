@@ -27,11 +27,11 @@ recompile your code.
 Node-only APIs (`fs`, `net`, raw `process` access, native modules)
 are intentionally absent. Use Acme's managed equivalents:
 
-| Node API | Acme equivalent |
-|----------|-----------------|
-| `fs.readFileSync` | `ctx.assets.read('path')` |
-| `net.connect` | `ctx.cache` (Redis) or `fetch` |
-| `process.cpuUsage` | `ctx.metrics` |
+| Node API           | Acme equivalent                |
+| ------------------ | ------------------------------ |
+| `fs.readFileSync`  | `ctx.assets.read('path')`      |
+| `net.connect`      | `ctx.cache` (Redis) or `fetch` |
+| `process.cpuUsage` | `ctx.metrics`                  |
 
 ## Routing
 

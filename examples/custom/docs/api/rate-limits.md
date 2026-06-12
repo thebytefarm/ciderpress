@@ -16,11 +16,11 @@ X-Acme-Reset: 1736812800
 
 ## Default quotas
 
-| Tier | Sustained req/s | Burst | Daily ceiling |
-|------|-----------------|-------|---------------|
-| Free | 10 | 30 | 100,000 |
-| Pro | 100 | 300 | unlimited |
-| Enterprise | negotiated | negotiated | unlimited |
+| Tier       | Sustained req/s | Burst      | Daily ceiling |
+| ---------- | --------------- | ---------- | ------------- |
+| Free       | 10              | 30         | 100,000       |
+| Pro        | 100             | 300        | unlimited     |
+| Enterprise | negotiated      | negotiated | unlimited     |
 
 ## Burst behaviour
 

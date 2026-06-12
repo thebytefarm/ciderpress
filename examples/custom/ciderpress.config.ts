@@ -21,7 +21,7 @@ const LOADER_SVG =
   '</circle></svg>'
 
 /**
- * Full white-label acceptance config. Every brand surface that ciderpress
+ * Fully custom-branded acceptance config. Every brand surface that ciderpress
  * paints by default is overridden here so the rendered site carries zero
  * framework branding — no wordmark, no pixel-apple favicon, no apple
  * loader animation, no apple in the footer.

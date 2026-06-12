@@ -5,9 +5,9 @@
 '@ciderpress/ui': minor
 ---
 
-**Full white-label customization.** Six surfaces that previously forced
-ciderpress's own branding through are now user-overridable, so a product docs
-site can ship with zero ciderpress wordmark or pixel-apple visible.
+**Full custom branding.** Six surfaces that previously forced ciderpress's
+own branding through are now user-overridable, so a product docs site can
+ship with zero ciderpress wordmark or pixel-apple visible.
 
 ### Topbar icon chip (new)
 

@@ -34,14 +34,14 @@ export default defineConfig({
 
 ## Reference
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `name` | `string` | yes | Service slug, used in audit logs and traces. |
-| `regions` | `Region[]` | yes | At least one Acme edge region. |
-| `database.pool.min` | `number` | no | Minimum pool size per region. Default `1`. |
-| `database.pool.max` | `number` | no | Maximum pool size per region. Default `8`. |
-| `database.statement_timeout_ms` | `number` | no | Hard SQL timeout. Default `30000`. |
-| `flags` | `Record<string, FlagSpec>` | no | Server-evaluated feature flags. |
+| Field                           | Type                       | Required | Description                                  |
+| ------------------------------- | -------------------------- | -------- | -------------------------------------------- |
+| `name`                          | `string`                   | yes      | Service slug, used in audit logs and traces. |
+| `regions`                       | `Region[]`                 | yes      | At least one Acme edge region.               |
+| `database.pool.min`             | `number`                   | no       | Minimum pool size per region. Default `1`.   |
+| `database.pool.max`             | `number`                   | no       | Maximum pool size per region. Default `8`.   |
+| `database.statement_timeout_ms` | `number`                   | no       | Hard SQL timeout. Default `30000`.           |
+| `flags`                         | `Record<string, FlagSpec>` | no       | Server-evaluated feature flags.              |
 
 ## Environment overrides
 

@@ -18,13 +18,13 @@ inspection, and feature-flag administration.
 
 ## Routes
 
-| Route | Purpose |
-|-------|---------|
-| `/` | Tenant overview + recent activity |
-| `/billing` | Plan, usage, invoices, payment method |
-| `/audit` | Filterable audit log with CSV export |
-| `/webhooks` | Live delivery feed + replay UI |
-| `/team` | Members, roles, SSO config |
+| Route       | Purpose                               |
+| ----------- | ------------------------------------- |
+| `/`         | Tenant overview + recent activity     |
+| `/billing`  | Plan, usage, invoices, payment method |
+| `/audit`    | Filterable audit log with CSV export  |
+| `/webhooks` | Live delivery feed + replay UI        |
+| `/team`     | Members, roles, SSO config            |
 
 ## Local development
 

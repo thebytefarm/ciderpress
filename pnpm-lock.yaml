@@ -136,6 +136,12 @@ importers:
         specifier: ^1.60.0
         version: 1.60.0
 
+  examples/custom:
+    dependencies:
+      ciderpress:
+        specifier: workspace:*
+        version: link:../../packages/ciderpress
+
   examples/kitchen-sink:
     dependencies:
       ciderpress:
@@ -149,12 +155,6 @@ importers:
         version: link:../../packages/ciderpress
 
   examples/simple:
-    dependencies:
-      ciderpress:
-        specifier: workspace:*
-        version: link:../../packages/ciderpress
-
-  examples/whitelabel:
     dependencies:
       ciderpress:
         specifier: workspace:*
