@@ -7,6 +7,15 @@ import { useCiderpress } from '../../hooks/use-ciderpress'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
+interface FrontmatterFeaturesHeading {
+  readonly title?: string
+  readonly subtitle?: string
+}
+
+const DEFAULT_HEADING_TITLE = 'Built for the way you ship.'
+const DEFAULT_HEADING_SUBTITLE =
+  "Everything you need, nothing you don't. Configured in TypeScript, validated at boot."
+
 /**
  * Custom HomeFeature override for ciderpress.
  * Uses useFrontmatter() hook to read features and renders with FeatureCard/FeatureGrid styling.
@@ -21,9 +30,11 @@ export function HomeFeature(): React.ReactElement | null {
   // Rspress types frontmatter as its own FrontMatterMeta shape which does not
   // include ciderpress-specific `features`. The double cast is necessary because
   // no shared Zod schema exists for frontmatter validation at runtime.
-  const features = (frontmatter as Record<string, unknown>).features as
-    | readonly FeatureItem[]
-    | undefined
+  const fm = frontmatter as Record<string, unknown>
+  const features = fm.features as readonly FeatureItem[] | undefined
+  const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
+  const headingTitle = (heading && heading.title) ?? DEFAULT_HEADING_TITLE
+  const headingSubtitle = (heading && heading.subtitle) ?? DEFAULT_HEADING_SUBTITLE
 
   return match(features)
     .with(
@@ -32,11 +43,8 @@ export function HomeFeature(): React.ReactElement | null {
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
             <div className="cp-feature-section-head__eyebrow">Features</div>
-            <h2 className="cp-feature-section-head__title">Built for the way you ship.</h2>
-            <p className="cp-feature-section-head__sub">
-              Everything you need, nothing you don&apos;t. Configured in TypeScript, validated at
-              boot.
-            </p>
+            <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
+            <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
           </div>
           <div className="cp-feature-grid">
             {items.map((f, i) => renderFeature(f, i, gridConfig))}

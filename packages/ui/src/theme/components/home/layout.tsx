@@ -57,6 +57,11 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const hero = fm.hero as FrontmatterHero | undefined
   const trust = fm.trust as FrontmatterTrust | undefined
   const cta = fm.cta as FrontmatterCTA | undefined
+  // White-label opt-outs. Sync engine writes `heroDemo: false` / `split: false`
+  // into frontmatter when `config.home.heroDemo === false` / `config.home.split
+  // === false` so the layout can suppress the hardcoded framework chunks.
+  const heroDemoEnabled = fm.heroDemo !== false
+  const splitEnabled = fm.split !== false
 
   const heroSection = match(hero)
     .with(undefined, () => null)
@@ -66,7 +71,9 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         title={renderTitle(h.text ?? h.name ?? '')}
         tagline={h.tagline}
         actions={h.actions}
-        demo={<HeroDemo />}
+        demo={match(heroDemoEnabled)
+          .with(true, () => <HeroDemo />)
+          .otherwise(() => null)}
       />
     ))
 
@@ -87,15 +94,9 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         .otherwise(() => <CTA title={c.title ?? ''} subtitle={c.subtitle} actions={c.actions} />)
     )
 
-  return (
-    <PageRail>
-      {props.beforeHero}
-      {heroSection}
-      {props.afterHero}
-      {trustSection}
-      {props.beforeFeatures}
-      <HomeFeature />
-      {props.afterFeatures}
+  const splitSection = match(splitEnabled)
+    .with(false, () => null)
+    .otherwise(() => (
       <HomeSplit
         eyebrow="Configuration"
         title="One file. Validated. Type-safe."
@@ -109,6 +110,18 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         action={{ theme: 'brand', text: 'Read the docs', link: '/getting-started/quick-start' }}
         visual={<ConfigPreview />}
       />
+    ))
+
+  return (
+    <PageRail>
+      {props.beforeHero}
+      {heroSection}
+      {props.afterHero}
+      {trustSection}
+      {props.beforeFeatures}
+      <HomeFeature />
+      {props.afterFeatures}
+      {splitSection}
       <HomeWorkspaces />
       {ctaSection}
       <SiteFooter />

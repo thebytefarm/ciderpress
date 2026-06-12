@@ -1,0 +1,14 @@
+{
+  "name": "example-whitelabel",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "docs:dev": "ciderpress dev",
+    "docs:build": "ciderpress build",
+    "docs:serve": "ciderpress serve"
+  },
+  "dependencies": {
+    "ciderpress": "workspace:*"
+  }
+}

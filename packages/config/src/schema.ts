@@ -294,10 +294,27 @@ const ctaConfigSchema = z
   })
   .strict()
 
+const homeSectionHeadingSchema = z
+  .object({
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+  })
+  .strict()
+
+const homeFeaturesConfigSchema = z
+  .object({
+    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    truncate: truncateConfigSchema.optional(),
+    heading: homeSectionHeadingSchema.optional(),
+  })
+  .strict()
+
 const homeConfigSchema = z
   .object({
-    features: homeGridConfigSchema.optional(),
+    features: homeFeaturesConfigSchema.optional(),
     workspaces: homeGridConfigSchema.optional(),
+    heroDemo: z.literal(false).optional(),
+    split: z.literal(false).optional(),
     eyebrow: z.string().optional(),
     trust: trustConfigSchema.optional(),
     cta: ctaConfigSchema.optional(),

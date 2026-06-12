@@ -90,6 +90,14 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
 
+  // Overlay user-owned static assets from `<repoRoot>/public/` on top of
+  // the generated set. This is the documented opt-in path for shipping
+  // a custom `logo.svg` / `favicon.svg` / `icon.svg` / loader asset —
+  // user files win over the auto-generated ones with the same name.
+  // `copyAll` is a no-op when the source directory does not exist, so
+  // projects without a `public/` dir get the auto-generated set only.
+  await copyAll(path.resolve(repoRoot, 'public'), path.resolve(outDir, 'public'))
+
   const ctx: SyncContext = {
     repoRoot,
     outDir,

@@ -1418,6 +1418,18 @@
                 }
               },
               "additionalProperties": false
+            },
+            "heading": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "subtitle": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -1463,6 +1475,14 @@
             }
           },
           "additionalProperties": false
+        },
+        "heroDemo": {
+          "type": "boolean",
+          "const": false
+        },
+        "split": {
+          "type": "boolean",
+          "const": false
         },
         "eyebrow": {
           "type": "string"

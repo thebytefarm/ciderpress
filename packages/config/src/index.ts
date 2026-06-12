@@ -26,6 +26,8 @@ export type {
   Feature,
   OpenAPIConfig,
   HomeConfig,
+  HomeFeaturesConfig,
+  HomeSectionHeading,
   HomeTrustConfig,
   HomeCtaConfig,
   SocialLinkIcon,

@@ -860,6 +860,36 @@ export interface HomeCtaConfig {
 }
 
 /**
+ * Section heading shown above a home-page block (features, etc.).
+ */
+export interface HomeSectionHeading {
+  /**
+   * Heading title — replaces the framework default (e.g. "Built for
+   * the way you ship.").
+   */
+  readonly title?: string
+  /**
+   * Optional supporting sentence rendered under the title.
+   */
+  readonly subtitle?: string
+}
+
+/**
+ * Grid layout + heading customisation for the home-page features block.
+ *
+ * The grid fields (`columns`, `truncate`) are inherited from
+ * {@link HomeGridConfig}; `heading` overrides the framework default
+ * title rendered above the cards.
+ */
+export interface HomeFeaturesConfig extends HomeGridConfig {
+  /**
+   * Heading rendered above the features grid. Omit to use the framework
+   * default ("Built for the way you ship.").
+   */
+  readonly heading?: HomeSectionHeading
+}
+
+/**
  * Home page layout customization.
  *
  * Schema: `homeConfigSchema` in schema.ts validates this shape.
@@ -868,7 +898,9 @@ export interface HomeCtaConfig {
  * ```ts
  * home: {
  *   eyebrow: 'v1.0',
- *   features: { columns: 3, truncate: { description: 2 } },
+ *   heroDemo: false,
+ *   split: false,
+ *   features: { columns: 3, heading: { title: 'What you get' } },
  *   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
  *   trust: { lead: 'Used by', names: ['Acme', 'Globex'] },
  *   cta: { title: 'Ready to ship?', actions: [...] },
@@ -877,13 +909,28 @@ export interface HomeCtaConfig {
  */
 export interface HomeConfig {
   /**
-   * Grid layout for the explicit `features` array on the home page.
+   * Grid + heading config for the home-page features block. Set
+   * `heading.title` to replace the framework default copy.
    */
-  readonly features?: HomeGridConfig
+  readonly features?: HomeFeaturesConfig
   /**
    * Grid layout for the auto-generated workspace cards on the home page.
    */
   readonly workspaces?: HomeGridConfig
+  /**
+   * Hero demo block — the terminal-style preview rendered next to the
+   * hero copy. Set to `false` to suppress it entirely (recommended for
+   * white-labelled sites; the default block shows literal
+   * `pnpm ciderpress dev` output).
+   */
+  readonly heroDemo?: false
+  /**
+   * "Show and tell" Split section under the features grid — title +
+   * bullets + sample config preview. Set to `false` to suppress it
+   * entirely (the default block ships hardcoded ciderpress copy and an
+   * "Acme Docs" sample config).
+   */
+  readonly split?: false
   /**
    * Eyebrow text shown above the hero title (e.g. version chip).
    */

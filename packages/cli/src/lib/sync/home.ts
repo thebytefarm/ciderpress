@@ -104,7 +104,8 @@ export async function generateDefaultHomePage(
   // Landing-page extensions live on the typed `HomeConfig` now — no more
   // `Record<string, unknown>` casts. Destructure with a defaulted empty
   // object so optional fields surface as `undefined` cleanly.
-  const { eyebrow, trust, cta } = config.home ?? {}
+  const { eyebrow, trust, cta, heroDemo, split, features: featuresConfig } = config.home ?? {}
+  const featuresHeading = featuresConfig && featuresConfig.heading
 
   const heroConfig: Record<string, unknown> = {
     name: title,
@@ -130,11 +131,20 @@ export async function generateDefaultHomePage(
     ...match(frontmatterFeatures.length > 0)
       .with(true, () => ({ features: frontmatterFeatures }))
       .otherwise(() => ({})),
+    ...match(featuresHeading)
+      .with(P.nonNullable, (h) => ({ featuresHeading: h }))
+      .otherwise(() => ({})),
     ...match(trust)
       .with(P.nonNullable, (t) => ({ trust: t }))
       .otherwise(() => ({})),
     ...match(cta)
       .with(P.nonNullable, (c) => ({ cta: c }))
+      .otherwise(() => ({})),
+    ...match(heroDemo)
+      .with(false, () => ({ heroDemo: false as const }))
+      .otherwise(() => ({})),
+    ...match(split)
+      .with(false, () => ({ split: false as const }))
       .otherwise(() => ({})),
   }
 

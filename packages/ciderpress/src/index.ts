@@ -26,6 +26,8 @@ export type {
   TitleConfig,
   HeroAction,
   HomeConfig,
+  HomeFeaturesConfig,
+  HomeSectionHeading,
   HomeTrustConfig,
   HomeCtaConfig,
   HomeGridConfig,

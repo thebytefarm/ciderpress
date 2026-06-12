@@ -604,7 +604,7 @@ function resolveSidebarLinks(params: {
 function resolveHomeConfig(config: CiderpressConfig): HomeConfig {
   if (config.home) {
     return {
-      features: config.home.features,
+      ...config.home,
       workspaces: {
         columns: 2,
         ...config.home.workspaces,

@@ -154,6 +154,12 @@ importers:
         specifier: workspace:*
         version: link:../../packages/ciderpress
 
+  examples/whitelabel:
+    dependencies:
+      ciderpress:
+        specifier: workspace:*
+        version: link:../../packages/ciderpress
+
   extensions/vscode:
     devDependencies:
       '@types/vscode':
