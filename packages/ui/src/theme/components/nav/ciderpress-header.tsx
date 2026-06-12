@@ -8,6 +8,7 @@ import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
 import { CiderpressNavSearch } from './ciderpress-nav-search'
 import { CiderpressNavSocialLinks } from './ciderpress-nav-social-links'
 import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
+import { HeaderIcon } from './header-icon'
 import { HeaderLogo } from './header-logo'
 import { NavDivider } from './nav-divider'
 import { TopbarCTA } from './topbar-cta'
@@ -78,6 +79,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
           topbarCta={props.topbarCta}
         />
         <RouteLink href="/" className="cp-header-logo" aria-label="Home">
+          <HeaderIcon />
           <HeaderLogo />
         </RouteLink>
 

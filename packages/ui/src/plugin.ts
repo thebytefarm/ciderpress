@@ -22,7 +22,13 @@ export function ciderpressPlugin(): RspressPlugin {
     globalUIComponents: [
       path.resolve(componentsDir, 'theme-provider.tsx'),
       path.resolve(componentsDir, 'edit-source-button.tsx'),
-      path.resolve(componentsDir, 'nav', 'nav-logo.tsx'),
+      // `nav-logo.tsx` is intentionally NOT registered here. It used to
+      // portal a function-form logo into Rspress's `.rp-nav__title__link`,
+      // but `<HeaderLogo />` now renders the visible logo directly inside
+      // `cp-header-logo`. Keeping NavLogo registered would invoke the
+      // user's `LogoFn` twice per render and install a second
+      // MutationObserver on `<html>`. The file is kept around for any
+      // downstream imports — it just no longer mounts.
     ],
   }
 }

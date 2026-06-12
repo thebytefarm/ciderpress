@@ -160,7 +160,16 @@ function resolveGlyphUrl(content: string): string {
   if (content.includes('<svg')) {
     return `url("data:image/svg+xml;utf8,${encodeURIComponent(content)}")`
   }
-  return `url("${content.replaceAll('"', String.raw`\"`)}")`
+  // `&lt;` is escaped as CSS hex `\3c ` so the byte sequence `&lt;/style&gt;` can
+  // never appear in the emitted CSS. The HTML tokenizer scans &lt;style&gt;
+  // content as raw text terminated by the literal `&lt;/style&gt;` bytes — if any
+  // user-supplied content slipped that substring through, it would break out
+  // of the style element and the trailing bytes would parse as HTML.
+  const safe = content
+    .replaceAll('\\', String.raw`\\`)
+    .replaceAll('"', String.raw`\"`)
+    .replaceAll('<', String.raw`\3c `)
+  return `url("${safe}")`
 }
 
 /**
@@ -173,7 +182,13 @@ function resolveGlyphUrl(content: string): string {
  * @returns CSS rule painting `html::after`
  */
 function buildLabelCss(label: string): string {
-  const escaped = label.replaceAll('\\', String.raw`\\`).replaceAll("'", String.raw`\'`)
+  // `&lt;` is escaped as CSS hex `\3c ` so the byte sequence `&lt;/style&gt;` never
+  // appears in the inline &lt;style&gt; body. The CSS parser decodes `\3c` to `&lt;`
+  // when applying the rule, so the visible label is unchanged.
+  const escaped = label
+    .replaceAll('\\', String.raw`\\`)
+    .replaceAll("'", String.raw`\'`)
+    .replaceAll('<', String.raw`\3c `)
   return `html::after {
   content: '${escaped}';
   position: fixed;

@@ -92,4 +92,31 @@ describe('getThemeCss()', () => {
     const css = getThemeCss('honeycrisp', { content: '/loader.svg', label: '' })
     expect(css).not.toContain('html::after')
   })
+
+  it('should escape `<` in the label so a `</style>` payload cannot break out of the <style> tag', () => {
+    const css = getThemeCss('honeycrisp', {
+      content: '/loader.svg',
+      label: "</style><script>alert('xss')</script><style>x",
+    })
+    // The byte sequence `</style>` must not appear anywhere in the emitted CSS.
+    expect(css).not.toContain('</style>')
+    // The label is still preserved at the CSS level — `<` is hex-escaped to `\3c `.
+    expect(css).toContain(String.raw`\3c /style>\3c script`)
+  })
+
+  it('should escape `<` in a non-SVG content URL so `</style>` cannot break out', () => {
+    const css = getThemeCss('honeycrisp', {
+      content: '/loader.svg</style><script>alert(1)</script><style>',
+    })
+    expect(css).not.toContain('</style>')
+    expect(css).toContain(String.raw`\3c /style>\3c script`)
+  })
+
+  it('should not need to hex-escape inline SVG content because encodeURIComponent handles `<`', () => {
+    const css = getThemeCss('honeycrisp', {
+      content: '<svg xmlns="http://www.w3.org/2000/svg"><text>x</text></svg>',
+    })
+    expect(css).not.toContain('</style>')
+    expect(css).toContain('data:image/svg+xml;utf8,%3C')
+  })
 })

@@ -99,7 +99,12 @@ const iconIdSchema: z.ZodType<IconId> = z
   .string()
   .refine((v) => v.includes(':')) as z.ZodType<IconId>
 
-const iconImageSchema = z.object({ src: z.string(), alt: z.string().optional() }).strict()
+const iconImageSchema = z
+  .object({
+    src: z.string().min(1, 'icon.src must be a non-empty string'),
+    alt: z.string().optional(),
+  })
+  .strict()
 
 const iconConfigSchema = z.union([
   iconIdSchema,
@@ -109,12 +114,22 @@ const iconConfigSchema = z.union([
 
 const loaderConfigSchema = z
   .object({
-    content: z.string(),
+    content: z.string().min(1, 'loader.content must be a non-empty string'),
     label: z.string().optional(),
     minDisplayMs: z.number().int().min(0).optional(),
     maxDisplayMs: z.number().int().min(0).optional(),
   })
   .strict()
+  .refine(
+    (cfg) => {
+      const min = cfg.minDisplayMs ?? 150
+      const max = cfg.maxDisplayMs ?? 5000
+      // Allow some breathing room for the CSS fade transition (200ms) plus
+      // a small margin so the forced dismissal doesn't truncate the fade.
+      return max >= min + 200
+    },
+    { message: 'loader.maxDisplayMs must be at least minDisplayMs + 200ms (fade transition)' }
+  )
 
 const loaderFieldSchema = z.union([
   z.literal(false),
@@ -123,8 +138,8 @@ const loaderFieldSchema = z.union([
 ])
 
 const faviconConfigSchema = z.union([
-  z.string(),
-  z.object({ src: z.string(), type: z.string().optional() }).strict(),
+  z.string().min(1, 'favicon path must be a non-empty string'),
+  z.object({ src: z.string().min(1, 'favicon.src must be a non-empty string') }).strict(),
 ])
 
 const cardConfigSchema = z

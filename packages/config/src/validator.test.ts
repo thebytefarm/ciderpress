@@ -55,6 +55,9 @@ describe('validateConfig() — white-label acceptance config', () => {
     description: 'docs site',
     logo: '/logo.svg',
     favicon: '/favicon.svg',
+    // Topbar chip (rendered by HeaderIcon next to HeaderLogo) — small mark
+    // distinct from the wordmark `logo`. Image form here exercises the
+    // full white-label surface.
     icon: { src: '/icon.svg', alt: 'maltty' },
     loader: {
       content: '<svg xmlns="http://www.w3.org/2000/svg"></svg>',
@@ -70,12 +73,33 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(config).not.toBeNull()
   })
 
-  it('should accept favicon in object form with explicit type', () => {
+  it('should accept favicon in object form with src', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
-      favicon: { src: '/favicon.png', type: 'image/png' },
+      favicon: { src: '/favicon.png' },
     })
     expect(error).toBeNull()
+  })
+
+  it('should reject empty favicon src', () => {
+    const [error] = validateConfig({ ...whiteLabelConfig, favicon: '' })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject loader.maxDisplayMs lower than minDisplayMs + 200', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      loader: { content: '<svg/>', minDisplayMs: 500, maxDisplayMs: 600 },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject empty src at schema level for a section icon (not only workspace icons)', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      sections: [{ title: 'Welcome', path: '/welcome', content: '# Welcome', icon: { src: '' } }],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
   })
 
   it('should accept loader=false to disable the FOUC overlay entirely', () => {
@@ -110,6 +134,8 @@ describe('validateConfig() — white-label acceptance config', () => {
         },
       ],
     })
-    expect(error).toMatchObject({ type: 'invalid_icon' })
+    // Schema-level (`z.string().min(1)`) catches this before the semantic
+    // pass runs, so the surfaced error is the Zod validation_failed envelope.
+    expect(error).toMatchObject({ type: 'validation_failed' })
   })
 })

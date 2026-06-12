@@ -13,7 +13,6 @@ declare const __CIDERPRESS_THEME_DARK_COLORS__: string
 declare const __CIDERPRESS_THEME_REGISTRY__: string
 declare const __CIDERPRESS_HAS_USER_FAVICON__: boolean
 declare const __CIDERPRESS_LOADER_MIN_MS__: number
-declare const __CIDERPRESS_LOADER_MAX_MS__: number
 
 interface RegistryEntry {
   readonly name: string
@@ -131,14 +130,6 @@ const ALL_CSS_VARS: readonly string[] = Object.values(COLOR_VAR_MAP).flat()
  * defaults to 150ms in `packages/ui/src/config.ts`.
  */
 const LOADER_MIN_DISPLAY_MS = __CIDERPRESS_LOADER_MIN_MS__
-
-/**
- * Forced-dismiss timeout (ms) — already enforced by the head script's
- * fallback timer, but re-asserted here so the React-driven dismissal
- * still fires inside the same budget on slow hydration. Resolved at
- * build time from `config.loader.maxDisplayMs`.
- */
-const LOADER_MAX_DISPLAY_MS = __CIDERPRESS_LOADER_MAX_MS__
 
 /**
  * Duration (ms) of the CSS fade-out transition. Must match the
@@ -646,23 +637,16 @@ function dismissLoader(html: HTMLElement): () => void {
     clearDotsInterval()
   }, LOADER_MIN_DISPLAY_MS + LOADER_FADE_MS)
 
-  // Belt-and-suspenders fallback inside the React path: cap the React-
-  // driven dismissal at `LOADER_MAX_DISPLAY_MS` so even if the layout
-  // effect mounts but a downstream effect blocks (e.g. a long
-  // synchronous theme migration), the loader still goes away. The head
-  // script enforces the same cap for the no-hydration case.
-  const fallbackTimer = setTimeout(() => {
-    if (html.dataset.cpReady !== 'true') {
-      html.classList.add('cp-loader-fade')
-      html.dataset.cpReady = 'true'
-      clearDotsInterval()
-    }
-  }, LOADER_MAX_DISPLAY_MS)
+  // The forced-dismiss fallback (covering the case where React never
+  // hydrates) lives in the inline head script — see `buildHeadScriptBody`
+  // in `packages/ui/src/config.ts`. That timer always runs, so a
+  // duplicate React-side fallback here would only fire AFTER ThemeProvider
+  // has already mounted — at which point the normal fade path above has
+  // already won.
 
   return () => {
     clearTimeout(fadeTimer)
     clearTimeout(removeTimer)
-    clearTimeout(fallbackTimer)
     html.classList.remove('cp-loader-fade')
     clearDotsInterval()
   }

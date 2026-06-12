@@ -1,4 +1,11 @@
-export { defineConfig, defineTheme, hasGlobChars } from '@ciderpress/config'
+export {
+  defineConfig,
+  defineTheme,
+  hasGlobChars,
+  resolveIcon,
+  resolveOptionalIcon,
+  serializeIcon,
+} from '@ciderpress/config'
 export { CiderpressLogo } from '@ciderpress/ui'
 export type { CiderpressLogoProps } from '@ciderpress/ui'
 
@@ -46,6 +53,10 @@ export type {
   LogoContext,
   LogoFn,
   LogoImage,
+  ResolvedIcon,
+  ResolvedIconifyIcon,
+  ResolvedImageIcon,
+  SerializedIcon,
 } from '@ciderpress/config'
 
 export type {

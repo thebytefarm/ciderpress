@@ -232,7 +232,16 @@ async function extractDescription(sourcePath: string): Promise<string | undefine
  * @returns Escaped string safe for JSX prop interpolation
  */
 function escapeJsxProp(str: string): string {
-  return str.replaceAll('"', '&quot;').replaceAll('{', '&#123;').replaceAll('}', '&#125;')
+  // Backslash must escape first, otherwise the entity-replacement passes below
+  // would multiply existing backslashes. Without this, a trailing odd-count
+  // backslash (`alt: 'x\\'`) escapes the closing `"` of the emitted JSX
+  // attribute and the parser swallows the next character into the string —
+  // adjacent props become part of the value or the build errors confusingly.
+  return str
+    .replaceAll('\\', String.raw`\\`)
+    .replaceAll('"', '&quot;')
+    .replaceAll('{', '&#123;')
+    .replaceAll('}', '&#125;')
 }
 
 /**

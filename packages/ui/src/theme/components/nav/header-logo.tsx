@@ -5,8 +5,6 @@ import userConfigModule from '@ciderpress/internal/user-config'
 import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import React, { useEffect, useState } from 'react'
 
-import { CiderpressLogo } from '../shared/ciderpress-logo'
-
 import './header-logo.css'
 
 interface ThemeContext {
@@ -59,7 +57,7 @@ const FALLBACK_COLORS = Object.freeze({
  *
  * @returns Branded logo element ready to drop inside `cp-header-logo`
  */
-export function HeaderLogo(): React.ReactElement {
+export function HeaderLogo(): React.ReactElement | null {
   const logoConfig = readLogoConfig(userConfigModule)
   const [themeContext, setThemeContext] = useState<ThemeContext | null>(null)
 
@@ -81,7 +79,12 @@ export function HeaderLogo(): React.ReactElement {
   }, [logoConfig])
 
   if (logoConfig === undefined) {
-    return <CiderpressLogo className="cp-header-logo__mark" />
+    // Default: the auto-generated `/logo.svg` written to the public dir
+    // by the banner module at sync time (derived from `config.title`).
+    // Sites that committed their own `public/logo.svg` already win here.
+    // The `<CiderpressLogo />` framework wordmark is opt-in via
+    // `logo: ({ theme }) => <CiderpressLogo />`.
+    return <img src="/logo.svg" alt="" className="cp-header-logo__img" />
   }
 
   if (typeof logoConfig === 'string') {
@@ -89,7 +92,10 @@ export function HeaderLogo(): React.ReactElement {
   }
 
   if (themeContext === null) {
-    return <CiderpressLogo className="cp-header-logo__mark" />
+    // Function-form logo: render nothing for a frame instead of flashing
+    // the ciderpress wordmark while themeContext resolves. The user's
+    // logo appears as soon as the layout effect runs.
+    return null
   }
 
   const result = logoConfig({ theme: themeContext })

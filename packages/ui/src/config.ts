@@ -56,7 +56,8 @@ interface HeadScriptOptions {
   /**
    * Forced-dismiss timer (ms). Catches the case where the React bundle
    * never hydrates — the head script flips `data-cp-ready` after this
-   * duration regardless of `ThemeProvider`.
+   * duration regardless of `ThemeProvider`. Ignored when `loaderEnabled`
+   * is false.
    */
   readonly loaderMaxMs: number
   /**
@@ -64,6 +65,14 @@ interface HeadScriptOptions {
    * the apple loader and custom loaders animate purely via CSS.
    */
   readonly useDotsLoader: boolean
+  /**
+   * Whether the inline FOUC loader is enabled at all. When `false`
+   * (i.e. `config.loader === false`), no loader CSS is emitted and no
+   * forced-dismiss fallback timer is scheduled — `data-cp-ready` flips
+   * are skipped entirely so user CSS hooked on the dismissal lifecycle
+   * stays quiet.
+   */
+  readonly loaderEnabled: boolean
 }
 
 /**
@@ -155,6 +164,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     registry: themeRegistry,
     loaderMaxMs,
     useDotsLoader: loaderStyle === 'classic',
+    loaderEnabled: loaderStyle !== false,
   })
 
   // Force a single React instance across all compiled theme components.
@@ -172,14 +182,6 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   // shim falls back to an empty object so the import always resolves even
   // when the user has no config file or only data fields.
   const userConfigAlias = resolveUserConfigAlias(paths.repoRoot)
-  // Logo resolution:
-  // - String → pass through to Rspress's native <img> rendering.
-  // - Function → suppress Rspress's native logo (NavLogo portal renders).
-  // - Missing → default to the auto-generated `/logo.svg` (banner module
-  //   writes this at sync time). The portal pattern proved unreliable for
-  //   the default case, so we now ship a static SVG that Rspress renders
-  //   directly. Theme-aware function logos still go through NavLogo.
-  const resolvedLogo = resolveLogo(config.logo)
 
   return {
     root: paths.contentDir,
@@ -193,10 +195,13 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     description: config.description ?? 'Documentation',
 
     icon: resolveFaviconPath(config.favicon),
-    // String logos pass through to Rspress's stock `<img>` rendering.
-    // Function logos and the default-branded fallback render via the
-    // <NavLogo /> globalUIComponent which portals into `.rp-nav__title__link`.
-    logo: resolvedLogo,
+    // `logo` and `logoText` are intentionally suppressed. Rspress's
+    // built-in nav (`.rp-nav`) is visually hidden by CSS in
+    // `ciderpress-header.css`, and `<HeaderLogo />` paints the visible
+    // brand inside `cp-header-logo` by reading `config.logo` from the
+    // bundled user config. Letting Rspress also fetch a logo image
+    // would produce a wasted network request into the hidden nav.
+    logo: '',
     logoText: '',
 
     themeDir: path.resolve(import.meta.dirname, 'theme'),
@@ -326,25 +331,6 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
  * @param params - Content directory, file name, and fallback value
  * @returns Parsed JSON content or the fallback value
  */
-/**
- * Resolve the Rspress `logo` field from the ciderpress config. String
- * passes through; nullish defaults to the synced `/logo.svg`; anything
- * else (e.g. a theme-aware function) signals "let `<NavLogo />` render
- * the brand mark via portal".
- *
- * @private
- * @param logo - Raw `config.logo` value (string, nullish, or function).
- * @returns Path string, or an absent value when a portal-driven logo is in play.
- */
-function resolveLogo(logo: unknown): string | undefined {
-  if (typeof logo === 'string') {
-    return logo
-  }
-  if (logo === null || logo === undefined) {
-    return '/logo.svg'
-  }
-}
-
 function loadGenerated<T>(params: {
   readonly contentDir: string
   readonly name: string
@@ -705,8 +691,17 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
   // for the case where hydration never runs (static dist served over
   // plain http with no service worker, an errored bundle, etc.). The
   // setTimeout flips `data-cp-ready` after `loaderMaxMs` so the loader
-  // can't get visually stuck.
-  const fallbackJs = `setTimeout(function(){var d=document.documentElement;if(d.dataset.cpReady!=='true'){d.classList.add('cp-loader-fade');setTimeout(function(){d.dataset.cpReady='true'},220)}},${options.loaderMaxMs})`
+  // can't get visually stuck. Skipped entirely when the loader is
+  // disabled (`config.loader === false`) — otherwise we'd flip
+  // `data-cp-ready` on pages that have no loader to dismiss, which
+  // would still fire user CSS hooked on that attribute.
+  const fallbackJs = match(options.loaderEnabled)
+    .with(
+      true,
+      () =>
+        `setTimeout(function(){var d=document.documentElement;if(d.dataset.cpReady!=='true'){d.classList.add('cp-loader-fade');setTimeout(function(){d.dataset.cpReady='true'},220)}},${options.loaderMaxMs})`
+    )
+    .otherwise(() => '')
 
   const loaderJs = match(options.useDotsLoader)
     .with(true, () => LOADER_DOTS_JS)

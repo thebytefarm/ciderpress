@@ -1,7 +1,7 @@
+import type { SerializedIcon } from '@ciderpress/config'
+
 /**
- * Serialized image-icon shape — what the sync engine emits when a card
- * config uses the `{ src, alt }` image form. The discriminator `kind`
- * makes the type guard trivial.
+ * Render-ready image icon — `src` plus `alt`.
  */
 export interface ResolvedCardImageIcon {
   readonly kind: 'image'
@@ -10,7 +10,7 @@ export interface ResolvedCardImageIcon {
 }
 
 /**
- * Resolved Iconify card icon — `id` plus a color rotation key.
+ * Render-ready Iconify icon — `id` plus a colour-rotation key.
  */
 export interface ResolvedCardIconifyIcon {
   readonly kind: 'iconify'
@@ -25,26 +25,24 @@ export interface ResolvedCardIconifyIcon {
 export type ResolvedCardIcon = ResolvedCardIconifyIcon | ResolvedCardImageIcon
 
 /**
- * Card-icon input shape — what flows in from the sync engine's JSON
- * output (workspaces, sections, features). Matches the `SerializedIcon`
- * union in `@ciderpress/config`, copied here so this module stays
- * dependency-free.
+ * Card-icon input shape — the `SerializedIcon` shape emitted by the
+ * sync engine (workspaces, sections, features), re-exported here under
+ * a local alias to keep render-site call signatures readable. Always
+ * comes from `@ciderpress/config` — there is no separate source of
+ * truth.
  */
-export type CardIconInput =
-  | string
-  | { readonly id: string; readonly color: string }
-  | { readonly kind: 'image'; readonly src: string; readonly alt: string }
-  | undefined
+export type CardIconInput = SerializedIcon | undefined
 
 /**
- * Resolve a unified icon-config-derived value into a discriminated icon.
+ * Resolve a serialized icon value into a discriminated icon ready for
+ * render.
  *
  * - `string` → `{ kind: 'iconify', id, color: 'purple' }`
  * - `{ id, color }` → `{ kind: 'iconify', id, color }`
  * - `{ kind: 'image', src, alt }` → pass-through
  * - `undefined` → `undefined`
  *
- * @param icon - Icon config value (string, iconify object, image object, or undefined)
+ * @param icon - Serialized icon value or `undefined`
  * @returns Discriminated resolved icon, or `undefined`
  */
 export function resolveCardIcon(icon: CardIconInput): ResolvedCardIcon | undefined {
@@ -55,7 +53,10 @@ export function resolveCardIcon(icon: CardIconInput): ResolvedCardIcon | undefin
     return { kind: 'iconify', id: icon, color: 'purple' }
   }
   if ('kind' in icon) {
-    return { kind: 'image', src: icon.src, alt: icon.alt }
+    // Defence-in-depth: even if a downstream caller hand-builds the
+    // object and forgets `alt`, fall back to an empty string so React
+    // never sees `alt={undefined}` (which silences screen readers).
+    return { kind: 'image', src: icon.src, alt: icon.alt ?? '' }
   }
   return { kind: 'iconify', id: icon.id, color: icon.color }
 }

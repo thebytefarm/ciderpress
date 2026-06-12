@@ -5,9 +5,26 @@
 '@ciderpress/ui': minor
 ---
 
-**Full white-label customization.** Five surfaces that previously forced
+**Full white-label customization.** Six surfaces that previously forced
 ciderpress's own branding through are now user-overridable, so a product docs
 site can ship with zero ciderpress wordmark or pixel-apple visible.
+
+### Topbar icon chip (new)
+
+`config.icon` now actually renders. The field had a JSDoc claim but no
+implementation — `<HeaderIcon />` now paints it as a small chip immediately
+before `<HeaderLogo />` inside `cp-header-logo`. Accepts the same
+`IconConfig` union as cards: Iconify id, `{ id, color }`, or `{ src, alt }`
+for a static asset.
+
+```ts
+icon: 'devicon:react'                          // Iconify
+icon: { id: 'devicon:nextjs', color: 'blue' }  // Iconify, explicit colour
+icon: { src: '/icon.svg', alt: 'maltty' }      // Image
+```
+
+Pairs with `logo` for the canonical two-slot brand identity (icon chip +
+wordmark) — Stripe / Vercel / Rspress-docs pattern.
 
 ### Logo on landing pages
 
@@ -40,8 +57,8 @@ http with no service worker).
 
 Setting `config.favicon` now disables the runtime favicon retinting that
 swapped `<link rel="icon">` to a themed pixel-apple data URI. The user's
-asset stays put. `favicon` also accepts `{ src, type }` for explicit MIME
-type when the path doesn't carry a recognised extension.
+asset stays put. `favicon` also accepts `{ src }` in object form for
+forward compatibility with future per-link metadata.
 
 ### Image-form icons
 
@@ -55,3 +72,30 @@ icon: { src: '/icon.svg', alt: 'maltty' }
 
 For inline React JSX, keep using `logo: ({ theme }) => <YourMark />` —
 that path already supports ReactNode and re-renders on theme changes.
+
+### Security hardening
+
+The custom-loader CSS builder hex-escapes `<` characters in both `label`
+and asset-URL `content`, so a payload containing `</style>` can never
+break out of the inline `<style>` tag injected in `<head>`. The inline-SVG
+content path was already safe via `encodeURIComponent`. The JSX-prop
+escaper in the sync engine now also escapes backslash, blocking
+trailing-backslash escape sequences in image-form icon `src`/`alt`.
+
+### Loader timer correctness
+
+- `minDisplayMs` + `maxDisplayMs` are cross-field validated: `max` must
+  be at least `min + 200ms` (the CSS fade transition), rejecting configs
+  that would dismiss the loader before paint.
+- The forced-dismiss fallback is now skipped entirely when `loader: false`
+  so user CSS hooked on the `data-cp-ready` dismissal lifecycle stays quiet.
+- The React-side duplicate fallback timer was removed — the inline head
+  script's timer is the single source of truth.
+
+### Icon-config consolidation
+
+`SerializedIcon` and `ResolvedIcon` are now exported from the wrapper
+`ciderpress` package so downstream tooling (custom MDX, third-party
+themes) can type icon objects without reaching into `@ciderpress/config`.
+The `@ciderpress/ui` shared resolver imports `SerializedIcon` directly —
+the duplicate `CardIconInput` alias was dropped.

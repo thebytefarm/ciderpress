@@ -1379,14 +1379,16 @@ export interface LoaderConfig {
  *
  * - **String** — absolute path or URL to the favicon asset. Shorthand
  *   for `{ src }`.
- * - **Object** — `{ src, type }` with an optional explicit MIME type
- *   (e.g. `'image/png'`). Use when the path doesn't end in a recognised
- *   extension.
+ * - **Object** — `{ src }`. The object form exists for forward
+ *   compatibility; the rendered `<link rel="icon">` is emitted via
+ *   Rspress's `icon` field which doesn't surface an explicit `type`
+ *   attribute, so callers should rely on the file extension (e.g.
+ *   `/favicon.svg`, `/favicon.png`) for browser MIME inference.
  *
  * Setting this field disables the runtime favicon retinting that
  * normally swaps `<link rel="icon">` to a themed pixel-apple data-URI.
  */
-export type FaviconConfig = string | { readonly src: string; readonly type?: string }
+export type FaviconConfig = string | { readonly src: string }
 
 /**
  * Logo configuration accepted on `CiderpressConfig.logo`.
@@ -1471,10 +1473,17 @@ export interface CiderpressConfig {
    */
   readonly loader?: false | 'apple' | 'classic' | LoaderConfig
   /**
-   * Brand icon rendered next to the site title in the topbar.
+   * Brand mark rendered as a small chip immediately before `logo` in the
+   * topbar. Use for the canonical two-slot identity (small mark + wordmark
+   * logo) seen on Stripe / Vercel / Rspress-style docs sites.
    *
-   * Accepts any {@link IconConfig} value — Iconify id, `{ id, color }`,
-   * or `{ src, alt }` for a custom image asset.
+   * Accepts any {@link IconConfig} value:
+   * - Iconify id (`"devicon:react"`) — rendered with the `<Icon>` component.
+   * - `{ id, color }` — Iconify with explicit colour.
+   * - `{ src, alt }` — static image asset (SVG/PNG/…) painted as `<img>`.
+   *
+   * When omitted, the topbar shows the `logo` slot only. When neither
+   * `icon` nor `logo` is set, the framework wordmark fallback appears.
    */
   readonly icon?: IconConfig
   /**

@@ -211,7 +211,8 @@
           "type": "object",
           "properties": {
             "content": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             },
             "label": {
               "type": "string"
@@ -259,7 +260,8 @@
           "type": "object",
           "properties": {
             "src": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             },
             "alt": {
               "type": "string"
@@ -286,16 +288,15 @@
     "favicon": {
       "anyOf": [
         {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         },
         {
           "type": "object",
           "properties": {
             "src": {
-              "type": "string"
-            },
-            "type": {
-              "type": "string"
+              "type": "string",
+              "minLength": 1
             }
           },
           "required": [
@@ -340,7 +341,8 @@
                 "type": "object",
                 "properties": {
                   "src": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1
                   },
                   "alt": {
                     "type": "string"
@@ -597,7 +599,8 @@
                 "type": "object",
                 "properties": {
                   "src": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1
                   },
                   "alt": {
                     "type": "string"
@@ -869,7 +872,8 @@
                       "type": "object",
                       "properties": {
                         "src": {
-                          "type": "string"
+                          "type": "string",
+                          "minLength": 1
                         },
                         "alt": {
                           "type": "string"
@@ -1144,7 +1148,8 @@
                 "type": "object",
                 "properties": {
                   "src": {
-                    "type": "string"
+                    "type": "string",
+                    "minLength": 1
                   },
                   "alt": {
                     "type": "string"
@@ -1231,7 +1236,8 @@
                     "type": "object",
                     "properties": {
                       "src": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                       },
                       "alt": {
                         "type": "string"
@@ -1303,7 +1309,8 @@
                     "type": "object",
                     "properties": {
                       "src": {
-                        "type": "string"
+                        "type": "string",
+                        "minLength": 1
                       },
                       "alt": {
                         "type": "string"
@@ -2036,7 +2043,8 @@
               "type": "object",
               "properties": {
                 "src": {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1
                 },
                 "alt": {
                   "type": "string"
@@ -2076,7 +2084,8 @@
                   "type": "object",
                   "properties": {
                     "src": {
-                      "type": "string"
+                      "type": "string",
+                      "minLength": 1
                     },
                     "alt": {
                       "type": "string"
