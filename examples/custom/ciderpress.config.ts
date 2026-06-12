@@ -35,16 +35,16 @@ export default defineConfig({
   description: 'The operating layer for ambitious internet companies.',
   tagline: 'Ship faster. Integrate deeper. Stay accountable.',
 
-  // Wordmark logo. Rendered by `<HeaderLogo />` inside `cp-header-logo`.
+  // Integrated wordmark logo — chevron mark + "Acme Corp" rendered as one
+  // SVG. The default single-slot brand pattern. Use `config.icon`
+  // instead/additionally only when you have a small mark that's
+  // visually distinct from the wordmark (Stripe and Vercel keep it
+  // single; some product sites layer a separate chip).
   logo: '/logo.svg',
 
   // Tab mark. Setting this suppresses the runtime favicon retinting that
   // otherwise swaps `<link rel="icon">` to a themed pixel-apple data URI.
   favicon: '/favicon.svg',
-
-  // Topbar icon chip — image form. Rendered by `<HeaderIcon />` immediately
-  // before `<HeaderLogo />` so the header reads "[A] Acme Corp".
-  icon: { src: '/icon.svg', alt: 'Acme Corp mark' },
 
   // Custom FOUC loader. Inline SVG content + brand-aligned label.
   loader: {

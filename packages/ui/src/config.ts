@@ -284,6 +284,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           __CIDERPRESS_HAS_USER_FAVICON__: JSON.stringify(config.favicon !== undefined),
           __CIDERPRESS_LOADER_MIN_MS__: JSON.stringify(resolveLoaderMinMs(config.loader)),
           __CIDERPRESS_LOADER_MAX_MS__: JSON.stringify(resolveLoaderMaxMs(config.loader)),
+          __CIDERPRESS_HAS_VARIANT_TOGGLE__: JSON.stringify(
+            resolveHasVariantToggle({ themeName, themeSwitcher, registry: themeRegistry })
+          ),
         },
       },
       output: {
@@ -784,6 +787,36 @@ function resolveFaviconPath(favicon: FaviconConfig | undefined): string {
     return favicon
   }
   return favicon.src
+}
+
+/**
+ * Decide whether the `<VariantToggle />` will ever be visible in the
+ * topbar — drives the trailing-cluster divider in `CiderpressHeader`.
+ *
+ * - If the theme switcher is enabled, the user can swap to any
+ *   registered theme at runtime — assume the toggle COULD appear and
+ *   render the divider.
+ * - Otherwise, the build-time theme is the only one ever painted; the
+ *   toggle is hidden by CSS when that theme declares one variant.
+ *
+ * @private
+ * @param params - Active theme name, switcher flag, and the registry
+ *   entries (built-in + user themes).
+ * @returns True when the divider before the toggle should be rendered.
+ */
+function resolveHasVariantToggle(params: {
+  readonly themeName: string
+  readonly themeSwitcher: boolean
+  readonly registry: readonly ThemeRegistryEntry[]
+}): boolean {
+  if (params.themeSwitcher) {
+    return true
+  }
+  const entry = params.registry.find((e) => e.name === params.themeName)
+  if (entry === undefined) {
+    return false
+  }
+  return entry.variants.length > 1
 }
 
 /**
