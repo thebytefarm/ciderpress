@@ -20,7 +20,7 @@
     "prerelease": "turbo run build",
     "release": "changeset publish",
     "docs:dev": "node packages/ciderpress/dist/cli.mjs dev",
-    "docs:build": "node packages/ciderpress/dist/cli.mjs build",
+    "docs:build": "lauf run build",
     "docs:serve": "node packages/ciderpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
     "dev": "turbo run dev",

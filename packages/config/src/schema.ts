@@ -487,6 +487,10 @@ export const ciderpressConfigSchema = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
+    base: z
+      .string()
+      .regex(/^\/.*\/$/, 'base must start and end with `/` (e.g. `/examples/simple/`)')
+      .optional(),
     theme: themeConfigSchema.optional(),
     themes: z.array(ciderpressThemeInputSchema).optional(),
     loader: loaderFieldSchema

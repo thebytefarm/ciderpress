@@ -11,6 +11,10 @@
     "description": {
       "type": "string"
     },
+    "base": {
+      "type": "string",
+      "pattern": "^\\/.*\\/$"
+    },
     "theme": {
       "type": "object",
       "properties": {

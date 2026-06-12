@@ -1677,6 +1677,19 @@ export interface CiderpressConfig {
    */
   readonly description?: string
   /**
+   * Deployment base path. Forwarded to Rspress's `base` option so static
+   * asset URLs (`/main.css`, `/logo.svg`) and client-side route prefixes
+   * are emitted with the leading sub-path baked in. Use this when the
+   * site is mounted somewhere other than the host root — e.g. an
+   * example site served under `/examples/simple/` on the main deploy.
+   *
+   * Must start and end with `/` (e.g. `/examples/simple/`). Defaults
+   * to `/`. The `CIDERPRESS_BASE` env var, when set, wins over this
+   * field — that lets a build orchestrator inject mount paths per
+   * child build without editing each site's config.
+   */
+  readonly base?: string
+  /**
    * Theme selection and customisation — built-in theme name, variant
    * preference, switcher toggle, and color overrides.
    */

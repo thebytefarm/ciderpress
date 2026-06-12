@@ -183,10 +183,20 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   // when the user has no config file or only data fields.
   const userConfigAlias = resolveUserConfigAlias(paths.repoRoot)
 
+  // `CIDERPRESS_BASE` env var wins over the config field so a build
+  // orchestrator (e.g. `scripts/build.lauf.ts`) can inject per-child
+  // mount paths without editing each example site's own config.
+  const envBase = process.env.CIDERPRESS_BASE
+  const resolvedBase = match([envBase, config.base])
+    .with([P.string.minLength(1), P._], ([b]) => b)
+    .with([P._, P.string.minLength(1)], ([, b]) => b)
+    .otherwise(() => '/')
+
   return {
     root: paths.contentDir,
     outDir: paths.distDir,
 
+    base: resolvedBase,
     route: { cleanUrls: true },
 
     llms: true,
