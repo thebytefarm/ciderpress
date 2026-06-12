@@ -32,8 +32,7 @@ Thumbs.db
 
 # Editor directories and files
 .idea/
-.vscode/
-!/.vscode/
+.vscode/settings.json
 *.swp
 *.swo
 *~
