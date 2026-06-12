@@ -8,7 +8,6 @@ import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 import { CiderpressNavSocialLinks } from '../nav/ciderpress-nav-social-links'
 import { ThemeSwitcher } from '../nav/theme-switcher'
-import { CiderpressMark } from '../shared/ciderpress-mark'
 
 import './site-footer.css'
 
@@ -56,7 +55,12 @@ export function SiteFooter(): React.ReactElement | null {
             <div className="cp-site-footer__brand-mark">
               {match(brandMark)
                 .with(undefined, () => (
-                  <CiderpressMark className="cp-site-footer__brand-icon" title="" />
+                  // Default to the project's `/icon.svg` (auto-generated
+                  // from `config.title` at sync time, or overridden by
+                  // shipping a `public/icon.svg`). This was previously
+                  // the hardcoded `<CiderpressMark />` apple, which
+                  // leaked ciderpress branding into every footer.
+                  <img src="/icon.svg" alt="" className="cp-site-footer__brand-icon" />
                 ))
                 .otherwise((mark) => mark)}
             </div>

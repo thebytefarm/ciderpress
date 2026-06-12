@@ -9,32 +9,31 @@ import { defineConfig } from 'ciderpress'
  * that bundle).
  */
 const LOADER_SVG =
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="brewing">' +
-  '<circle cx="32" cy="32" r="28" fill="none" stroke="#f59e0b" stroke-width="6" ' +
-  'stroke-linecap="round" stroke-dasharray="120 60">' +
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="loading">' +
+  '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+  '<stop offset="0%" stop-color="#0ea5e9"/>' +
+  '<stop offset="100%" stop-color="#6366f1"/>' +
+  '</linearGradient></defs>' +
+  '<circle cx="32" cy="32" r="26" fill="none" stroke="url(#g)" stroke-width="6" ' +
+  'stroke-linecap="round" stroke-dasharray="100 80">' +
   '<animateTransform attributeName="transform" type="rotate" from="0 32 32" ' +
-  'to="360 32 32" dur="1.4s" repeatCount="indefinite"/>' +
+  'to="360 32 32" dur="1.2s" repeatCount="indefinite"/>' +
   '</circle></svg>'
 
 /**
  * Full white-label acceptance config. Every brand surface that ciderpress
  * paints by default is overridden here so the rendered site carries zero
  * framework branding — no wordmark, no pixel-apple favicon, no apple
- * loader animation.
+ * loader animation, no apple in the footer.
  *
- * The config exercises:
- *   - `logo`     — string path to a custom wordmark SVG.
- *   - `favicon`  — custom tab mark; suppresses the runtime favicon retinting.
- *   - `icon`     — `{ src, alt }` chip rendered before the logo (two-slot
- *                  brand identity).
- *   - `loader`   — inline SVG with a custom label, replacing the apple
- *                  loader; `maxDisplayMs` caps the forced-dismiss fallback.
- *   - `theme`    — amber preset to match the maltty palette.
+ * The site itself is a realistic mid-size product docs site: getting
+ * started + guides + API reference + a workspace tree for the dashboard,
+ * edge runtime, and SDK.
  */
 export default defineConfig({
-  title: 'maltty',
-  description: 'Hand-crafted brewing kits',
-  tagline: 'Recipes, equipment, and care manuals — all in one place.',
+  title: 'Acme Corp',
+  description: 'The operating layer for ambitious internet companies.',
+  tagline: 'Ship faster. Integrate deeper. Stay accountable.',
 
   // Wordmark logo. Rendered by `<HeaderLogo />` inside `cp-header-logo`.
   logo: '/logo.svg',
@@ -44,20 +43,18 @@ export default defineConfig({
   favicon: '/favicon.svg',
 
   // Topbar icon chip — image form. Rendered by `<HeaderIcon />` immediately
-  // before `<HeaderLogo />` so the header reads "[m] maltty".
-  icon: { src: '/icon.svg', alt: 'maltty mark' },
+  // before `<HeaderLogo />` so the header reads "[A] Acme Corp".
+  icon: { src: '/icon.svg', alt: 'Acme Corp mark' },
 
-  // Custom FOUC loader. Inline SVG content + brewing-themed label.
-  // `maxDisplayMs` is the forced-dismiss budget; the inline head-script
-  // flips `data-cp-ready` at this point even if the React bundle stalls.
+  // Custom FOUC loader. Inline SVG content + brand-aligned label.
   loader: {
     content: LOADER_SVG,
-    label: 'brewing',
+    label: 'loading',
     minDisplayMs: 150,
     maxDisplayMs: 4000,
   },
 
-  theme: { name: 'amber' },
+  theme: { name: 'midnight' },
 
   // White-label the home page: suppress the framework's hardcoded
   // HeroDemo (terminal showing `pnpm ciderpress dev`) and HomeSplit
@@ -67,52 +64,151 @@ export default defineConfig({
     heroDemo: false,
     split: false,
     features: {
-      columns: 2,
+      columns: 3,
       heading: {
-        title: 'What you get',
-        subtitle: 'Three things every kit ships with — guaranteed.',
+        title: 'What you get on day one',
+        subtitle:
+          'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
       },
     },
   },
 
-  // Hero CTA + supporting features (replaces the framework's defaults).
-  actions: [{ theme: 'brand', text: 'Browse recipes', link: '/recipes' }],
+  // Hero CTA + supporting features.
+  actions: [
+    { theme: 'brand', text: 'Quickstart', link: '/getting-started/quickstart' },
+    { theme: 'alt', text: 'API reference', link: '/api/overview' },
+  ],
   features: [
     {
-      title: 'Curated recipes',
-      description: 'Hand-picked by our roastmasters.',
-      icon: 'pixelarticons:edit',
-      link: '/recipes',
+      title: 'Typed SDK',
+      description: 'Generated from your live OpenAPI spec on every deploy. End-to-end inference.',
+      icon: 'pixelarticons:script-text',
+      link: '/packages/sdk',
     },
     {
-      title: 'Care manuals',
-      description: 'Keep your equipment in fighting shape.',
-      icon: 'pixelarticons:tools',
+      title: 'Managed edge runtime',
+      description: '40+ POPs, sub-50ms p99 cold starts, regional pinning, zero-config DR.',
+      icon: 'pixelarticons:cloud',
+      link: '/apps/edge',
+    },
+    {
+      title: 'Control plane',
+      description: 'Audit logs, customer impersonation, feature flags — next to your code.',
+      icon: 'pixelarticons:dashboard',
+      link: '/apps/dashboard',
+    },
+    {
+      title: 'Webhook delivery',
+      description: 'Signed events with 24h retries and a built-in DLQ.',
+      icon: 'pixelarticons:notification',
+      link: '/guides/webhooks',
+    },
+    {
+      title: 'Observability built in',
+      description: 'Structured logs, OpenTelemetry traces, custom metrics — no agent install.',
+      icon: 'pixelarticons:chart',
+      link: '/guides/observability',
+    },
+    {
+      title: 'Rate limits you control',
+      description: 'Token-bucket limiter with per-workspace ceilings and burst behaviour.',
+      icon: 'pixelarticons:speed-fast',
+      link: '/api/rate-limits',
+    },
+  ],
+
+  apps: [
+    {
+      title: 'Dashboard',
+      icon: 'devicon:nextjs',
+      description: 'Next.js control-plane web app for billing, audit, and webhook ops.',
+      tags: ['nextjs', 'react', 'rsc'],
+      path: '/apps/dashboard',
+      include: 'docs/*.md',
+    },
+    {
+      title: 'Edge Runtime',
+      icon: 'pixelarticons:cloud',
+      description: 'Managed V8 isolates running your handlers in 40+ regions.',
+      tags: ['v8', 'isolates', 'edge'],
+      path: '/apps/edge',
+      include: 'docs/*.md',
+    },
+  ],
+  packages: [
+    {
+      title: 'SDK',
+      icon: 'devicon:typescript',
+      description: 'Strongly-typed TypeScript client generated from the OpenAPI spec.',
+      tags: ['typescript', 'openapi'],
+      path: '/packages/sdk',
+      include: 'docs/*.md',
     },
   ],
 
   sections: [
     {
-      title: 'Welcome',
-      path: '/welcome',
-      include: 'docs/welcome.md',
-      icon: 'pixelarticons:home',
+      title: 'Getting Started',
+      path: '/getting-started',
+      include: 'docs/getting-started/*.md',
+      icon: 'pixelarticons:speed-fast',
+      sort: 'alpha',
     },
     {
-      title: 'Recipes',
-      path: '/recipes',
-      include: 'docs/recipes.md',
-      icon: 'pixelarticons:edit',
+      title: 'Guides',
+      path: '/guides',
+      include: 'docs/guides/*.md',
+      icon: 'pixelarticons:article',
+      sort: 'alpha',
+    },
+    {
+      title: 'API Reference',
+      path: '/api',
+      include: 'docs/api/*.md',
+      icon: 'pixelarticons:book-open',
+      sort: 'alpha',
     },
   ],
 
   nav: [
-    { title: 'Welcome', link: '/welcome' },
-    { title: 'Recipes', link: '/recipes' },
+    { title: 'Docs', link: '/getting-started/introduction' },
+    { title: 'Guides', link: '/guides/authentication' },
+    { title: 'API', link: '/api/overview' },
   ],
 
   footer: {
-    message: 'Brewed with care',
-    copyright: 'Copyright © 2026 maltty',
+    message: 'Built for teams who treat their stack as a product.',
+    copyright: 'Copyright © 2026 Acme Corp.',
+  },
+
+  site: {
+    footer: {
+      columns: [
+        {
+          heading: 'Product',
+          links: [
+            { text: 'Quickstart', href: '/getting-started/quickstart' },
+            { text: 'Configuration', href: '/getting-started/configuration' },
+            { text: 'API Reference', href: '/api/overview' },
+          ],
+        },
+        {
+          heading: 'Apps',
+          links: [
+            { text: 'Dashboard', href: '/apps/dashboard' },
+            { text: 'Edge Runtime', href: '/apps/edge' },
+          ],
+        },
+        {
+          heading: 'Resources',
+          links: [
+            { text: 'Authentication', href: '/guides/authentication' },
+            { text: 'Webhooks', href: '/guides/webhooks' },
+            { text: 'Observability', href: '/guides/observability' },
+          ],
+        },
+      ],
+      tagline: 'v1.0',
+    },
   },
 })

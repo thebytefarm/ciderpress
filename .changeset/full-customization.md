@@ -92,6 +92,15 @@ trailing-backslash escape sequences in image-form icon `src`/`alt`.
 - The React-side duplicate fallback timer was removed — the inline head
   script's timer is the single source of truth.
 
+### Footer brand mark
+
+The site footer's brand chip no longer falls back to the framework
+`<CiderpressMark />` apple. When `site.footer.brandMark` is omitted, the
+chip renders `<img src="/icon.svg">` — the auto-generated mark derived
+from `config.title` at sync time, or the user's `public/icon.svg` when
+one is shipped. Any user with a `public/icon.svg` (or who lets
+ciderpress generate one) gets a non-apple footer out of the box.
+
 ### Icon-config consolidation
 
 `SerializedIcon` and `ResolvedIcon` are now exported from the wrapper
