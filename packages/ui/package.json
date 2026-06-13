@@ -68,7 +68,7 @@
     "@iconify/react": "^6.0.2",
     "clsx": "^2.1.1",
     "katex": "^0.17.0",
-    "massaman": "^0.2.0",
+    "massaman": "catalog:",
     "mermaid": "^10.9.6",
     "openapi-sampler": "^1.7.4",
     "react-aria-components": "^1.18.0",

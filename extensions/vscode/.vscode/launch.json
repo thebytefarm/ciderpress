@@ -10,9 +10,7 @@
         "${workspaceFolder}/examples/kitchen-sink",
         "--extensionDevelopmentPath=${workspaceFolder}/extensions/vscode"
       ],
-      "outFiles": [
-        "${workspaceFolder}/extensions/vscode/dist/**/*.js"
-      ],
+      "outFiles": ["${workspaceFolder}/extensions/vscode/dist/**/*.js"],
       "preLaunchTask": "build-extension"
     }
   ]

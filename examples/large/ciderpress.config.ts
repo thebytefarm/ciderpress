@@ -4,14 +4,11 @@ export default defineConfig({
   title: 'Platform Docs',
   description: 'Internal Engineering Documentation',
   tagline: 'Everything you need to build, ship, and scale.',
-
   theme: { name: 'midnight' },
-
   home: {
     features: { truncate: { description: 2 } },
     workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
   },
-
   apps: [
     {
       title: 'API',
@@ -86,7 +83,6 @@ export default defineConfig({
       sort: 'alpha',
     },
   ],
-
   packages: [
     {
       title: 'Database',
@@ -179,15 +175,26 @@ export default defineConfig({
       sort: 'alpha',
     },
   ],
-
   sections: [
     {
       title: 'Getting Started',
       icon: 'pixelarticons:open',
       items: [
-        { title: 'Introduction', path: '/introduction', include: 'docs/README.md' },
-        { title: 'Architecture', path: '/architecture', include: 'docs/architecture.md' },
-        { title: 'Repository Structure', path: '/structure', include: 'docs/structure.md' },
+        {
+          title: 'Introduction',
+          path: '/introduction',
+          include: 'docs/README.md',
+        },
+        {
+          title: 'Architecture',
+          path: '/architecture',
+          include: 'docs/architecture.md',
+        },
+        {
+          title: 'Repository Structure',
+          path: '/structure',
+          include: 'docs/structure.md',
+        },
         { title: 'Commands', path: '/commands', include: 'docs/commands.md' },
       ],
     },
@@ -210,7 +217,11 @@ export default defineConfig({
       icon: 'pixelarticons:mood-happy',
       path: '/ai',
       items: [
-        { title: 'Overview', path: '/ai/overview', include: 'docs/ai/overview.md' },
+        {
+          title: 'Overview',
+          path: '/ai/overview',
+          include: 'docs/ai/overview.md',
+        },
         {
           title: 'Best Practices',
           path: '/ai/best-practices',
@@ -279,7 +290,11 @@ export default defineConfig({
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
       items: [
-        { title: 'Overview', path: '/contributing', include: 'contributing/README.md' },
+        {
+          title: 'Overview',
+          path: '/contributing',
+          include: 'contributing/README.md',
+        },
         {
           title: { from: 'frontmatter' },
           path: '/contributing/guides',
@@ -334,9 +349,7 @@ export default defineConfig({
       ],
     },
   ],
-
   socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/acme' }],
-
   footer: {
     message: 'Built with ciderpress',
     copyright: 'Copyright © 2025 Acme Inc.',

@@ -1,0 +1,134 @@
+---
+title: IDE Window
+description: Wrap code blocks in an editor-style window with file tabs.
+---
+
+import { IDEWindow } from '@theme'
+
+# IDE Window
+
+The `<IDEWindow>` component wraps code in an editor-style window with file tabs in the title bar. Built on top of [DesktopWindow](/reference/built-ins/desktop-window).
+
+## Single file
+
+Pass a code string via the `code` prop:
+
+**Code**
+
+```mdx
+import { IDEWindow } from '@theme'
+
+<IDEWindow
+  files={[{ name: 'ciderpress.config.ts', active: true }]}
+  lang="ts"
+  code={
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+  }
+/>
+```
+
+**Output**
+
+<IDEWindow
+  files={[{ name: 'ciderpress.config.ts', active: true }]}
+  lang="ts"
+  code={
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+  }
+/>
+
+## Multiple tabs
+
+Show multiple file tabs to indicate context. The `active` tab is visually highlighted:
+
+**Code**
+
+```mdx
+<IDEWindow
+  files={[{ name: 'index.ts' }, { name: 'config.ts', active: true }, { name: 'types.ts' }]}
+  lang="ts"
+  code={"export const config = {\n  port: 3000,\n  host: 'localhost',\n}"}
+/>
+```
+
+**Output**
+
+<IDEWindow
+  files={[{ name: 'index.ts' }, { name: 'config.ts', active: true }, { name: 'types.ts' }]}
+  lang="ts"
+  code={"export const config = {\n  port: 3000,\n  host: 'localhost',\n}"}
+/>
+
+## With path-style filenames
+
+Use full paths for clarity in monorepo contexts:
+
+**Code**
+
+```mdx
+<IDEWindow
+  files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
+  lang="ts"
+  code={
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+  }
+/>
+```
+
+**Output**
+
+<IDEWindow
+  files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
+  lang="ts"
+  code={
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+  }
+/>
+
+## JSON example
+
+**Code**
+
+```mdx
+<IDEWindow
+  files={[{ name: 'package.json', active: true }]}
+  lang="json"
+  code={
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "ciderpress dev",\n    "build": "ciderpress build"\n  },\n  "dependencies": {\n    "ciderpress": "^0.2.4"\n  }\n}'
+  }
+/>
+```
+
+**Output**
+
+<IDEWindow
+  files={[{ name: 'package.json', active: true }]}
+  lang="json"
+  code={
+    '{\n  "name": "@acme/docs",\n  "scripts": {\n    "dev": "ciderpress dev",\n    "build": "ciderpress build"\n  },\n  "dependencies": {\n    "ciderpress": "^0.2.4"\n  }\n}'
+  }
+/>
+
+## Props
+
+### IDEWindow
+
+| Prop       | Type           | Required | Default | Description                                  |
+| ---------- | -------------- | -------- | ------- | -------------------------------------------- |
+| `files`    | `IDEFileTab[]` | yes      | —       | File tabs in the title bar                   |
+| `code`     | `string`       | no       | —       | Code string to display                       |
+| `lang`     | `string`       | no       | —       | Language identifier (e.g. `'ts'`, `'json'`)  |
+| `children` | `ReactNode`    | no       | —       | Fallback content when `code` is not provided |
+
+### IDEFileTab
+
+| Prop     | Type      | Required | Default | Description                   |
+| -------- | --------- | -------- | ------- | ----------------------------- |
+| `name`   | `string`  | yes      | —       | Filename displayed in the tab |
+| `active` | `boolean` | no       | `false` | Whether this tab is selected  |
+
+## References
+
+- [DesktopWindow](/reference/built-ins/desktop-window)
+- [BrowserWindow](/reference/built-ins/browser-window)
+- [TerminalWindow](/reference/built-ins/terminal-window)

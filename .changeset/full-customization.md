@@ -153,6 +153,7 @@ All home components are importable from `@ciderpress/ui/theme`.
 ---
 pageType: home
 ---
+
 import { Hero, FeatureGrid, FeatureCard, PageRail, CTA } from '@ciderpress/ui/theme'
 
 <PageRail>

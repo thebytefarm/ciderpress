@@ -48,7 +48,7 @@
   "dependencies": {
     "@ciderpress/theme": "workspace:*",
     "c12": "4.0.0-beta.5",
-    "massaman": "^0.2.0",
+    "massaman": "catalog:",
     "type-fest": "catalog:",
     "zod": "catalog:"
   },

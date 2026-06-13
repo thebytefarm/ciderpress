@@ -1,0 +1,148 @@
+---
+title: Accordion
+description: Expandable disclosure sections for progressive content reveal.
+---
+
+import { Accordion, AccordionGroup } from '@theme'
+
+# Accordion
+
+The `<Accordion>` component creates expandable sections with title, optional description and icon, URL-hash deep linking, and full keyboard accessibility. Built on `react-aria-components` for ARIA support.
+
+## Basic
+
+**Code**
+
+```mdx
+import { Accordion } from '@theme'
+
+<Accordion title="What is ciderpress?">
+
+ciderpress is a documentation framework built on Rspress that generates
+beautiful, themeable documentation sites from your codebase.
+
+</Accordion>
+```
+
+**Output**
+
+<Accordion title="What is ciderpress?">
+
+ciderpress is a documentation framework built on Rspress that generates
+beautiful, themeable documentation sites from your codebase.
+
+</Accordion>
+
+## With description and icon
+
+**Code**
+
+````mdx
+<Accordion
+  title="Installation"
+  description="How to install ciderpress in your project"
+  icon="pixelarticons:cloud-download"
+>
+
+Run the following command to install ciderpress:
+
+```bash
+pnpm add ciderpress
+```
+
+</Accordion>
+````
+
+**Output**
+
+<Accordion
+  title="Installation"
+  description="How to install ciderpress in your project"
+  icon="pixelarticons:cloud-download"
+>
+
+Run `pnpm add ciderpress` to install.
+
+</Accordion>
+
+## Default open
+
+Use `defaultOpen` to start the accordion in the expanded state.
+
+**Code**
+
+```mdx
+<Accordion title="Expanded by default" defaultOpen>
+
+This content is visible on page load.
+
+</Accordion>
+```
+
+**Output**
+
+<Accordion title="Expanded by default" defaultOpen>
+
+This content is visible on page load.
+
+</Accordion>
+
+## AccordionGroup
+
+Wrap multiple accordions in `<AccordionGroup>` to coordinate them. Set `exclusive` so only one can be open at a time.
+
+**Code**
+
+```mdx
+import { Accordion, AccordionGroup } from '@theme'
+
+<AccordionGroup exclusive>
+  <Accordion title="Step 1: Install">
+    Install the package with your preferred package manager.
+  </Accordion>
+  <Accordion title="Step 2: Configure">
+    Create a `ciderpress.config.ts` file in your project root.
+  </Accordion>
+  <Accordion title="Step 3: Build">Run `pnpm build` to generate your documentation site.</Accordion>
+</AccordionGroup>
+```
+
+**Output**
+
+<AccordionGroup exclusive>
+  <Accordion title="Step 1: Install">
+    Install the package with your preferred package manager.
+  </Accordion>
+  <Accordion title="Step 2: Configure">
+    Create a `ciderpress.config.ts` file in your project root.
+  </Accordion>
+  <Accordion title="Step 3: Build">Run `pnpm build` to generate your documentation site.</Accordion>
+</AccordionGroup>
+
+## Deep linking
+
+Each accordion generates a URL hash from its title (or custom `id` prop). Navigating to `#your-title` will auto-expand the matching accordion.
+
+```mdx
+<Accordion title="Custom Anchor" id="my-custom-id">
+  Link to this section with `#my-custom-id`.
+</Accordion>
+```
+
+## Accordion props
+
+| Prop          | Type        | Required | Default       | Description                               |
+| ------------- | ----------- | -------- | ------------- | ----------------------------------------- |
+| `title`       | `string`    | yes      | —             | Title displayed in the trigger            |
+| `description` | `string`    | no       | —             | Description below the title               |
+| `icon`        | `string`    | no       | —             | Iconify icon ID rendered before the title |
+| `defaultOpen` | `boolean`   | no       | `false`       | Whether to start expanded                 |
+| `id`          | `string`    | no       | slug of title | Custom anchor ID for deep linking         |
+| `children`    | `ReactNode` | yes      | —             | Content revealed when expanded            |
+
+## AccordionGroup props
+
+| Prop        | Type        | Required | Default | Description                              |
+| ----------- | ----------- | -------- | ------- | ---------------------------------------- |
+| `exclusive` | `boolean`   | no       | `false` | Only one accordion can be open at a time |
+| `children`  | `ReactNode` | yes      | —       | Accordion components to coordinate       |
