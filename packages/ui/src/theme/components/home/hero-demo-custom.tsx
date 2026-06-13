@@ -2,6 +2,8 @@ import type { HeroDemoConfig, HeroDemoLine, HeroDemoTerminal } from '@ciderpress
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { withMountBase } from '../../lib/with-mount-base.ts'
+
 import './hero-demo.css'
 
 interface CustomHeroDemoProps {
@@ -33,7 +35,7 @@ export function CustomHeroDemo(props: CustomHeroDemoProps): React.ReactElement {
     .otherwise((c) => (
       <div className="cp-hero-demo cp-hero-demo--image">
         <img
-          src={c.src}
+          src={withMountBase(c.src)}
           alt={c.alt ?? ''}
           width={c.width}
           height={c.height}

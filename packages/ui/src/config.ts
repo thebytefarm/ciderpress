@@ -231,6 +231,17 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     markdown: {
       remarkPlugins: [remarkMathToDiv],
+      // Skip dead-link checks for `/examples/<name>/` URLs — those are
+      // sub-mounted by the `scripts/build.lauf.ts` orchestrator (copied
+      // from each example's own dist) and aren't routes in this Rspress
+      // build. Without this, the link checker fails on the auto-
+      // generated `docs/examples/index.mdx` cards. Internal routes
+      // still get checked exhaustively.
+      link: {
+        checkDeadLinks: {
+          excludes: (url: string) => url.startsWith('/examples/'),
+        },
+      },
     },
 
     builderConfig: {

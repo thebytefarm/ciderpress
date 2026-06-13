@@ -33,7 +33,9 @@
     "e2e": "pnpm --filter e2e test",
     "e2e:ui": "pnpm --filter e2e test:ui",
     "e2e:update": "pnpm --filter e2e test:update",
-    "e2e:install": "pnpm --filter e2e install:browsers"
+    "e2e:install": "pnpm --filter e2e install:browsers",
+    "e2e:serve": "tsx e2e/lib/static-server.ts",
+    "e2e:setup": "pnpm docs:build && pnpm e2e:serve"
   },
   "dependencies": {
     "ciderpress": "workspace:*"

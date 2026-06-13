@@ -78,12 +78,17 @@ export default defineConfig({
   webServer: process.env.SKIP_WEB_SERVER
     ? undefined
     : {
-        command: 'pnpm -C .. docs:serve --no-open',
+        // Serve the merged `.ciderpress/dist/` tree (root site + every
+        // `examples/<slug>/`) so e2e specs see exactly what Vercel
+        // deploys. The orchestrator (`pnpm docs:build`) must have run
+        // beforehand — CI chains them; locally `pnpm e2e:setup` does
+        // both. Uses a tiny static server with Vercel-style cleanUrls
+        // and no SPA fallback, so missing routes surface as real 404s
+        // instead of being masked by router catch-alls.
+        command: 'pnpm -C .. e2e:serve',
         url: BASE_URL,
         reuseExistingServer: !IS_CI,
         timeout: 120_000,
-        // Stream the server's output so you see build/serve errors as they happen
-        // instead of staring at silence until the 2-minute timeout fires.
         stdout: 'pipe',
         stderr: 'pipe',
       },
