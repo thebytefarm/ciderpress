@@ -86,11 +86,14 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
   }
 
-  // Wipe `outDir/public` first so deleted user assets (e.g. a removed
-  // `repoRoot/public/logo.svg`) don't linger and silently override the
-  // freshly generated set on the next build. `copyAll` is append-only,
-  // so without this `fs.rm` stale files persist across syncs.
-  await fs.rm(path.resolve(outDir, 'public'), { recursive: true, force: true })
+  // Wipe top-level files in `outDir/public` so deleted user assets
+  // (e.g. a removed `repoRoot/public/logo.svg`) don't linger and
+  // silently override the freshly generated set on the next build —
+  // `copyAll` is append-only. Subdirectories are preserved because
+  // `outDir/public/images/` is the destination for the per-page
+  // `rewriteImages` step further down, which is gated by mtime
+  // caching and won't re-copy files for unchanged pages.
+  await wipePublicTopLevel(path.resolve(outDir, 'public'))
 
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
@@ -345,6 +348,29 @@ async function copyAll(src: string, dest: string): Promise<void> {
         await fs.copyFile(srcPath, destPath)
       }
     })
+  )
+}
+
+/**
+ * Remove every top-level file inside `dir` while leaving subdirectories
+ * intact. Used before the public-asset overlay so deleted user assets
+ * don't linger, without nuking the per-page rewriteImages output at
+ * `dir/images/`.
+ *
+ * @private
+ * @param dir - Absolute path to the directory whose top-level files
+ *   should be wiped. No-op when the directory does not exist.
+ */
+async function wipePublicTopLevel(dir: string): Promise<void> {
+  const exists = await fs.stat(dir).catch(() => null)
+  if (!exists) {
+    return
+  }
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  await Promise.all(
+    entries
+      .filter((entry) => entry.isFile())
+      .map((entry) => fs.rm(path.resolve(dir, entry.name), { force: true }))
   )
 }
 

@@ -2,6 +2,7 @@
 import type { CiderpressConfig, LogoFn, LogoImage } from '@ciderpress/config'
 // oxlint-disable-next-line import/no-unresolved -- alias provided by createRspressConfig's resolve.alias
 import userConfigModule from '@ciderpress/internal/user-config'
+import { withBase } from '@rspress/core/runtime'
 import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
 import React, { useEffect, useState } from 'react'
 
@@ -84,11 +85,11 @@ export function HeaderLogo(): React.ReactElement | null {
     // Sites that committed their own `public/logo.svg` already win here.
     // The `<CiderpressLogo />` framework wordmark is opt-in via
     // `logo: ({ theme }) => <CiderpressLogo />`.
-    return <img src="/logo.svg" alt="" className="cp-header-logo__img" />
+    return <img src={withBase('/logo.svg')} alt="" className="cp-header-logo__img" />
   }
 
   if (typeof logoConfig === 'string') {
-    return <img src={logoConfig} alt="" className="cp-header-logo__img" />
+    return <img src={withBase(logoConfig)} alt="" className="cp-header-logo__img" />
   }
 
   if (themeContext === null) {
@@ -102,7 +103,7 @@ export function HeaderLogo(): React.ReactElement | null {
   if (isLogoImage(result)) {
     return (
       <img
-        src={result.src}
+        src={withBase(result.src)}
         alt={result.alt ?? ''}
         width={result.width}
         height={result.height}

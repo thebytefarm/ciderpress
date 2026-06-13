@@ -1,4 +1,4 @@
-import { useSite } from '@rspress/core/runtime'
+import { useSite, withBase } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import type React from 'react'
 
@@ -60,7 +60,7 @@ export function SiteFooter(): React.ReactElement | null {
                   // shipping a `public/icon.svg`). This was previously
                   // the hardcoded `<CiderpressMark />` apple, which
                   // leaked ciderpress branding into every footer.
-                  <img src="/icon.svg" alt="" className="cp-site-footer__brand-icon" />
+                  <img src={withBase('/icon.svg')} alt="" className="cp-site-footer__brand-icon" />
                 ))
                 .otherwise((mark) => mark)}
             </div>
