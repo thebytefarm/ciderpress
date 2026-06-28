@@ -22,6 +22,8 @@ Several commands share the same option set. Where a per-command table omits a fl
 | `--quiet`     | `boolean`           | `false` | `sync`, `dev`, `build`       | Suppress non-error output                                               |
 | `--clean`     | `boolean`           | `false` | `dev`, `build`               | Remove build artifacts before running                                   |
 | `--port`      | `number`            | —       | `dev` (6174), `serve` (8080) | Preferred port — falls back to the next free port in a 5-port range     |
+| `--host`      | `string`            | —       | `dev`                        | Bind interface. Overrides `devServer.host` (default `'localhost'`)      |
+| `--url`       | `string`            | —       | `dev`                        | Externally-visible URL. Overrides `devServer.url` (e.g. portless host)  |
 | `--theme`     | `string`            | —       | `dev`, `serve`               | Force a registered theme name for this run (must appear in `theme.themes`) |
 | `--colorMode` | `'dark' \| 'light'` | —       | `dev`, `serve`               | Force the initial variant for this run (overrides `theme.defaultVariant`)  |
 | `--vscode`    | `boolean`           | `false` | `dev`, `serve`               | Emit the VS Code extension's chrome trimmings (no topbar, panel layout) |
@@ -55,18 +57,20 @@ Resolves all entries in the config, copies source files into `.ciderpress/conten
 Start the dev server with live reload.
 
 ```bash
-ciderpress dev [--quiet] [--clean] [--port <n>] [--theme <name>] [--colorMode <dark|light>] [--vscode] [--headless]
+ciderpress dev [--quiet] [--clean] [--port <n>] [--host <h>] [--url <u>] [--theme <name>] [--colorMode <dark|light>] [--vscode] [--headless]
 ```
 
-| Flag          | Type                | Default | Description                                                         |
-| ------------- | ------------------- | ------- | ------------------------------------------------------------------- |
-| `--quiet`     | `boolean`           | `false` | Suppress non-error output                                           |
-| `--clean`     | `boolean`           | `false` | Remove build artifacts before starting                              |
-| `--port`      | `number`            | `6174`  | Preferred port (falls back to the next free port in a 5-port range) |
-| `--theme`     | `string`            | —       | Force a registered theme name for this run                          |
-| `--colorMode` | `'dark' \| 'light'` | —       | Force the initial variant for this run                              |
-| `--vscode`    | `boolean`           | `false` | Emit the VS Code extension's chrome trimmings                       |
-| `--headless`  | `boolean`           | `false` | Run without the Ink TUI — plain log output                          |
+| Flag          | Type                | Default       | Description                                                                                          |
+| ------------- | ------------------- | ------------- | ---------------------------------------------------------------------------------------------------- |
+| `--quiet`     | `boolean`           | `false`       | Suppress non-error output                                                                            |
+| `--clean`     | `boolean`           | `false`       | Remove build artifacts before starting                                                               |
+| `--port`      | `number`            | `6174`        | Preferred port (falls back to the next free port in a 5-port range). Overrides `devServer.port`      |
+| `--host`      | `string`            | `'localhost'` | Bind interface. Set `'0.0.0.0'` to expose on every interface. Overrides `devServer.host`             |
+| `--url`       | `string`            | —             | Externally-visible URL surfaced to the ready message + browser auto-open. Overrides `devServer.url`  |
+| `--theme`     | `string`            | —             | Force a registered theme name for this run                                                           |
+| `--colorMode` | `'dark' \| 'light'` | —             | Force the initial variant for this run                                                               |
+| `--vscode`    | `boolean`           | `false`       | Emit the VS Code extension's chrome trimmings                                                        |
+| `--headless`  | `boolean`           | `false`       | Run without the Ink TUI — plain log output                                                           |
 
 Runs `sync` first, starts a file watcher on all source files, and launches the Rspress dev server. Changes to source markdown files are detected and re-synced automatically.
 

@@ -994,6 +994,48 @@ discover: {
 
 Per-page `discover.ignore` is appended to this list — globals always apply.
 
+## `devServer`
+
+Dev-server configuration — controls how `ciderpress dev` binds and how the dev URL is presented in the terminal and browser auto-open. All fields are optional.
+
+```ts
+devServer?: {
+  url?:  string,
+  port?: number,
+  host?: string,
+  open?: boolean,
+}
+```
+
+| Field    | Type      | Default                       | Description                                                                                                                                                                                  |
+| -------- | --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`    | `string`  | `http://${host}:${port}`      | Externally-visible URL. Replaces the default `http://${host}:${port}` in the "ready: …" terminal message and the browser auto-open target. The dev server still binds locally — this is a display + auto-open hint |
+| `port`   | `number`  | `6174`                        | Preferred port. ciderpress falls forward through a 5-port range when the preferred port is occupied. CLI `--port` overrides                                                                  |
+| `host`   | `string`  | `'localhost'`                 | Bind interface. Set `'0.0.0.0'` to expose the dev server on every network interface (LAN / Docker / VM). CLI `--host` overrides                                                              |
+| `open`   | `boolean` | `false`                       | Auto-open the resolved URL in the default browser when the dev server becomes ready                                                                                                          |
+
+CLI precedence: `--port` / `--host` / `--url` > `devServer.{port,host,url}` > built-in defaults.
+
+### Example — behind portless.sh
+
+```ts
+devServer: {
+  url: 'https://docs.acme.localhost',
+  open: true,
+}
+```
+
+The dev server still binds `localhost:6174`; portless reverse-proxies the HTTPS hostname to that port. See the [portless guide](/guides/using-portless) for setup.
+
+### Example — exposing to LAN / Docker
+
+```ts
+devServer: {
+  host: '0.0.0.0',
+  port: 6174,
+}
+```
+
 ## Shared primitives
 
 Types reused across multiple top-level keys. Same shape, same meaning, everywhere.

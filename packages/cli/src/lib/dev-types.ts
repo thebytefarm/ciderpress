@@ -31,6 +31,7 @@ export interface DevServerState {
   readonly lastSync: SyncResult | null
   readonly log: readonly LogEntry[]
   readonly port: number
+  readonly url: string
 }
 
 /**

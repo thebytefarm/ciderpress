@@ -1495,6 +1495,49 @@ export interface DiscoverConfig {
 }
 
 /**
+ * Dev-server configuration — controls how `ciderpress dev` binds and
+ * how the dev URL is presented in the terminal and browser auto-open.
+ *
+ * All fields are optional. CLI flags (`--port`, `--host`, `--url`)
+ * override values supplied here.
+ *
+ * @example Behind portless.sh
+ * ```ts
+ * devServer: {
+ *   url: 'https://docs.acme.localhost',
+ * }
+ * ```
+ */
+export interface DevServerConfig {
+  /**
+   * Externally-visible URL of the dev server. Replaces the default
+   * `http://${host}:${port}` in the "ready: …" terminal message and in
+   * the browser auto-open target. Useful when running behind a reverse
+   * proxy such as `portless.sh` that fronts the dev server with a
+   * stable HTTPS hostname. The dev server still binds to `host` /
+   * `port` locally — `url` is purely a display + auto-open hint.
+   */
+  readonly url?: string
+  /**
+   * Preferred port for the dev server. Defaults to `6174`; ciderpress
+   * falls forward through a 5-port range when the preferred port is
+   * occupied. CLI `--port` overrides this.
+   */
+  readonly port?: number
+  /**
+   * Bind interface for the dev server. Defaults to `'localhost'`. Set
+   * to `'0.0.0.0'` to expose the dev server on every network interface
+   * (LAN / Docker / VM). CLI `--host` overrides this.
+   */
+  readonly host?: string
+  /**
+   * Auto-open the resolved URL in the default browser when the dev
+   * server becomes ready. Defaults to `false`.
+   */
+  readonly open?: boolean
+}
+
+/**
  * ciderpress configuration — the public surface for `defineConfig`.
  *
  * Schema: `ciderpressConfigSchema` in schema.ts validates this shape.
@@ -1585,4 +1628,10 @@ export interface CiderpressConfig {
    * Cross-cutting discovery options (e.g. global ignore globs).
    */
   readonly discover?: DiscoverConfig
+  /**
+   * Dev-server configuration — host, port, externally-visible URL,
+   * and browser auto-open. Applies to `ciderpress dev`; CLI flags
+   * override values supplied here.
+   */
+  readonly devServer?: DevServerConfig
 }

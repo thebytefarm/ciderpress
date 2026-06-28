@@ -36,6 +36,19 @@ export default defineConfig({
 
   theme: { themes: ['midnight'] },
 
+  // Dev-server configuration. Set `url` to the externally-visible address
+  // ciderpress should print + auto-open. Useful when a reverse proxy
+  // (portless.sh, ngrok, Caddy, …) fronts the dev server with a stable
+  // hostname. The dev server still binds to `host` / `port` locally —
+  // `url` is purely a display + auto-open hint.
+  //
+  // Run `portless` from this directory and visit https://acme.localhost.
+  // See `/guides/using-portless` for setup.
+  devServer: {
+    url: 'https://acme.localhost',
+    open: true,
+  },
+
   brand: {
     // Integrated wordmark logo — chevron mark + "Acme Corp" rendered as one
     // SVG. The default single-slot brand pattern. Use `brand.icon`

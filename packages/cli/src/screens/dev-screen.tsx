@@ -42,6 +42,8 @@ interface DevScreenProps {
   readonly quiet?: boolean
   readonly clean?: boolean
   readonly port?: number
+  readonly host?: string
+  readonly url?: string
   readonly theme?: string
   readonly colorMode?: 'dark' | 'light'
   readonly vscode?: boolean
@@ -77,7 +79,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
   useHotkey({
     keys: ['o'],
     action: () => {
-      openBrowser(`http://localhost:${state.port}`)
+      openBrowser(state.url)
     },
     active: state.phase === 'ready' && isTTY,
   })
@@ -196,9 +198,7 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
       {/* Banner + URL */}
       <Banner width={separatorWidth} />
       <Box marginTop={1}>
-        <Text dimColor>
-          http://localhost:<Text color="cyan">{state.port}</Text>
-        </Text>
+        <Text color="cyan">{state.url}</Text>
         <Spacer />
         {match(state.status)
           .with('idle', () => <Text color="green">● Ready</Text>)

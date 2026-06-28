@@ -35,6 +35,7 @@ import type {
   ButtonConfig,
   CardConfig,
   CopyrightConfig,
+  DevServerConfig,
   DiscoverConfig,
   EditLinkConfig,
   Feature,
@@ -573,6 +574,15 @@ const discoverConfigSchema = z
   })
   .strict()
 
+const devServerConfigSchema = z
+  .object({
+    url: z.string().optional(),
+    port: z.number().int().min(1).max(65535).optional(),
+    host: z.string().optional(),
+    open: z.boolean().optional(),
+  })
+  .strict()
+
 const brandConfigSchema = z
   .object({
     icon: iconConfigSchema.optional(),
@@ -687,6 +697,7 @@ export const ciderpressConfigSchema = z
     reportLink: z.union([z.literal(false), reportLinkConfigSchema]).optional(),
     home: homeConfigSchema.optional(),
     discover: discoverConfigSchema.optional(),
+    devServer: devServerConfigSchema.optional(),
   })
   .strict()
 
@@ -797,6 +808,8 @@ const _guardAnnouncementConfig: z.ZodType<AnnouncementConfig> = announcementConf
 const _guardOpenAPISpec: z.ZodType<OpenAPISpec> = openAPISpecSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardDiscoverConfig: z.ZodType<DiscoverConfig> = discoverConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardDevServerConfig: z.ZodType<DevServerConfig> = devServerConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardTruncateConfig: z.ZodType<TruncateConfig> = truncateConfigSchema
 

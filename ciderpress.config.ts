@@ -304,6 +304,12 @@ export default defineConfig({
           path: '/guides/deploying-to-github-pages',
           include: 'docs/guides/deploying-to-github-pages.md',
         },
+        {
+          title: 'Using portless.sh',
+          description: 'Run the dev server behind portless for stable HTTPS hostnames instead of localhost.',
+          path: '/guides/using-portless',
+          include: 'docs/guides/using-portless.md',
+        },
       ],
     },
     {

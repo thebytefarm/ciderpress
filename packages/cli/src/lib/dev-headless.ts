@@ -3,7 +3,7 @@ import { toError } from 'massaman/conversion'
 
 import { clean } from '../commands/clean.ts'
 import { createPaths } from './paths.ts'
-import { startDevServer } from './rspress.ts'
+import { openBrowser, startDevServer } from './rspress.ts'
 import { sync } from './sync/index.ts'
 import { createWatcher } from './watcher.ts'
 
@@ -15,6 +15,8 @@ export interface RunDevHeadlessOptions {
   readonly quiet?: boolean
   readonly clean?: boolean
   readonly port?: number
+  readonly host?: string
+  readonly url?: string
   readonly theme?: string
   readonly colorMode?: 'dark' | 'light'
   readonly vscode?: boolean
@@ -63,12 +65,18 @@ export async function runDevHeadless(options: RunDevHeadlessOptions): Promise<vo
     config,
     paths,
     port: options.port,
+    host: options.host,
+    url: options.url,
     theme: options.theme,
     colorMode: options.colorMode,
     vscode: options.vscode ?? false,
   })
 
-  log(`ready: http://localhost:${server.port}`)
+  log(`ready: ${server.url}`)
+
+  if (config.devServer?.open === true) {
+    openBrowser(server.url)
+  }
 
   const watcher = createWatcher({
     paths,

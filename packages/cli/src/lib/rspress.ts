@@ -27,10 +27,17 @@ interface ServerOptions {
   readonly config: CiderpressConfig
   readonly paths: Paths
   readonly port?: number
+  readonly host?: string
+  readonly url?: string
   readonly vscode?: boolean
   readonly theme?: string
   readonly colorMode?: ThemeVariant
 }
+
+/**
+ * Default bind interface for the dev server when no override is supplied.
+ */
+const DEFAULT_DEV_HOST = 'localhost'
 
 /**
  * Server instance returned by Rspress dev().
@@ -59,11 +66,15 @@ interface StartServerOptions {
 export type OnConfigReload = (newConfig: CiderpressConfig) => Promise<void>
 
 /**
- * Result returned by `startDevServer` containing the reload callback and resolved port.
+ * Result returned by `startDevServer` containing the reload callback,
+ * the resolved port and host the server bound to, and the
+ * externally-visible URL surfaced to the terminal / browser auto-open.
  */
 export interface DevServerResult {
   readonly onConfigReload: OnConfigReload
   readonly port: number
+  readonly host: string
+  readonly url: string
   readonly close: () => Promise<void>
 }
 
@@ -78,9 +89,12 @@ export interface DevServerResult {
  * @returns The resolved port and an async reload callback
  */
 export async function startDevServer(options: ServerOptions): Promise<DevServerResult> {
-  const { paths } = options
-  const preferred = options.port ?? DEV_PORT
+  const { paths, config: initialConfig } = options
+  const devServer = initialConfig.devServer
+  const preferred = options.port ?? devServer?.port ?? DEV_PORT
+  const host = options.host ?? devServer?.host ?? DEFAULT_DEV_HOST
   const port = await getPort({ port: portNumbers(preferred, preferred + DEV_PORT_RANGE) })
+  const url = resolveDevUrl({ override: options.url, config: devServer?.url, host, port })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
@@ -105,6 +119,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
         extraBuilderConfig: {
           server: {
             port,
+            host,
             strictPort: true,
           },
           dev: {
@@ -182,7 +197,30 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
     }
   }
 
-  return { onConfigReload: handleConfigReload, port, close: closeServer }
+  return { onConfigReload: handleConfigReload, port, host, url, close: closeServer }
+}
+
+/**
+ * Resolve the externally-visible dev URL from precedence: CLI override
+ * (`options.url`) > config (`devServer.url`) > computed `http://${host}:${port}`.
+ *
+ * @private
+ * @param params - Override, config value, and resolved bind host + port
+ * @returns Final URL surfaced to the terminal and browser auto-open
+ */
+function resolveDevUrl(params: {
+  readonly override: string | undefined
+  readonly config: string | undefined
+  readonly host: string
+  readonly port: number
+}): string {
+  if (params.override !== undefined && params.override.length > 0) {
+    return params.override
+  }
+  if (params.config !== undefined && params.config.length > 0) {
+    return params.config
+  }
+  return `http://${params.host}:${params.port}`
 }
 
 /**

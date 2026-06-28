@@ -16,7 +16,7 @@ import type {
   WatcherStatus,
 } from '../lib/dev-types.ts'
 import { createPaths } from '../lib/paths.ts'
-import { startDevServer } from '../lib/rspress.ts'
+import { openBrowser, startDevServer } from '../lib/rspress.ts'
 import { sync } from '../lib/sync/index.ts'
 import type { SyncResult } from '../lib/sync/index.ts'
 import { createWatcher } from '../lib/watcher.ts'
@@ -28,6 +28,8 @@ export interface UseDevServerProps {
   readonly quiet?: boolean
   readonly clean?: boolean
   readonly port?: number
+  readonly host?: string
+  readonly url?: string
   readonly theme?: string
   readonly colorMode?: 'dark' | 'light'
   readonly vscode?: boolean
@@ -58,6 +60,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   const [status, setStatus] = useState<WatcherStatus>('idle')
   const [lastSync, setLastSync] = useState<SyncResult | null>(null)
   const [port, setPort] = useState(0)
+  const [url, setUrl] = useState('')
 
   const { log, pushLog, clearLog } = useActivityLog()
 
@@ -93,6 +96,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       status: setStatus,
       lastSync: setLastSync,
       port: setPort,
+      url: setUrl,
       pushLog,
     })
 
@@ -136,6 +140,8 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
           config,
           paths,
           port: props.port,
+          host: props.host,
+          url: props.url,
           theme: props.theme,
           colorMode: props.colorMode,
           vscode: props.vscode,
@@ -158,6 +164,10 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
       serverClose.current = server.close
       set.port(server.port)
+      set.url(server.url)
+      if (config.devServer?.open === true) {
+        openBrowser(server.url)
+      }
 
       const callbacks: WatcherCallbacks = {
         onStatusChange: set.status,
@@ -233,7 +243,7 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }, [])
 
   return {
-    state: { phase, error, crashLogPath, status, lastSync, log, port },
+    state: { phase, error, crashLogPath, status, lastSync, log, port, url },
     actions: { resync, clearLog, close },
   }
 }

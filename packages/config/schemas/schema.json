@@ -2605,6 +2605,26 @@
         }
       },
       "additionalProperties": false
+    },
+    "devServer": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        },
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535
+        },
+        "host": {
+          "type": "string"
+        },
+        "open": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     }
   },
   "required": [

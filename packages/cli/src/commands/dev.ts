@@ -9,6 +9,8 @@ const devOptions = z.object({
   quiet: z.boolean().optional().default(false),
   clean: z.boolean().optional().default(false),
   port: z.number().optional(),
+  host: z.string().optional(),
+  url: z.string().optional(),
   theme: z.string().optional(),
   colorMode: z.enum(['dark', 'light']).optional(),
   vscode: z.boolean().optional().default(false),
