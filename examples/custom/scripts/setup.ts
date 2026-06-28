@@ -1,21 +1,22 @@
 #!/usr/bin/env zx
 
 /**
- * Custom example — portless setup check.
+ * Custom example — portless setup.
  *
- * Verifies the host machine is ready to serve the example behind
- * portless.sh: portless installed, Node >= 24, and the package.json
- * `portless` hostname override matches the configured `devServer.url`.
+ * Runs the real first-time setup work for portless against this example:
+ * verifies prerequisites, drives `portless trust` (which sudo-elevates
+ * to install the local CA into the system keychain / trust store), and
+ * confirms config alignment with `portless doctor`.
  *
  * Modes:
- *   pnpm setup:portless           — verbose; prints every check + next steps.
- *   pnpm setup:portless --quiet   — silent on success, loud on failure.
- *                                   Wired as the `predev` lifecycle hook so
- *                                   `pnpm dev` refuses to run when the example
- *                                   isn't set up for portless.
- *
- * From repo root:
- *   pnpm setup:custom             — alias for `pnpm --filter=example-custom run setup:portless`
+ *   pnpm setup:portless           — full setup. Runs `portless trust`
+ *                                   (may sudo-prompt) + `portless doctor`,
+ *                                   then verifies config alignment.
+ *   pnpm setup:portless --check   — verify only. Never invokes `portless
+ *                                   trust` (no sudo prompts). Wired as
+ *                                   the `predev` lifecycle hook so
+ *                                   `pnpm dev` refuses to start when the
+ *                                   example isn't configured for portless.
  *
  * Script name is intentionally `setup:portless` (not `setup`) because
  * `pnpm setup` collides with a pnpm built-in command that installs
@@ -47,9 +48,10 @@ const EXAMPLE_DIR = dirname(SCRIPT_DIR)
 const REQUIRED_NODE_MAJOR = 24
 const REQUIRED_HOSTNAME = 'acme'
 const REQUIRED_URL = `https://${REQUIRED_HOSTNAME}.localhost`
-const QUIET = argv.quiet === true || argv._.includes('--quiet')
+const CHECK_ONLY = argv.check === true
+const QUIET = argv.quiet === true
 
-const checks: readonly Check[] = [
+const verifyChecks: readonly Check[] = [
   { label: 'Node >= 24', run: checkNode },
   { label: 'portless on PATH', run: checkPortless },
   { label: 'package.json portless: "acme"', run: checkPortlessConfig },
@@ -57,53 +59,90 @@ const checks: readonly Check[] = [
 ]
 
 if (!QUIET) {
-  console.log(chalk.cyan.bold('\n  ciderpress · custom example · portless setup\n'))
+  const title = CHECK_ONLY
+    ? 'ciderpress · custom example · portless preflight'
+    : 'ciderpress · custom example · portless setup'
+  console.log(chalk.cyan.bold(`\n  ${title}\n`))
 }
 
 const results = await Promise.all(
-  checks.map(async (check) => ({ label: check.label, ...(await check.run()) }))
+  verifyChecks.map(async (check) => ({ label: check.label, ...(await check.run()) }))
 )
-
-const failures = results.filter((r) => !r.ok)
 
 if (!QUIET) {
   for (const result of results) {
     const icon = result.ok ? chalk.green('✓') : chalk.red('✗')
-    const suffix = result.detail ? chalk.gray(` — ${result.detail}`) : ''
+    const suffix = result.detail !== undefined ? chalk.gray(` — ${result.detail}`) : ''
     console.log(`  ${icon} ${result.label}${suffix}`)
   }
 }
 
-if (failures.length === 0) {
-  if (!QUIET) {
-    console.log(chalk.green.bold('\n  All checks passed.\n'))
-    console.log(`  Next steps:\n`)
-    console.log(`    ${chalk.cyan('$')} cd ${EXAMPLE_DIR}`)
-    console.log(`    ${chalk.cyan('$')} portless`)
-    console.log(`\n  Then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
+const failures = results.filter((r) => !r.ok)
+
+if (failures.length > 0) {
+  console.log(
+    chalk.red.bold(
+      `\n  ✗ Custom example is not set up for portless (${failures.length} check(s) failed).\n`
+    )
+  )
+  for (const failure of failures) {
+    console.log(chalk.red(`  ✗ ${failure.label}`))
+    if (failure.detail !== undefined) {
+      console.log(chalk.gray(`    ${failure.detail}`))
+    }
+    if (failure.fix !== undefined) {
+      console.log(chalk.gray(`    Fix: ${failure.fix}`))
+    }
   }
+  console.log(
+    chalk.yellow(`\n  Run \`pnpm setup:portless\` from ${EXAMPLE_DIR} for full setup.\n`)
+  )
+  process.exit(1)
+}
+
+if (CHECK_ONLY) {
+  // Preflight mode — verify only. Skip the trust/doctor steps so
+  // `pnpm dev` doesn't sudo-prompt on every invocation.
   process.exit(0)
 }
 
+// Full setup mode — drive `portless trust` (sudo-prompts to install
+// the local CA into the system keychain / trust store) and confirm
+// with `portless doctor`. Both are idempotent: re-running when
+// already-trusted prints a short "already trusted" message and exits 0.
+
+console.log(chalk.cyan.bold('\n  Installing portless trust anchor...'))
 console.log(
-  chalk.red.bold(
-    `\n  ✗ Custom example is not set up for portless (${failures.length} check(s) failed).\n`
+  chalk.gray(
+    '  (You may be prompted for your password to add the local CA to your system trust store.)\n'
   )
 )
-for (const failure of failures) {
-  console.log(chalk.red(`  ✗ ${failure.label}`))
-  if (failure.detail !== undefined) {
-    console.log(chalk.gray(`    ${failure.detail}`))
-  }
-  if (failure.fix !== undefined) {
-    console.log(chalk.gray(`    Fix: ${failure.fix}`))
-  }
+$.verbose = true
+try {
+  await $`portless trust`
+} catch (error) {
+  console.log(chalk.red('\n  ✗ `portless trust` failed.\n'))
+  console.log(chalk.gray(`    ${(error as { message?: string }).message ?? error}\n`))
+  process.exit(1)
 }
-console.log(
-  chalk.yellow(`\n  Run \`pnpm setup:portless\` from ${EXAMPLE_DIR} for full diagnostics.`)
-)
-console.log(chalk.yellow(`  (or \`pnpm setup:custom\` from the repo root.)\n`))
-process.exit(1)
+
+console.log(chalk.cyan.bold('\n  Running `portless doctor` for a final health check...\n'))
+try {
+  await $`portless doctor`
+} catch (error) {
+  console.log(chalk.yellow('\n  ⚠ `portless doctor` reported issues.'))
+  console.log(chalk.gray(`    ${(error as { message?: string }).message ?? error}\n`))
+  console.log(chalk.yellow('  Address the issues above, then re-run `pnpm setup:portless`.\n'))
+  process.exit(1)
+}
+
+$.verbose = false
+console.log(chalk.green.bold('\n  Setup complete.\n'))
+console.log(`  Next steps:\n`)
+console.log(`    ${chalk.cyan('$')} cd ${EXAMPLE_DIR}`)
+console.log(`    ${chalk.cyan('$')} portless`)
+console.log(`\n  Then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
+process.exit(0)
 
 /**
  * Verify Node.js >= REQUIRED_NODE_MAJOR.

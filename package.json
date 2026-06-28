@@ -28,7 +28,6 @@
     "ladle": "pnpm --filter @ciderpress/ui ladle",
     "examples": "lauf run examples",
     "clean:examples": "pnpm exec rimraf examples/*/.ciderpress",
-    "setup:custom": "pnpm --filter=example-custom run setup:portless",
     "dev:custom": "pnpm --filter=example-custom run dev",
     "bench": "pnpm --filter benchmarks bench",
     "bench:run": "pnpm --filter benchmarks bench:run",

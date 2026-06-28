@@ -50,14 +50,24 @@ export default defineConfig({
 
 `devServer.url` does not change which port ciderpress binds to — the dev server still listens on `localhost:6174` (or your configured `host` / `port`). It only changes what the "ready: …" message prints and what `o` / `--open` opens in the browser.
 
-> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. From the repo root:
+> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. Setup is a two-step:
 >
 > ```bash
-> pnpm setup:custom     # verify portless install + config alignment
-> pnpm dev:custom       # runs the dev server (gated by the same preflight)
+> cd examples/custom
+> pnpm setup:portless    # installs the local CA into your system trust store
+>                        # (sudo-prompts once), runs `portless doctor`, and
+>                        # verifies the example's config alignment.
 > ```
 >
-> The example's `dev` script runs a `predev` preflight that refuses to start if `portless` isn't installed, the `portless` package.json field is missing, or `devServer.url` drifts from the configured hostname. Fix any failure with the printed `Fix:` line, then re-run.
+> Then, from anywhere in the repo:
+>
+> ```bash
+> pnpm dev:custom        # runs the dev server. A `predev` preflight runs in
+>                        # check-only mode (never sudo-prompts) and refuses to
+>                        # start if portless drifts out of alignment.
+> ```
+>
+> The preflight catches three regressions: `portless` missing from PATH, the `portless` field missing from `package.json`, or `devServer.url` drifting from the configured hostname. Fix any failure with the printed `Fix:` line, then re-run.
 
 ## Run portless
 
