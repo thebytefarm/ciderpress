@@ -5,23 +5,32 @@ description: Run ciderpress dev behind portless.sh for stable HTTPS hostnames in
 
 # Using portless.sh
 
-[portless.sh](https://portless.sh) is a local reverse proxy that replaces `localhost:6174` with a stable `https://<name>.localhost` hostname. ciderpress works behind portless with one config field — `devServer.url` — that tells the dev server which URL to print in the terminal and open in the browser.
+[portless.sh](https://portless.sh) replaces `localhost:6174` with a stable `https://<name>.localhost` hostname over HTTPS. ciderpress works behind portless with one config field — `devServer.url`. The whole setup is four short steps.
 
-## Install portless
+## 1. Install portless and trust its CA — once per machine
 
 ```bash
-npm install -g portless
+npm i -g portless
+portless trust
 ```
 
-First run on macOS / Linux generates and trusts a local CA, then binds port 443 (sudo-elevates as needed). No further setup.
+`portless trust` sudo-prompts once to add portless's local CA to your system trust store (`security add-trusted-cert` on macOS, `update-ca-certificates` / `update-ca-trust` on Linux, `certutil` on Windows). After that the CA stays trusted; you never re-run this command unless you `portless clean` first.
 
-## Configure ciderpress
+Verify with `portless doctor` — it reports CA trust, port 443 binding, and anything else portless wants.
 
-Three things need to line up so portless serves your docs at the hostname you want:
+## 2. Configure your project — once per project
 
-1. **`devServer.url`** in `ciderpress.config.ts` — where the "ready: …" message points and what the browser auto-opens.
-2. **`portless`** field in `package.json` — overrides the inferred subdomain so portless serves at `acme.localhost` instead of `<package-name>.localhost`.
-3. **`dev` script** in `package.json` — portless runs the `dev` script when invoked with no args.
+Two fields. The first tells portless which subdomain to serve at; the second tells ciderpress what URL to print and auto-open.
+
+```jsonc title="package.json"
+{
+  "name": "my-docs",
+  "portless": "acme",                  // serves at https://acme.localhost
+  "scripts": {
+    "dev": "ciderpress dev"            // portless runs the `dev` script
+  }
+}
+```
 
 ```ts title="ciderpress.config.ts"
 import { defineConfig } from 'ciderpress'
@@ -38,38 +47,9 @@ export default defineConfig({
 })
 ```
 
-```jsonc title="package.json"
-{
-  "name": "example-custom",
-  "portless": "acme",
-  "scripts": {
-    "dev": "ciderpress dev"
-  }
-}
-```
+`devServer.url` does not change which port ciderpress binds to — the dev server still listens on `localhost:6174` (or your configured `host` / `port`). It only changes what the "ready: …" message prints and what the `o` hotkey / `open: true` opens in the browser.
 
-`devServer.url` does not change which port ciderpress binds to — the dev server still listens on `localhost:6174` (or your configured `host` / `port`). It only changes what the "ready: …" message prints and what `o` / `--open` opens in the browser.
-
-> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. Setup is a two-step:
->
-> ```bash
-> cd examples/custom
-> pnpm setup:portless    # installs the local CA into your system trust store
->                        # (sudo-prompts once), runs `portless doctor`, and
->                        # verifies the example's config alignment.
-> ```
->
-> Then, from anywhere in the repo:
->
-> ```bash
-> pnpm dev:custom        # runs the dev server. A `predev` preflight runs in
->                        # check-only mode (never sudo-prompts) and refuses to
->                        # start if portless drifts out of alignment.
-> ```
->
-> The preflight catches three regressions: `portless` missing from PATH, the `portless` field missing from `package.json`, or `devServer.url` drifting from the configured hostname. Fix any failure with the printed `Fix:` line, then re-run.
-
-## Run portless
+## 3. Run it
 
 From your project directory:
 
@@ -77,17 +57,35 @@ From your project directory:
 portless
 ```
 
-portless reads the `dev` script from `package.json`, picks an upstream port, runs `ciderpress dev` against it, and registers the route at `https://<portless-name>.localhost`. Visit the URL ciderpress prints — portless terminates TLS and forwards to the dev server.
+portless reads the `dev` script from `package.json`, picks an upstream port, runs `ciderpress dev` against it, and registers the route at `https://acme.localhost`. Visit that URL — portless terminates TLS and forwards to the dev server.
 
-## Why it works
+## 4. See it working
 
-ciderpress runs on top of Rsbuild, which does **not** validate the `Host` header on incoming requests. Portless's `Host: docs.acme.localhost` header lands without any allowlist configuration — no `allowedHosts`, no CORS adjustment needed for normal docs browsing.
+The [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships pre-configured. From its directory:
+
+```bash
+pnpm setup:portless        # preflight check — verifies Node, portless on PATH,
+                           #   package.json portless field, and devServer.url.
+                           #   Never sudo-prompts; never mutates anything.
+                           #   Failures print the exact fix command.
+portless                   # opens https://acme.localhost
+```
+
+Or from the repo root, just run the dev server (the preflight runs automatically as a `predev` hook and refuses to start if portless drifts out of alignment):
+
+```bash
+pnpm dev:custom
+```
+
+## How it works under the hood
+
+ciderpress runs on top of Rsbuild, which does **not** validate the `Host` header on incoming requests. Portless's `Host: acme.localhost` header lands without any allowlist configuration — no `allowedHosts`, no CORS adjustment needed for normal docs browsing.
 
 ## Gotchas
 
-- **HMR over a portless HTTPS origin.** Rsbuild's HMR uses a WebSocket. When the page loads from `https://docs.acme.localhost`, the WebSocket needs to either travel through the same portless tunnel or hit the upstream directly. Portless proxies WebSockets, so this works as long as the page connects to its own origin. If you see HMR drop, check the browser devtools console for a mixed-content or origin-mismatch warning.
-- **Don't set `cors` unless you actually need it.** A docs site is static — no XHR back to the dev server in the common case. Only configure `devServer` proxy / CORS settings if you embed live demos that `fetch()` back to the dev server from the portless origin.
-- **`base` stays a path.** `devServer.url` is the origin (`https://docs.acme.localhost`); `base` is the URL path the site mounts at (`/`, `/docs/`). They serve different concerns and don't overlap.
+- **HMR over a portless HTTPS origin.** Rsbuild's HMR uses a WebSocket. When the page loads from `https://acme.localhost`, the WebSocket needs to travel through the same portless tunnel. Portless proxies WebSockets, so this works as long as the page connects to its own origin. If HMR drops, check devtools for a mixed-content or origin-mismatch warning.
+- **Don't set `cors` unless you actually need it.** A docs site is static — no XHR back to the dev server in the common case. Only configure CORS if you embed live demos that `fetch()` back to the dev server from the portless origin.
+- **`base` stays a path.** `devServer.url` is the origin (`https://acme.localhost`); `base` is the URL path the site mounts at (`/`, `/docs/`). They serve different concerns and don't overlap.
 
 ## References
 
