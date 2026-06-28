@@ -50,7 +50,14 @@ export default defineConfig({
 
 `devServer.url` does not change which port ciderpress binds to — the dev server still listens on `localhost:6174` (or your configured `host` / `port`). It only changes what the "ready: …" message prints and what `o` / `--open` opens in the browser.
 
-> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. Run `pnpm setup` inside it to verify your machine is ready, then `portless` from the same directory.
+> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. From the repo root:
+>
+> ```bash
+> pnpm setup:custom     # verify portless install + config alignment
+> pnpm dev:custom       # runs the dev server (gated by the same preflight)
+> ```
+>
+> The example's `dev` script runs a `predev` preflight that refuses to start if `portless` isn't installed, the `portless` package.json field is missing, or `devServer.url` drifts from the configured hostname. Fix any failure with the printed `Fix:` line, then re-run.
 
 ## Run portless
 

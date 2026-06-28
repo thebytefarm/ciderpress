@@ -7,7 +7,19 @@
  * portless.sh: portless installed, Node >= 24, and the package.json
  * `portless` hostname override matches the configured `devServer.url`.
  *
- * Run with: `pnpm setup` (from this directory)
+ * Modes:
+ *   pnpm setup:portless           — verbose; prints every check + next steps.
+ *   pnpm setup:portless --quiet   — silent on success, loud on failure.
+ *                                   Wired as the `predev` lifecycle hook so
+ *                                   `pnpm dev` refuses to run when the example
+ *                                   isn't set up for portless.
+ *
+ * From repo root:
+ *   pnpm setup:custom             — alias for `pnpm --filter=example-custom run setup:portless`
+ *
+ * Script name is intentionally `setup:portless` (not `setup`) because
+ * `pnpm setup` collides with a pnpm built-in command that installs
+ * pnpm itself onto the system PATH.
  *
  * NOTE: this script intentionally uses zx instead of laufen. Laufen is
  * being phased out across the repo — new scripts should reach for zx.
@@ -35,6 +47,7 @@ const EXAMPLE_DIR = dirname(SCRIPT_DIR)
 const REQUIRED_NODE_MAJOR = 24
 const REQUIRED_HOSTNAME = 'acme'
 const REQUIRED_URL = `https://${REQUIRED_HOSTNAME}.localhost`
+const QUIET = argv.quiet === true || argv._.includes('--quiet')
 
 const checks: readonly Check[] = [
   { label: 'Node >= 24', run: checkNode },
@@ -43,37 +56,53 @@ const checks: readonly Check[] = [
   { label: 'ciderpress.config.ts devServer.url', run: checkDevServerUrl },
 ]
 
-console.log(chalk.cyan.bold('\n  ciderpress · custom example · portless setup\n'))
+if (!QUIET) {
+  console.log(chalk.cyan.bold('\n  ciderpress · custom example · portless setup\n'))
+}
 
 const results = await Promise.all(
   checks.map(async (check) => ({ label: check.label, ...(await check.run()) }))
 )
 
-for (const result of results) {
-  const icon = result.ok ? chalk.green('✓') : chalk.red('✗')
-  const suffix = result.detail ? chalk.gray(` — ${result.detail}`) : ''
-  console.log(`  ${icon} ${result.label}${suffix}`)
-}
-
 const failures = results.filter((r) => !r.ok)
 
+if (!QUIET) {
+  for (const result of results) {
+    const icon = result.ok ? chalk.green('✓') : chalk.red('✗')
+    const suffix = result.detail ? chalk.gray(` — ${result.detail}`) : ''
+    console.log(`  ${icon} ${result.label}${suffix}`)
+  }
+}
+
 if (failures.length === 0) {
-  console.log(chalk.green.bold('\n  All checks passed.\n'))
-  console.log(`  Next steps:\n`)
-  console.log(`    ${chalk.cyan('$')} cd ${EXAMPLE_DIR}`)
-  console.log(`    ${chalk.cyan('$')} portless`)
-  console.log(`\n  Then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
+  if (!QUIET) {
+    console.log(chalk.green.bold('\n  All checks passed.\n'))
+    console.log(`  Next steps:\n`)
+    console.log(`    ${chalk.cyan('$')} cd ${EXAMPLE_DIR}`)
+    console.log(`    ${chalk.cyan('$')} portless`)
+    console.log(`\n  Then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
+  }
   process.exit(0)
 }
 
-console.log(chalk.red.bold(`\n  ${failures.length} check(s) failed.\n`))
+console.log(
+  chalk.red.bold(
+    `\n  ✗ Custom example is not set up for portless (${failures.length} check(s) failed).\n`
+  )
+)
 for (const failure of failures) {
   console.log(chalk.red(`  ✗ ${failure.label}`))
-  if (failure.fix) {
+  if (failure.detail !== undefined) {
+    console.log(chalk.gray(`    ${failure.detail}`))
+  }
+  if (failure.fix !== undefined) {
     console.log(chalk.gray(`    Fix: ${failure.fix}`))
   }
 }
-console.log()
+console.log(
+  chalk.yellow(`\n  Run \`pnpm setup:portless\` from ${EXAMPLE_DIR} for full diagnostics.`)
+)
+console.log(chalk.yellow(`  (or \`pnpm setup:custom\` from the repo root.)\n`))
 process.exit(1)
 
 /**
