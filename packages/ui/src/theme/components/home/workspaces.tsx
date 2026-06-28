@@ -1,4 +1,4 @@
-import type { HomeGridConfig } from '@ciderpress/config'
+import type { HomeShowcaseConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
 import type React from 'react'
@@ -9,7 +9,7 @@ import { WorkspaceCard } from '../workspaces/card'
 import { WorkspaceGrid } from '../workspaces/grid'
 
 interface FrontmatterWorkspacesHeading {
-  readonly eyebrow?: string
+  readonly label?: string
   readonly title?: string
   readonly subtitle?: string
 }
@@ -19,14 +19,14 @@ interface FrontmatterWorkspacesHeading {
  * and renders workspace groups with the correct card component per type.
  *
  * Optionally renders a top-level heading above the workspace groups
- * when `home.workspaces.heading` is configured. The sync engine writes
+ * when `home.showcase.heading` is configured. The sync engine writes
  * it into frontmatter as `workspacesHeading`.
  *
  * @returns React element with workspace groups or null
  */
 export function HomeWorkspaces(): React.ReactElement | null {
   const { workspaces, home } = useCiderpress()
-  const gridConfig = home && home.workspaces
+  const gridConfig = home && home.showcase
   const { frontmatter } = useFrontmatter()
   const heading = (frontmatter as Record<string, unknown>).workspacesHeading as
     | FrontmatterWorkspacesHeading
@@ -42,7 +42,7 @@ export function HomeWorkspaces(): React.ReactElement | null {
             .with(undefined, () => null)
             .otherwise((h) => (
               <div className="cp-feature-section-head">
-                {match(h.eyebrow)
+                {match(h.label)
                   .with(undefined, () => null)
                   .otherwise((e) => (
                     <div className="cp-feature-section-head__eyebrow">{e}</div>
@@ -76,7 +76,7 @@ export function HomeWorkspaces(): React.ReactElement | null {
  */
 function renderGroup(
   group: WorkspaceGroupData,
-  gridConfig: HomeGridConfig | undefined
+  gridConfig: HomeShowcaseConfig | undefined
 ): React.ReactElement {
   const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
   const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description

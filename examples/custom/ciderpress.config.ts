@@ -33,42 +33,51 @@ const LOADER_SVG =
 export default defineConfig({
   title: 'Acme Corp',
   description: 'The operating layer for ambitious internet companies.',
-  tagline: 'Ship faster. Integrate deeper. Stay accountable.',
 
-  // Integrated wordmark logo — chevron mark + "Acme Corp" rendered as one
-  // SVG. The default single-slot brand pattern. Use `config.icon`
-  // instead/additionally only when you have a small mark that's
-  // visually distinct from the wordmark (Stripe and Vercel keep it
-  // single; some product sites layer a separate chip).
-  logo: '/logo.svg',
+  theme: { themes: ['midnight'] },
 
-  // Tab mark — object form exercises the explicit `type` field. Setting
-  // `favicon` suppresses the runtime favicon retinting that otherwise
-  // swaps `<link rel="icon">` to a themed pixel-apple data URI.
-  favicon: { src: '/favicon.svg', type: 'image/svg+xml' },
+  brand: {
+    // Integrated wordmark logo — chevron mark + "Acme Corp" rendered as one
+    // SVG. The default single-slot brand pattern. Use `brand.icon`
+    // instead/additionally only when you have a small mark that's
+    // visually distinct from the wordmark (Stripe and Vercel keep it
+    // single; some product sites layer a separate chip).
+    logo: '/logo.svg',
 
-  // Custom FOUC loader. Inline SVG content + brand-aligned label.
-  loader: {
-    content: LOADER_SVG,
-    label: 'loading',
-    minDisplayMs: 150,
-    maxDisplayMs: 4000,
+    // Tab mark — object form exercises the explicit `type` field. Setting
+    // `favicon` suppresses the runtime favicon retinting that otherwise
+    // swaps `<link rel="icon">` to a themed pixel-apple data URI.
+    favicon: { src: '/favicon.svg', type: 'image/svg+xml' },
+
+    // Custom FOUC loader. Inline SVG content + brand-aligned label.
+    loader: {
+      content: LOADER_SVG,
+      label: 'loading',
+      minDisplayMs: 150,
+      maxDisplayMs: 4000,
+    },
   },
-
-  theme: { name: 'midnight' },
 
   // Fully custom-branded home page. Exercises every customization
   // surface so the rendered HTML contains zero ciderpress strings and
   // every framework default chunk is replaced with brand-aligned copy.
   home: {
-    // Dashboard-style hero demo — image variant. Renders the
-    // dashboard.svg preview inside the framework's framed hero slot
-    // (rounded corners + brand-soft glow preserved).
-    heroDemo: { src: '/dashboard.svg', alt: 'Acme Corp control plane' },
+    hero: {
+      tagline: 'Ship faster. Integrate deeper. Stay accountable.',
+      // Hero CTA buttons.
+      actions: [
+        { variant: 'primary', text: 'Quickstart', href: '/getting-started/quickstart' },
+        { variant: 'secondary', text: 'API reference', href: '/api/overview' },
+      ],
+      // Dashboard-style hero demo — image variant. Renders the
+      // dashboard.svg preview inside the framework's framed hero slot
+      // (rounded corners + brand-soft glow preserved).
+      demo: { src: '/dashboard.svg', alt: 'Acme Corp control plane' },
+    },
     // Custom Split section. Replaces the framework's "Acme Docs"
     // example with Acme's actual SDK config preview.
     split: {
-      eyebrow: 'Type-safe by default',
+      label: 'Type-safe by default',
       title: 'One config. Validated at boot.',
       body: 'Acme services are described by acme.config.ts. The SDK validates against your live database schema on deploy — drift never ships.',
       bullets: [
@@ -77,7 +86,11 @@ export default defineConfig({
         'Feature flags + audit retention next to code',
         'Per-environment overrides without forking',
       ],
-      cta: { text: 'Read configuration', link: '/getting-started/configuration' },
+      cta: {
+        variant: 'primary',
+        text: 'Read configuration',
+        href: '/getting-started/configuration',
+      },
       visual: {
         language: 'ts',
         code: [
@@ -97,16 +110,55 @@ export default defineConfig({
     features: {
       columns: 3,
       heading: {
-        eyebrow: 'What you get',
+        label: 'What you get',
         title: 'Built for the engineers who ship.',
         subtitle:
           'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
       },
+      items: [
+        {
+          title: 'Typed SDK',
+          description:
+            'Generated from your live OpenAPI spec on every deploy. End-to-end inference.',
+          icon: 'pixelarticons:script-text',
+          link: '/packages/sdk',
+        },
+        {
+          title: 'Managed edge runtime',
+          description: '40+ POPs, sub-50ms p99 cold starts, regional pinning, zero-config DR.',
+          icon: 'pixelarticons:cloud',
+          link: '/apps/edge',
+        },
+        {
+          title: 'Control plane',
+          description: 'Audit logs, customer impersonation, feature flags — next to your code.',
+          icon: 'pixelarticons:dashboard',
+          link: '/apps/dashboard',
+        },
+        {
+          title: 'Webhook delivery',
+          description: 'Signed events with 24h retries and a built-in DLQ.',
+          icon: 'pixelarticons:notification',
+          link: '/guides/webhooks',
+        },
+        {
+          title: 'Observability built in',
+          description: 'Structured logs, OpenTelemetry traces, custom metrics — no agent install.',
+          icon: 'pixelarticons:chart',
+          link: '/guides/observability',
+        },
+        {
+          title: 'Rate limits you control',
+          description: 'Token-bucket limiter with per-workspace ceilings and burst behaviour.',
+          icon: 'pixelarticons:speed-fast',
+          link: '/api/rate-limits',
+        },
+      ],
     },
-    workspaces: {
+    showcase: {
       columns: 2,
       heading: {
-        eyebrow: 'Apps & Packages',
+        label: 'Apps & Packages',
         title: 'Everything in the monorepo.',
         subtitle: 'Browse the dashboard app, the edge runtime, and the official SDK.',
       },
@@ -115,59 +167,15 @@ export default defineConfig({
       title: 'Ready to ship?',
       subtitle: 'Install the CLI and have a service deployed in under fifteen minutes.',
       actions: [
-        { theme: 'brand', text: 'Quickstart', link: '/getting-started/quickstart' },
-        { theme: 'alt', text: 'API reference', link: '/api/overview' },
+        { variant: 'primary', text: 'Quickstart', href: '/getting-started/quickstart' },
+        { variant: 'secondary', text: 'API reference', href: '/api/overview' },
       ],
     },
     // Custom section order — push the CTA up under the hero so the
-    // primary conversion sits before any further reading. Trust strip
+    // primary conversion sits before any further reading. Proof strip
     // is dropped (we don't have names yet).
-    layout: ['hero', 'cta', 'features', 'workspaces', 'split'],
+    layout: ['hero', 'cta', 'features', 'showcase', 'split'],
   },
-
-  // Hero CTA + supporting features.
-  actions: [
-    { theme: 'brand', text: 'Quickstart', link: '/getting-started/quickstart' },
-    { theme: 'alt', text: 'API reference', link: '/api/overview' },
-  ],
-  features: [
-    {
-      title: 'Typed SDK',
-      description: 'Generated from your live OpenAPI spec on every deploy. End-to-end inference.',
-      icon: 'pixelarticons:script-text',
-      link: '/packages/sdk',
-    },
-    {
-      title: 'Managed edge runtime',
-      description: '40+ POPs, sub-50ms p99 cold starts, regional pinning, zero-config DR.',
-      icon: 'pixelarticons:cloud',
-      link: '/apps/edge',
-    },
-    {
-      title: 'Control plane',
-      description: 'Audit logs, customer impersonation, feature flags — next to your code.',
-      icon: 'pixelarticons:dashboard',
-      link: '/apps/dashboard',
-    },
-    {
-      title: 'Webhook delivery',
-      description: 'Signed events with 24h retries and a built-in DLQ.',
-      icon: 'pixelarticons:notification',
-      link: '/guides/webhooks',
-    },
-    {
-      title: 'Observability built in',
-      description: 'Structured logs, OpenTelemetry traces, custom metrics — no agent install.',
-      icon: 'pixelarticons:chart',
-      link: '/guides/observability',
-    },
-    {
-      title: 'Rate limits you control',
-      description: 'Token-bucket limiter with per-workspace ceilings and burst behaviour.',
-      icon: 'pixelarticons:speed-fast',
-      link: '/api/rate-limits',
-    },
-  ],
 
   apps: [
     {
@@ -198,69 +206,66 @@ export default defineConfig({
     },
   ],
 
-  sections: [
+  pages: [
     {
       title: 'Getting Started',
       path: '/getting-started',
       include: 'docs/getting-started/*.md',
       icon: 'pixelarticons:speed-fast',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Guides',
       path: '/guides',
       include: 'docs/guides/*.md',
       icon: 'pixelarticons:article',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'API Reference',
       path: '/api',
       include: 'docs/api/*.md',
       icon: 'pixelarticons:book-open',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
 
-  nav: [
-    { title: 'Docs', link: '/getting-started/introduction' },
-    { title: 'Guides', link: '/guides/authentication' },
-    { title: 'API', link: '/api/overview' },
-  ],
+  topbar: {
+    nav: [
+      { title: 'Docs', link: '/getting-started/introduction' },
+      { title: 'Guides', link: '/guides/authentication' },
+      { title: 'API', link: '/api/overview' },
+    ],
+  },
 
   footer: {
     message: 'Built for teams who treat their stack as a product.',
-    copyright: 'Copyright © 2026 Acme Corp.',
-  },
-
-  site: {
-    footer: {
-      columns: [
-        {
-          heading: 'Product',
-          links: [
-            { text: 'Quickstart', href: '/getting-started/quickstart' },
-            { text: 'Configuration', href: '/getting-started/configuration' },
-            { text: 'API Reference', href: '/api/overview' },
-          ],
-        },
-        {
-          heading: 'Apps',
-          links: [
-            { text: 'Dashboard', href: '/apps/dashboard' },
-            { text: 'Edge Runtime', href: '/apps/edge' },
-          ],
-        },
-        {
-          heading: 'Resources',
-          links: [
-            { text: 'Authentication', href: '/guides/authentication' },
-            { text: 'Webhooks', href: '/guides/webhooks' },
-            { text: 'Observability', href: '/guides/observability' },
-          ],
-        },
-      ],
-      tagline: 'v1.0',
-    },
+    copyright: { company: 'Acme Corp.' },
+    tagline: 'v1.0',
+    columns: [
+      {
+        heading: 'Product',
+        links: [
+          { text: 'Quickstart', href: '/getting-started/quickstart' },
+          { text: 'Configuration', href: '/getting-started/configuration' },
+          { text: 'API Reference', href: '/api/overview' },
+        ],
+      },
+      {
+        heading: 'Apps',
+        links: [
+          { text: 'Dashboard', href: '/apps/dashboard' },
+          { text: 'Edge Runtime', href: '/apps/edge' },
+        ],
+      },
+      {
+        heading: 'Resources',
+        links: [
+          { text: 'Authentication', href: '/guides/authentication' },
+          { text: 'Webhooks', href: '/guides/webhooks' },
+          { text: 'Observability', href: '/guides/observability' },
+        ],
+      },
+    ],
   },
 })

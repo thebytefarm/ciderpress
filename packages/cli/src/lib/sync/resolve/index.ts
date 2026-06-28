@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@ciderpress/config'
-import type { Section, Frontmatter } from '@ciderpress/config'
+import type { Page, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
@@ -17,26 +17,26 @@ import { sortEntries } from './sort.ts'
 import { deriveText, resolveSectionTitle } from './text.ts'
 
 /**
- * Walk the Section tree and produce a ResolvedEntry tree.
+ * Walk the Page tree and produce a ResolvedEntry tree.
  *
  * Resolves globs, derives text, merges frontmatter, deduplicates.
  * Returns a `SyncOutcome` tuple — the caller is responsible for
  * surfacing errors and exiting.
  *
- * @param sections - Config section tree to resolve
+ * @param pages - Config page tree to resolve
  * @param ctx - Sync context (provides repo root, config, quiet flag)
- * @param inheritedFrontmatter - Frontmatter inherited from parent sections
+ * @param inheritedFrontmatter - Frontmatter inherited from parent pages
  * @param depth - Current nesting depth (0 = top-level)
  * @returns Result tuple containing resolved entry tree or the first sync error
  */
 export async function resolveEntries(
-  sections: readonly Section[],
+  pages: readonly Page[],
   ctx: SyncContext,
   inheritedFrontmatter: Frontmatter = {},
   depth = 0
 ): Promise<readonly [SyncError, null] | readonly [null, ResolvedEntry[]]> {
   const results = await Promise.all(
-    sections.map((section) => resolveSection(section, ctx, inheritedFrontmatter, depth))
+    pages.map((page) => resolveSection(page, ctx, inheritedFrontmatter, depth))
   )
 
   const result = collectResults(results)
@@ -50,24 +50,24 @@ export async function resolveEntries(
 }
 
 /**
- * Resolve a single section node — dispatches to leaf, virtual, or nested section handler.
+ * Resolve a single page node — dispatches to leaf, virtual, or nested section handler.
  *
  * @private
- * @param section - Section config node to resolve
+ * @param section - Page config node to resolve
  * @param ctx - Sync context
  * @param inheritedFrontmatter - Frontmatter inherited from parent
  * @param depth - Current nesting depth
  * @returns Sync outcome tuple with resolved entry or error
  */
 function resolveSection(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   inheritedFrontmatter: Frontmatter,
   depth: number
 ): Promise<SyncOutcome<ResolvedEntry>> {
-  const mergedFm = { ...inheritedFrontmatter, ...section.frontmatter }
+  const mergedFm = { ...inheritedFrontmatter, ...section.defaults }
 
-  if (isSingleFileInclude(section.include) && !section.items) {
+  if (isSingleFileInclude(section.include) && !section.pages) {
     return Promise.resolve(resolveFilePage(section, ctx, mergedFm))
   }
 
@@ -82,20 +82,20 @@ function resolveSection(
  * Resolve a leaf page backed by a single source file.
  *
  * @private
- * @param section - Section config with `include` pointing to a file
+ * @param section - Page config with `include` pointing to a file
  * @param ctx - Sync context
  * @param frontmatter - Merged frontmatter for the page
  * @returns Sync outcome with resolved entry or error
  */
 function resolveFilePage(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): SyncOutcome<ResolvedEntry> {
   const { include } = section
   if (isNil(include) || !isString(include)) {
     return [
-      syncError('missing_from', 'resolveFilePage called without single-file section.include'),
+      syncError('missing_from', 'resolveFilePage called without single-file page.include'),
       null,
     ]
   }
@@ -107,12 +107,15 @@ function resolveFilePage(
 
   if (isNil(section.path)) {
     return [
-      syncError('missing_link', `resolveFilePage called without section.path for: ${include}`),
+      syncError('missing_link', `resolveFilePage called without page.path for: ${include}`),
       null,
     ]
   }
 
   const ext = sourceExt(include)
+  const hidden = match(section.nav)
+    .with(P.nonNullable, (n) => n.hidden)
+    .otherwise(() => undefined)
 
   return [
     null,
@@ -120,7 +123,7 @@ function resolveFilePage(
       title: resolveSectionTitle(section),
       description: section.description,
       link: section.path,
-      hidden: section.hidden,
+      hidden,
       card: section.card,
       page: {
         source: sourcePath,
@@ -135,17 +138,18 @@ function resolveFilePage(
  * Resolve a virtual page with inline or generated content.
  *
  * @private
- * @param section - Section config with `content` field
+ * @param section - Page config with `content` field
  * @param frontmatter - Merged frontmatter for the page
  * @returns Sync outcome with resolved entry or error
  */
-function resolveVirtualPage(
-  section: Section,
-  frontmatter: Frontmatter
-): SyncOutcome<ResolvedEntry> {
+function resolveVirtualPage(section: Page, frontmatter: Frontmatter): SyncOutcome<ResolvedEntry> {
   if (isNil(section.path)) {
-    return [syncError('missing_link', 'resolveVirtualPage called without section.path'), null]
+    return [syncError('missing_link', 'resolveVirtualPage called without page.path'), null]
   }
+
+  const hidden = match(section.nav)
+    .with(P.nonNullable, (n) => n.hidden)
+    .otherwise(() => undefined)
 
   return [
     null,
@@ -153,7 +157,7 @@ function resolveVirtualPage(
       title: resolveSectionTitle(section),
       description: section.description,
       link: section.path,
-      hidden: section.hidden,
+      hidden,
       card: section.card,
       page: {
         content: section.content,
@@ -165,25 +169,45 @@ function resolveVirtualPage(
 }
 
 /**
- * Resolve a nested section — may include glob-discovered children,
+ * Resolve a nested page — may include glob-discovered children,
  * explicit children, or both. Deduplicates and sorts the result.
  *
  * @private
- * @param section - Section config node with potential children
+ * @param section - Page config node with potential children
  * @param ctx - Sync context
  * @param mergedFm - Merged frontmatter
  * @param depth - Current nesting depth
  * @returns Sync outcome with resolved entry containing children
  */
 async function resolveNestedSection(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   mergedFm: Frontmatter,
   depth: number
 ): Promise<SyncOutcome<ResolvedEntry>> {
+  const recursive = match(section.discover)
+    .with(P.nonNullable, (d) => d.recursive)
+    .otherwise(() => undefined)
+  const sort = match(section.discover)
+    .with(P.nonNullable, (d) => d.sort)
+    .otherwise(() => undefined)
+  const nav = section.nav
+  const hidden = match(nav)
+    .with(P.nonNullable, (n) => n.hidden)
+    .otherwise(() => undefined)
+  const navCollapsible = match(nav)
+    .with(P.nonNullable, (n) => n.collapsible)
+    .otherwise(() => undefined)
+  const island = match(nav)
+    .with(P.nonNullable, (n) => n.island)
+    .otherwise(() => undefined)
+  const navRoot = match(nav)
+    .with(P.nonNullable, (n) => n.root)
+    .otherwise(() => undefined)
+
   const globbed = await (() => {
     if (hasAnyGlobInclude(section.include)) {
-      if (section.recursive) {
+      if (recursive) {
         return resolveRecursiveGlob(section, ctx, mergedFm, depth + 1)
       }
       return resolveGlob(section, ctx, mergedFm)
@@ -192,8 +216,8 @@ async function resolveNestedSection(
   })()
 
   const explicitResult = await (() => {
-    if (section.items) {
-      return resolveEntries(section.items, ctx, mergedFm, depth + 1)
+    if (section.pages) {
+      return resolveEntries(section.pages, ctx, mergedFm, depth + 1)
     }
     return Promise.resolve([null, [] as ResolvedEntry[]] as const)
   })()
@@ -205,7 +229,7 @@ async function resolveNestedSection(
 
   const children = [...globbed, ...explicit]
   const deduped = deduplicateByLink(children)
-  const sorted = sortEntries(deduped, section.sort)
+  const sorted = sortEntries(deduped, sort)
 
   const sectionPage = resolveSectionPage(section, ctx, mergedFm)
 
@@ -215,7 +239,7 @@ async function resolveNestedSection(
       return true as const
     }
   })()
-  const collapsible = section.collapsible ?? autoCollapsible
+  const collapsible = navCollapsible ?? autoCollapsible
 
   // Auto-derive link so the group is navigable and gets a landing page.
   // Priority: explicit path > common prefix of children's links
@@ -230,11 +254,11 @@ async function resolveNestedSection(
       description: section.description,
       link,
       collapsible,
-      hidden: section.hidden,
+      hidden,
       card: section.card,
       landing: section.landing,
-      standalone: section.standalone,
-      root: section.root,
+      standalone: island,
+      root: navRoot,
       autoLink,
       items: sorted,
       page: sectionPage,
@@ -243,19 +267,26 @@ async function resolveNestedSection(
 }
 
 /**
- * Resolve the section header page (if the section has a `path` and a single-file `include`).
+ * Resolve the section header page (if the page has a `path` and a single-file `include`).
  *
  * @private
- * @param section - Section config
+ * @param section - Page config
  * @param ctx - Sync context
  * @param mergedFm - Merged frontmatter
  * @returns Page data for the section header, or undefined
  */
 function resolveSectionPage(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   mergedFm: Frontmatter
 ): ResolvedEntry['page'] | undefined {
+  const recursive = match(section.discover)
+    .with(P.nonNullable, (d) => d.recursive)
+    .otherwise(() => undefined)
+  const indexFile = match(section.discover)
+    .with(P.nonNullable, (d) => d.indexFile)
+    .otherwise(() => undefined)
+
   if (section.path && isSingleFileInclude(section.include)) {
     const include = section.include as string
     const sourcePath = path.resolve(ctx.repoRoot, include)
@@ -267,11 +298,11 @@ function resolveSectionPage(
         frontmatter: mergedFm,
       }
     }
-  } else if (section.path && section.recursive && section.include) {
+  } else if (section.path && recursive && section.include) {
     // Recursive mode: find the root-level entry file from the glob base (.md or .mdx)
     const patterns = normalizeInclude(section.include)
     const baseDir = extractBaseDir(patterns[0])
-    const entryFile = section.entryFile ?? 'overview'
+    const entryFile = indexFile ?? 'overview'
     const mdPath = path.join(baseDir, `${entryFile}.md`)
     const mdxPath = path.join(baseDir, `${entryFile}.mdx`)
     const mdxExists = fs.existsSync(path.resolve(ctx.repoRoot, mdxPath))
@@ -294,20 +325,26 @@ function resolveSectionPage(
  * Resolve a non-recursive glob pattern into leaf page entries.
  *
  * @private
- * @param section - Section config with glob `include` pattern(s)
+ * @param section - Page config with glob `include` pattern(s)
  * @param ctx - Sync context
  * @param frontmatter - Frontmatter to apply to discovered pages
  * @returns Array of resolved entries for each matching file
  */
 async function resolveGlob(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   frontmatter: Frontmatter
 ): Promise<ResolvedEntry[]> {
-  const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
+  const globalIgnore = match(ctx.config.discover)
+    .with(P.nonNullable, (d) => d.ignore ?? [])
+    .otherwise(() => [] as readonly string[])
+  const sectionIgnore = match(section.discover)
+    .with(P.nonNullable, (d) => d.ignore ?? [])
+    .otherwise(() => [] as readonly string[])
+  const ignore = [...globalIgnore, ...sectionIgnore]
 
   if (isNil(section.include)) {
-    log.error('[ciderpress] resolveGlob called without section.include')
+    log.error('[ciderpress] resolveGlob called without page.include')
     return []
   }
 

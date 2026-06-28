@@ -227,12 +227,12 @@ function needsServerRestart(prev: CiderpressConfig, next: CiderpressConfig): boo
 /**
  * Hash the config fields that require a server restart when changed.
  *
- * Excludes `sections` and `nav` since those only affect sidebar/nav
- * structure handled by `_meta.json`/`_nav.json` HMR.
+ * Excludes `pages` since that only affects sidebar/nav structure handled
+ * by `_meta.json`/`_nav.json` HMR.
  *
- * Includes `apps`, `packages`, `workspaces`, `features`, and `actions`
- * because they feed into the generated home page (`index.md`) hero,
- * feature cards, and workspace cards via `themeConfig.home`.
+ * Includes `apps`, `packages`, `workspaces`, and `home` because they feed
+ * into the generated home page (`index.md`) hero, feature cards, and
+ * workspace cards via `themeConfig.home`.
  *
  * @private
  * @param config - Ciderpress config to hash
@@ -242,16 +242,13 @@ function restartRelevantHash(config: CiderpressConfig): string {
   const relevant = {
     title: config.title,
     description: config.description,
-    tagline: config.tagline,
-    icon: config.icon,
+    brand: config.brand,
     theme: config.theme,
     sidebar: config.sidebar,
-    socialLinks: config.socialLinks,
+    socials: config.socials,
     footer: config.footer,
+    topbar: config.topbar,
     home: config.home,
-    openapi: config.openapi,
-    actions: config.actions,
-    features: config.features,
     apps: config.apps,
     packages: config.packages,
     workspaces: config.workspaces,

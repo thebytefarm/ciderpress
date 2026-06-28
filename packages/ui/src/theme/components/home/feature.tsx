@@ -1,4 +1,4 @@
-import type { HomeGridConfig } from '@ciderpress/config'
+import type { HomeFeaturesConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
 import type React from 'react'
@@ -8,7 +8,7 @@ import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
 interface FrontmatterFeaturesHeading {
-  readonly eyebrow?: string
+  readonly label?: string
   readonly title?: string
   readonly subtitle?: string
 }
@@ -38,7 +38,7 @@ export function HomeFeature(): React.ReactElement | null {
   // Frontmatter is unvalidated user content — a `featuresHeading.title: {}`
   // would otherwise render as `[object Object]` in the H2. Treat any
   // non-string value as missing and fall through to the framework default.
-  const headingEyebrow = match(heading && heading.eyebrow)
+  const headingEyebrow = match(heading && heading.label)
     .with(P.string, (s) => s)
     .otherwise(() => DEFAULT_HEADING_EYEBROW)
   const headingTitle = match(heading && heading.title)
@@ -80,7 +80,7 @@ export function HomeFeature(): React.ReactElement | null {
 function renderFeature(
   feature: FeatureItem,
   index: number,
-  gridConfig: HomeGridConfig | undefined
+  gridConfig: HomeFeaturesConfig | undefined
 ): React.ReactElement {
   const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
   const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description

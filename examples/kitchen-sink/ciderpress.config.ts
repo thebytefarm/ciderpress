@@ -6,15 +6,19 @@ const acmeLogoSvg = (color: string): string =>
 export default defineConfig({
   title: 'Acme Platform',
   description: 'The Acme Monorepo Documentation',
-  tagline: 'Everything you need to build, ship, and scale.',
-  theme: { name: 'arcade' },
-  logo: ({ theme }) => ({
-    src: `data:image/svg+xml;utf8,${encodeURIComponent(acmeLogoSvg(theme.colors.brand))}`,
-    alt: 'Acme Platform',
-  }),
+  theme: { themes: ['arcade'] },
+  brand: {
+    logo: ({ theme }) => ({
+      src: `data:image/svg+xml;utf8,${encodeURIComponent(acmeLogoSvg(theme.colors.brand))}`,
+      alt: 'Acme Platform',
+    }),
+  },
   home: {
+    hero: {
+      tagline: 'Everything you need to build, ship, and scale.',
+    },
     features: { truncate: { description: 2 } },
-    workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+    showcase: { columns: 2, truncate: { title: 1, description: 2 } },
   },
   apps: [
     {
@@ -24,7 +28,7 @@ export default defineConfig({
       tags: ['nextjs', 'react', 'typescript'],
       path: '/apps/web',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'API',
@@ -48,7 +52,7 @@ export default defineConfig({
       tags: ['react', 'typescript'],
       path: '/packages/ui',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'DB',
@@ -57,7 +61,7 @@ export default defineConfig({
       tags: ['drizzle', 'postgresql'],
       path: '/packages/db',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Config',
@@ -66,7 +70,7 @@ export default defineConfig({
       tags: ['typescript'],
       path: '/packages/config',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
   workspaces: [
@@ -82,7 +86,7 @@ export default defineConfig({
           tags: ['stripe', 'payments'],
           path: '/integrations/stripe',
           include: 'docs/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
@@ -98,7 +102,7 @@ export default defineConfig({
           tags: ['docker', 'containers'],
           path: '/infrastructure/docker',
           include: 'docs/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Terraform',
@@ -107,12 +111,12 @@ export default defineConfig({
           tags: ['terraform', 'iac', 'aws'],
           path: '/infrastructure/terraform',
           include: 'docs/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
   ],
-  sections: [
+  pages: [
     {
       title: 'Getting Started',
       path: '/getting-started',
@@ -130,12 +134,12 @@ export default defineConfig({
       path: '/guides',
       include: 'docs/guides/*.md',
       icon: 'pixelarticons:book-open',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
-      items: [
+      pages: [
         {
           title: 'Overview',
           path: '/contributing',
@@ -145,7 +149,7 @@ export default defineConfig({
           title: { from: 'frontmatter' },
           path: '/contributing/guides',
           include: 'contributing/guides/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
@@ -153,81 +157,88 @@ export default defineConfig({
       title: 'Reference',
       icon: 'pixelarticons:book-open',
       path: '/references',
-      root: true,
-      items: [
+      nav: { root: true },
+      pages: [
         {
           title: 'API',
           path: '/references/api',
           include: 'docs/references/api/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'CLI',
           path: '/references/cli',
           include: 'docs/references/cli/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
   ],
   sidebar: {
-    above: [
-      { text: 'Home', link: '/', icon: 'pixelarticons:home' },
-      { text: 'Brand Square', link: '/', icon: 'pixelarticons:speed-fast', style: 'brand' },
+    top: [
+      { text: 'Home', href: '/', icon: 'pixelarticons:home' },
+      { text: 'Brand Square', href: '/', icon: 'pixelarticons:speed-fast', variant: 'primary' },
       {
         text: 'Brand Rounded',
-        link: '/',
+        href: '/',
         icon: 'pixelarticons:speed-fast',
-        style: 'brand',
+        variant: 'primary',
         shape: 'rounded',
       },
-      { text: 'Alt Square', link: '/', icon: 'pixelarticons:book-open', style: 'alt' },
+      { text: 'Alt Square', href: '/', icon: 'pixelarticons:book-open', variant: 'secondary' },
       {
         text: 'Alt Rounded',
-        link: '/',
+        href: '/',
         icon: 'pixelarticons:book-open',
-        style: 'alt',
+        variant: 'secondary',
         shape: 'rounded',
       },
     ],
-    below: [
-      { text: 'Ghost (default)', link: '/', icon: 'pixelarticons:home' },
-      { text: 'Ghost Rounded', link: '/', icon: 'pixelarticons:home', shape: 'rounded' },
-      { text: 'GitHub', link: 'https://github.com/acme', icon: 'pixelarticons:link', style: 'alt' },
+    bottom: [
+      { text: 'Ghost (default)', href: '/', icon: 'pixelarticons:home' },
+      { text: 'Ghost Rounded', href: '/', icon: 'pixelarticons:home', shape: 'rounded' },
+      {
+        text: 'GitHub',
+        href: 'https://github.com/acme',
+        icon: 'pixelarticons:link',
+        variant: 'secondary',
+      },
     ],
   },
-  nav: [
-    { title: 'Getting Started', link: '/getting-started' },
-    {
-      title: 'Docs',
-      items: [
-        { title: 'Architecture', link: '/architecture' },
-        { title: 'Guides', link: '/guides' },
-        { title: 'API Reference', link: '/references/api' },
-        { title: 'CLI Reference', link: '/references/cli' },
-      ],
-    },
-    {
-      title: 'Products',
-      items: [
-        { title: 'Web', link: '/apps/web' },
-        { title: 'API', link: '/apps/api' },
-        { title: 'UI', link: '/packages/ui' },
-        { title: 'DB', link: '/packages/db' },
-        { title: 'Stripe', link: '/integrations/stripe' },
-        { title: 'Docker', link: '/infrastructure/docker' },
-      ],
-    },
-    { title: 'Contributing', link: '/contributing' },
-  ],
-  socialLinks: [
-    { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
-    { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
-    { icon: 'x', mode: 'link', content: 'https://x.com/acme' },
+  topbar: {
+    nav: [
+      { title: 'Getting Started', link: '/getting-started' },
+      {
+        title: 'Docs',
+        items: [
+          { title: 'Architecture', link: '/architecture' },
+          { title: 'Guides', link: '/guides' },
+          { title: 'API Reference', link: '/references/api' },
+          { title: 'CLI Reference', link: '/references/cli' },
+        ],
+      },
+      {
+        title: 'Products',
+        items: [
+          { title: 'Web', link: '/apps/web' },
+          { title: 'API', link: '/apps/api' },
+          { title: 'UI', link: '/packages/ui' },
+          { title: 'DB', link: '/packages/db' },
+          { title: 'Stripe', link: '/integrations/stripe' },
+          { title: 'Docker', link: '/infrastructure/docker' },
+        ],
+      },
+      { title: 'Contributing', link: '/contributing' },
+    ],
+  },
+  socials: [
+    { icon: 'github', url: 'https://github.com/acme' },
+    { icon: 'discord', url: 'https://discord.gg/acme' },
+    { icon: 'x', url: 'https://x.com/acme' },
   ],
   footer: {
     message: 'Built with ciderpress',
-    copyright: 'Copyright © 2025 Acme Inc.',
+    copyright: { company: 'Acme Inc.' },
     socials: true,
   },
 })

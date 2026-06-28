@@ -5,7 +5,7 @@ description: Complete reference for all frontmatter fields supported by ciderpre
 
 # Frontmatter Fields
 
-ciderpress pages support standard Rspress frontmatter fields. Frontmatter is defined in YAML at the top of markdown files or injected via the `frontmatter` field in config entries.
+ciderpress pages support standard Rspress frontmatter fields. Frontmatter is defined in YAML at the top of markdown files **or** injected via the `defaults` field on a `Page` / `Workspace` (renamed from the legacy `frontmatter` field — same type, different name).
 
 ```md
 ---
@@ -16,7 +16,7 @@ description: A short summary of this page.
 # My Page
 ```
 
-See the [Content](/concepts/content#frontmatter) concept for injection and inheritance patterns.
+See the [Content](/concepts/content#frontmatter-and-defaults) concept for injection and inheritance patterns.
 
 ## Standard fields
 
@@ -25,7 +25,7 @@ See the [Content](/concepts/content#frontmatter) concept for injection and inher
 | `title`         | `string`                                  | —       | Page title (used in sidebar, browser tab, SEO)    |
 | `titleTemplate` | `string \| boolean`                       | —       | Title template override (`%s` is page title)      |
 | `description`   | `string`                                  | —       | Meta description for SEO and card previews        |
-| `layout`        | `'doc' \| 'page' \| 'home'`               | `'doc'` | Page layout mode                                  |
+| `layout`        | `string`                                  | `'doc'` | Page layout mode — `'doc'` / `'page'` / `'home'` ship out of the box (see [Layout values](#layout-values)) |
 | `sidebar`       | `boolean`                                 | `true`  | Show or hide the sidebar                          |
 | `aside`         | `boolean \| 'left'`                       | `true`  | Table of contents position                        |
 | `outline`       | `false \| number \| [min, max] \| 'deep'` | —       | Outline heading depth                             |
@@ -75,20 +75,28 @@ head:
       href: https://example.com/my-page
 ```
 
-Equivalent in config-injected frontmatter:
+Equivalent injected via `Page.defaults` in the config:
 
 ```ts
-frontmatter: {
-  head: [
-    ['meta', { name: 'og:title', content: 'My Page' }],
-    ['link', { rel: 'canonical', href: 'https://example.com/my-page' }],
-  ],
+{
+  title: 'Architecture',
+  path: '/architecture',
+  include: 'docs/architecture.md',
+  defaults: {
+    head: [
+      ['meta', { name: 'og:title', content: 'My Page' }],
+      ['link', { rel: 'canonical', href: 'https://example.com/my-page' }],
+    ],
+  },
 }
 ```
 
 ## Custom fields
 
-Arbitrary extra fields are supported and passed through to the output. Use custom fields for metadata consumed by plugins or theme components:
+The two surfaces have different rules:
+
+- **YAML frontmatter** in `.md` / `.mdx` source files — arbitrary keys are accepted and passed through to Rspress's page data object. Use these for metadata that theme components or plugins consume.
+- **Config-side `defaults`** — validated against a `.strict()` Zod schema. Only the fields documented above are accepted; unknown keys fail at config load time with a clear error.
 
 ```yaml
 ---

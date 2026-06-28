@@ -1,4 +1,4 @@
-import type { HeroDemoConfig, HeroDemoLine, HeroDemoTerminal } from '@ciderpress/config'
+import type { HomeHeroDemoConfig, HomeHeroDemoLine, HomeHeroDemoTerminal } from '@ciderpress/config'
 import { match } from 'massaman/match'
 import type React from 'react'
 
@@ -7,11 +7,11 @@ import { withMountBase } from '../../lib/with-mount-base.ts'
 import './hero-demo.css'
 
 interface CustomHeroDemoProps {
-  readonly config: HeroDemoConfig
+  readonly config: HomeHeroDemoConfig
 }
 
 /**
- * Custom replacement for `<HeroDemo />`. Driven by `home.heroDemo` from
+ * Custom replacement for `<HeroDemo />`. Driven by `home.hero.demo` from
  * `ciderpress.config.ts`:
  *
  * - **Image form** (`{ src, alt, width?, height? }`) — renders an
@@ -23,13 +23,13 @@ interface CustomHeroDemoProps {
  * The discriminator is structural: image objects carry `src`, terminal
  * objects carry `lines`.
  *
- * @param props - Validated `HeroDemoConfig`
+ * @param props - Validated `HomeHeroDemoConfig`
  * @returns Custom hero demo element
  */
 export function CustomHeroDemo(props: CustomHeroDemoProps): React.ReactElement {
   return match(props.config)
     .when(
-      (c): c is HeroDemoTerminal => 'lines' in c,
+      (c): c is HomeHeroDemoTerminal => 'lines' in c,
       (c) => <CustomTerminal config={c} />
     )
     .otherwise((c) => (
@@ -46,7 +46,7 @@ export function CustomHeroDemo(props: CustomHeroDemoProps): React.ReactElement {
 }
 
 interface CustomTerminalProps {
-  readonly config: HeroDemoTerminal
+  readonly config: HomeHeroDemoTerminal
 }
 
 /**
@@ -83,7 +83,7 @@ function CustomTerminal(props: CustomTerminalProps): React.ReactElement {
 }
 
 interface TerminalLineProps {
-  readonly line: HeroDemoLine
+  readonly line: HomeHeroDemoLine
 }
 
 /**

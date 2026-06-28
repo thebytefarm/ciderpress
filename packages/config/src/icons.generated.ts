@@ -1,11 +1,30 @@
 // @auto-generated — do not edit. Regenerate with: lauf run icons
 
-export type IconPrefix = 'catppuccin' | 'devicon' | 'logos' | 'material-icon-theme' | 'mdi' | 'pixelarticons' | 'simple-icons' | 'skill-icons' | 'vscode-icons'
+export type IconPrefix =
+  | 'catppuccin'
+  | 'devicon'
+  | 'logos'
+  | 'material-icon-theme'
+  | 'mdi'
+  | 'pixelarticons'
+  | 'simple-icons'
+  | 'skill-icons'
+  | 'vscode-icons'
 
 // oxlint-disable-next-line no-template-curly-in-string -- intentional: generating source code string
 export type IconId = `${IconPrefix}:${string}`
 
-export const ICON_PREFIXES: readonly IconPrefix[] = ['catppuccin', 'devicon', 'logos', 'material-icon-theme', 'mdi', 'pixelarticons', 'simple-icons', 'skill-icons', 'vscode-icons']
+export const ICON_PREFIXES: readonly IconPrefix[] = [
+  'catppuccin',
+  'devicon',
+  'logos',
+  'material-icon-theme',
+  'mdi',
+  'pixelarticons',
+  'simple-icons',
+  'skill-icons',
+  'vscode-icons',
+]
 
 export const VALID_ICON_IDS: ReadonlySet<string> = new Set([
   'catppuccin:3d',

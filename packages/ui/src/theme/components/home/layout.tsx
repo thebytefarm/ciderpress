@@ -1,4 +1,9 @@
-import type { HeroDemoConfig, HomeSectionId, SplitConfig } from '@ciderpress/config'
+import type {
+  ButtonConfig,
+  HomeHeroDemoConfig,
+  HomeSectionId,
+  HomeSplitConfig,
+} from '@ciderpress/config'
 import { DEFAULT_HOME_LAYOUT } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
@@ -28,11 +33,11 @@ interface FrontmatterHero {
   readonly name?: string
   readonly text?: string
   readonly tagline?: string
-  readonly actions?: readonly HeroAction[]
-  readonly eyebrow?: string
+  readonly actions?: readonly ButtonConfig[]
+  readonly label?: string
 }
 
-interface FrontmatterTrust {
+interface FrontmatterProof {
   readonly lead?: string
   readonly names?: readonly string[]
 }
@@ -40,7 +45,7 @@ interface FrontmatterTrust {
 interface FrontmatterCTA {
   readonly title?: string
   readonly subtitle?: string
-  readonly actions?: readonly HeroAction[]
+  readonly actions?: readonly ButtonConfig[]
 }
 
 /**
@@ -71,14 +76,14 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const fm = frontmatter as Record<string, unknown>
 
   const hero = fm.hero as FrontmatterHero | undefined
-  const trust = fm.trust as FrontmatterTrust | undefined
+  const proof = fm.proof as FrontmatterProof | undefined
   const cta = fm.cta as FrontmatterCTA | undefined
   // heroDemo / split frontmatter:
   //   undefined → render the framework default
   //   false     → suppress entirely
   //   object    → render the user-supplied custom variant
-  const heroDemoFm = fm.heroDemo as false | HeroDemoConfig | undefined
-  const splitFm = fm.split as false | SplitConfig | undefined
+  const heroDemoFm = fm.heroDemo as false | HomeHeroDemoConfig | undefined
+  const splitFm = fm.split as false | HomeSplitConfig | undefined
 
   const heroDemoEl = match(heroDemoFm)
     .with(false, () => null)
@@ -89,15 +94,15 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     .with(undefined, () => null)
     .otherwise((h) => (
       <Hero
-        eyebrow={h.eyebrow}
+        eyebrow={h.label}
         title={renderTitle(h.text ?? h.name ?? '')}
         tagline={h.tagline}
-        actions={h.actions}
+        actions={mapButtonsToHeroActions(h.actions)}
         demo={heroDemoEl}
       />
     ))
 
-  const trustSection = match(trust)
+  const proofSection = match(proof)
     .with(undefined, () => null)
     .otherwise((t) => {
       const names = t.names ?? []
@@ -111,7 +116,13 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     .otherwise((c) =>
       match(c.title === undefined)
         .with(true, () => null)
-        .otherwise(() => <CTA title={c.title ?? ''} subtitle={c.subtitle} actions={c.actions} />)
+        .otherwise(() => (
+          <CTA
+            title={c.title ?? ''}
+            subtitle={c.subtitle}
+            actions={mapButtonsToHeroActions(c.actions)}
+          />
+        ))
     )
 
   const splitSection = match(splitFm)
@@ -133,13 +144,13 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     ))
     .with(P.nonNullable, (s) => (
       <HomeSplit
-        eyebrow={s.eyebrow}
+        eyebrow={s.label}
         title={s.title}
         body={s.body}
         bullets={s.bullets ?? []}
         action={match(s.cta)
           .with(undefined, () => undefined)
-          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.link }))}
+          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.href }))}
         visual={match(s.visual)
           .with(undefined, () => null)
           .otherwise((v) => (
@@ -163,7 +174,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         {props.afterHero}
       </>
     ),
-    trust: trustSection,
+    proof: proofSection,
     features: (
       <>
         {props.beforeFeatures}
@@ -172,7 +183,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
       </>
     ),
     split: splitSection,
-    workspaces: <HomeWorkspaces />,
+    showcase: <HomeWorkspaces />,
     cta: ctaSection,
   }
 
@@ -204,16 +215,16 @@ function ConfigPreview(): React.ReactElement {
       {'  title: '}
       <span className="tok-str">'Acme Docs'</span>
       {',\n'}
-      {'  sections: [\n'}
+      {'  pages: [\n'}
       {'    { title: '}
       <span className="tok-str">'Guides'</span>
       {', include: '}
       <span className="tok-str">'docs/guides/*.md'</span>
       {' },\n'}
       {'  ],\n'}
-      {'  theme: { name: '}
+      {'  theme: { themes: ['}
       <span className="tok-str">'mulled'</span>
-      {' },\n'}
+      {'] },\n'}
       {'})'}
     </pre>
   )
@@ -250,4 +261,46 @@ function renderTitle(raw: string): React.ReactNode {
           )
         })
     })
+}
+
+/**
+ * Map the unified `ButtonConfig[]` shape (used by the new `home.hero`
+ * / `home.cta` configs) into the legacy `HeroAction[]` shape still
+ * consumed by `<Hero />` and `<CTA />`. `'primary'` → `'brand'`,
+ * `'secondary' | 'ghost'` → `'alt'`, `undefined` → `undefined`.
+ *
+ * @private
+ * @param actions - Optional list of unified button configs from frontmatter
+ * @returns Hero-action array consumed by the existing component API
+ */
+function mapButtonsToHeroActions(
+  actions: readonly ButtonConfig[] | undefined
+): readonly HeroAction[] | undefined {
+  if (actions === undefined) {
+    return undefined
+  }
+  return actions.map((action) => ({
+    text: action.text,
+    link: action.href,
+    theme: mapButtonVariantToHeroTheme(action.variant),
+  }))
+}
+
+/**
+ * Project the new `'primary' | 'secondary' | 'ghost'` variant token
+ * back into the legacy `'brand' | 'alt'` token that `<Hero />` accepts.
+ *
+ * @private
+ * @param variant - Optional variant from the unified button config
+ * @returns `'brand'`, `'alt'`, or `undefined`
+ */
+function mapButtonVariantToHeroTheme(
+  variant: ButtonConfig['variant']
+): 'brand' | 'alt' | undefined {
+  return match(variant)
+    .with(undefined, () => undefined)
+    .with('primary', () => 'brand' as const)
+    .with('secondary', () => 'alt' as const)
+    .with('ghost', () => 'alt' as const)
+    .exhaustive()
 }

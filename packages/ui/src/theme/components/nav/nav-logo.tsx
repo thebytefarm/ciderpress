@@ -153,7 +153,11 @@ function readLogoConfig(mod: unknown): string | LogoFn | undefined {
     asRecord.default !== null && asRecord.default !== undefined
       ? (asRecord.default as Partial<CiderpressConfig>)
       : (mod as Partial<CiderpressConfig>)
-  const { logo } = candidate
+  const brand = candidate.brand
+  if (brand === undefined) {
+    return undefined
+  }
+  const { logo } = brand
   if (typeof logo === 'string') {
     return logo
   }

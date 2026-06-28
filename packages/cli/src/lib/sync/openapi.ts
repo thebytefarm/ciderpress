@@ -10,7 +10,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import SwaggerParser from '@apidevtools/swagger-parser'
-import type { OpenAPIConfig, Workspace, CiderpressConfig } from '@ciderpress/config'
+import type { OpenAPISpec, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
@@ -28,9 +28,9 @@ export interface OpenAPISidebarEntry {
   readonly prefix: string
   readonly sidebar: readonly SidebarItem[]
   /**
-   * True when this entry originates from the root `config.openapi` field
-   * rather than a workspace item's `.openapi`. Root-level entries need
-   * their own standalone sidebar scope and a root `_meta.json` dir entry.
+   * True when this entry originates from a top-level `Page.openapi` rather
+   * than a workspace item's `.openapi`. Root-level entries need their own
+   * standalone sidebar scope and a root `_meta.json` dir entry.
    */
   readonly rootLevel: boolean
 }
@@ -45,10 +45,11 @@ export interface SyncOpenAPIResult {
 }
 
 /**
- * Sync all OpenAPI configs from both root config and workspace items.
+ * Sync all OpenAPI configs from page tree and workspace items.
  *
- * Collects configs from `config.openapi` and all workspace items' `.openapi`,
- * processes each spec, and returns aggregated sidebar entries and pages.
+ * Collects specs from any `Page.openapi` field in the tree and all workspace
+ * items' `.openapi`, processes each spec, and returns aggregated sidebar
+ * entries and pages.
  *
  * @param ctx - Sync context with config and paths
  * @returns Aggregated sidebar entries and generated pages
@@ -121,7 +122,7 @@ interface SingleSyncResult {
  * @private
  */
 interface ConfigEntry {
-  readonly config: OpenAPIConfig
+  readonly config: OpenAPISpec
   readonly rootLevel: boolean
 }
 
@@ -133,7 +134,7 @@ interface ConfigEntry {
  * @param ctx - Sync context
  * @returns Sidebar items and generated page data
  */
-async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<SingleSyncResult> {
+async function syncOpenAPI(config: OpenAPISpec, ctx: SyncContext): Promise<SingleSyncResult> {
   const specAbsPath = path.resolve(ctx.repoRoot, config.spec)
   const specRelPath = config.spec
 
@@ -229,16 +230,23 @@ async function syncOpenAPI(config: OpenAPIConfig, ctx: SyncContext): Promise<Sin
 }
 
 /**
- * Collect root-level OpenAPI config (if present).
+ * Collect root-level OpenAPI configs from any top-level `Page.openapi` field.
+ *
+ * The legacy top-level `config.openapi` field has been removed; per-page
+ * OpenAPI specs now live on `Page.openapi`. A page is considered "root-level"
+ * when it sits in the top-level `config.pages` array, mirroring the previous
+ * behavior of treating root specs as standalone sidebar scopes.
  *
  * @private
  * @param config - Ciderpress config
- * @returns Array of config entries (zero or one)
+ * @returns Array of config entries from top-level pages with `openapi`
  */
 function collectRootConfigs(config: CiderpressConfig): readonly ConfigEntry[] {
-  return match(config.openapi)
-    .with(P.nonNullable, (o) => [{ config: o, rootLevel: true }])
-    .otherwise(() => [])
+  return config.pages
+    .filter((page): page is typeof page & { readonly openapi: OpenAPISpec } =>
+      isNotNil(page.openapi)
+    )
+    .map((page) => ({ config: page.openapi, rootLevel: true }))
 }
 
 /**
@@ -252,7 +260,7 @@ function collectWorkspaceConfigs(config: CiderpressConfig): readonly ConfigEntry
   const allWorkspaces = collectAllWorkspaceItems(config)
 
   return allWorkspaces
-    .filter((ws): ws is Workspace & { readonly openapi: OpenAPIConfig } => isNotNil(ws.openapi))
+    .filter((ws): ws is Workspace & { readonly openapi: OpenAPISpec } => isNotNil(ws.openapi))
     .map((ws) => ({ config: ws.openapi, rootLevel: false }))
 }
 
@@ -463,7 +471,7 @@ function formatSidebarText(op: OperationInfo, style: 'method-path' | 'title'): s
  * @param config - OpenAPI config with optional title
  * @returns Resolved title string
  */
-function resolveTitle(config: OpenAPIConfig): string {
+function resolveTitle(config: OpenAPISpec): string {
   return match(config.title)
     .with(P.string, (t) => t)
     .otherwise(() => 'API Reference')

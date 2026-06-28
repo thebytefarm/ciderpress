@@ -6,7 +6,7 @@ import type { ResolvedEntry, RspressNavItem } from '../types.ts'
 /**
  * Generate Rspress nav config from resolved tree.
  *
- * When `config.nav` is `"auto"` (or omitted), produces one nav item per
+ * When `config.topbar.nav` is `"auto"` (or omitted), produces one nav item per
  * top-level section, linking to its first child page.
  *
  * @param config - ciderpress config (provides explicit nav or `"auto"`)
@@ -17,8 +17,9 @@ export function generateNav(
   config: CiderpressConfig,
   resolved: readonly ResolvedEntry[]
 ): RspressNavItem[] {
-  if (config.nav !== 'auto' && config.nav !== undefined) {
-    return config.nav.map(mapNavItem)
+  const nav = config.topbar && config.topbar.nav
+  if (nav !== 'auto' && nav !== undefined) {
+    return nav.map(mapNavItem)
   }
 
   // Auto: first 3 non-standalone sections (matching home page features),

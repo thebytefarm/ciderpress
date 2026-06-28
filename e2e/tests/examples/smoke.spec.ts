@@ -33,10 +33,7 @@ for (const example of EXAMPLES) {
     })
 
     const response = await page.goto(example.mountBase)
-    expect(
-      response?.status(),
-      `${example.mountBase} should respond 2xx`
-    ).toBeLessThan(400)
+    expect(response?.status(), `${example.mountBase} should respond 2xx`).toBeLessThan(400)
 
     // Header from the ciderpress theme is the simplest hydration marker —
     // proves React mounted and CSS resolved. If the bundle 404d this fails.
@@ -50,9 +47,8 @@ for (const example of EXAMPLES) {
       failedRequests,
       `${example.slug} failed requests:\n${failedRequests.join('\n')}`
     ).toEqual([])
-    expect(
-      consoleErrors,
-      `${example.slug} console errors:\n${consoleErrors.join('\n')}`
-    ).toEqual([])
+    expect(consoleErrors, `${example.slug} console errors:\n${consoleErrors.join('\n')}`).toEqual(
+      []
+    )
   })
 }

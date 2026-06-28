@@ -91,9 +91,9 @@ async function loadAndValidateConfig(
     ]
   }
 
-  if (!config.sections || (Array.isArray(config.sections) && config.sections.length === 0)) {
+  if (!config.pages || (Array.isArray(config.pages) && config.pages.length === 0)) {
     return [
-      configError('empty_sections', 'Failed to load ciderpress.config — no sections found'),
+      configError('empty_sections', 'Failed to load ciderpress.config — no pages found'),
       null,
     ]
   }

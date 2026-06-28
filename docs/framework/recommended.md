@@ -1,11 +1,11 @@
 ---
 title: Recommended
-description: The recommended section layout for a ciderpress documentation site.
+description: The recommended layout for a ciderpress documentation site.
 ---
 
 # Recommended Layout
 
-This is the section structure we recommend for most projects. It maps each doc type to a clear section in the sidebar.
+This is the layout we recommend for most projects. It maps each doc type to a clear top-level page in the sidebar.
 
 ## The layout
 
@@ -13,13 +13,13 @@ This is the section structure we recommend for most projects. It maps each doc t
 import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
-  sections: [
+  pages: [
     // Onboarding — tutorials and quickstarts
     {
       title: 'Getting Started',
       icon: 'pixelarticons:speed-fast',
       path: '/getting-started',
-      items: [
+      pages: [
         {
           title: 'Introduction',
           path: '/getting-started/intro',
@@ -39,7 +39,7 @@ export default defineConfig({
       icon: 'pixelarticons:article',
       path: '/guides',
       include: 'docs/guides/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
 
     // Conceptual explanations
@@ -48,8 +48,7 @@ export default defineConfig({
       icon: 'pixelarticons:label',
       path: '/concepts',
       include: 'docs/concepts/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
 
     // API, config, CLI reference
@@ -58,8 +57,7 @@ export default defineConfig({
       icon: 'pixelarticons:list-box',
       path: '/reference',
       include: 'docs/reference/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
 
     // Rules and conventions
@@ -68,8 +66,7 @@ export default defineConfig({
       icon: 'pixelarticons:clipboard',
       path: '/standards',
       include: 'docs/standards/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
 
     // Common problems and fixes
@@ -78,15 +75,15 @@ export default defineConfig({
       icon: 'pixelarticons:alert',
       path: '/troubleshooting',
       include: 'docs/troubleshooting/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
 })
 ```
 
-## Section-to-type mapping
+## Page-to-type mapping
 
-| Section         | Doc types                 | Directory               |
+| Page            | Doc types                 | Directory               |
 | --------------- | ------------------------- | ----------------------- |
 | Getting Started | Tutorials, Quickstarts    | `docs/getting-started/` |
 | Guides          | Guides                    | `docs/guides/`          |
@@ -97,28 +94,26 @@ export default defineConfig({
 
 ## Monorepo additions
 
-For monorepos with multiple apps or packages, add isolated sections for each workspace:
+For monorepos with multiple apps or packages, add a top-level page per workspace tree and mark it as a sidebar island so navigation stays focused:
 
 ```ts
 {
   title: 'Apps',
   icon: 'pixelarticons:device-laptop',
   path: '/apps',
-  standalone: true,
-  items: [
+  nav: { island: true },
+  pages: [
     {
       title: { from: 'heading' },
       path: '/apps/api',
       include: 'apps/api/docs/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
     {
       title: { from: 'heading' },
       path: '/apps/web',
       include: 'apps/web/docs/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
   ],
 },
@@ -126,24 +121,25 @@ For monorepos with multiple apps or packages, add isolated sections for each wor
   title: 'Packages',
   icon: 'pixelarticons:archive',
   path: '/packages',
-  standalone: true,
-  items: [
+  nav: { island: true },
+  pages: [
     {
       title: { from: 'heading' },
       path: '/packages/ui',
       include: 'packages/ui/docs/**/*.md',
-      recursive: true,
-      sort: 'alpha',
+      discover: { recursive: true, sort: 'alpha' },
     },
   ],
 },
 ```
 
-Using `standalone: true` gives each app or package its own sidebar, keeping navigation focused.
+`nav: { island: true }` gives each app or package its own sidebar — children only appear when the user is inside that branch.
+
+For richer card metadata on the home page (icons, tags, deploy badges), promote those workspaces into the top-level `apps` / `packages` fields instead — see [Workspaces](/concepts/workspaces).
 
 ## File structure
 
-The recommended directory layout mirrors the sections:
+The recommended directory layout mirrors the top-level pages:
 
 ```
 docs/
@@ -172,20 +168,21 @@ docs/
 
 ## Adapting the layout
 
-Not every project needs all sections. Start with what you have:
+Not every project needs every page. Start with what you have:
 
-| Project size | Recommended sections                         |
-| ------------ | -------------------------------------------- |
-| Small        | Getting Started, Reference                   |
-| Medium       | Getting Started, Guides, Concepts, Reference |
-| Large        | All sections                                 |
-| Monorepo     | All sections + standalone Apps/Packages      |
+| Project size | Recommended pages                              |
+| ------------ | ---------------------------------------------- |
+| Small        | Getting Started, Reference                     |
+| Medium       | Getting Started, Guides, Concepts, Reference   |
+| Large        | All pages                                      |
+| Monorepo     | All pages + sidebar-island Apps / Packages     |
 
-Add sections as your docs grow. Removing an empty section is easier than reorganizing a flat pile of docs later.
+Add pages as your docs grow. Removing an empty page is easier than reorganizing a flat pile of docs later.
 
 ## References
 
 - [Overview](/framework/overview) — why this framework exists
 - [Types](/framework/types) — the seven doc types in detail
 - [Scaling](/framework/scaling) — how the layout evolves over time
-- [Content](/concepts/content) — ciderpress section configuration
+- [Content](/concepts/content) — ciderpress page configuration
+- [Workspaces](/concepts/workspaces) — when to promote workspace pages into `apps` / `packages`

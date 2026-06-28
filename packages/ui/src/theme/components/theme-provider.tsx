@@ -28,7 +28,7 @@ type ThemeColorKey = keyof ThemeColors
 
 /**
  * Parsed theme registry — built-in themes plus any user themes from
- * `config.themes`. Read from the build-time define so the client bundle
+ * `theme.themes`. Read from the build-time define so the client bundle
  * does not pull `@ciderpress/theme`'s factory + Zod into the runtime path.
  */
 const REGISTRY_ENTRIES: readonly RegistryEntry[] = parseRegistry(__CIDERPRESS_THEME_REGISTRY__)
@@ -126,7 +126,7 @@ const ALL_CSS_VARS: readonly string[] = Object.values(COLOR_VAR_MAP).flat()
 
 /**
  * Minimum time (ms) the loading overlay stays visible before fading
- * out. Resolved at build time from `config.loader.minDisplayMs` —
+ * out. Resolved at build time from `brand.loader.minDisplayMs` —
  * defaults to 150ms in `packages/ui/src/config.ts`.
  */
 const LOADER_MIN_DISPLAY_MS = __CIDERPRESS_LOADER_MIN_MS__

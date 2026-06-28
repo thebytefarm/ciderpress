@@ -1,8 +1,12 @@
-import type { IconColor, ThemeConfig, CiderpressThemeInput } from '@ciderpress/theme'
+import type {
+  BuiltInThemeName,
+  CiderpressThemeInput,
+  IconColor,
+  ThemeColors,
+} from '@ciderpress/theme'
 import type React from 'react'
 
 export type {
-  ThemeConfig,
   ThemeName,
   ColorMode,
   ThemeColors,
@@ -38,11 +42,6 @@ export type IconId = `${IconPrefix}:${string}`
  * Image-form icon — points at a static asset (SVG, PNG, …) shipped in
  * the project's `public/` directory or a CDN URL. Use when the brand
  * mark isn't in any installed Iconify set.
- *
- * @example
- * ```ts
- * icon: { src: '/icon.svg', alt: 'maltty' }
- * ```
  */
 export interface IconImage {
   /**
@@ -57,28 +56,21 @@ export interface IconImage {
 }
 
 /**
- * Unified icon configuration.
+ * Unified icon configuration — applied uniformly across every position
+ * that accepts an icon (`brand.icon`, `Page.icon`, `Workspace.icon`,
+ * `WorkspaceGroup.icon`, `ButtonConfig.icon`, etc.).
  *
  * Accepts three forms:
  *
  * - **Iconify id** (`"devicon:hono"`) — string from an installed icon set.
- *   Color defaults to purple. Browse icons at https://icon-sets.iconify.design/
  * - **Iconify object** (`{ id, color }`) — explicit color from the 8-colour palette.
- * - **Image object** (`{ src, alt }`) — static image (SVG/PNG/…) shipped in
- *   the project's `public/` directory or a CDN URL. Bypasses Iconify entirely.
- *
- * For inline React JSX as an icon, use `logo` instead — it accepts a
- * function returning `ReactNode` and re-renders on theme changes.
- *
- * Auto-generated section cards rotate through these colors when an
- * Iconify icon is used:
- * purple → blue → green → amber → cyan → red → pink → slate
+ * - **Image object** (`{ src, alt }`) — static image (SVG/PNG/…).
  *
  * @example
  * ```ts
- * icon: 'devicon:react'                            // Iconify, purple
- * icon: { id: 'devicon:nextjs', color: 'blue' }    // Iconify, blue
- * icon: { src: '/icon.svg', alt: 'maltty' }        // Static image
+ * icon: 'devicon:react'
+ * icon: { id: 'devicon:nextjs', color: 'blue' }
+ * icon: { src: '/icon.svg', alt: 'maltty' }
  * ```
  */
 export type IconConfig = IconId | { readonly id: IconId; readonly color?: IconColor } | IconImage
@@ -87,6 +79,11 @@ export type IconConfig = IconId | { readonly id: IconId; readonly color?: IconCo
  * File-system path (absolute or relative).
  */
 type FilePath = string
+
+/**
+ * URL path segment (e.g. `"/api"`, `"/guides/auth"`).
+ */
+type UrlPath = string
 
 /**
  * All user-project paths derived from a single root directory.
@@ -105,11 +102,6 @@ export interface Paths {
 }
 
 /**
- * URL path segment (e.g. `"/api"`, `"/guides/auth"`).
- */
-type UrlPath = string
-
-/**
  * Result type for error handling without exceptions.
  *
  * Success: `[null, value]`
@@ -124,13 +116,28 @@ type UrlPath = string
 export type Result<T, E = Error> = readonly [E, null] | readonly [null, T]
 
 /**
+ * Universal image source.
+ *
+ * Accepts either a string path/URL or a structured object carrying alt
+ * text and explicit dimensions. Used for `brand.favicon`, banner image
+ * return values, hero demo images, and anywhere else an image is named
+ * in config.
+ */
+export type ImageSource =
+  | string
+  | {
+      readonly src: string
+      readonly alt?: string
+      readonly type?: string
+      readonly width?: number | string
+      readonly height?: number | string
+    }
+
+/**
  * Rspress frontmatter fields injectable at build time.
  *
  * Schema: `frontmatterSchema` in schema.ts validates this shape with
- * `.strict()` — unknown keys are rejected at config-load time. To inject
- * custom YAML fields into a page, add them to the source `.md`/`.mdx`
- * frontmatter directly; this type is the typed surface for config-time
- * injection only.
+ * `.strict()` — unknown keys are rejected at config-load time.
  */
 export interface Frontmatter {
   /**
@@ -149,7 +156,6 @@ export interface Frontmatter {
   readonly description?: string
   /**
    * Layout to render the page with — defaults to Rspress's `'doc'` layout.
-   * Use `'home'` to opt this page into the home-page layout.
    */
   readonly layout?: string
   /**
@@ -173,13 +179,11 @@ export interface Frontmatter {
    */
   readonly navbar?: boolean
   /**
-   * Show the edit-this-page link under the article. Defaults to `true`
-   * when `site.edit` is configured.
+   * Show the edit-this-page link under the article.
    */
   readonly editLink?: boolean
   /**
-   * Show the "last updated" timestamp under the article. Defaults to
-   * `false`.
+   * Show the "last updated" timestamp under the article. Defaults to `false`.
    */
   readonly lastUpdated?: boolean
   /**
@@ -187,8 +191,7 @@ export interface Frontmatter {
    */
   readonly footer?: boolean
   /**
-   * Extra class name applied to the page wrapper — useful for one-off
-   * layout tweaks.
+   * Extra class name applied to the page wrapper.
    */
   readonly pageClass?: string
   /**
@@ -200,9 +203,6 @@ export interface Frontmatter {
 
 /**
  * Navigation item for the top nav bar.
- *
- * Schema: `navItemSchema` in schema.ts validates this shape.
- * The schema uses `z.ZodType<NavItem>` to enforce consistency.
  */
 export interface NavItem {
   /**
@@ -226,19 +226,9 @@ export interface NavItem {
 }
 
 /**
- * Title configuration — static or derived from source files.
- *
- * Schema: `titleConfigSchema` in schema.ts validates this shape.
- *
- * **Static title**:
- * ```ts
- * title: "Getting Started"
- * ```
- *
- * **Derived title**:
- * ```ts
- * title: { from: 'auto', transform: (text, slug) => text.toUpperCase() }
- * ```
+ * Title configuration — static string or derivation rule for
+ * auto-discovered children. Used uniformly on every `title` field that
+ * accepts derivation (`Page.title`, `Workspace.title`, …).
  */
 export type TitleConfig =
   | string
@@ -253,35 +243,34 @@ export type TitleConfig =
       readonly from: 'auto' | 'filename' | 'heading' | 'frontmatter'
       /**
        * Transform function applied after derivation.
-       * @param text - The derived title
-       * @param slug - The filename slug (without extension)
-       * @returns Transformed title for sidebar display
        */
       readonly transform?: (text: string, slug: string) => string
     }
 
 /**
- * Controls how an entry appears as a card on its parent section's
- * auto-generated landing page.
+ * Sort strategy applied when `Page.include` (or `Workspace.include`)
+ * auto-discovers children.
  *
- * Schema: `cardConfigSchema` in schema.ts validates this shape.
- * A compile-time guard in schema.ts ensures these stay in sync.
- *
- * @example
- * ```ts
- * card: {
- *   icon: 'devicon:hono',
- *   scope: 'apps/',
- *   description: 'Hono REST API with RPC-typed routes',
- *   tags: ['Hono', 'REST', 'Serverless'],
- *   badge: { src: '/logos/vercel.svg', alt: 'Vercel' },
- * }
- * ```
+ * - `'default'` — frontmatter `order` then alphabetical title
+ * - `'alpha'` — alphabetical by title
+ * - `'filename'` — alphabetical by source filename
+ * - `'none'` — preserve glob-discovery order
+ * - Custom comparator — sort by your own rule
+ */
+export type SortStrategy =
+  | 'default'
+  | 'alpha'
+  | 'filename'
+  | 'none'
+  | ((a: ResolvedPage, b: ResolvedPage) => number)
+
+/**
+ * Card appearance overrides — controls how a `Page` or workspace renders
+ * as a card on a parent's auto-generated landing.
  */
 export interface CardConfig {
   /**
-   * Card icon — Iconify id or `{ id, color }` object. Defaults to a
-   * rotating color based on the parent section's position.
+   * Card icon. Defaults to a rotating color based on the parent's position.
    */
   readonly icon?: IconConfig
   /**
@@ -301,252 +290,163 @@ export interface CardConfig {
    * Logo badge rendered in the card's top-right corner.
    */
   readonly badge?: {
-    /**
-     * URL to the badge image (typically an SVG logo).
-     */
     readonly src: string
-    /**
-     * Alt text for the badge image.
-     */
     readonly alt: string
   }
 }
 
 /**
- * A single call-to-action button on the home page hero.
- *
- * Schema: `heroActionSchema` in schema.ts validates this shape.
+ * Unified button vocabulary — replaces the legacy `HeroAction.theme` /
+ * `SidebarLink.style` shapes. Used everywhere a button appears in config
+ * (hero actions, CTA bands, sidebar top/bottom links, topbar CTA).
  */
-export interface HeroAction {
+export interface ButtonConfig {
   /**
-   * Visual treatment — `'brand'` is the primary filled button,
-   * `'alt'` is the secondary outline button.
-   */
-  readonly theme: 'brand' | 'alt'
-  /**
-   * Button label.
+   * Visible label rendered inside the button.
    */
   readonly text: string
   /**
    * Destination URL — relative path or absolute URL.
    */
-  readonly link: string
-}
-
-/**
- * A persistent link rendered above or below the sidebar nav tree.
- *
- * Schema: `sidebarLinkSchema` in schema.ts validates this shape.
- */
-export interface SidebarLink {
+  readonly href: string
   /**
-   * Visible label rendered in the sidebar.
+   * Visual treatment. Defaults to `'primary'` for hero actions and
+   * `'ghost'` for sidebar links.
    */
-  readonly text: string
+  readonly variant?: 'primary' | 'secondary' | 'ghost'
   /**
-   * Destination URL — relative path or absolute URL.
+   * Button shape. Defaults to `'rounded'`.
    */
-  readonly link: string
+  readonly shape?: 'square' | 'rounded' | 'circle'
   /**
    * Optional icon rendered to the left of the label.
    */
   readonly icon?: IconConfig
-  /**
-   * Button style — `'brand'` is filled, `'alt'` is outline, `'ghost'`
-   * is text-only. Defaults to `'ghost'`.
-   */
-  readonly style?: 'brand' | 'alt' | 'ghost'
-  /**
-   * Button shape — `'square'`, `'rounded'`, or `'circle'`. Defaults
-   * to `'rounded'`.
-   */
-  readonly shape?: 'square' | 'rounded' | 'circle'
 }
 
 /**
- * Sidebar configuration.
+ * A single node in the information architecture tree — replaces the
+ * legacy `Section` interface and renames `items` → `pages`, `frontmatter`
+ * → `defaults`, and groups navigation / discovery options under `nav`
+ * and `discover` sub-objects.
  *
- * Schema: `sidebarConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * sidebar: {
- *   above: [
- *     { text: 'Home', link: '/', icon: 'pixelarticons:home' },
- *   ],
- *   below: [
- *     { text: 'GitHub', link: 'https://github.com/...', icon: 'pixelarticons:github' },
- *     { text: 'Discord', link: 'https://discord.gg/...', icon: 'pixelarticons:message' },
- *   ],
- * }
- * ```
+ * **Source**: declare exactly one of `include`, `content`, or `pages`.
  */
-export interface SidebarConfig {
+export interface Page {
   /**
-   * Persistent links rendered above the sidebar nav tree.
-   */
-  readonly above?: readonly SidebarLink[]
-  /**
-   * Persistent links rendered below the sidebar nav tree.
-   */
-  readonly below?: readonly SidebarLink[]
-}
-
-/**
- * A single node in the information architecture (sidebar/nav tree).
- *
- * Schema: `entrySchema` in schema.ts validates this shape.
- * The schema uses `z.ZodType<Section>` to enforce consistency.
- *
- * **Page — explicit file**:
- * ```ts
- * { title: 'Architecture', path: '/architecture', include: 'docs/architecture.md' }
- * ```
- *
- * **Page — inline/generated content**:
- * ```ts
- * { title: 'Overview', path: '/api/overview', content: '# API Overview\n...' }
- * ```
- *
- * **Section — explicit children**:
- * ```ts
- * { title: 'Guides', items: [ ... ] }
- * ```
- *
- * **Section — auto-discovered from glob**:
- * ```ts
- * { title: 'Guides', path: '/guides', include: 'docs/guides/*.md' }
- * ```
- */
-export interface Section {
-  /**
-   * Display title — either a static string or a derivation rule that
-   * produces titles from frontmatter, headings, or filenames.
+   * Display title — static string or a derivation rule for
+   * auto-discovered children.
    */
   readonly title: TitleConfig
   /**
-   * One-line description rendered on the auto-generated landing page
-   * for this section.
+   * One-line description used on this page's auto-generated landing card
+   * and OG meta.
    */
   readonly description?: string
   /**
-   * URL path for this section (e.g. `'/guides'`). When omitted, the
-   * section is sidebar-only (its children get their own paths).
+   * URL path this page mounts at (e.g. `/guides`). Omit for a sidebar-only
+   * grouping node.
    */
   readonly path?: string
   /**
-   * Glob pattern(s) that source content from the file system. When
-   * present, children are auto-discovered. Mutually exclusive with
-   * `content` and inline `items` containing `include` chains.
-   */
-  readonly include?: string | readonly string[]
-  /**
-   * Inline page content — a string of Markdown/MDX or a function that
-   * returns it. Use for generated pages (changelogs, indexes) that
-   * don't live on disk.
-   */
-  readonly content?: string | (() => string | Promise<string>)
-  /**
-   * Explicit child nodes. Mutually exclusive with `include` (auto-
-   * discovery) — pick one source of truth per section.
-   */
-  readonly items?: readonly Section[]
-  /**
-   * When `true`, render an auto-generated landing page at this section's
-   * `path` listing its children as cards. Defaults to `true` for
-   * sections with no `content`.
-   */
-  readonly landing?: boolean
-  /**
-   * Show this section as a collapsible group in the sidebar. Defaults
-   * to `true`.
-   */
-  readonly collapsible?: boolean
-  /**
-   * Glob patterns of files to exclude when `include` is auto-discovering.
-   */
-  readonly exclude?: readonly string[]
-  /**
-   * Hide this section (and all its children) from the sidebar.
-   * Useful for routes that are linked from content but shouldn't
-   * appear in nav.
-   */
-  readonly hidden?: boolean
-  /**
-   * Frontmatter merged into every page resolved under this section.
-   * Per-file frontmatter takes precedence over these defaults.
-   */
-  readonly frontmatter?: Frontmatter
-  /**
-   * Sort strategy applied when `include` auto-discovers children.
-   * - `'default'` — frontmatter `order` then alphabetical title
-   * - `'alpha'` — alphabetical by title
-   * - `'filename'` — alphabetical by source filename
-   * - `'none'` — preserve glob-discovery order
-   * - Custom comparator — sort by your own rule
-   */
-  readonly sort?:
-    | 'default'
-    | 'alpha'
-    | 'filename'
-    | 'none'
-    | ((a: ResolvedPage, b: ResolvedPage) => number)
-  /**
-   * Recurse into subdirectories when `include` auto-discovers content.
-   * Defaults to `true`.
-   */
-  readonly recursive?: boolean
-  /**
-   * Filename (relative to the section's directory) treated as the
-   * landing page instead of generating one. Common values: `'index.md'`,
-   * `'README.md'`.
-   */
-  readonly entryFile?: string
-  /**
-   * Icon rendered on the section's card and (when configured) in the
-   * sidebar.
+   * Icon rendered on the page's card and (when configured) in the sidebar.
    */
   readonly icon?: IconConfig
   /**
-   * Card appearance overrides — controls how this entry renders on its
-   * parent section's landing page.
+   * File path or glob string(s); children auto-discovered.
+   */
+  readonly include?: string | readonly string[]
+  /**
+   * Inline Markdown/MDX string, or async generator.
+   */
+  readonly content?: string | (() => string | Promise<string>)
+  /**
+   * Explicit child nodes (was `items` on the legacy `Section` interface).
+   */
+  readonly pages?: readonly Page[]
+  /**
+   * Sidebar navigation behavior for this page (and its subtree).
+   */
+  readonly nav?: {
+    /**
+     * Hide this page (and children) from the sidebar entirely.
+     */
+    readonly hidden?: boolean
+    /**
+     * Show as a collapsible group in the sidebar. Defaults to `true`.
+     */
+    readonly collapsible?: boolean
+    /**
+     * Render as a sidebar island — children appear only when the user is
+     * inside this branch (was `standalone` on the legacy `Section`).
+     */
+    readonly island?: boolean
+    /**
+     * Mark as a sidebar root — only one root can be active at a time;
+     * the topbar treats it as the active workspace.
+     */
+    readonly root?: boolean
+  }
+  /**
+   * Render an auto-generated landing page at this `path` listing children
+   * as cards. Defaults to `true` for pages with children.
+   */
+  readonly landing?: boolean
+  /**
+   * Card appearance overrides — controls how this page appears as a card
+   * on a parent's landing.
    */
   readonly card?: CardConfig
   /**
-   * Render this section as a sidebar-rooted island — its children are
-   * shown in the sidebar only when the user is inside the section.
+   * Default values merged into every child page's frontmatter (was
+   * `frontmatter` on the legacy `Section` interface). Per-file
+   * frontmatter wins on conflict.
    */
-  readonly standalone?: boolean
+  readonly defaults?: Frontmatter
   /**
-   * Mark this section as a sidebar root — only one root can be active
-   * at a time, and the topbar treats it as the active workspace.
+   * Glob-discovery options — ignored unless `include` is a glob.
    */
-  readonly root?: boolean
+  readonly discover?: {
+    /**
+     * Sort strategy for discovered children.
+     */
+    readonly sort?: SortStrategy
+    /**
+     * Recurse into subdirectories. Defaults to `true`.
+     */
+    readonly recursive?: boolean
+    /**
+     * Glob patterns ignored during discovery (was `exclude` on the legacy
+     * `Section` interface; renamed for gitignore vocabulary alignment).
+     */
+    readonly ignore?: readonly string[]
+    /**
+     * Filename treated as the page's own content instead of generating a
+     * landing page (was `entryFile`).
+     */
+    readonly indexFile?: string
+  }
+  /**
+   * Per-page OpenAPI integration — generates API operation pages under
+   * this page's `path`.
+   */
+  readonly openapi?: OpenAPISpec
 }
 
 /**
  * Workspace item representing an app or package in the monorepo.
  *
- * Schema: `workspaceItemSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * {
- *   title: 'API',
- *   icon: 'devicon:hono',
- *   description: 'Hono REST API serving all client applications',
- *   tags: ['hono', 'react', 'vercel'],
- *   path: '/apps/api',
- *   include: 'docs/*.md',
- *   sort: 'alpha',
- * }
- * ```
+ * Mirrors {@link Page}'s discovery surface — `pages`, `discover.*`, and
+ * `defaults` carry the same semantics on a Workspace as on a Page. The
+ * extra Workspace-only fields (`description`, `tags`, `badge`) drive
+ * card rendering on the home showcase and landing pages.
  */
 export interface Workspace {
   /**
-   * Workspace display name (e.g. `'API'`, `'@acme/sdk'`).
+   * Workspace display name (e.g. `'API'`, `'@acme/sdk'`). Accepts the
+   * uniform {@link TitleConfig} shape.
    */
-  readonly title: string
+  readonly title: TitleConfig
   /**
    * Icon rendered on the workspace card and landing page.
    */
@@ -564,13 +464,7 @@ export interface Workspace {
    * Logo badge rendered in the card's top-right corner.
    */
   readonly badge?: {
-    /**
-     * URL to the badge image (typically an SVG logo).
-     */
     readonly src: string
-    /**
-     * Alt text for the badge image.
-     */
     readonly alt: string
   }
   /**
@@ -578,67 +472,51 @@ export interface Workspace {
    */
   readonly path: string
   /**
-   * Glob pattern(s) that source content from the file system. When
-   * present, child pages are auto-discovered.
+   * Glob pattern(s) that source content from the file system, resolved
+   * relative to the workspace's base path (derived from `path`).
    */
   readonly include?: string | readonly string[]
   /**
-   * Explicit child sections — overrides `include`-based auto-discovery
-   * when both are set.
+   * Explicit child pages — overrides `include`-based auto-discovery
+   * when both are set. Same shape as {@link Page} children.
    */
-  readonly items?: readonly Section[]
+  readonly pages?: readonly Page[]
   /**
-   * Sort strategy applied to auto-discovered children. See `Section.sort`
-   * for the strategy values.
+   * Default frontmatter merged into every child page discovered or
+   * declared under this workspace. Per-file frontmatter wins on conflict.
    */
-  readonly sort?:
-    | 'default'
-    | 'alpha'
-    | 'filename'
-    | 'none'
-    | ((a: ResolvedPage, b: ResolvedPage) => number)
+  readonly defaults?: Frontmatter
   /**
-   * Glob patterns of files to exclude when `include` is auto-discovering.
+   * Glob-discovery options — ignored unless `include` is a glob. Same
+   * shape as {@link Page.discover}.
    */
-  readonly exclude?: readonly string[]
+  readonly discover?: {
+    /**
+     * Sort strategy for discovered children.
+     */
+    readonly sort?: SortStrategy
+    /**
+     * Recurse into subdirectories. Defaults to `true`.
+     */
+    readonly recursive?: boolean
+    /**
+     * Glob patterns ignored during discovery.
+     */
+    readonly ignore?: readonly string[]
+    /**
+     * Filename treated as the workspace's own landing-page content
+     * instead of generating an auto-landing.
+     */
+    readonly indexFile?: string
+  }
   /**
-   * Recurse into subdirectories when `include` auto-discovers content.
-   * Defaults to `true`.
+   * Per-workspace OpenAPI integration.
    */
-  readonly recursive?: boolean
-  /**
-   * Filename (relative to the workspace's directory) treated as the
-   * landing page instead of generating one.
-   */
-  readonly entryFile?: string
-  /**
-   * Frontmatter merged into every page under this workspace. Per-file
-   * frontmatter wins on conflict.
-   */
-  readonly frontmatter?: Frontmatter
-  /**
-   * Per-workspace OpenAPI integration — generates API operation pages
-   * under this workspace's `path`.
-   */
-  readonly openapi?: OpenAPIConfig
+  readonly openapi?: OpenAPISpec
 }
 
 /**
  * Custom workspace category grouping apps/packages.
- *
- * Schema: `workspaceGroupSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * {
- *   title: 'Integrations',
- *   description: 'Third-party service connectors',
- *   icon: 'mdi:puzzle',
- *   items: [
- *     { title: 'Stripe', description: 'Payment processing', path: '/integrations/stripe' },
- *   ],
- * }
- * ```
  */
 export interface WorkspaceGroup {
   /**
@@ -651,18 +529,17 @@ export interface WorkspaceGroup {
    */
   readonly description?: string
   /**
-   * Icon shown next to the group title (Iconify id only — `{ id, color }`
-   * objects are not supported for category icons).
+   * Icon shown next to the group title — uniform {@link IconConfig}
+   * shape, matching every other icon position.
    */
-  readonly icon: IconId
+  readonly icon: IconConfig
   /**
    * Workspaces grouped under this category. Rendered as cards in the
    * order provided.
    */
   readonly items: readonly Workspace[]
   /**
-   * Optional URL the group title links to. When omitted, the title is
-   * non-interactive.
+   * Optional URL the group title links to.
    */
   readonly link?: string
 }
@@ -714,9 +591,10 @@ export interface ResolvedSection {
 }
 
 /**
- * Configuration for OpenAPI spec integration.
+ * Configuration for OpenAPI spec integration (renamed from the legacy
+ * `OpenAPIConfig`).
  */
-export interface OpenAPIConfig {
+export interface OpenAPISpec {
   /**
    * Path to openapi.json relative to repo root.
    */
@@ -742,19 +620,7 @@ export interface OpenAPIConfig {
 }
 
 /**
- * Explicit feature card for the home page.
- *
- * Schema: `featureSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * {
- *   title: 'Getting Started',
- *   description: 'Everything you need to set up and start building.',
- *   link: '/getting-started',
- *   icon: 'pixelarticons:speed-fast',
- * }
- * ```
+ * Explicit feature card for the home page features grid.
  */
 export interface Feature {
   /**
@@ -793,89 +659,17 @@ export interface TruncateConfig {
 }
 
 /**
- * Layout and styling options for a card grid section on the home page.
- */
-export interface HomeGridConfig {
-  /**
-   * Number of columns in the grid at desktop widths (1–4). Smaller
-   * breakpoints automatically reduce this.
-   */
-  readonly columns?: 1 | 2 | 3 | 4
-  /**
-   * Line-clamp limits for card text. When omitted, no truncation is
-   * applied.
-   */
-  readonly truncate?: TruncateConfig
-  /**
-   * Heading rendered above the grid. Omit to use the framework default
-   * (or no heading for the workspaces grid).
-   */
-  readonly heading?: HomeSectionHeading
-}
-
-/**
- * Trust strip on the home hero — short lead followed by a list of names.
- *
- * Schema: `trustConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * trust: { lead: 'Trusted by teams at', names: ['Acme', 'Globex', 'Initech'] }
- * ```
- */
-export interface HomeTrustConfig {
-  /**
-   * Lead phrase rendered before the names (e.g. `'Trusted by teams at'`).
-   */
-  readonly lead?: string
-  /**
-   * Company / team names rendered as a comma-separated list after the lead.
-   */
-  readonly names?: readonly string[]
-}
-
-/**
- * Final CTA band on the home page — title, optional subtitle, and up to two actions.
- *
- * Schema: `ctaConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * cta: {
- *   title: 'Ready to ship?',
- *   subtitle: 'Install ciderpress and write your first page in five minutes.',
- *   actions: [{ theme: 'brand', text: 'Quick start', link: '/getting-started' }],
- * }
- * ```
- */
-export interface HomeCtaConfig {
-  /**
-   * Headline rendered at the top of the CTA band.
-   */
-  readonly title?: string
-  /**
-   * Supporting sentence rendered under the headline.
-   */
-  readonly subtitle?: string
-  /**
-   * Up to two action buttons rendered below the subtitle. Schema enforces
-   * the two-button cap.
-   */
-  readonly actions?: readonly HeroAction[]
-}
-
-/**
- * Section heading shown above a home-page block (features, workspaces, etc.).
+ * Section heading shown above a home-page block (features, showcase,
+ * etc.). The legacy `eyebrow` field is renamed to `label` to drop design
+ * jargon.
  */
 export interface HomeSectionHeading {
   /**
-   * Eyebrow kicker rendered above the title (small uppercase label —
-   * e.g. "Features", "Apps & Packages").
+   * Small uppercase kicker rendered above the title (was `eyebrow`).
    */
-  readonly eyebrow?: string
+  readonly label?: string
   /**
-   * Heading title — replaces the framework default (e.g. "Built for
-   * the way you ship.").
+   * Heading title — replaces the framework default.
    */
   readonly title?: string
   /**
@@ -885,56 +679,108 @@ export interface HomeSectionHeading {
 }
 
 /**
- * Grid layout + heading customisation for the home-page features block.
- *
- * Carries the standard {@link HomeGridConfig} fields (`columns`,
- * `truncate`, `heading`) and exists as a separate name purely for
- * documentation clarity — the runtime shape is identical.
+ * Home hero block — label, tagline, actions, and optional demo visual.
  */
-export type HomeFeaturesConfig = HomeGridConfig
+export interface HomeHeroConfig {
+  /**
+   * Small label above the title (was `eyebrow`).
+   */
+  readonly label?: string
+  /**
+   * Marketing line under the title.
+   */
+  readonly tagline?: string
+  /**
+   * Hero call-to-action buttons.
+   */
+  readonly actions?: readonly ButtonConfig[]
+  /**
+   * Visual rendered next to the hero copy.
+   */
+  readonly demo?: false | HomeHeroDemoConfig
+}
 
 /**
- * Hero demo block — the visual rendered next to the hero copy.
- *
- * Three concrete shapes:
- *
- * - **Image** (`{ src, alt? }`) — paint a single image inside the
- *   slot's framed container (rounded corners + brand-soft glow shadow
- *   are preserved). Use for product screenshots, illustration assets,
- *   or marketing GIFs.
- * - **Structured terminal** (`{ windowTitle, command, lines }`) — keep
- *   the framework's terminal-style chrome but render your own commands
- *   and output. Each `lines` entry carries a `kind` discriminating the
- *   visual style of the line (`'ok' | 'info' | 'cmt' | 'err'`).
- *
- * @example
- * ```ts
- * heroDemo: { src: '/cli.svg', alt: 'maltty CLI' }
- *
- * heroDemo: {
- *   windowTitle: '~/code/acme — acme dev',
- *   command: 'acme dev',
- *   lines: [
- *     { kind: 'ok', text: 'edge runtime booting in us-east-1' },
- *     { kind: 'info', text: 'watching ./handlers, ./prisma' },
- *     { kind: 'ok', text: 'ready on http://localhost:4321' },
- *   ],
- * }
- * ```
+ * "Used by" / "Trusted by" strip on the home hero (was `HomeTrustConfig`
+ * — renamed to drop ambiguous jargon).
  */
-export type HeroDemoConfig = HeroDemoImage | HeroDemoTerminal
+export interface HomeProofConfig {
+  /**
+   * Lead phrase rendered before the names (e.g. `'used by'`, `'powering
+   * teams at'`).
+   */
+  readonly lead?: string
+  /**
+   * Company / team names rendered as a comma-separated list after the lead.
+   */
+  readonly names?: readonly string[]
+}
 
 /**
- * Image-form hero demo — `<img>` painted inside the demo container.
+ * Home features block — grid + cards combined into one config (today's
+ * top-level `features` list lives under `items` here).
  */
-export interface HeroDemoImage {
+export interface HomeFeaturesConfig {
+  /**
+   * Feature cards rendered in the grid (was top-level `features`).
+   * Optional — omit to customize only the grid layout / heading without
+   * supplying cards (renders an empty grid).
+   */
+  readonly items?: readonly Feature[]
+  /**
+   * Number of columns in the grid at desktop widths (1–4). Smaller
+   * breakpoints automatically reduce this.
+   */
+  readonly columns?: 1 | 2 | 3 | 4
+  /**
+   * Line-clamp limits for card text.
+   */
+  readonly truncate?: TruncateConfig
+  /**
+   * Heading rendered above the grid.
+   */
+  readonly heading?: HomeSectionHeading
+}
+
+/**
+ * Generalized card grid for the second home-page block (was
+ * `home.workspaces`). Source defaults to the apps + packages +
+ * workspaces collection but can be overridden with arbitrary page paths.
+ */
+export interface HomeShowcaseConfig {
+  /**
+   * Number of columns in the grid at desktop widths (1–4).
+   */
+  readonly columns?: 1 | 2 | 3 | 4
+  /**
+   * Line-clamp limits for card text.
+   */
+  readonly truncate?: TruncateConfig
+  /**
+   * Heading rendered above the grid.
+   */
+  readonly heading?: HomeSectionHeading
+  /**
+   * Card source.
+   *
+   * - omit → auto-collect from top-level `apps` + `packages` + `workspaces`
+   * - `'workspaces'` → same as omit, explicit
+   * - `string[]` → explicit list of page paths
+   *   (e.g. `['/products/cli', '/products/api']`)
+   */
+  readonly source?: 'workspaces' | readonly string[]
+}
+
+/**
+ * Image-form home hero demo — `<img>` painted inside the demo container.
+ */
+export interface HomeHeroDemoImage {
   /**
    * Absolute path or URL to the image asset.
    */
   readonly src: string
   /**
-   * Alt text for screen readers. Defaults to empty string (decorative)
-   * if omitted.
+   * Alt text for screen readers.
    */
   readonly alt?: string
   /**
@@ -948,36 +794,15 @@ export interface HeroDemoImage {
 }
 
 /**
- * Structured terminal-form hero demo — keeps the framework's terminal
- * chrome but uses the supplied command + output lines.
+ * Single line in a structured {@link HomeHeroDemoTerminal}.
  */
-export interface HeroDemoTerminal {
-  /**
-   * Title shown in the fake window's title bar (e.g. project path +
-   * command). Defaults to the framework default when omitted.
-   */
-  readonly windowTitle?: string
-  /**
-   * Command rendered after the `$ ` prompt at the top of the output.
-   */
-  readonly command: string
-  /**
-   * Output lines rendered below the command, each tagged with a kind
-   * that controls its visual style.
-   */
-  readonly lines: readonly HeroDemoLine[]
-}
-
-/**
- * Single line in a structured `HeroDemoTerminal`.
- */
-export interface HeroDemoLine {
+export interface HomeHeroDemoLine {
   /**
    * Line style:
-   * - `'ok'`   — success marker (✓ / ▸)
-   * - `'info'` — informational marker (▸)
+   * - `'ok'`   — success marker
+   * - `'info'` — informational marker
    * - `'cmt'`  — comment / hint line
-   * - `'err'`  — error / warning marker (✗)
+   * - `'err'`  — error / warning marker
    */
   readonly kind: 'ok' | 'info' | 'cmt' | 'err'
   /**
@@ -987,31 +812,53 @@ export interface HeroDemoLine {
 }
 
 /**
- * "Show and tell" Split block — title + bullets + visual sample.
- *
- * @example
- * ```ts
- * split: {
- *   eyebrow: 'Configuration',
- *   title: 'One file. Validated. Type-safe.',
- *   body: 'Describe your service in code; Zod validates at boot.',
- *   bullets: [
- *     'Type-safe config with full IntelliSense',
- *     'Hot-reloads on every save',
- *   ],
- *   cta: { text: 'Read the docs', link: '/getting-started/configuration' },
- *   visual: {
- *     language: 'ts',
- *     code: "import { defineConfig } from '@acme/sdk'\n\nexport default defineConfig({ ... })",
- *   },
- * }
- * ```
+ * Structured terminal-form home hero demo — keeps the framework's
+ * terminal chrome but uses the supplied command + output lines.
  */
-export interface SplitConfig {
+export interface HomeHeroDemoTerminal {
   /**
-   * Eyebrow kicker above the title.
+   * Title shown in the fake window's title bar.
    */
-  readonly eyebrow?: string
+  readonly windowTitle?: string
+  /**
+   * Command rendered after the `$ ` prompt at the top of the output.
+   */
+  readonly command: string
+  /**
+   * Output lines rendered below the command.
+   */
+  readonly lines: readonly HomeHeroDemoLine[]
+}
+
+/**
+ * Home hero demo block — the visual rendered next to the hero copy
+ * (was `HeroDemoConfig`).
+ */
+export type HomeHeroDemoConfig = HomeHeroDemoImage | HomeHeroDemoTerminal
+
+/**
+ * Visual paired with a {@link HomeSplitConfig} copy column.
+ */
+export interface HomeSplitVisual {
+  /**
+   * Code snippet rendered as a syntax-highlighted preview.
+   */
+  readonly code: string
+  /**
+   * Language identifier for syntax highlighting. Defaults to `'ts'`.
+   */
+  readonly language?: string
+}
+
+/**
+ * "Show and tell" Split block — title + bullets + visual sample (was
+ * `SplitConfig`).
+ */
+export interface HomeSplitConfig {
+  /**
+   * Small label rendered above the title (was `eyebrow`).
+   */
+  readonly label?: string
   /**
    * Section title — required.
    */
@@ -1027,131 +874,98 @@ export interface SplitConfig {
   /**
    * CTA button rendered at the bottom of the copy column.
    */
-  readonly cta?: {
-    readonly text: string
-    readonly link: string
-  }
+  readonly cta?: ButtonConfig
   /**
-   * Visual rendered in the right column. Code blocks are syntax-
-   * highlighted with the supplied language hint.
+   * Visual rendered in the right column.
    */
-  readonly visual?: SplitVisual
+  readonly visual?: HomeSplitVisual
 }
 
 /**
- * Visual paired with a `SplitConfig` copy column.
+ * Final CTA band on the home page — title, optional subtitle, and
+ * action buttons.
  */
-export interface SplitVisual {
+export interface HomeCtaConfig {
   /**
-   * Code snippet rendered as a syntax-highlighted preview.
+   * Headline rendered at the top of the CTA band.
    */
-  readonly code: string
+  readonly title?: string
   /**
-   * Language identifier for syntax highlighting (e.g. `'ts'`, `'tsx'`,
-   * `'json'`). Defaults to `'ts'`.
+   * Supporting sentence rendered under the headline.
    */
-  readonly language?: string
+  readonly subtitle?: string
+  /**
+   * Action buttons rendered below the subtitle.
+   */
+  readonly actions?: readonly ButtonConfig[]
 }
 
 /**
- * Identifier for one of the built-in home-page sections. Used by
- * `home.layout` to control render order and visibility.
+ * Identifier for one of the built-in home-page sections (`trust` →
+ * `proof`, `workspaces` → `showcase`).
  */
-export type HomeSectionId = 'hero' | 'trust' | 'features' | 'split' | 'workspaces' | 'cta'
+export type HomeSectionId = 'hero' | 'proof' | 'features' | 'showcase' | 'split' | 'cta'
 
 /**
- * Default render order for `home.layout` when the field is omitted —
- * matches the historical fixed order before `home.layout` was added.
- * Exposed as a `readonly` constant so consumers writing custom
- * layouts can splice in / omit sections without retyping the list.
+ * Default render order for `home.layout` when the field is omitted.
  */
 export const DEFAULT_HOME_LAYOUT: readonly HomeSectionId[] = Object.freeze([
   'hero',
-  'trust',
+  'proof',
   'features',
+  'showcase',
   'split',
-  'workspaces',
   'cta',
 ])
 
 /**
- * Home page layout customization.
- *
- * Schema: `homeConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * home: {
- *   eyebrow: 'v1.0',
- *   heroDemo: false,
- *   split: false,
- *   features: { columns: 3, heading: { title: 'What you get' } },
- *   workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
- *   trust: { lead: 'Used by', names: ['Acme', 'Globex'] },
- *   cta: { title: 'Ready to ship?', actions: [...] },
- *   layout: ['hero', 'cta', 'features', 'workspaces'],
- * }
- * ```
+ * Home layout entry — bare section id, future-extensible object, or a
+ * custom component (inline or path string).
+ */
+export type HomeLayoutEntry =
+  | HomeSectionId
+  | { readonly sectionId: HomeSectionId }
+  | { readonly component: React.ComponentType<{ readonly paths: Paths }> }
+  | { readonly component: string }
+
+/**
+ * Home page configuration — hero, proof strip, features grid, showcase
+ * grid, split block, and final CTA. Every block is optional; the
+ * `layout` field controls render order.
  */
 export interface HomeConfig {
   /**
-   * Grid + heading config for the home-page features block. Set
-   * `heading.title` to replace the framework default copy.
+   * Hero block — label, tagline, actions, and optional demo. Optional —
+   * the framework renders sensible defaults from the site title and
+   * `brand.banner` when omitted.
+   */
+  readonly hero?: HomeHeroConfig
+  /**
+   * "Used by / Trusted by" strip rendered between the hero and the
+   * features grid.
+   */
+  readonly proof?: HomeProofConfig
+  /**
+   * Features grid block — cards + grid layout combined.
    */
   readonly features?: HomeFeaturesConfig
   /**
-   * Grid layout for the auto-generated workspace cards on the home page.
+   * Generalized card grid (was `home.workspaces`).
    */
-  readonly workspaces?: HomeGridConfig
+  readonly showcase?: HomeShowcaseConfig
   /**
-   * Hero demo block — the visual rendered next to the hero copy.
-   *
-   * - omit → framework default (terminal showing `pnpm ciderpress dev`).
-   * - `false` → suppress entirely.
-   * - `HeroDemoImage` (`{ src, alt }`) → image painted inside the slot.
-   * - `HeroDemoTerminal` (`{ command, lines }`) → keep the terminal
-   *   chrome but render your own output.
+   * "Show and tell" Split section.
    */
-  readonly heroDemo?: false | HeroDemoConfig
-  /**
-   * "Show and tell" Split section under the features grid.
-   *
-   * - omit → framework default (Acme Docs sample config).
-   * - `false` → suppress entirely.
-   * - `SplitConfig` → fully custom eyebrow / title / bullets / cta / visual.
-   */
-  readonly split?: false | SplitConfig
-  /**
-   * Eyebrow text shown above the hero title (e.g. version chip).
-   */
-  readonly eyebrow?: string
-  /**
-   * Trust strip rendered between the hero and the features grid.
-   */
-  readonly trust?: HomeTrustConfig
+  readonly split?: false | HomeSplitConfig
   /**
    * Final CTA band rendered just above the footer.
    */
   readonly cta?: HomeCtaConfig
   /**
-   * Render order for the home-page sections. Omit to use the
-   * framework default (`hero → trust → features → split → workspaces
-   * → cta`); set to an array of section ids to reorder, suppress, or
-   * both — sections not listed are not rendered. Duplicate ids are
-   * rejected by the schema.
-   *
-   * For more flexibility (custom sections, JSX layouts), provide an
-   * `index.md` in your content tree with `pageType: home` and import
-   * components from `@ciderpress/ui/theme`. The sync engine skips the
-   * auto-generated home page whenever an explicit `index.md` exists.
-   *
-   * @example
-   * ```ts
-   * // Put the CTA above the features grid and drop the trust strip
-   * layout: ['hero', 'cta', 'features', 'workspaces']
-   * ```
+   * Render order for home-page sections. Accepts bare ids, objects
+   * carrying a `sectionId`, or custom React components (inline or path).
    */
-  readonly layout?: readonly HomeSectionId[]
+  readonly layout?: readonly HomeLayoutEntry[]
 }
 
 /**
@@ -1186,32 +1000,20 @@ export const SOCIAL_LINK_ICONS = Object.freeze([
 
 /**
  * Built-in social link icon identifier.
- *
- * Rspress supports these icons out of the box via `virtual-social-links`.
  */
 export type SocialLinkIcon = (typeof SOCIAL_LINK_ICONS)[number]
 
 /**
- * Supported `mode` discriminants on `SocialLink`. See {@link SocialLink} for
- * the per-mode semantics of the `content` field.
- */
-export const SOCIAL_LINK_MODES = Object.freeze(['link', 'text', 'img', 'dom'] as const)
-
-/**
- * Render mode for a social link entry.
- */
-export type SocialLinkMode = (typeof SOCIAL_LINK_MODES)[number]
-
-/**
- * A social link shown in the navigation bar.
+ * A social link rendered in the topbar (and optionally in the footer).
  *
- * Schema: `socialLinkSchema` in schema.ts validates this shape.
+ * Wrapped to drop Rspress's `mode` / `content` discriminator — every
+ * link is now `{ icon, url, label? }`.
  *
  * @example
  * ```ts
- * socialLinks: [
- *   { icon: 'github', mode: 'link', content: 'https://github.com/acme' },
- *   { icon: 'discord', mode: 'link', content: 'https://discord.gg/acme' },
+ * socials: [
+ *   { icon: 'github', url: 'https://github.com/acme' },
+ *   { icon: 'discord', url: 'https://discord.gg/acme' },
  * ]
  * ```
  */
@@ -1222,64 +1024,17 @@ export interface SocialLink {
    */
   readonly icon: SocialLinkIcon | { readonly svg: string }
   /**
-   * How `content` is interpreted:
-   * - `'link'` — `content` is a URL the icon links to
-   * - `'text'` — `content` is rendered as text alongside the icon
-   * - `'img'` — `content` is the URL of an image to render
-   * - `'dom'` — `content` is a raw HTML fragment to render
+   * Destination URL.
    */
-  readonly mode: SocialLinkMode
+  readonly url: string
   /**
-   * The link href, label, image URL, or HTML — meaning depends on `mode`.
+   * Optional accessible label for screen readers.
    */
-  readonly content: string
-}
-
-/**
- * Site footer shown below all page content.
- *
- * Schema: `footerConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * footer: {
- *   message: 'Built with ciderpress',
- *   copyright: 'Copyright © 2025 Acme Inc.',
- * }
- * ```
- */
-export interface FooterConfig {
-  /**
-   * Tagline rendered in the footer's left column.
-   */
-  readonly message?: string
-  /**
-   * Copyright line rendered at the bottom of the footer.
-   */
-  readonly copyright?: string
-  /**
-   * When `true`, render `config.socialLinks` icons in the footer.
-   * Defaults to `false` so social links only appear in the topbar.
-   */
-  readonly socials?: boolean
+  readonly label?: string
 }
 
 /**
  * Announcement banner rendered above the topbar.
- *
- * Schema: `announcementConfigSchema` in schema.ts validates this shape.
- *
- * @example
- * ```ts
- * site: {
- *   announcement: {
- *     id: 'v1-launch',
- *     lead: 'NEW',
- *     message: 'ciderpress 1.0 is out.',
- *     cta: { href: '/changelog', label: 'See changes' },
- *   },
- * }
- * ```
  */
 export interface AnnouncementConfig {
   /**
@@ -1299,7 +1054,7 @@ export interface AnnouncementConfig {
    */
   readonly cta?: {
     /**
-     * Destination URL for the CTA — relative path or absolute URL.
+     * Destination URL for the CTA.
      */
     readonly href: string
     /**
@@ -1314,48 +1069,10 @@ export interface AnnouncementConfig {
 }
 
 /**
- * Edit-this-page link configuration. Renders an "Edit on GitHub"-style
- * action under every doc page when set.
+ * Sidebar promo card rendered at the bottom of the docs sidebar (was
+ * `SiteSidebarPromoConfig`).
  */
-export interface SiteEditConfig {
-  /**
-   * Destination repository (e.g. `'acme/docs'`) or full URL template.
-   * The string `{path}` is substituted with the current page's relative path.
-   */
-  readonly repo: string
-  /**
-   * Branch to link against. Defaults to `'main'`.
-   */
-  readonly branch?: string
-  /**
-   * Subdirectory inside the repo containing the docs. Defaults to repo root.
-   */
-  readonly directory?: string
-  /**
-   * Override the visible label. Defaults to `'Edit this page on GitHub'`.
-   */
-  readonly label?: string
-}
-
-/**
- * Report-an-issue link configuration. Renders an action under every doc
- * page when set.
- */
-export interface SiteReportConfig {
-  /**
-   * Destination repository (e.g. `'acme/docs'`) or full URL.
-   */
-  readonly repo: string
-  /**
-   * Override the visible label. Defaults to `'Report an issue'`.
-   */
-  readonly label?: string
-}
-
-/**
- * Sidebar promo card rendered at the bottom of the docs sidebar.
- */
-export interface SiteSidebarPromoConfig {
+export interface SidebarPromo {
   /**
    * Promo card headline.
    */
@@ -1373,30 +1090,62 @@ export interface SiteSidebarPromoConfig {
      */
     readonly text: string
     /**
-     * Destination URL for the CTA — relative path or absolute URL.
+     * Destination URL for the CTA.
      */
     readonly href: string
   }
 }
 
 /**
- * Call-to-action button rendered on the topbar (and in the mobile nav).
+ * Topbar chrome — navigation, primary CTA, social icons, and an optional
+ * announcement banner above the bar.
  */
-export interface SiteCtaConfig {
+export interface TopbarConfig {
   /**
-   * Visible label on the topbar CTA button.
+   * Topbar navigation. `'auto'` derives top-level entries from
+   * `pages`; an explicit array hand-authors the bar.
    */
-  readonly text: string
+  readonly nav?: 'auto' | readonly NavItem[]
   /**
-   * Destination URL — relative path or absolute URL.
+   * Primary call-to-action button rendered on the right side of the
+   * topbar (and mirrored in the mobile nav).
    */
-  readonly href: string
+  readonly cta?: ButtonConfig
+  /**
+   * Topbar social icons. `true` reuses the root-level `socials` list;
+   * pass an array to override.
+   */
+  readonly socials?: true | readonly SocialLink[]
+  /**
+   * Announcement banner rendered above the topbar.
+   */
+  readonly announcement?: AnnouncementConfig
 }
 
 /**
- * One column of footer links in the site footer grid.
+ * Sidebar chrome — persistent links above/below the nav tree and an
+ * optional promo card at the bottom.
  */
-export interface SiteFooterColumn {
+export interface SidebarConfig {
+  /**
+   * Persistent links rendered above the sidebar nav tree (was `above`).
+   */
+  readonly top?: readonly ButtonConfig[]
+  /**
+   * Persistent links rendered below the sidebar nav tree (was `below`).
+   */
+  readonly bottom?: readonly ButtonConfig[]
+  /**
+   * Promo card rendered at the bottom of the docs sidebar.
+   */
+  readonly promo?: SidebarPromo
+}
+
+/**
+ * One column of footer links in the site footer grid (was
+ * `SiteFooterColumn`).
+ */
+export interface FooterColumn {
   /**
    * Column heading rendered at the top of the column.
    */
@@ -1410,114 +1159,144 @@ export interface SiteFooterColumn {
      */
     readonly text: string
     /**
-     * Destination URL — relative path or absolute URL.
+     * Destination URL.
      */
     readonly href: string
   }[]
 }
 
 /**
- * Extended footer configuration for the column-based site footer.
- * The simple `message` / `copyright` / `socials` fields live on the
- * top-level `footer` config (`FooterConfig`).
+ * Footer copyright configuration.
+ *
+ * - `true` on `FooterConfig.copyright` → auto-generate `© <year> <title>`
+ * - `string` on `FooterConfig.copyright` → use the string verbatim
+ * - `CopyrightConfig` → structured generation with company / dba / year range
  */
-export interface SiteFooterConfig {
+export interface CopyrightConfig {
   /**
-   * Link columns rendered in the footer grid. When omitted, the footer
-   * renders only the brand block and bottom strip.
+   * Legal entity name (e.g. `'Acme Inc.'`).
    */
-  readonly columns?: readonly SiteFooterColumn[]
+  readonly company?: string
+  /**
+   * "Doing business as" name.
+   */
+  readonly dba?: string
+  /**
+   * Single year or a range starting from the given year through the
+   * current year.
+   */
+  readonly year?: number | { readonly from: number }
+}
+
+/**
+ * Unified site footer — merges the legacy top-level `footer` and
+ * `site.footer` blocks into one config.
+ */
+export interface FooterConfig {
+  /**
+   * Tagline rendered in the footer's left column.
+   */
+  readonly message?: string
+  /**
+   * Copyright line. `true` auto-generates from `title` + current year.
+   */
+  readonly copyright?: true | string | CopyrightConfig
+  /**
+   * Link columns rendered in the footer grid.
+   */
+  readonly columns?: readonly FooterColumn[]
   /**
    * Small tagline rendered on the right side of the bottom strip.
    */
   readonly tagline?: string
   /**
-   * Character/glyph rendered in the footer's brand block. When omitted,
-   * the footer falls back to the site's `/icon.svg`.
+   * Character/glyph rendered in the footer's brand block.
    */
   readonly brandMark?: string
+  /**
+   * Footer social icons. `true` mirrors the root-level `socials` list;
+   * pass an array to override.
+   */
+  readonly socials?: true | readonly SocialLink[]
 }
 
 /**
- * Site-level configuration for the chrome that wraps every page —
- * version chip, edit/report links, sidebar promo, topbar CTA,
- * announcement bar, and extended footer columns.
+ * Edit-this-page link configuration (matches industry vocabulary —
+ * VitePress / Nextra `editLink`).
  *
- * Every field is optional; pieces with no config render nothing so a
- * minimal `defineConfig({ sections: [...] })` produces a clean site
- * with no leftover framework branding.
- *
- * @example
- * ```ts
- * site: {
- *   version: 'v1.0',
- *   edit:   { repo: 'acme/docs', branch: 'main' },
- *   report: { repo: 'acme/docs' },
- *   sidebarPromo: {
- *     title: 'Try Acme Cloud',
- *     body:  'Hosted Acme in two clicks.',
- *     cta:   { text: 'Start free', href: 'https://acme.io' },
- *   },
- *   topbarCta: { text: 'Get started →', href: '/getting-started' },
- *   announcement: {
- *     id: 'v1',
- *     lead: 'NEW',
- *     message: 'Acme Docs 1.0 is here.',
- *     cta: { href: '/changelog', label: 'What changed' },
- *   },
- *   footer: {
- *     columns: [
- *       { heading: 'Product', links: [...] },
- *       { heading: 'Community', links: [...] },
- *     ],
- *     tagline: 'Built with ciderpress',
- *   },
- * }
- * ```
+ * Set `editLink` to `false` to disable the link entirely.
  */
-export interface SiteConfig {
+export interface EditLinkConfig {
   /**
-   * Version label rendered next to the brand in the topbar (e.g. `'v1.0'`).
-   * When omitted, no version chip is rendered.
+   * Destination repository (e.g. `'acme/docs'`) or full URL template.
+   * The string `{path}` is substituted with the current page's
+   * relative path.
    */
-  readonly version?: string
+  readonly repo?: string
   /**
-   * Edit-this-page link rendered under every doc page. Omit to hide.
+   * Branch to link against. Defaults to `'main'`.
    */
-  readonly edit?: SiteEditConfig
+  readonly branch?: string
   /**
-   * Report-an-issue link rendered under every doc page. Omit to hide.
+   * Subdirectory inside the repo containing the docs.
    */
-  readonly report?: SiteReportConfig
+  readonly directory?: string
   /**
-   * Promo card rendered at the bottom of the docs sidebar. Omit to hide.
+   * Override the visible label.
    */
-  readonly sidebarPromo?: SiteSidebarPromoConfig
+  readonly label?: string
   /**
-   * Topbar call-to-action button (also mirrored in the mobile nav).
+   * Custom URL builder — wins over the auto-generated URL.
    */
-  readonly topbarCta?: SiteCtaConfig
+  readonly url?: (page: ResolvedPage) => string
   /**
-   * Announcement banner rendered above the topbar.
+   * Hook called when the link resolves (analytics / telemetry).
    */
-  readonly announcement?: AnnouncementConfig
-  /**
-   * Extended footer config — link columns and tagline.
-   */
-  readonly footer?: SiteFooterConfig
+  readonly onResolve?: (page: ResolvedPage) => void
 }
 
 /**
- * Live theme context passed to a `LogoFn` at render time.
+ * Report-an-issue link configuration. Renders under every doc page.
+ *
+ * Set `reportLink` to `false` to disable the link entirely.
+ */
+export interface ReportLinkConfig {
+  /**
+   * Destination repository or full URL.
+   */
+  readonly repo?: string
+  /**
+   * Branch to link against.
+   */
+  readonly branch?: string
+  /**
+   * Subdirectory inside the repo.
+   */
+  readonly directory?: string
+  /**
+   * Override the visible label.
+   */
+  readonly label?: string
+  /**
+   * Custom URL builder.
+   */
+  readonly url?: (page: ResolvedPage) => string
+  /**
+   * Hook called when the link resolves.
+   */
+  readonly onResolve?: (page: ResolvedPage) => void
+}
+
+/**
+ * Live theme context passed to a `LogoFn` (or `BannerFn`) at render time.
  *
  * Re-derived from `<html>`'s `data-cp-theme` / `data-cp-variant` attributes
- * and the resolved CSS custom properties (`--rp-c-*`). Updates when the user
- * switches theme or variant, so the function re-runs and the logo retints
- * without a page reload.
+ * and the resolved CSS custom properties. Updates when the user switches
+ * theme or variant.
  */
 export interface LogoContext {
   /**
-   * Active theme name (e.g. `'mulled'`, `'honeycrisp'`, or a user-defined name).
+   * Active theme name.
    */
   readonly name: string
   /**
@@ -1530,8 +1309,6 @@ export interface LogoContext {
   readonly isDark: boolean
   /**
    * Resolved brand and surface colors for the active theme + variant.
-   * Each value is the computed CSS color string (hex, rgb, etc.) — safe
-   * to embed directly in inline styles or SVG `fill` attributes.
    */
   readonly colors: {
     readonly brand: string
@@ -1544,17 +1321,7 @@ export interface LogoContext {
 
 /**
  * Image-props object returned by a `LogoFn` when the function picks an
- * image path based on the active theme. The slot spreads these props onto
- * an internal `<img>` element matching Rspress's logo classes so styling
- * stays consistent.
- *
- * @example
- * ```ts
- * logo: ({ theme }) => ({
- *   src: theme.isDark ? '/logo-dark.svg' : '/logo-light.svg',
- *   alt: 'Acme',
- * })
- * ```
+ * image path based on the active theme.
  */
 export interface LogoImage {
   readonly src: string
@@ -1564,106 +1331,176 @@ export interface LogoImage {
 }
 
 /**
- * Function form of `logo`. Called at render time with the live theme
- * context; can return either a `LogoImage` (image-props object) or any
- * React node (inline JSX, a custom component, etc.).
- *
- * @example
- * ```tsx
- * import { defineConfig, CiderpressLogo } from 'ciderpress'
- *
- * export default defineConfig({
- *   logo: ({ theme }) => <CiderpressLogo color={theme.colors.brand} />,
- * })
- * ```
+ * Function form of `brand.logo`. Called at render time with the live
+ * theme context; returns either a `LogoImage` or any React node.
  */
 export type LogoFn = (params: { readonly theme: LogoContext }) => LogoImage | React.ReactNode
 
 /**
- * Custom FOUC loader configuration.
- *
- * Renders during the brief window before React hydrates. The glyph is
- * painted via critical CSS injected in `<head>`, so `content` must be
- * something the browser can paint without React — an inline SVG string
- * or a path/URL to an image asset.
- *
- * For React JSX-based loading screens, render them inside the page
- * shell (post-hydration) instead — by then the FOUC window is closed
- * and there is nothing left to cover.
- *
- * @example
- * ```ts
- * loader: {
- *   content: readFileSync('./assets/loader.svg', 'utf8'),
- *   label: 'brewing',
- *   maxDisplayMs: 4000,
- * }
- * ```
+ * Logo configuration accepted on `BrandConfig.logo`.
  */
-export interface LoaderConfig {
+export type LogoConfig = string | LogoFn
+
+/**
+ * Function form of `brand.banner`. Called at render time with the live
+ * theme context; returns either an image source or any React node.
+ */
+export type BannerFn = (params: { readonly theme: LogoContext }) => ImageSource | React.ReactNode
+
+/**
+ * Banner configuration accepted on `BrandConfig.banner`.
+ */
+export type BannerConfig = string | BannerFn
+
+/**
+ * Static-glyph loader configuration — the historical shape carrying a
+ * paintable `content` string (inline SVG or asset path).
+ */
+export interface LoaderStaticConfig {
   /**
-   * Loader glyph. Accepts:
-   *
-   * - **Inline SVG markup** (starts with `<svg`) — encoded as a data URI
-   *   and used as the loader's `background-image`.
-   * - **Asset path or URL** (`'/loader.svg'`, `'https://…'`) — used
-   *   directly as `background-image`.
+   * Loader glyph — inline SVG markup or asset path/URL.
    */
   readonly content: string
   /**
-   * Text label rendered next to the glyph. Defaults to `'loading'`.
-   * Pass an empty string to suppress the label entirely.
+   * Text label rendered next to the glyph.
    */
   readonly label?: string
   /**
-   * Minimum time (ms) the loader stays visible before fading out. Keeps
-   * the flash from feeling jittery on fast first paints. Defaults to
-   * `150`.
+   * Minimum time (ms) the loader stays visible before fading out.
    */
   readonly minDisplayMs?: number
   /**
-   * Maximum time (ms) before the loader is forcibly dismissed,
-   * regardless of React hydration state. Catches the case where the JS
-   * bundle never executes (e.g. static dist served over plain http with
-   * no service worker). Defaults to `5000`.
+   * Maximum time (ms) before the loader is forcibly dismissed.
    */
   readonly maxDisplayMs?: number
 }
 
 /**
- * Favicon configuration. Accepts either:
- *
- * - **String** — absolute path or URL to the favicon asset. Shorthand
- *   for `{ src }`.
- * - **Object** — `{ src, type? }`. The optional `type` is emitted as
- *   an explicit `<link rel="icon" type="...">` attribute alongside
- *   Rspress's auto-generated link, so callers can override the MIME
- *   type when the file extension wouldn't be enough (e.g. an SVG
- *   served without a `.svg` suffix from a CDN).
- *
- * Setting this field disables the runtime favicon retinting that
- * normally swaps `<link rel="icon">` to a themed pixel-apple data-URI.
+ * Custom React-component loader configuration — paints once React
+ * hydrates (pre-hydration falls back to the backdrop only).
  */
-export type FaviconConfig = string | { readonly src: string; readonly type?: string }
+export interface LoaderComponentConfig {
+  /**
+   * Custom React component to render as the loader.
+   */
+  readonly component: React.ComponentType
+  /**
+   * Text label rendered next to the component.
+   */
+  readonly label?: string
+  /**
+   * Minimum time (ms) the loader stays visible before fading out.
+   */
+  readonly minDisplayMs?: number
+  /**
+   * Maximum time (ms) before the loader is forcibly dismissed.
+   */
+  readonly maxDisplayMs?: number
+}
 
 /**
- * Logo configuration accepted on `CiderpressConfig.logo`.
- *
- * - `string` — image path (forwarded to Rspress's `logo` field as-is).
- * - `LogoFn` — function called at render time; receives the live theme
- *   context and returns either a `LogoImage` or a React node.
- *
- * When omitted, the topbar renders the default themed `<CiderpressLogo />`
- * wordmark.
+ * Custom FOUC loader configuration. Either a static glyph or a custom
+ * React component.
  */
-export type LogoConfig = string | LogoFn
+export type LoaderConfig = LoaderStaticConfig | LoaderComponentConfig
 
 /**
- * ciderpress configuration.
+ * Brand identity — small chip icon, wordmark logo, hero banner,
+ * browser-tab favicon, and FOUC loader. All optional; minimal config
+ * produces a clean default site with no ciderpress branding.
+ */
+export interface BrandConfig {
+  /**
+   * Small chip rendered immediately before the wordmark in the topbar.
+   */
+  readonly icon?: IconConfig
+  /**
+   * Wordmark rendered in the topbar.
+   */
+  readonly logo?: LogoConfig
+  /**
+   * Hero background — string path or a function returning an image
+   * source or React node.
+   */
+  readonly banner?: BannerConfig
+  /**
+   * Browser-tab icon.
+   */
+  readonly favicon?: ImageSource
+  /**
+   * Inline FOUC loader.
+   *
+   * - omit (default) — the `'apple'` preset.
+   * - `'apple'` — ciderpress's native pixel-apple animation. Carries
+   *   ciderpress branding.
+   * - `'classic'` — legacy dots loader.
+   * - `false` — no loader.
+   * - {@link LoaderConfig} — custom glyph or React component.
+   */
+  readonly loader?: false | 'apple' | 'classic' | LoaderConfig
+}
+
+/**
+ * Theme entry on `theme.themes` — bare built-in name, full custom
+ * definition, or either with an explicit `default` marker. First entry
+ * is the default unless one carries `default: true`.
+ */
+export type ThemeEntry =
+  | BuiltInThemeName
+  | CiderpressThemeInput
+  | { readonly name: BuiltInThemeName; readonly default?: boolean }
+  | (CiderpressThemeInput & { readonly default?: boolean })
+
+/**
+ * Theme block — single themes array (first entry is the default
+ * unless one is marked), separate switchers for theme vs. variant, and
+ * optional cross-theme color overrides.
+ */
+export interface ThemeSettings {
+  /**
+   * Themes available on the site. Mix built-in names and custom
+   * definitions; the first entry is the default unless one carries
+   * `default: true`.
+   */
+  readonly themes: readonly ThemeEntry[]
+  /**
+   * Initial variant to render.
+   */
+  readonly defaultVariant?: 'light' | 'dark' | 'system'
+  /**
+   * Show the named-theme picker. Defaults to `true` when
+   * `themes.length > 1`.
+   */
+  readonly themeSwitcher?: boolean
+  /**
+   * Show the light/dark toggle. Defaults to `true`.
+   */
+  readonly variantSwitcher?: boolean
+  /**
+   * Override individual color tokens across all themes.
+   */
+  readonly overrides?: Partial<ThemeColors>
+}
+
+/**
+ * Cross-cutting discovery options. Today only carries a single
+ * `ignore` field for global glob excludes; reserved as an object so
+ * future cross-cutting toggles slot in without another top-level field.
+ */
+export interface DiscoverConfig {
+  /**
+   * Global glob patterns excluded from every page's auto-discovery.
+   */
+  readonly ignore?: readonly string[]
+}
+
+/**
+ * ciderpress configuration — the public surface for `defineConfig`.
  *
  * Schema: `ciderpressConfigSchema` in schema.ts validates this shape.
- * The information architecture tree IS the config — each node defines
- * what it is, where its content comes from, and where it sits in the sidebar.
+ * The information architecture tree (`pages`) IS the config — each node
+ * defines what it is, where its content comes from, and where it sits
+ * in the sidebar.
  */
 export interface CiderpressConfig {
   /**
@@ -1673,229 +1510,79 @@ export interface CiderpressConfig {
   readonly title?: string
   /**
    * Site description — used as the default `<meta name="description">`
-   * and as fallback OpenGraph description.
+   * and as the fallback OpenGraph description.
    */
   readonly description?: string
   /**
-   * Deployment base path. Forwarded to Rspress's `base` option so static
-   * asset URLs (`/main.css`, `/logo.svg`) and client-side route prefixes
-   * are emitted with the leading sub-path baked in. Use this when the
-   * site is mounted somewhere other than the host root — e.g. an
-   * example site served under `/examples/simple/` on the main deploy.
-   *
-   * Must start and end with `/` (e.g. `/examples/simple/`). Defaults
-   * to `/`. The `CIDERPRESS_BASE` env var, when set, wins over this
-   * field — that lets a build orchestrator inject mount paths per
-   * child build without editing each site's config.
+   * Deployment base path. Must start and end with `/` (e.g.
+   * `/examples/simple/`). Defaults to `/`. `CIDERPRESS_BASE` env var
+   * wins over this field.
    */
   readonly base?: string
   /**
-   * Theme selection and customisation — built-in theme name, variant
-   * preference, switcher toggle, and color overrides.
+   * Version label rendered next to the brand in the topbar (e.g. `'v1.0'`).
    */
-  readonly theme?: ThemeConfig
+  readonly version?: string
   /**
-   * Custom theme definitions registered at config time.
-   *
-   * Each entry is a `CiderpressThemeInput` (the same shape accepted by
-   * `defineTheme`). Registering a theme here makes its `name` selectable
-   * via `theme.name` and via the theme switcher. Built-in themes
-   * (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`,
-   * `arcade`) remain available regardless of this field.
-   *
-   * @example
-   * ```ts
-   * import { defineTheme } from 'ciderpress'
-   *
-   * export default defineConfig({
-   *   themes: [
-   *     defineTheme({
-   *       name: 'company-brand',
-   *       variants: { dark: brandTokens },
-   *     }),
-   *   ],
-   * })
-   * ```
+   * Brand identity — icon, logo, banner, favicon, and FOUC loader.
    */
-  readonly themes?: readonly CiderpressThemeInput[]
+  readonly brand?: BrandConfig
   /**
-   * Inline FOUC loader.
-   *
-   * Five forms:
-   *   - omit (default) — the `'apple'` preset.
-   *   - `'apple'` — Ciderpress's native pixel-apple animation: five
-   *     discrete bites, ballerina-spin on the vertical axis, with the
-   *     leaf surviving the bites. **Carries ciderpress branding** — use
-   *     a custom `LoaderConfig` for white-labelled sites.
-   *   - `'classic'` — legacy dots loader cycling `loading`, `loading.`,
-   *     `loading..`, `loading...` every 300ms.
-   *   - `false` — no loader at all. The page paints whatever's behind
-   *     it during the brief FOUC window.
-   *   - `LoaderConfig` — custom SVG glyph, optional label, and timing
-   *     overrides. See {@link LoaderConfig}.
-   *
-   * All non-`false` styles share the same backdrop and lifecycle
-   * (`cp-loader-fade`, `data-cp-ready`). A `maxDisplayMs` fallback in
-   * the inline head script guarantees the loader dismisses even when
-   * the React bundle never hydrates (e.g. static dist served over plain
-   * http with no service worker).
+   * Theme selection, switchers, and color overrides.
    */
-  readonly loader?: false | 'apple' | 'classic' | LoaderConfig
-  /**
-   * Brand mark rendered as a small chip immediately before `logo` in the
-   * topbar. Use for the canonical two-slot identity (small mark + wordmark
-   * logo) seen on Stripe / Vercel / Rspress-style docs sites.
-   *
-   * Accepts any {@link IconConfig} value:
-   * - Iconify id (`"devicon:react"`) — rendered with the `<Icon>` component.
-   * - `{ id, color }` — Iconify with explicit colour.
-   * - `{ src, alt }` — static image asset (SVG/PNG/…) painted as `<img>`.
-   *
-   * When omitted, the topbar shows the `logo` slot only. When neither
-   * `icon` nor `logo` is set, the framework wordmark fallback appears.
-   */
-  readonly icon?: IconConfig
-  /**
-   * Brand logo rendered in the topbar. Three forms:
-   *
-   * - **omit** — render the auto-generated `/logo.svg` written to the public
-   *   dir by the banner module (derived from the project title). Commit your
-   *   own `public/logo.svg` to override permanently.
-   * - `string` — image path; forwarded to Rspress's `logo` field as-is.
-   * - `({ theme }) => LogoImage | ReactNode` — function called at render
-   *   time with the live theme context. Return a `LogoImage` (image-props
-   *   object) or inline JSX. The function re-runs on theme/variant change.
-   *
-   * @example
-   * ```ts
-   * // Image path
-   * logo: '/logo.svg'
-   *
-   * // Theme-aware image swap
-   * logo: ({ theme }) => ({
-   *   src: theme.isDark ? '/logo-dark.svg' : '/logo-light.svg',
-   *   alt: 'Acme',
-   * })
-   *
-   * // Inline JSX with a custom component
-   * import { CiderpressLogo } from 'ciderpress'
-   * logo: ({ theme }) => <CiderpressLogo />
-   * ```
-   */
-  readonly logo?: LogoConfig
-  /**
-   * Hero banner image path used on the home page and workspace landing
-   * pages. Defaults to `/banner.svg` (auto-generated from the project
-   * title at sync time; commit your own `public/banner.svg` to override).
-   * Set this to point at a different path — a custom SVG, a PNG, or a
-   * CDN URL.
-   *
-   * @example
-   * ```ts
-   * banner: '/assets/hero.png'
-   * banner: 'https://cdn.example.com/banner.svg'
-   * ```
-   */
-  readonly banner?: string
-  /**
-   * Favicon image path. Defaults to `/icon.svg` (auto-generated from
-   * the project title at sync time; commit your own `public/icon.svg`
-   * to override). Distinct from `icon`, which is the inline mark next
-   * to the topbar title.
-   *
-   * Setting this field disables the runtime favicon retinting that
-   * swaps `<link rel="icon">` to a themed ciderpress pixel-apple — your
-   * asset wins instead.
-   *
-   * @example
-   * ```ts
-   * favicon: '/favicon.ico'
-   * favicon: '/assets/favicon.svg'
-   * favicon: { src: '/favicon.png', type: 'image/png' }
-   * ```
-   */
-  readonly favicon?: FaviconConfig
-  /**
-   * Short marketing tagline rendered under the site title on the home hero.
-   */
-  readonly tagline?: string
-  /**
-   * Primary call-to-action buttons rendered on the home hero. Schema
-   * enforces a two-button cap.
-   */
-  readonly actions?: readonly HeroAction[]
-  /**
-   * Workspace apps — standalone applications and runnable services (APIs,
-   * workers, web apps, and anything that deploys independently).
-   * Single source of truth for app metadata used on the home page,
-   * landing pages, and introduction page.
-   */
-  readonly apps?: readonly Workspace[]
-  /**
-   * Workspace packages — reusable modules shared across the codebase
-   * (libraries, utilities, configs, SDKs, and internal tooling).
-   * Single source of truth for package metadata used on the home page,
-   * landing pages, and introduction page.
-   */
-  readonly packages?: readonly Workspace[]
-  /**
-   * Custom workspace groups — arbitrary named groups of workspace items.
-   * Each group receives the same card/landing-page treatment as apps and packages.
-   * Rendered after apps and packages, in array order.
-   */
-  readonly workspaces?: readonly WorkspaceGroup[]
-  /**
-   * Explicit feature cards on the home page. Rendered in array order
-   * inside a grid laid out by `home.features`.
-   */
-  readonly features?: readonly Feature[]
-  /**
-   * Persistent sidebar links rendered above and below the sidebar
-   * nav tree on every doc page.
-   */
-  readonly sidebar?: SidebarConfig
+  readonly theme?: ThemeSettings
   /**
    * Information architecture tree — the single source of truth for
    * pages, sections, sidebars, and URL paths. Required.
    */
-  readonly sections: readonly Section[]
+  readonly pages: readonly Page[]
   /**
-   * Topbar navigation:
-   * - `'auto'` (default) — derived from `sections` roots
-   * - Explicit array — hand-authored nav items
+   * Workspace apps — standalone applications and runnable services.
    */
-  readonly nav?: 'auto' | readonly NavItem[]
+  readonly apps?: readonly Workspace[]
   /**
-   * Global glob patterns of files to exclude from auto-discovery in
-   * every section and workspace.
+   * Workspace packages — reusable modules shared across the codebase.
    */
-  readonly exclude?: readonly string[]
+  readonly packages?: readonly Workspace[]
   /**
-   * Top-level OpenAPI integration — mounts a single spec at the
-   * configured `path`. For multi-spec sites, configure `openapi` on
-   * each workspace instead.
+   * Custom workspace groups — arbitrary named groups of workspace items.
    */
-  readonly openapi?: OpenAPIConfig
+  readonly workspaces?: readonly WorkspaceGroup[]
   /**
-   * Home page layout customisation — grid columns, truncation, trust
-   * strip, eyebrow, and final CTA band.
+   * Social links — single source of truth. Referenced by
+   * `topbar.socials` and `footer.socials` via `true`.
    */
-  readonly home?: HomeConfig
+  readonly socials?: readonly SocialLink[]
   /**
-   * Social links rendered in the topbar (and optionally in the footer
-   * when `footer.socials` is `true`).
+   * Topbar chrome — navigation, CTA, social icons, announcement.
    */
-  readonly socialLinks?: readonly SocialLink[]
+  readonly topbar?: TopbarConfig
   /**
-   * Simple site footer — tagline, copyright, and the social-link
-   * mirror toggle. Extended footer columns live on `site.footer`.
+   * Sidebar chrome — persistent top/bottom links and promo card.
+   */
+  readonly sidebar?: SidebarConfig
+  /**
+   * Site footer — message, copyright, columns, tagline, brand mark,
+   * social icons.
    */
   readonly footer?: FooterConfig
   /**
-   * Site-level chrome configuration — version chip, edit/report links,
-   * sidebar promo, topbar CTA, announcement, and extended footer.
-   *
-   * Every field is optional; pieces with no config render nothing.
+   * Edit-this-page link rendered under every doc page. `false` disables
+   * the link entirely.
    */
-  readonly site?: SiteConfig
+  readonly editLink?: false | EditLinkConfig
+  /**
+   * Report-an-issue link rendered under every doc page. `false` disables
+   * the link entirely.
+   */
+  readonly reportLink?: false | ReportLinkConfig
+  /**
+   * Home page configuration — hero, proof, features, showcase, split,
+   * cta, and render order.
+   */
+  readonly home?: HomeConfig
+  /**
+   * Cross-cutting discovery options (e.g. global ignore globs).
+   */
+  readonly discover?: DiscoverConfig
 }

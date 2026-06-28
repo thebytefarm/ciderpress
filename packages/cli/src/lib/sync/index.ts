@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { Section, CiderpressConfig } from '@ciderpress/config'
+import type { Page, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
@@ -118,9 +118,9 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   const workspaceSections = synthesizeWorkspaceSections(config)
-  const allSections: Section[] = [...config.sections, ...workspaceSections]
+  const rootPages: Page[] = [...config.pages, ...workspaceSections]
 
-  const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
+  const [resolveErr, rawResolved] = await resolveEntries(rootPages, ctx)
   if (resolveErr) {
     return {
       pagesWritten: 0,
@@ -135,7 +135,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  const resolved = injectLandingPages(enriched, allSections, workspaces)
+  const resolved = injectLandingPages(enriched, rootPages, workspaces)
 
   const sectionPages = collectPages(resolved)
 
@@ -443,7 +443,10 @@ function collectOpenapiScopePaths(entries: readonly OpenAPISidebarEntry[]): read
  * @returns Asset config with title and optional tagline
  */
 function buildAssetConfig(config: CiderpressConfig): AssetConfig {
-  return { title: config.title ?? 'Documentation', tagline: config.tagline }
+  const heroTagline = match(config.home)
+    .with({ hero: { tagline: P.string } }, (h) => h.hero.tagline)
+    .otherwise(() => undefined)
+  return { title: config.title ?? 'Documentation', tagline: heroTagline }
 }
 
 /**

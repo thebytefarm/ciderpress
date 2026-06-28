@@ -43,7 +43,7 @@ const FALLBACK_COLORS = Object.freeze({
  * Brand mark rendered inside `<RouteLink className="cp-header-logo">`
  * by `<CiderpressHeader />`.
  *
- * Reads `userConfig.logo` from the bundled user config (same
+ * Reads `userConfig.brand.logo` from the bundled user config (same
  * `@ciderpress/internal/user-config` alias `NavLogo` uses) and renders:
  *
  * - `string` → `<img src={...}>` pointed at the user's asset path.
@@ -133,7 +133,11 @@ function readLogoConfig(mod: unknown): string | LogoFn | undefined {
     asRecord.default !== null && asRecord.default !== undefined
       ? (asRecord.default as Partial<CiderpressConfig>)
       : (mod as Partial<CiderpressConfig>)
-  const { logo } = candidate
+  const brand = candidate.brand
+  if (brand === undefined) {
+    return undefined
+  }
+  const { logo } = brand
   if (typeof logo === 'string') {
     return logo
   }

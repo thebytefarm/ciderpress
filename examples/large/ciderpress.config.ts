@@ -3,11 +3,13 @@ import { defineConfig } from 'ciderpress'
 export default defineConfig({
   title: 'Platform Docs',
   description: 'Internal Engineering Documentation',
-  tagline: 'Everything you need to build, ship, and scale.',
-  theme: { name: 'midnight' },
+  theme: { themes: ['midnight'] },
   home: {
+    hero: {
+      tagline: 'Everything you need to build, ship, and scale.',
+    },
     features: { truncate: { description: 2 } },
-    workspaces: { columns: 2, truncate: { title: 1, description: 2 } },
+    showcase: { columns: 2, truncate: { title: 1, description: 2 } },
   },
   apps: [
     {
@@ -17,7 +19,7 @@ export default defineConfig({
       tags: ['hono', 'typescript'],
       path: '/apps/api',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Console',
@@ -26,7 +28,7 @@ export default defineConfig({
       tags: ['nextjs', 'react'],
       path: '/apps/console',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Tasks',
@@ -35,7 +37,7 @@ export default defineConfig({
       tags: ['trigger.dev', 'async'],
       path: '/apps/tasks',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Workers',
@@ -44,7 +46,7 @@ export default defineConfig({
       tags: ['cloudflare', 'edge'],
       path: '/apps/workers',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Gateway',
@@ -53,7 +55,7 @@ export default defineConfig({
       tags: ['gateway', 'routing'],
       path: '/apps/gateway',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Scheduler',
@@ -62,7 +64,7 @@ export default defineConfig({
       tags: ['cron', 'scheduler'],
       path: '/apps/scheduler',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Notifications',
@@ -71,7 +73,7 @@ export default defineConfig({
       tags: ['notifications', 'email'],
       path: '/apps/notifications',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Analytics',
@@ -80,7 +82,7 @@ export default defineConfig({
       tags: ['analytics', 'metrics'],
       path: '/apps/analytics',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
   packages: [
@@ -91,7 +93,7 @@ export default defineConfig({
       tags: ['prisma', 'postgresql'],
       path: '/libs/database',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'AI',
@@ -100,7 +102,7 @@ export default defineConfig({
       tags: ['ai-sdk', 'agents'],
       path: '/libs/ai',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'FP',
@@ -109,7 +111,7 @@ export default defineConfig({
       tags: ['fp', 'utilities'],
       path: '/libs/fp',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Shell',
@@ -118,7 +120,7 @@ export default defineConfig({
       tags: ['cli', 'codegen'],
       path: '/libs/shell',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Scout',
@@ -127,7 +129,7 @@ export default defineConfig({
       tags: ['scanning', 'classification'],
       path: '/libs/scout',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Config',
@@ -136,7 +138,7 @@ export default defineConfig({
       tags: ['typescript'],
       path: '/libs/config',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Auth',
@@ -145,7 +147,7 @@ export default defineConfig({
       tags: ['auth', 'jwt'],
       path: '/libs/auth',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Cache',
@@ -154,7 +156,7 @@ export default defineConfig({
       tags: ['redis', 'cache'],
       path: '/libs/cache',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Logger',
@@ -163,7 +165,7 @@ export default defineConfig({
       tags: ['logging', 'observability'],
       path: '/libs/logger',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Queue',
@@ -172,14 +174,14 @@ export default defineConfig({
       tags: ['queue', 'async'],
       path: '/libs/queue',
       include: 'docs/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
-  sections: [
+  pages: [
     {
       title: 'Getting Started',
       icon: 'pixelarticons:open',
-      items: [
+      pages: [
         {
           title: 'Introduction',
           path: '/introduction',
@@ -203,20 +205,20 @@ export default defineConfig({
       icon: 'pixelarticons:article',
       path: '/guides',
       include: 'docs/guides/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Concepts',
       icon: 'pixelarticons:label',
       path: '/concepts',
       include: 'docs/concepts/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'AI',
       icon: 'pixelarticons:mood-happy',
       path: '/ai',
-      items: [
+      pages: [
         {
           title: 'Overview',
           path: '/ai/overview',
@@ -226,25 +228,25 @@ export default defineConfig({
           title: 'Best Practices',
           path: '/ai/best-practices',
           include: 'docs/ai/best-practices/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Coding Agents',
           path: '/ai/coding-agents',
           include: 'docs/ai/coding-agents/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Concepts',
           path: '/ai/concepts',
           include: 'docs/ai/concepts/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Ecosystem',
           path: '/ai/ecosystem',
           include: 'docs/ai/ecosystem/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
@@ -252,7 +254,7 @@ export default defineConfig({
       title: 'Development',
       icon: 'pixelarticons:android',
       path: '/development',
-      items: [
+      pages: [
         {
           title: 'Overview',
           path: '/development/overview',
@@ -262,13 +264,13 @@ export default defineConfig({
           title: 'Standards',
           path: '/development/standards',
           include: 'docs/development/standards/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Tools',
           path: '/development/tools',
           include: 'docs/development/tools/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
@@ -277,19 +279,19 @@ export default defineConfig({
       icon: 'pixelarticons:lock',
       path: '/security',
       include: 'docs/security/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Troubleshooting',
       icon: 'pixelarticons:alert',
       path: '/troubleshooting',
       include: 'docs/troubleshooting/*.md',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
     {
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
-      items: [
+      pages: [
         {
           title: 'Overview',
           path: '/contributing',
@@ -299,59 +301,60 @@ export default defineConfig({
           title: { from: 'frontmatter' },
           path: '/contributing/guides',
           include: 'contributing/guides/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
       ],
     },
   ],
-
-  nav: [
-    { title: 'Getting Started', link: '/introduction' },
-    {
-      title: 'Docs',
-      items: [
-        { title: 'Guides', link: '/guides' },
-        { title: 'Concepts', link: '/concepts' },
-        { title: 'Architecture', link: '/architecture' },
-        { title: 'Commands', link: '/commands' },
-        { title: 'Structure', link: '/structure' },
-      ],
-    },
-    {
-      title: 'AI',
-      items: [
-        { title: 'Overview', link: '/ai/overview' },
-        { title: 'Best Practices', link: '/ai/best-practices' },
-        { title: 'Coding Agents', link: '/ai/coding-agents' },
-        { title: 'Concepts', link: '/ai/concepts' },
-        { title: 'Ecosystem', link: '/ai/ecosystem' },
-      ],
-    },
-    {
-      title: 'Workspace',
-      items: [
-        { title: 'API', link: '/apps/api' },
-        { title: 'Console', link: '/apps/console' },
-        { title: 'Workers', link: '/apps/workers' },
-        { title: 'Database', link: '/libs/database' },
-        { title: 'AI Library', link: '/libs/ai' },
-        { title: 'Auth', link: '/libs/auth' },
-      ],
-    },
-    {
-      title: 'Operations',
-      items: [
-        { title: 'Development', link: '/development/overview' },
-        { title: 'Standards', link: '/development/standards' },
-        { title: 'Tools', link: '/development/tools' },
-        { title: 'Security', link: '/security' },
-        { title: 'Troubleshooting', link: '/troubleshooting' },
-      ],
-    },
-  ],
-  socialLinks: [{ icon: 'github', mode: 'link', content: 'https://github.com/acme' }],
+  topbar: {
+    nav: [
+      { title: 'Getting Started', link: '/introduction' },
+      {
+        title: 'Docs',
+        items: [
+          { title: 'Guides', link: '/guides' },
+          { title: 'Concepts', link: '/concepts' },
+          { title: 'Architecture', link: '/architecture' },
+          { title: 'Commands', link: '/commands' },
+          { title: 'Structure', link: '/structure' },
+        ],
+      },
+      {
+        title: 'AI',
+        items: [
+          { title: 'Overview', link: '/ai/overview' },
+          { title: 'Best Practices', link: '/ai/best-practices' },
+          { title: 'Coding Agents', link: '/ai/coding-agents' },
+          { title: 'Concepts', link: '/ai/concepts' },
+          { title: 'Ecosystem', link: '/ai/ecosystem' },
+        ],
+      },
+      {
+        title: 'Workspace',
+        items: [
+          { title: 'API', link: '/apps/api' },
+          { title: 'Console', link: '/apps/console' },
+          { title: 'Workers', link: '/apps/workers' },
+          { title: 'Database', link: '/libs/database' },
+          { title: 'AI Library', link: '/libs/ai' },
+          { title: 'Auth', link: '/libs/auth' },
+        ],
+      },
+      {
+        title: 'Operations',
+        items: [
+          { title: 'Development', link: '/development/overview' },
+          { title: 'Standards', link: '/development/standards' },
+          { title: 'Tools', link: '/development/tools' },
+          { title: 'Security', link: '/security' },
+          { title: 'Troubleshooting', link: '/troubleshooting' },
+        ],
+      },
+    ],
+  },
+  socials: [{ icon: 'github', url: 'https://github.com/acme' }],
   footer: {
     message: 'Built with ciderpress',
-    copyright: 'Copyright © 2025 Acme Inc.',
+    copyright: { company: 'Acme Inc.' },
   },
 })

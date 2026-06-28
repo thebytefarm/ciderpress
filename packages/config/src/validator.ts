@@ -1,4 +1,4 @@
-import { isBuiltInTheme, THEME_NAMES, THEME_VARIANTS } from '@ciderpress/theme'
+import { isBuiltInTheme, THEME_NAMES } from '@ciderpress/theme'
 import { uniqBy } from 'massaman/array'
 import { match, P } from 'massaman/match'
 import { either, isNotNil, isString } from 'massaman/predicate'
@@ -8,15 +8,16 @@ import type { ConfigError, ConfigResult } from './errors.ts'
 import { hasAnyGlobInclude, isSingleFileInclude } from './glob.ts'
 import { ciderpressConfigSchema } from './schema.ts'
 import type {
+  CiderpressConfig,
   Feature,
   IconConfig,
-  OpenAPIConfig,
-  Section,
+  OpenAPISpec,
+  Page,
   ThemeColors,
-  ThemeConfig,
+  ThemeEntry,
+  ThemeSettings,
   Workspace,
   WorkspaceGroup,
-  CiderpressConfig,
 } from './types.ts'
 import { collectAllWorkspaceItems } from './workspace.ts'
 
@@ -25,7 +26,7 @@ import { collectAllWorkspaceItems } from './workspace.ts'
  *
  * 1. Schema parse via Zod (shape, types, required fields).
  * 2. Cross-field semantic validation (workspace path uniqueness, OpenAPI
- *    nesting, include/path coupling, landing/standalone requirements, icon
+ *    nesting, include/path coupling, landing/island requirements, icon
  *    identifier format, theme name validity).
  *
  * @param config - Raw config object to validate (typically loaded from `ciderpress.config.ts`)
@@ -54,8 +55,8 @@ export function validateConfig(config: unknown): ConfigResult<CiderpressConfig> 
  * @returns First semantic error encountered, or success
  */
 function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
-  if (!config.sections || config.sections.length === 0) {
-    return [configError('empty_sections', 'config.sections must have at least one section'), null]
+  if (!config.pages || config.pages.length === 0) {
+    return [configError('empty_sections', 'config.pages must have at least one entry'), null]
   }
 
   const [appsErr] = validateWorkspaces(config.apps ?? [])
@@ -79,27 +80,27 @@ function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
     return [wsErr, null]
   }
 
-  const [openapiErr] = validateAllOpenAPI(config.openapi, allWorkspaceItems)
+  const [openapiErr] = validateAllOpenAPI(config.pages, allWorkspaceItems)
   if (openapiErr) {
     return [openapiErr, null]
   }
 
-  const sectionErrors = firstErrorOf(config.sections, (section) => {
-    const [sectionErr] = validateSection(section)
-    return sectionErr
+  const pageErrors = firstErrorOf(config.pages, (page) => {
+    const [pageErr] = validatePage(page)
+    return pageErr
   })
 
-  if (sectionErrors) {
-    return [sectionErrors, null]
+  if (pageErrors) {
+    return [pageErrors, null]
   }
 
-  const [featErr] = validateFeatures(config.features)
+  const featureItems = readFeatureItems(config)
+  const [featErr] = validateFeatures(featureItems)
   if (featErr) {
     return [featErr, null]
   }
 
-  const userThemeNames = (config.themes ?? []).map((t) => t.name)
-  const [themeErr] = validateTheme(config.theme, userThemeNames)
+  const [themeErr] = validateTheme(config.theme)
   if (themeErr) {
     return [themeErr, null]
   }
@@ -108,18 +109,35 @@ function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
 }
 
 /**
+ * Read the feature items from the new home.features.items position.
+ *
+ * @private
+ */
+function readFeatureItems(config: CiderpressConfig): readonly Feature[] | undefined {
+  const home = config.home
+  if (home === undefined) {
+    return undefined
+  }
+  const features = home.features
+  if (features === undefined) {
+    return undefined
+  }
+  return features.items
+}
+
+/**
  * Check if include contains a recursive glob pattern ('**').
  *
  * @private
  */
-function includeHasRecursive(include: Section['include']): boolean {
+function includeHasRecursive(include: Page['include']): boolean {
   if (include === null || include === undefined) {
     return false
   }
   if (isString(include)) {
     return include.includes('**')
   }
-  return include.some((p) => p.includes('**'))
+  return include.some((p: string) => p.includes('**'))
 }
 
 /**
@@ -152,7 +170,7 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
   return [
     configError(
       'duplicate_prefix',
-      `Workspace "${duplicate.title}": duplicate path "${duplicate.path}"`
+      `Workspace "${stringifyTitle(duplicate.title)}": duplicate path "${duplicate.path}"`
     ),
     null,
   ]
@@ -164,16 +182,17 @@ function validateWorkspaces(items: readonly Workspace[]): ConfigResult<true> {
  * @private
  */
 function validateWorkspaceItem(item: Workspace): ConfigError | null {
+  const titleStr = stringifyTitle(item.title)
   if (!item.title) {
     return configError('missing_field', 'Workspace: "title" is required')
   }
   if (!item.description) {
-    return configError('missing_field', `Workspace "${item.title}": "description" is required`)
+    return configError('missing_field', `Workspace "${titleStr}": "description" is required`)
   }
   if (!item.path) {
-    return configError('missing_field', `Workspace "${item.title}": "path" is required`)
+    return configError('missing_field', `Workspace "${titleStr}": "path" is required`)
   }
-  const [iconErr] = validateIconConfig(item.icon, `Workspace "${item.title}"`)
+  const [iconErr] = validateIconConfig(item.icon, `Workspace "${titleStr}"`)
   if (iconErr) {
     return iconErr
   }
@@ -232,99 +251,101 @@ function validateWorkspaceGroup(group: WorkspaceGroup): ConfigError | null {
 }
 
 /**
- * Validate a single section node (recursive).
+ * Validate a single page node (recursive).
  *
  * @private
  */
-function validateSection(section: Section): ConfigResult<true> {
-  const titleStr = match(section.title)
-    .with(P.string, (t) => t)
-    .otherwise(() => 'Section')
+function validatePage(page: Page): ConfigResult<true> {
+  const titleStr = stringifyTitle(page.title)
 
-  if (section.include && section.content) {
+  if (page.include && page.content) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": 'include' and 'content' are mutually exclusive`
+        `Page "${titleStr}": 'include' and 'content' are mutually exclusive`
       ),
       null,
     ]
   }
 
-  if (section.path && !section.include && !section.content && !section.items) {
+  if (page.path && !page.include && !page.content && !page.pages && !page.openapi) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": page with 'path' must have 'include', 'content', or 'items'`
+        `Page "${titleStr}": page with 'path' must have 'include', 'content', 'pages', or 'openapi'`
       ),
       null,
     ]
   }
 
-  if (isSingleFileInclude(section.include) && !section.items && !section.path) {
+  if (isSingleFileInclude(page.include) && !page.pages && !page.path) {
+    return [
+      configError('invalid_section', `Page "${titleStr}": single-file 'include' requires 'path'`),
+      null,
+    ]
+  }
+
+  if (hasAnyGlobInclude(page.include) && !page.path) {
+    return [
+      configError('invalid_section', `Page "${titleStr}": glob 'include' requires 'path'`),
+      null,
+    ]
+  }
+
+  const discover = page.discover
+  const recursiveFlag = match(discover)
+    .with(P.nonNullable, (d) => d.recursive)
+    .otherwise(() => undefined)
+
+  if (recursiveFlag && !includeHasRecursive(page.include)) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": single-file 'include' requires 'path'`
+        `Page "${titleStr}": 'discover.recursive' requires a recursive glob pattern (e.g. "**/*.md")`
       ),
       null,
     ]
   }
 
-  if (hasAnyGlobInclude(section.include) && !section.path) {
+  if (recursiveFlag && !page.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": glob 'include' requires 'path'`),
+      configError('invalid_section', `Page "${titleStr}": 'discover.recursive' requires 'path'`),
       null,
     ]
   }
 
-  if (section.recursive && !includeHasRecursive(section.include)) {
+  if (page.landing !== undefined && !page.pages) {
     return [
       configError(
         'invalid_section',
-        `Section "${titleStr}": 'recursive' requires a recursive glob pattern (e.g. "**/*.md")`
+        `Page "${titleStr}": 'landing' only applies to pages with 'pages'`
       ),
       null,
     ]
   }
 
-  if (section.recursive && !section.path) {
+  if (page.landing === true && !page.path) {
     return [
-      configError('invalid_section', `Section "${titleStr}": 'recursive' requires 'path'`),
+      configError('invalid_section', `Page "${titleStr}": 'landing' requires 'path' to be set`),
       null,
     ]
   }
 
-  if (section.landing !== undefined && !section.items) {
+  const nav = page.nav
+  const isIsland = match(nav)
+    .with(P.nonNullable, (n) => n.island === true)
+    .otherwise(() => false)
+
+  if (isIsland && !page.path) {
     return [
-      configError(
-        'invalid_section',
-        `Section "${titleStr}": 'landing' only applies to sections with 'items'`
-      ),
+      configError('invalid_section', `Page "${titleStr}": 'nav.island' requires 'path' to be set`),
       null,
     ]
   }
 
-  if (section.landing === true && !section.path) {
-    return [
-      configError('invalid_section', `Section "${titleStr}": 'landing' requires 'path' to be set`),
-      null,
-    ]
-  }
-
-  if (section.standalone && !section.path) {
-    return [
-      configError(
-        'invalid_section',
-        `Section "${titleStr}": 'standalone' requires 'path' to be set`
-      ),
-      null,
-    ]
-  }
-
-  if (section.items) {
-    const childErr = firstErrorOf(section.items, (child) => {
-      const [err] = validateSection(child)
+  if (page.pages) {
+    const childErr = firstErrorOf(page.pages, (child) => {
+      const [err] = validatePage(child)
       return err
     })
 
@@ -337,11 +358,22 @@ function validateSection(section: Section): ConfigResult<true> {
 }
 
 /**
+ * Stringify a `TitleConfig` for use in error messages.
+ *
+ * @private
+ */
+function stringifyTitle(title: Page['title'] | Workspace['title']): string {
+  return match(title)
+    .with(P.string, (t) => t)
+    .otherwise(() => 'Untitled')
+}
+
+/**
  * Validate explicit features when provided.
  *
  * @private
  */
-function validateFeatures(features: CiderpressConfig['features']): ConfigResult<true> {
+function validateFeatures(features: readonly Feature[] | undefined): ConfigResult<true> {
   if (features === undefined) {
     return [null, true]
   }
@@ -422,11 +454,11 @@ function validateIconConfig(icon: IconConfig | undefined, context: string): Conf
 }
 
 /**
- * Validate a single OpenAPI config.
+ * Validate a single OpenAPI spec.
  *
  * @private
  */
-function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<true> {
+function validateOpenAPI(openapi: OpenAPISpec, context: string): ConfigResult<true> {
   if (!openapi.spec || openapi.spec.length === 0) {
     return [configError('invalid_openapi', `${context}: "spec" must be a non-empty string`), null]
   }
@@ -451,27 +483,34 @@ function validateOpenAPI(openapi: OpenAPIConfig, context: string): ConfigResult<
 }
 
 /**
- * Validate all OpenAPI configs from root and workspace items.
+ * Validate all OpenAPI specs collected from top-level pages and workspaces.
+ *
+ * Top-level `config.openapi` is gone — each `Page.openapi` (top-level pages
+ * only) substitutes for the old single root spec. Workspace-level
+ * `Workspace.openapi` continues to participate in the duplicate-path and
+ * nesting checks.
  *
  * @private
  */
 function validateAllOpenAPI(
-  rootOpenapi: OpenAPIConfig | undefined,
+  pages: readonly Page[],
   workspaces: readonly Workspace[]
 ): ConfigResult<true> {
-  const rootConfigs: readonly { readonly config: OpenAPIConfig; readonly context: string }[] =
-    match(rootOpenapi)
-      .with(P.nonNullable, (o) => [{ config: o, context: 'openapi' }])
-      .otherwise(() => [])
+  const rootConfigs: readonly { readonly config: OpenAPISpec; readonly context: string }[] = pages
+    .filter((p): p is Page & { readonly openapi: OpenAPISpec } => p.openapi !== undefined)
+    .map((p) => ({
+      config: p.openapi,
+      context: `Page "${stringifyTitle(p.title)}".openapi`,
+    }))
 
   const workspaceConfigs = workspaces
     .filter(
-      (ws): ws is Workspace & { readonly openapi: OpenAPIConfig } =>
+      (ws): ws is Workspace & { readonly openapi: OpenAPISpec } =>
         ws.openapi !== null && ws.openapi !== undefined
     )
     .map((ws) => ({
       config: ws.openapi,
-      context: `Workspace "${String(ws.title)}".openapi`,
+      context: `Workspace "${stringifyTitle(ws.title)}".openapi`,
       workspacePath: ws.path,
     }))
 
@@ -516,7 +555,7 @@ function validateAllOpenAPI(
  * @private
  */
 function checkOpenApiNesting(entry: {
-  readonly config: OpenAPIConfig
+  readonly config: OpenAPISpec
   readonly context: string
   readonly workspacePath: string
 }): ConfigError | null {
@@ -540,8 +579,8 @@ function checkOpenApiNesting(entry: {
  * @private
  */
 function findFirstDuplicateOpenApi(
-  entries: readonly { readonly config: OpenAPIConfig; readonly context: string }[]
-): { readonly config: OpenAPIConfig; readonly context: string } | null {
+  entries: readonly { readonly config: OpenAPISpec; readonly context: string }[]
+): { readonly config: OpenAPISpec; readonly context: string } | null {
   const duplicate = entries.find((entry, index) =>
     entries.slice(0, index).some((earlier) => earlier.config.path === entry.config.path)
   )
@@ -552,11 +591,11 @@ function findFirstDuplicateOpenApi(
 }
 
 /**
- * Validate a single ThemeColors object.
+ * Validate a single ThemeColors override object.
  *
  * @private
  */
-function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<true> {
+function validateThemeColors(colors: Partial<ThemeColors>, label: string): ConfigResult<true> {
   const colorPattern = /^(?:#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})|rgba?\([^)]*\))$/
   const keys: readonly (keyof ThemeColors)[] = [
     'brand',
@@ -593,50 +632,79 @@ function validateThemeColors(colors: ThemeColors, label: string): ConfigResult<t
 }
 
 /**
- * Validate theme configuration when provided.
+ * Pull the name out of a ThemeEntry — bare string, `{ name }` object, or a
+ * custom `defineTheme`-style envelope.
  *
  * @private
  */
-function validateTheme(
-  theme: ThemeConfig | undefined,
-  userThemeNames: readonly string[]
-): ConfigResult<true> {
+function themeEntryName(entry: ThemeEntry): string | undefined {
+  if (typeof entry === 'string') {
+    return entry
+  }
+  if (entry !== null && typeof entry === 'object' && 'name' in entry) {
+    const candidate = entry.name
+    if (typeof candidate === 'string') {
+      return candidate
+    }
+  }
+  return undefined
+}
+
+/**
+ * Decide whether a ThemeEntry registers a custom theme (carries `variants`)
+ * vs references a built-in by name.
+ *
+ * @private
+ */
+function isCustomThemeEntry(entry: ThemeEntry): boolean {
+  return entry !== null && typeof entry === 'object' && 'variants' in entry
+}
+
+/**
+ * Validate theme settings when provided.
+ *
+ * @private
+ */
+function validateTheme(theme: ThemeSettings | undefined): ConfigResult<true> {
   if (theme === undefined) {
     return [null, true]
   }
 
+  const userThemeNames = theme.themes
+    .filter(isCustomThemeEntry)
+    .map((entry) => themeEntryName(entry))
+    .filter(isNotNil)
+
   const isKnownThemeName = either(isBuiltInTheme, (name: string) => userThemeNames.includes(name))
-  if (theme.name !== undefined && !isKnownThemeName(theme.name)) {
-    return [
-      configError(
+
+  const entryError = firstErrorOf(theme.themes, (entry: ThemeEntry) => {
+    if (isCustomThemeEntry(entry)) {
+      return null
+    }
+    const name = themeEntryName(entry)
+    if (name === undefined) {
+      return configError(
         'invalid_theme',
-        `theme.name: "${theme.name}" is not a valid theme (use ${formatKnownThemeNames(userThemeNames)})`
-      ),
-      null,
-    ]
+        `theme.themes: entry must be a theme name string or a theme definition object`
+      )
+    }
+    if (!isKnownThemeName(name)) {
+      return configError(
+        'invalid_theme',
+        `theme.themes: "${name}" is not a valid theme (use ${formatKnownThemeNames(userThemeNames)})`
+      )
+    }
+    return null
+  })
+
+  if (entryError) {
+    return [entryError, null]
   }
 
-  if (theme.variant !== undefined && !THEME_VARIANTS.includes(theme.variant)) {
-    return [
-      configError(
-        'invalid_theme',
-        `theme.variant: "${theme.variant}" is not valid (use ${THEME_VARIANTS.map((m) => `"${m}"`).join(', ')})`
-      ),
-      null,
-    ]
-  }
-
-  if (theme.colors) {
-    const [colorsErr] = validateThemeColors(theme.colors, 'colors')
+  if (theme.overrides) {
+    const [colorsErr] = validateThemeColors(theme.overrides, 'overrides')
     if (colorsErr) {
       return [colorsErr, null]
-    }
-  }
-
-  if (theme.darkColors) {
-    const [darkErr] = validateThemeColors(theme.darkColors, 'darkColors')
-    if (darkErr) {
-      return [darkErr, null]
     }
   }
 
@@ -650,7 +718,7 @@ function validateTheme(
  * pattern that previously appeared at eight sites in this module.
  *
  * The full sweep with `.map().find()` is fine in practice — typical inputs
- * are <100 sections / workspaces, validation work is constant per item, and
+ * are <100 pages / workspaces, validation work is constant per item, and
  * eager evaluation keeps the code dead-simple.
  *
  * @private
@@ -670,7 +738,7 @@ function firstErrorOf<T>(
  * Built-in names come first (declared order), then any user-registered names.
  *
  * @private
- * @param userThemeNames - Names of themes registered via `config.themes`
+ * @param userThemeNames - Names of themes registered via `theme.themes` (custom defs)
  * @returns Comma-separated, double-quoted list (e.g. `'"mulled", "honeycrisp"'`)
  */
 function formatKnownThemeNames(userThemeNames: readonly string[]): string {

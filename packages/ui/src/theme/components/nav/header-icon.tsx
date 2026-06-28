@@ -12,7 +12,7 @@ import './header-icon.css'
 /**
  * Small brand chip rendered before `<HeaderLogo />` inside `cp-header-logo`.
  *
- * Reads `userConfig.icon` from the bundled user config and routes:
+ * Reads `userConfig.brand.icon` from the bundled user config and routes:
  * - Iconify id (`"devicon:react"`) → `<Icon>` component.
  * - `{ id, color }` → `<Icon>` with inline color.
  * - `{ src, alt }` → `<img>` with the user's asset.
@@ -50,11 +50,11 @@ type TopbarIcon =
   | { readonly kind: 'image'; readonly src: string; readonly alt: string }
 
 /**
- * Extract the `icon` field from the bundled user config module.
+ * Extract the `brand.icon` field from the bundled user config module.
  *
  * @private
  * @param mod - Module imported from `@ciderpress/internal/user-config`
- * @returns The `icon` value or `undefined` when none is configured
+ * @returns The `brand.icon` value or `undefined` when none is configured
  */
 function readIconConfig(mod: unknown): IconConfig | undefined {
   if (mod === null || mod === undefined) {
@@ -65,7 +65,11 @@ function readIconConfig(mod: unknown): IconConfig | undefined {
     asRecord.default !== null && asRecord.default !== undefined
       ? (asRecord.default as Partial<CiderpressConfig>)
       : (mod as Partial<CiderpressConfig>)
-  return candidate.icon
+  const brand = candidate.brand
+  if (brand === undefined) {
+    return undefined
+  }
+  return brand.icon
 }
 
 /**

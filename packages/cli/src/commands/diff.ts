@@ -1,7 +1,7 @@
 import { execFileSync } from 'node:child_process'
 
 import { hasGlobChars, normalizeInclude } from '@ciderpress/config'
-import type { Section, CiderpressConfig, Result } from '@ciderpress/config'
+import type { Page, CiderpressConfig, Result } from '@ciderpress/config'
 import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
 import { uniq } from 'massaman/array'
@@ -129,46 +129,46 @@ export default command({
 })
 
 /**
- * Collect unique directory paths from all section `include` fields in the config.
+ * Collect unique directory paths from all page `include` fields in the config.
  *
  * @private
  * @param config - Resolved ciderpress config
  * @returns Deduplicated array of directory paths to watch
  */
 function collectWatchPaths(config: CiderpressConfig): readonly string[] {
-  const dirs = flattenIncludePaths(config.sections).map(toDirectory)
+  const dirs = flattenIncludePaths(config.pages).map(toDirectory)
   const roots = dirs.map(toTopLevelRoot).filter((r) => r.length > 0)
   return uniq([...dirs, ...roots, ...CONFIG_GLOBS])
 }
 
 /**
- * Recursively extract all `include` values from a section tree.
+ * Recursively extract all `include` values from a page tree.
  *
  * @private
- * @param sections - Section tree to traverse
+ * @param pages - Page tree to traverse
  * @returns Flat array of all `include` path strings
  */
-function flattenIncludePaths(sections: readonly Section[]): readonly string[] {
-  return sections.flatMap(flattenSection)
+function flattenIncludePaths(pages: readonly Page[]): readonly string[] {
+  return pages.flatMap(flattenSection)
 }
 
 /**
- * Extract `include` paths from a single section, including nested items.
+ * Extract `include` paths from a single page, including nested children.
  *
  * @private
- * @param section - Section to extract include paths from
- * @returns Array of `include` path strings found in this section and its children
+ * @param section - Page to extract include paths from
+ * @returns Array of `include` path strings found in this page and its children
  */
-function flattenSection(section: Section): readonly string[] {
+function flattenSection(section: Page): readonly string[] {
   const includes = normalizeInclude(section.include)
-  if (includes.length > 0 && section.items) {
-    return [...includes, ...flattenIncludePaths(section.items)]
+  if (includes.length > 0 && section.pages) {
+    return [...includes, ...flattenIncludePaths(section.pages)]
   }
   if (includes.length > 0) {
     return includes
   }
-  if (section.items) {
-    return flattenIncludePaths(section.items)
+  if (section.pages) {
+    return flattenIncludePaths(section.pages)
   }
   return []
 }

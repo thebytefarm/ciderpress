@@ -1,7 +1,7 @@
-import type { SiteConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import type { CiderpressSiteBlock } from '../../hooks/use-ciderpress'
 import { useCiderpress } from '../../hooks/use-ciderpress'
 
 import './branch-tag.css'
@@ -12,7 +12,7 @@ declare const __CIDERPRESS_GIT_BRANCH__: string | undefined
 /**
  * Git branch tag — pill-shaped badge rendered via the `beforeNavMenu`
  * layout slot. Hidden when on default branches (`main` or `master`) or
- * when no `site.edit.repo` is configured. Uses the pixelarticons:git-branch
+ * when no `editLink.repo` is configured. Uses the pixelarticons:git-branch
  * icon.
  *
  * @returns React element, or `null` when on a default branch / unconfigured.
@@ -61,7 +61,7 @@ function resolveBranch(): string {
 }
 
 /**
- * Build a GitHub `/tree/<branch>` URL from the configured `site.edit.repo`.
+ * Build a GitHub `/tree/<branch>` URL from the configured `editLink.repo`.
  *
  * Accepts either a full URL (used as-is) or an `org/repo` slug
  * (prefixed with `https://github.com/`). Returns `null` when `repo` is
@@ -83,14 +83,14 @@ function buildBranchHref(params: {
 }
 
 /**
- * Pull the configured edit-repo slug off the site config, expressed
- * with explicit null checks rather than optional chaining.
+ * Pull the configured edit-repo slug off the serialised site block,
+ * expressed with explicit null checks rather than optional chaining.
  *
  * @private
- * @param site - The ciderpress site config (may be undefined).
+ * @param site - The runtime site block (may be undefined).
  * @returns The configured `edit.repo` value or `undefined`.
  */
-function resolveRepo(site: SiteConfig | undefined): string | undefined {
+function resolveRepo(site: CiderpressSiteBlock | undefined): string | undefined {
   if (site === undefined) {
     return undefined
   }

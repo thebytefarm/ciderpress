@@ -23,7 +23,7 @@ import { defineConfig } from 'ciderpress'
 export default defineConfig({
   title: 'My Project',
   description: 'Project documentation',
-  sections: [
+  pages: [
     {
       title: 'Getting Started',
       path: '/getting-started',
@@ -33,10 +33,10 @@ export default defineConfig({
 })
 ```
 
-Add another section to the `sections` array that auto-discovers pages from a directory:
+Add another page to the `pages` array that auto-discovers child files from a directory:
 
 ```ts
-// inside the sections array
+// inside the pages array
 {
   title: 'Guides',
   path: '/guides',
@@ -49,22 +49,22 @@ Every `.md` file matching the glob becomes a page under `/guides/`.
 
 ## Configure the site chrome
 
-Tell ciderpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA:
+Tell ciderpress about your repo so visitors get a real "Edit this page" link, a version chip in the topbar, and a topbar CTA. Each field is its own top-level entry on the config:
 
 ```ts
 // ciderpress.config.ts
 export default defineConfig({
   // ...
-  site: {
-    version: 'v1.0',
-    edit: { repo: 'acme/docs', branch: 'main', directory: 'docs' },
-    report: { repo: 'acme/docs' },
-    topbarCta: { text: 'Get started →', href: '/getting-started' },
+  version: 'v1.0',
+  editLink: { repo: 'acme/docs', branch: 'main', directory: 'docs' },
+  reportLink: { repo: 'acme/docs' },
+  topbar: {
+    cta: { text: 'Get started →', href: '/getting-started' },
   },
 })
 ```
 
-Every field is optional — pieces you don't configure render nothing rather than placeholder content. See the [Configuration reference](/reference/configuration#siteconfig) for the full `site.*` surface (sidebar promo, announcement banner, footer columns, etc.).
+Every field is optional — pieces you don't configure render nothing rather than placeholder content. See the [Configuration reference](/reference/configuration) for the full top-level surface, including the [sidebar promo](/reference/configuration#sidebar), [announcement banner](/reference/configuration#topbar), and [footer columns](/reference/configuration#footer).
 
 ## Start the dev server
 
@@ -116,5 +116,5 @@ If you skipped `ciderpress setup`, add `.ciderpress/` to your `.gitignore` manua
 
 ## Next steps
 
-- [Content](/concepts/content) — learn how sections, pages, and navigation work
+- [Content](/concepts/content) — learn how pages, groups, and navigation work
 - [Configuration reference](/reference/configuration) — complete field reference for `ciderpress.config.ts`

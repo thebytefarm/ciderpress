@@ -1,4 +1,4 @@
-import type { LoaderConfig } from '@ciderpress/config'
+import type { LoaderConfig, LoaderStaticConfig } from '@ciderpress/config'
 import { BUILT_IN_THEMES, resolveThemeAlias } from '@ciderpress/theme'
 import { match } from 'massaman/match'
 
@@ -63,7 +63,24 @@ function resolveLoaderCss(loader: LoaderStyle): string {
   if (loader === 'apple') {
     return BACKDROP_CSS + APPLE_LOADER_CSS
   }
-  return BACKDROP_CSS + buildCustomLoaderCss(loader)
+  if (isStaticLoader(loader)) {
+    return BACKDROP_CSS + buildCustomLoaderCss(loader)
+  }
+  // Component-form loaders paint via React after hydration — emit only
+  // the backdrop CSS so pre-hydration paint stays neutral.
+  return BACKDROP_CSS
+}
+
+/**
+ * Type guard for the static-glyph loader variant. The component-form
+ * loader has no static CSS surface — it paints once React hydrates.
+ *
+ * @private
+ * @param loader - Loader configuration to test
+ * @returns True when the loader carries a paintable `content` string
+ */
+function isStaticLoader(loader: LoaderConfig): loader is LoaderStaticConfig {
+  return 'content' in loader && typeof loader.content === 'string'
 }
 
 /**
@@ -101,7 +118,7 @@ export function getThemeCss(themeName: string, loader: LoaderStyle = DEFAULT_LOA
  * @param config - User-supplied loader config
  * @returns CSS string painting the custom loader
  */
-function buildCustomLoaderCss(config: LoaderConfig): string {
+function buildCustomLoaderCss(config: LoaderStaticConfig): string {
   const glyph = resolveGlyphUrl(config.content)
   const label = config.label ?? 'loading'
   const hasLabel = label.length > 0

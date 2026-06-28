@@ -1,5 +1,6 @@
+import type { CopyrightConfig, FooterConfig } from '@ciderpress/config'
 import { useSite } from '@rspress/core/runtime'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
@@ -35,14 +36,17 @@ export function SiteFooter(): React.ReactElement | null {
   const { message, copyright, socials } = ciderpressFooter ?? {}
   const { columns, tagline, brandMark } = siteFooter ?? {}
 
-  const hasRspressContent = message !== undefined || copyright !== undefined || socials === true
+  const copyrightText = resolveCopyright(copyright, rspressSite.title)
+  const shouldRenderSocials = socials === true && socialLinks.length > 0
+
+  const hasFooterContent = message !== undefined || copyrightText !== null || shouldRenderSocials
   const hasSiteContent = columns !== undefined || tagline !== undefined
   // The footer also hosts the theme switcher when it's enabled — so a
-  // config with `theme.switcher: true` but no other footer content
+  // config with `theme.themeSwitcher: true` but no other footer content
   // still needs the footer shell rendered.
   const hasSwitcher = __CIDERPRESS_THEME_SWITCHER__
 
-  if (!hasRspressContent && !hasSiteContent && !hasSwitcher) {
+  if (!hasFooterContent && !hasSiteContent && !hasSwitcher) {
     return null
   }
 
@@ -61,7 +65,11 @@ export function SiteFooter(): React.ReactElement | null {
                   // shipping a `public/icon.svg`). This was previously
                   // the hardcoded `<CiderpressMark />` apple, which
                   // leaked ciderpress branding into every footer.
-                  <img src={withMountBase('/icon.svg')} alt="" className="cp-site-footer__brand-icon" />
+                  <img
+                    src={withMountBase('/icon.svg')}
+                    alt=""
+                    className="cp-site-footer__brand-icon"
+                  />
                 ))
                 .otherwise((mark) => mark)}
             </div>
@@ -70,7 +78,7 @@ export function SiteFooter(): React.ReactElement | null {
               .otherwise((msg) => (
                 <p className="cp-site-footer__message">{msg}</p>
               ))}
-            {match(socials === true && socialLinks.length > 0)
+            {match(shouldRenderSocials)
               .with(true, () => (
                 <div className="cp-site-footer__socials">
                   <CiderpressNavSocialLinks links={socialLinks} />
@@ -100,8 +108,8 @@ export function SiteFooter(): React.ReactElement | null {
       </div>
       <div className="cp-site-footer__bottom">
         <div className="cp-site-footer__bottom-inner">
-          {match(copyright)
-            .with(undefined, () => null)
+          {match(copyrightText)
+            .with(null, () => null)
             .otherwise((cr) => (
               <span className="cp-site-footer__copyright">{cr}</span>
             ))}
@@ -117,4 +125,50 @@ export function SiteFooter(): React.ReactElement | null {
       </div>
     </footer>
   )
+}
+
+/**
+ * Resolve the `footer.copyright` config union into a string for rendering.
+ *
+ * Accepts the new public shape: `true` for auto-generation from the site
+ * title + current year, a verbatim string, or a `CopyrightConfig` object
+ * with `company` / `dba` / `year`. `undefined` returns `null` so the
+ * caller can skip the render.
+ *
+ * @private
+ * @param copyright - The footer copyright config value
+ * @param siteTitle - The Rspress site title to use as fallback owner name
+ * @returns The formatted copyright string, or `null` when nothing should render
+ */
+function resolveCopyright(
+  copyright: FooterConfig['copyright'],
+  siteTitle: string | undefined
+): string | null {
+  return match(copyright)
+    .with(undefined, () => null)
+    .with(true, () => formatCopyright({}, siteTitle))
+    .with(P.string, (s) => s)
+    .otherwise((cfg) => formatCopyright(cfg, siteTitle))
+}
+
+/**
+ * Build a copyright string from a partial `CopyrightConfig`. Falls back to
+ * the site title for the owner name and the current year for the date.
+ *
+ * @private
+ * @param cfg - Copyright config object (may be empty)
+ * @param siteTitle - Fallback owner name
+ * @returns Formatted copyright string
+ */
+function formatCopyright(cfg: CopyrightConfig, siteTitle: string | undefined): string {
+  const currentYear = new Date().getFullYear()
+  const yearPart = match(cfg.year)
+    .with(undefined, () => String(currentYear))
+    .with(P.number, (n) => String(n))
+    .otherwise(({ from }) => `${from}–${currentYear}`)
+  const owner = cfg.dba ?? cfg.company ?? siteTitle ?? ''
+  const ownerPart = match(owner.length === 0)
+    .with(true, () => '')
+    .otherwise(() => ` ${owner}`)
+  return `© ${yearPart}${ownerPart}`
 }

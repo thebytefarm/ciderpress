@@ -21,7 +21,7 @@ docs/
 ```
 
 ```ts
-sections: [
+pages: [
   { title: 'Getting Started', path: '/getting-started', include: 'docs/getting-started.md' },
   {
     title: { from: 'heading' },
@@ -40,7 +40,7 @@ At this stage, auto-discovery with globs handles most of the work. New files sho
 
 ## Stage 2: Growing docs, more types
 
-As the project matures, you'll find yourself writing conceptual docs, standards, and troubleshooting pages. Add sections for them.
+As the project matures, you'll find yourself writing conceptual docs, standards, and troubleshooting pages. Add groups for them.
 
 ```
 docs/
@@ -55,11 +55,11 @@ docs/
 ```
 
 ```ts
-sections: [
+pages: [
   {
     title: 'Getting Started',
     path: '/getting-started',
-    items: [
+    pages: [
       {
         title: 'Introduction',
         path: '/getting-started/intro',
@@ -76,47 +76,45 @@ sections: [
     title: { from: 'heading' },
     path: '/guides',
     include: 'docs/guides/*.md',
-    sort: 'alpha',
+    discover: { sort: 'alpha' },
   },
   {
     title: { from: 'heading' },
     path: '/concepts',
     include: 'docs/concepts/**/*.md',
-    recursive: true,
-    sort: 'alpha',
+    discover: { recursive: true, sort: 'alpha' },
   },
   {
     title: { from: 'heading' },
     path: '/reference',
     include: 'docs/reference/**/*.md',
-    recursive: true,
-    sort: 'alpha',
+    discover: { recursive: true, sort: 'alpha' },
   },
   {
     title: { from: 'heading' },
     path: '/standards',
     include: 'docs/standards/**/*.md',
-    recursive: true,
-    sort: 'alpha',
+    discover: { recursive: true, sort: 'alpha' },
   },
   {
     title: { from: 'heading' },
     path: '/troubleshooting',
     include: 'docs/troubleshooting/*.md',
-    sort: 'alpha',
+    discover: { sort: 'alpha' },
   },
 ]
 ```
 
 Key changes:
 
-- **Getting Started** becomes a section with multiple pages (intro + quickstart)
-- **Concepts** and **Standards** get their own sections instead of living in Guides
-- **`recursive: true`** enables nested subdirectories as sidebar groups
+- **Getting Started** becomes a group with multiple pages (intro + quick start) declared explicitly via `pages`
+- **Concepts** and **Standards** get their own groups instead of living in Guides
+- **`discover.recursive: true`** enables nested subdirectories as sidebar groups
+- **`discover.sort`** controls per-group ordering
 
 ## Stage 3: Monorepo with workspaces
 
-When your repo has multiple apps and packages, each workspace gets its own docs directory. Use isolated sections to give each workspace a focused sidebar.
+When your repo has multiple apps and packages, each workspace gets its own docs directory. Use sidebar islands (`nav: { island: true }`) to give each workspace a focused sidebar.
 
 ```
 apps/
@@ -141,48 +139,44 @@ docs/
 ```
 
 ```ts
-sections: [
-  // ... shared sections from Stage 2 ...
+pages: [
+  // ... shared pages from Stage 2 ...
 
   {
     title: 'Apps',
     path: '/apps',
-    standalone: true,
-    items: [
+    nav: { island: true },
+    pages: [
       {
         title: { from: 'heading' },
         path: '/apps/api',
         include: 'apps/api/docs/**/*.md',
-        recursive: true,
-        sort: 'alpha',
+        discover: { recursive: true, sort: 'alpha' },
       },
       {
         title: { from: 'heading' },
         path: '/apps/web',
         include: 'apps/web/docs/**/*.md',
-        recursive: true,
-        sort: 'alpha',
+        discover: { recursive: true, sort: 'alpha' },
       },
     ],
   },
   {
     title: 'Packages',
     path: '/packages',
-    standalone: true,
-    items: [
+    nav: { island: true },
+    pages: [
       {
         title: { from: 'heading' },
         path: '/packages/auth',
         include: 'packages/auth/docs/**/*.md',
-        recursive: true,
-        sort: 'alpha',
+        discover: { recursive: true, sort: 'alpha' },
       },
       {
         title: { from: 'heading' },
         path: '/packages/database',
         include: 'packages/database/docs/**/*.md',
-        recursive: true,
-        sort: 'alpha',
+        discover: { recursive: true, sort: 'alpha' },
       },
     ],
   },
@@ -192,25 +186,30 @@ sections: [
 Key changes:
 
 - **Workspace docs live next to the code** — `apps/api/docs/`, not `docs/apps/api/`
-- **Standalone sidebars** keep workspace navigation separate from shared docs
-- **Shared sections** (Guides, Concepts, Standards) remain for cross-cutting concerns
+- **Sidebar islands** (`nav.island: true`) keep workspace navigation separate from shared docs
+- **Shared pages** (Guides, Concepts, Standards) remain for cross-cutting concerns
+
+For monorepos that want richer card metadata on the home page (icons, tags, deploy badges), promote the workspaces into top-level `apps` / `packages` — see [Workspaces](/concepts/workspaces).
 
 ## Patterns that scale
 
 ### Auto-discovery over explicit lists
 
-As you add more docs, maintaining explicit `items` arrays becomes tedious. Lean on globs:
+As you add more docs, maintaining explicit `pages` arrays becomes tedious. Lean on globs:
 
 ```ts
 // Instead of listing every guide manually:
-include: 'docs/guides/*.md',
-title: { from: 'heading' },
-sort: 'alpha',
+{
+  title: { from: 'heading' },
+  path: '/guides',
+  include: 'docs/guides/*.md',
+  discover: { sort: 'alpha' },
+}
 ```
 
 ### Recursive directories for deep content
 
-When a topic needs sub-grouping, use directories and `recursive: true`:
+When a topic needs sub-grouping, use directories and `discover.recursive: true`:
 
 ```
 docs/concepts/
@@ -225,9 +224,9 @@ docs/concepts/
 
 Each directory becomes a collapsible sidebar group automatically.
 
-### Landing pages for section entry points
+### Landing pages for group entry points
 
-Sections with children and a `path` automatically get a generated landing page with cards linking to each child entry:
+Pages with children and a `path` automatically get a generated landing page with cards linking to each child entry:
 
 ```ts
 {
@@ -237,20 +236,22 @@ Sections with children and a `path` automatically get a generated landing page w
 }
 ```
 
-Navigating to `/concepts` shows a landing page with cards for each discovered page, orienting the reader before they dive into individual pages. Set `landing: false` to disable this behavior.
+Navigating to `/concepts` shows a landing page with cards for each discovered page, orienting the reader before they dive in. Set `landing: false` to disable this behavior.
 
 ### Custom sort for intentional ordering
 
-When alphabetical order doesn't tell the right story, use a custom comparator:
+When alphabetical order doesn't tell the right story, use a custom comparator under `discover.sort`:
 
 ```ts
 {
   title: 'Getting Started',
   path: '/getting-started',
   include: 'docs/getting-started/*.md',
-  sort: (a, b) => {
-    const order = { Introduction: 0, 'Quick Start': 1, 'Next Steps': 2 }
-    return (order[a.title] ?? 99) - (order[b.title] ?? 99)
+  discover: {
+    sort: (a, b) => {
+      const order = { Introduction: 0, 'Quick Start': 1, 'Next Steps': 2 }
+      return (order[a.title] ?? 99) - (order[b.title] ?? 99)
+    },
   },
 }
 ```
@@ -264,10 +265,11 @@ Signs your docs need a new stage:
 - The sidebar is more than 3 scroll heights long
 - You have docs that are half-guide, half-explanation
 
-The fix is almost always the same: split a section into two, or promote a nested group into a top-level section.
+The fix is almost always the same: split a group into two, or promote a nested group into a top-level page.
 
 ## References
 
 - [Recommended](/framework/recommended) — the full recommended layout
 - [Types](/framework/types) — the seven doc types
-- [Content](/concepts/content) — ciderpress section configuration, auto-discovery, and glob patterns
+- [Content](/concepts/content) — ciderpress page configuration, auto-discovery, and glob patterns
+- [Workspaces](/concepts/workspaces) — when to promote workspace pages into `apps` / `packages`

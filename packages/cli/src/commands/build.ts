@@ -1,5 +1,7 @@
+import type { CiderpressConfig } from '@ciderpress/config'
 import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
+import { match, P } from 'massaman/match'
 import { z } from 'zod'
 
 import { generateAssets } from '../lib/banner/index.ts'
@@ -92,21 +94,21 @@ export default command({
  * Returns `null` when no title is configured (nothing to generate).
  *
  * @private
- * @param config - Config object with optional title and tagline
+ * @param config - Resolved ciderpress config
  * @returns Asset config or null when no title is present
  */
-function buildAssetConfig(config: {
-  readonly title?: string
-  readonly tagline?: string
-}): AssetConfig | null {
+function buildAssetConfig(config: CiderpressConfig): AssetConfig | null {
   if (!config.title) {
     return null
   }
-  return { title: config.title, tagline: config.tagline }
+  const tagline = match(config.home)
+    .with({ hero: { tagline: P.string } }, (h) => h.hero.tagline)
+    .otherwise(() => undefined)
+  return { title: config.title, tagline }
 }
 
 interface RunAssetGenerationParams {
-  readonly config: { readonly title?: string; readonly tagline?: string }
+  readonly config: CiderpressConfig
   readonly paths: ReturnType<typeof createPaths>
   readonly log: { readonly step: (msg: string) => void; readonly info: (msg: string) => void }
   readonly quiet: boolean

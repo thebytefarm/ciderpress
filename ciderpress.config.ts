@@ -4,115 +4,111 @@ import { createElement } from 'react'
 export default defineConfig({
   title: 'ciderpress',
   description: 'Beautiful Docs, Zero Effort',
-  tagline:
-    'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
+  version: 'v1.0',
   theme: {
-    name: 'honeycrisp',
-    switcher: true,
+    themes: ['honeycrisp'],
   },
-  // Inline SVG wordmark that inherits `var(--rp-c-brand)` via
-  // `fill="currentColor"` — retints automatically when the user flips
-  // theme or variant without a re-render or sync rebuild. Replaces the
-  // auto-generated `/logo.svg`, which bakes a single brand hex at sync
-  // time and can't read the live CSS context once loaded via `<img>`.
-  logo: () => createElement(CiderpressLogo),
-  site: {
-    version: 'v1.0',
-    topbarCta: { text: 'Get started →', href: '/getting-started/quick-start' },
-    edit: { repo: 'thebytefarm/ciderpress', branch: 'main', directory: 'docs' },
-    report: { repo: 'thebytefarm/ciderpress' },
-    sidebarPromo: {
+  brand: {
+    // Inline SVG wordmark that inherits `var(--rp-c-brand)` via
+    // `fill="currentColor"` — retints automatically when the user flips
+    // theme or variant without a re-render or sync rebuild. Replaces the
+    // auto-generated `/logo.svg`, which bakes a single brand hex at sync
+    // time and can't read the live CSS context once loaded via `<img>`.
+    logo: () => createElement(CiderpressLogo),
+  },
+  editLink: { repo: 'thebytefarm/ciderpress', branch: 'main', directory: 'docs' },
+  reportLink: { repo: 'thebytefarm/ciderpress' },
+  topbar: {
+    nav: [
+      { title: 'Getting Started', link: '/getting-started/introduction' },
+      { title: 'Concepts', link: '/concepts/content' },
+      { title: 'Guides', link: '/guides/deploying-to-vercel' },
+      { title: 'Framework', link: '/framework/overview' },
+      { title: 'Reference', link: '/reference/configuration' },
+    ],
+    cta: { text: 'Get started →', href: '/getting-started/quick-start' },
+  },
+  sidebar: {
+    top: [
+      { text: 'Home', href: '/', icon: 'pixelarticons:home' },
+      { text: 'Changelog', href: '/changelog', icon: 'pixelarticons:notes' },
+    ],
+    bottom: [{ text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' }],
+    promo: {
       title: 'Ship docs that stay in sync',
       body: 'Pull docs from your codebase and keep them green automatically.',
       cta: { text: 'Try ciderpress →', href: '/getting-started/quick-start' },
     },
-    footer: {
-      tagline: 'powered by ciderpress',
-      columns: [
-        {
-          heading: 'Docs',
-          links: [
-            { text: 'Quickstart', href: '/getting-started/quick-start' },
-            { text: 'Guides', href: '/guides' },
-            { text: 'Reference', href: '/reference/configuration' },
-          ],
-        },
-        {
-          heading: 'Community',
-          links: [
-            { text: 'GitHub', href: 'https://github.com/thebytefarm/ciderpress' },
-            { text: 'npm', href: 'https://www.npmjs.com/package/ciderpress' },
-          ],
-        },
-      ],
-    },
   },
   home: {
-    features: { truncate: { description: 2 } },
-    // Landing-page extensions (mockup parity)
-    eyebrow: '★ open source · v0.5 · MIT',
-    trust: {
+    hero: {
+      label: '★ open source · v0.5 · MIT',
+      tagline:
+        'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
+      actions: [
+        {
+          variant: 'primary',
+          text: 'Introduction',
+          href: '/getting-started/introduction',
+        },
+        { variant: 'secondary', text: 'Quick Start', href: '/getting-started/quick-start' },
+      ],
+    },
+    proof: {
       lead: 'used by',
       names: ['maltty', 'viteval', 'massaman', 'marxml'],
+    },
+    features: {
+      truncate: { description: 2 },
+      items: [
+        {
+          title: 'Zero Effort',
+          description:
+            'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
+          icon: 'pixelarticons:speed-fast',
+        },
+        {
+          title: 'Your Structure',
+          description: 'Config maps to how you already organize markdown. The tool fits your docs.',
+          icon: 'pixelarticons:layout',
+        },
+        {
+          title: 'AI-Friendly',
+          description:
+            'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
+          icon: 'pixelarticons:robot',
+        },
+        {
+          title: 'Monorepo Native',
+          description: 'First-class workspace support with sidebar islands and auto-generated landing pages.',
+          icon: 'pixelarticons:git-merge',
+        },
+        {
+          title: 'VSCode Extension',
+          description: 'Preview your docs site directly inside VS Code as you write.',
+          icon: 'simple-icons:visualstudiocode',
+        },
+        {
+          title: 'OpenAPI Support',
+          description:
+            'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
+          icon: 'simple-icons:openapiinitiative',
+        },
+      ],
     },
     cta: {
       title: 'Ship the docs your team deserves.',
       subtitle: 'One CLI. Three minutes. Production-ready.',
       actions: [
-        { theme: 'brand', text: 'Get started', link: '/getting-started/quick-start' },
+        { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
         {
-          theme: 'alt',
+          variant: 'secondary',
           text: 'Star on GitHub →',
-          link: 'https://github.com/thebytefarm/ciderpress',
+          href: 'https://github.com/thebytefarm/ciderpress',
         },
       ],
     },
   },
-  sidebar: {
-    above: [
-      { text: 'Home', link: '/', icon: 'pixelarticons:home' },
-      { text: 'Changelog', link: '/changelog', icon: 'pixelarticons:notes' },
-    ],
-    below: [{ text: 'Contributing', link: '/contributing', icon: 'pixelarticons:git-merge' }],
-  },
-  actions: [
-    { theme: 'brand', text: 'Introduction', link: '/getting-started/introduction' },
-    { theme: 'alt', text: 'Quick Start', link: '/getting-started/quick-start' },
-  ],
-  features: [
-    {
-      title: 'Zero Effort',
-      description: 'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
-      icon: 'pixelarticons:speed-fast',
-    },
-    {
-      title: 'Your Structure',
-      description: 'Config maps to how you already organize markdown. The tool fits your docs.',
-      icon: 'pixelarticons:layout',
-    },
-    {
-      title: 'AI-Friendly',
-      description:
-        'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
-      icon: 'pixelarticons:robot',
-    },
-    {
-      title: 'Monorepo Native',
-      description: 'First-class workspace support with standalone sidebars and landing pages.',
-      icon: 'pixelarticons:git-merge',
-    },
-    {
-      title: 'VSCode Extension',
-      description: 'Preview your docs site directly inside VS Code as you write.',
-      icon: 'simple-icons:visualstudiocode',
-    },
-    {
-      title: 'OpenAPI Support',
-      description:
-        'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
-      icon: 'simple-icons:openapiinitiative',
-    },
-  ],
   packages: [
     {
       title: 'ciderpress',
@@ -121,7 +117,7 @@ export default defineConfig({
         'Documentation framework powered by Rspress with a config-driven information architecture',
       tags: ['typescript', 'node'],
       path: '/packages/ciderpress',
-      items: [
+      pages: [
         {
           title: 'Overview',
           path: '/packages/ciderpress',
@@ -140,7 +136,7 @@ export default defineConfig({
       description: 'CLI for building and serving ciderpress documentation sites',
       tags: ['typescript', 'node'],
       path: '/packages/cli',
-      items: [
+      pages: [
         { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
         {
           title: 'Changelog',
@@ -155,7 +151,7 @@ export default defineConfig({
       description: 'Configuration loading and validation for ciderpress',
       tags: ['typescript', 'zod'],
       path: '/packages/config',
-      items: [
+      pages: [
         { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
         {
           title: 'Changelog',
@@ -170,7 +166,7 @@ export default defineConfig({
       description: 'Rspress plugin, theme components, and styles for ciderpress',
       tags: ['typescript', 'react'],
       path: '/packages/ui',
-      items: [
+      pages: [
         { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
         {
           title: 'Changelog',
@@ -185,7 +181,7 @@ export default defineConfig({
       description: 'Theme types and definitions for ciderpress',
       tags: ['typescript'],
       path: '/packages/theme',
-      items: [
+      pages: [
         { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
         {
           title: 'Changelog',
@@ -203,17 +199,20 @@ export default defineConfig({
       path: '/packages/templates',
     },
   ],
-  openapi: {
-    spec: 'docs/examples/petstore.json',
-    path: '/petstore',
-    title: 'Petstore API',
-  },
-  sections: [
+  pages: [
     {
       title: 'Changelog',
       path: '/changelog',
       include: 'CHANGELOG.md',
-      hidden: true,
+      nav: { hidden: true },
+    },
+    // Petstore OpenAPI integration — mounts the spec under /petstore. Top-level
+    // `openapi` is gone in the new public API; each spec lives on a Page node.
+    {
+      title: 'Petstore API',
+      path: '/petstore',
+      nav: { hidden: true },
+      openapi: { spec: 'docs/examples/petstore.json', path: '/petstore', title: 'Petstore API' },
     },
     // Examples directory page. The MDX is auto-regenerated by
     // `scripts/build.lauf.ts` on every `pnpm docs:build`, so adding a
@@ -232,7 +231,7 @@ export default defineConfig({
       icon: 'pixelarticons:speed-fast',
       path: '/getting-started',
       landing: true,
-      items: [
+      pages: [
         {
           title: 'Introduction',
           description: 'What ciderpress is, why it exists, and what it gives you out of the box.',
@@ -253,7 +252,7 @@ export default defineConfig({
       icon: 'pixelarticons:book-open',
       path: '/concepts',
       landing: true,
-      items: [
+      pages: [
         {
           title: 'Content',
           description: 'How sections and pages define your information architecture.',
@@ -292,7 +291,7 @@ export default defineConfig({
       icon: 'pixelarticons:bookmark',
       path: '/guides',
       landing: true,
-      items: [
+      pages: [
         {
           title: 'Deploy to Vercel',
           description: 'Build and deploy your ciderpress site to Vercel static hosting.',
@@ -313,7 +312,7 @@ export default defineConfig({
       icon: 'pixelarticons:notes',
       path: '/framework',
       landing: true,
-      items: [
+      pages: [
         {
           title: 'Overview',
           description: 'Why documentation needs structure and how ciderpress maps to Diataxis.',
@@ -337,7 +336,7 @@ export default defineConfig({
           description: 'Starter templates for each documentation type.',
           path: '/framework/templates',
           include: 'docs/framework/templates.md',
-          items: [
+          pages: [
             {
               title: 'Concept',
               description: 'Copy-paste template for concept (explanation) documentation.',
@@ -366,16 +365,18 @@ export default defineConfig({
       icon: 'pixelarticons:list-box',
       path: '/reference',
       landing: true,
-      sort: (a, b) => {
-        if (a.title === 'Configuration') {
-          return -1
-        }
-        if (b.title === 'Configuration') {
-          return 1
-        }
-        return a.title.localeCompare(b.title)
+      discover: {
+        sort: (a, b) => {
+          if (a.title === 'Configuration') {
+            return -1
+          }
+          if (b.title === 'Configuration') {
+            return 1
+          }
+          return a.title.localeCompare(b.title)
+        },
       },
-      items: [
+      pages: [
         {
           title: 'Configuration',
           description: 'Complete reference for all ciderpress.config.ts fields and entry shapes.',
@@ -410,8 +411,8 @@ export default defineConfig({
           title: 'Built-ins',
           description: 'Components, diagrams, and markdown extensions included out of the box.',
           path: '/reference/built-ins',
-          sort: 'none',
-          items: [
+          discover: { sort: 'none' },
+          pages: [
             // Layout & Structure
             {
               title: 'Accordion',
@@ -538,7 +539,7 @@ export default defineConfig({
           title: 'Icons',
           description: 'Supported icon sets and color options.',
           path: '/reference/icons',
-          items: [
+          pages: [
             {
               title: 'Overview',
               description: 'Supported icon sets and how to use them across your site.',
@@ -557,7 +558,7 @@ export default defineConfig({
           title: 'Tags',
           description: 'Technology tag definitions for workspace cards.',
           path: '/reference/technology',
-          items: [
+          pages: [
             {
               title: 'Overview',
               description: 'How technology tags map to icons on workspace cards.',
@@ -608,27 +609,29 @@ export default defineConfig({
       title: 'Packages',
       icon: 'pixelarticons:archive',
       path: '/packages',
-      standalone: true,
-      sort: (a, b) => {
-        const order = ['ciderpress', '@ciderpress/cli', '@ciderpress/config', '@ciderpress/core']
-        const aIdx = order.indexOf(a.title)
-        const bIdx = order.indexOf(b.title)
-        if (aIdx !== -1 && bIdx !== -1) {
-          return aIdx - bIdx
-        }
-        if (aIdx !== -1) {
-          return -1
-        }
-        if (bIdx !== -1) {
-          return 1
-        }
-        return a.title.localeCompare(b.title)
+      nav: { island: true },
+      discover: {
+        sort: (a, b) => {
+          const order = ['ciderpress', '@ciderpress/cli', '@ciderpress/config', '@ciderpress/core']
+          const aIdx = order.indexOf(a.title)
+          const bIdx = order.indexOf(b.title)
+          if (aIdx !== -1 && bIdx !== -1) {
+            return aIdx - bIdx
+          }
+          if (aIdx !== -1) {
+            return -1
+          }
+          if (bIdx !== -1) {
+            return 1
+          }
+          return a.title.localeCompare(b.title)
+        },
       },
-      items: [
+      pages: [
         {
           title: 'ciderpress',
           path: '/packages/ciderpress',
-          items: [
+          pages: [
             {
               title: 'Overview',
               path: '/packages/ciderpress',
@@ -644,7 +647,7 @@ export default defineConfig({
         {
           title: '@ciderpress/cli',
           path: '/packages/cli',
-          items: [
+          pages: [
             { title: 'Overview', path: '/packages/cli', include: 'packages/cli/README.md' },
             {
               title: 'Changelog',
@@ -656,8 +659,12 @@ export default defineConfig({
         {
           title: '@ciderpress/config',
           path: '/packages/config',
-          items: [
-            { title: 'Overview', path: '/packages/config', include: 'packages/config/README.md' },
+          pages: [
+            {
+              title: 'Overview',
+              path: '/packages/config',
+              include: 'packages/config/README.md',
+            },
             {
               title: 'Changelog',
               path: '/packages/config/changelog',
@@ -668,7 +675,7 @@ export default defineConfig({
         {
           title: '@ciderpress/ui',
           path: '/packages/ui',
-          items: [
+          pages: [
             { title: 'Overview', path: '/packages/ui', include: 'packages/ui/README.md' },
             {
               title: 'Changelog',
@@ -680,7 +687,7 @@ export default defineConfig({
         {
           title: '@ciderpress/theme',
           path: '/packages/theme',
-          items: [
+          pages: [
             { title: 'Overview', path: '/packages/theme', include: 'packages/theme/README.md' },
             {
               title: 'Changelog',
@@ -692,7 +699,7 @@ export default defineConfig({
         {
           title: '@ciderpress/templates',
           path: '/packages/templates',
-          items: [
+          pages: [
             {
               title: 'Overview',
               path: '/packages/templates',
@@ -706,8 +713,8 @@ export default defineConfig({
       title: 'Contributing',
       icon: 'pixelarticons:git-merge',
       path: '/contributing',
-      standalone: true,
-      items: [
+      nav: { island: true },
+      pages: [
         {
           title: 'Overview',
           path: '/contributing',
@@ -717,66 +724,77 @@ export default defineConfig({
           title: { from: 'heading' },
           path: '/contributing/concepts',
           include: 'contributing/concepts/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: { from: 'heading' },
           path: '/contributing/concepts/engine',
           include: 'contributing/concepts/engine/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: { from: 'heading' },
           path: '/contributing/references',
           include: 'contributing/references/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: { from: 'heading' },
           path: '/contributing/guides',
           include: 'contributing/guides/*.md',
-          sort: 'alpha',
+          discover: { sort: 'alpha' },
         },
         {
           title: 'Standards',
-          items: [
+          pages: [
             {
               title: { from: 'heading' },
               path: '/contributing/standards/typescript',
               include: 'contributing/standards/typescript/*.md',
-              sort: 'alpha',
+              discover: { sort: 'alpha' },
             },
             {
               title: { from: 'heading' },
               path: '/contributing/standards/git',
               include: 'contributing/standards/git-*.md',
-              sort: 'alpha',
+              discover: { sort: 'alpha' },
             },
             {
               title: { from: 'heading' },
               path: '/contributing/standards/documentation',
               include: 'contributing/standards/documentation/*.md',
-              sort: 'alpha',
+              discover: { sort: 'alpha' },
             },
           ],
         },
       ],
     },
   ],
-  nav: [
-    { title: 'Getting Started', link: '/getting-started/introduction' },
-    { title: 'Concepts', link: '/concepts/content' },
-    { title: 'Guides', link: '/guides/deploying-to-vercel' },
-    { title: 'Framework', link: '/framework/overview' },
-    { title: 'Reference', link: '/reference/configuration' },
-  ],
-  socialLinks: [
-    { icon: 'github', mode: 'link', content: 'https://github.com/thebytefarm/ciderpress' },
-    { icon: 'npm', mode: 'link', content: 'https://www.npmjs.com/package/ciderpress' },
+  socials: [
+    { icon: 'github', url: 'https://github.com/thebytefarm/ciderpress' },
+    { icon: 'npm', url: 'https://www.npmjs.com/package/ciderpress' },
   ],
   footer: {
     message: 'Built with ciderpress',
-    copyright: `Copyright © ${new Date().getFullYear()} ciderpress`,
+    copyright: true,
+    tagline: 'powered by ciderpress',
     socials: true,
+    columns: [
+      {
+        heading: 'Docs',
+        links: [
+          { text: 'Quickstart', href: '/getting-started/quick-start' },
+          { text: 'Guides', href: '/guides' },
+          { text: 'Reference', href: '/reference/configuration' },
+        ],
+      },
+      {
+        heading: 'Community',
+        links: [
+          { text: 'GitHub', href: 'https://github.com/thebytefarm/ciderpress' },
+          { text: 'npm', href: 'https://www.npmjs.com/package/ciderpress' },
+        ],
+      },
+    ],
   },
 })

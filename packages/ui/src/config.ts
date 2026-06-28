@@ -6,14 +6,17 @@ import { fileURLToPath } from 'node:url'
 
 import type {
   BuiltInThemeName,
-  FaviconConfig,
+  ButtonConfig,
+  CiderpressConfig,
   HomeConfig,
+  HomeShowcaseConfig,
+  ImageSource,
   LoaderConfig,
   Paths,
   SerializedIcon,
   ThemeColors,
+  ThemeEntry,
   ThemeName,
-  CiderpressConfig,
 } from '@ciderpress/config'
 import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
 import {
@@ -26,7 +29,7 @@ import {
   resolveThemeVariants,
   themeToCss,
 } from '@ciderpress/theme'
-import type { ThemeVariant, CiderpressTheme } from '@ciderpress/theme'
+import type { CiderpressTheme, CiderpressThemeInput, ThemeVariant } from '@ciderpress/theme'
 import type { UserConfig } from '@rspress/core'
 import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
@@ -67,7 +70,7 @@ interface HeadScriptOptions {
   readonly useDotsLoader: boolean
   /**
    * Whether the inline FOUC loader is enabled at all. When `false`
-   * (i.e. `config.loader === false`), no loader CSS is emitted and no
+   * (i.e. `brand.loader === false`), no loader CSS is emitted and no
    * forced-dismiss fallback timer is scheduled — `data-cp-ready` flips
    * are skipped entirely so user CSS hooked on the dismissal lifecycle
    * stays quiet.
@@ -109,7 +112,7 @@ const LOADER_DOTS_JS = readJs('js/loader-dots.js')
 /**
  * Serialized registry of built-in themes — the static portion of the
  * `__CIDERPRESS_THEME_REGISTRY__` define. User-defined themes from
- * `config.themes` are appended per build inside `createRspressConfig`.
+ * `config.theme.themes` are appended per build inside `createRspressConfig`.
  */
 const BUILT_IN_THEME_REGISTRY: readonly ThemeRegistryEntry[] =
   Object.values(BUILT_IN_THEMES).map(buildRegistryEntry)
@@ -136,6 +139,17 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   })
   const gitBranch = detectGitBranch()
 
+  const brand = config.brand
+  const home = config.home
+  const editLink = config.editLink
+  const reportLink = config.reportLink
+  const topbar = config.topbar
+  const sidebar = config.sidebar
+  const footer = config.footer
+  const favicon = brand && brand.favicon
+  const loaderRaw = brand && brand.loader
+  const logoRaw = brand && brand.logo
+
   const themeName = resolveThemeName(config, options.themeOverride)
   const userThemes = resolveUserThemes(config)
   const variant = resolveActiveVariant({
@@ -149,14 +163,14 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const themeDarkColors = resolveThemeDarkColors(config)
 
   const userThemesCss = userThemes.map(themeToCss).join('')
-  const loaderStyle = resolveLoaderStyle(config.loader)
+  const loaderStyle = resolveLoaderStyle(loaderRaw)
   const themeCss = getThemeCss(themeName, loaderStyle) + userThemesCss
   const themeRegistry: readonly ThemeRegistryEntry[] = [
     ...BUILT_IN_THEME_REGISTRY,
     ...userThemes.map(buildRegistryEntry),
   ]
   const isVscode = vscode === true
-  const loaderMaxMs = resolveLoaderMaxMs(config.loader)
+  const loaderMaxMs = resolveLoaderMaxMs(loaderRaw)
   const headScriptBody = buildHeadScriptBody({
     variant,
     themeName,
@@ -192,6 +206,18 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     .with([P._, P.string.minLength(1)], ([, b]) => b)
     .otherwise(() => '/')
 
+  // Promoted into a serialized "site" block so theme-side components can
+  // continue to reach for site.{edit,report,topbarCta,sidebarPromo,announcement,footer,version}
+  // without re-deriving the layout from the unified config shape on every render.
+  const siteBlock = buildSiteBlock({
+    config,
+    editLink,
+    reportLink,
+    topbar,
+    sidebar,
+    footer,
+  })
+
   return {
     root: paths.contentDir,
     outDir: paths.distDir,
@@ -204,9 +230,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     title: config.title ?? 'ciderpress',
     description: config.description ?? 'Documentation',
 
-    icon: resolveFaviconPath(config.favicon),
+    icon: resolveFaviconPath(favicon),
     // `<HeaderLogo />` paints the visible brand inside `cp-header-logo`
-    // by reading `config.logo` from the bundled user config, and
+    // by reading `brand.logo` from the bundled user config, and
     // Rspress's built-in nav (`.rp-nav`) is visually hidden by CSS in
     // `ciderpress-header.css` — so this `logo` field never paints
     // pixels. Forward the static string form anyway so downstream
@@ -214,7 +240,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     // OpenGraph image generator) sees the user's intended asset. The
     // function form is non-serialisable for that audience; pass an
     // empty string there.
-    logo: match(config.logo)
+    logo: match(logoRaw)
       .with(P.string, (l) => l)
       .otherwise(() => ''),
     logoText: '',
@@ -253,7 +279,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       })(),
       html: {
         tags: [
-          ...resolveFaviconLinkTags(config.favicon),
+          ...resolveFaviconLinkTags(favicon),
           {
             tag: 'style',
             children: themeCss,
@@ -308,9 +334,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
           __CIDERPRESS_THEME_SWITCHER__: JSON.stringify(themeSwitcher),
           __CIDERPRESS_THEME_REGISTRY__: JSON.stringify(JSON.stringify(themeRegistry)),
           __CIDERPRESS_VSCODE__: JSON.stringify(isVscode),
-          __CIDERPRESS_HAS_USER_FAVICON__: JSON.stringify(config.favicon !== undefined),
-          __CIDERPRESS_LOADER_MIN_MS__: JSON.stringify(resolveLoaderMinMs(config.loader)),
-          __CIDERPRESS_LOADER_MAX_MS__: JSON.stringify(resolveLoaderMaxMs(config.loader)),
+          __CIDERPRESS_HAS_USER_FAVICON__: JSON.stringify(favicon !== undefined),
+          __CIDERPRESS_LOADER_MIN_MS__: JSON.stringify(resolveLoaderMinMs(loaderRaw)),
+          __CIDERPRESS_LOADER_MAX_MS__: JSON.stringify(resolveLoaderMaxMs(loaderRaw)),
           __CIDERPRESS_HAS_VARIANT_TOGGLE__: JSON.stringify(
             resolveHasVariantToggle({ themeName, themeSwitcher, registry: themeRegistry })
           ),
@@ -342,12 +368,12 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),
       ...({
-        socialLinks: config.socialLinks,
-        sidebarAbove: resolveSidebarLinks({ config, position: 'above' }),
-        sidebarBelow: resolveSidebarLinks({ config, position: 'below' }),
-        home: resolveHomeConfig(config),
-        ciderpressFooter: config.footer,
-        site: config.site,
+        socialLinks: serializeSocials(config.socials),
+        sidebarAbove: resolveSidebarLinks({ config, position: 'top' }),
+        sidebarBelow: resolveSidebarLinks({ config, position: 'bottom' }),
+        home: resolveHomeConfig(home),
+        ciderpressFooter: footer,
+        site: siteBlock,
       } as Record<string, unknown>),
     },
   }
@@ -403,12 +429,12 @@ function detectGitBranch(): string {
  * The requested name is normalized through `resolveThemeAlias` so legacy
  * slugs (e.g. `'default'`) map to their canonical apple-named built-in
  * before registry membership is checked. Custom themes declared in
- * `config.themes` are validated by their raw name (aliases only ever
+ * `theme.themes` are validated by their raw name (aliases only ever
  * point at built-ins).
  *
  * An unknown name — caused by a typo or by removing a custom theme without
- * updating `theme.name` — writes a warning to stderr and falls back to
- * `DEFAULT_THEME_NAME` so the build still produces working CSS.
+ * updating the default marker — writes a warning to stderr and falls back
+ * to `DEFAULT_THEME_NAME` so the build still produces working CSS.
  *
  * @private
  * @param config - Ciderpress config object
@@ -422,14 +448,15 @@ function resolveThemeName(config: CiderpressConfig, override?: ThemeName): Theme
     return requested
   }
   process.stderr.write(
-    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in config.themes. Falling back to '${DEFAULT_THEME_NAME}'.\n`
+    `[ciderpress] Unknown theme '${requested}' — not a built-in and not declared in theme.themes. Falling back to '${DEFAULT_THEME_NAME}'.\n`
   )
   return DEFAULT_THEME_NAME
 }
 
 /**
  * Pick the theme name the consumer asked for, in precedence order:
- * CLI override > `config.theme.name` > `DEFAULT_THEME_NAME`.
+ * CLI override > default entry in `theme.themes` > first entry in
+ * `theme.themes` > `DEFAULT_THEME_NAME`.
  *
  * @private
  * @param config - Ciderpress config object
@@ -440,15 +467,70 @@ function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeNam
   if (override) {
     return override
   }
-  if (config.theme && config.theme.name) {
-    return config.theme.name
+  const fromThemes = resolveDefaultEntryName(config.theme && config.theme.themes)
+  if (fromThemes !== undefined) {
+    return fromThemes
   }
   return DEFAULT_THEME_NAME
 }
 
 /**
+ * Pick the active theme name from a `ThemeEntry[]` array — the entry
+ * carrying `default: true` wins; otherwise the first entry; otherwise
+ * `undefined`.
+ *
+ * @private
+ * @param themes - Optional themes array from `theme.themes`
+ * @returns Active theme name, or `undefined` when the array is empty / absent
+ */
+function resolveDefaultEntryName(themes: readonly ThemeEntry[] | undefined): string | undefined {
+  if (themes === undefined || themes.length === 0) {
+    return undefined
+  }
+  const marked = themes.find(isDefaultMarked)
+  if (marked !== undefined) {
+    return readThemeEntryName(marked)
+  }
+  return readThemeEntryName(themes[0])
+}
+
+/**
+ * Type-guard: a `ThemeEntry` carries an explicit `default: true` marker.
+ *
+ * @private
+ * @param entry - Theme entry to test
+ * @returns True when the entry is marked default
+ */
+function isDefaultMarked(entry: ThemeEntry): boolean {
+  if (typeof entry === 'string') {
+    return false
+  }
+  const obj = entry as { readonly default?: boolean }
+  return obj.default === true
+}
+
+/**
+ * Read the `name` off any `ThemeEntry` shape — bare built-in name,
+ * `{ name }` wrapper, or full custom-theme input.
+ *
+ * @private
+ * @param entry - Theme entry to read
+ * @returns The entry's resolved name
+ */
+function readThemeEntryName(entry: ThemeEntry): string {
+  if (typeof entry === 'string') {
+    return entry
+  }
+  const obj = entry as { readonly name?: string }
+  if (typeof obj.name === 'string') {
+    return obj.name
+  }
+  return ''
+}
+
+/**
  * Build the set of theme names known to this build — built-in themes plus
- * any user themes declared in `config.themes` (each validated through
+ * any user themes declared in `theme.themes` (each validated through
  * `defineTheme` to surface bad input before this point).
  *
  * @private
@@ -457,14 +539,14 @@ function resolveRequestedThemeName(config: CiderpressConfig, override?: ThemeNam
  */
 function collectRegisteredThemeNames(config: CiderpressConfig): ReadonlySet<string> {
   const builtIn = Object.keys(BUILT_IN_THEMES)
-  const user = (config.themes ?? []).map((t) => t.name)
+  const user = resolveUserThemeInputs(config).map((t) => t.name)
   return new Set<string>([...builtIn, ...user])
 }
 
 /**
  * Resolve the initial variant to render for the active theme.
  *
- * Precedence: CLI override > `config.theme.variant` > theme's own
+ * Precedence: CLI override > `theme.defaultVariant` > theme's own
  * `defaultVariant`. When the requested variant is not declared by the
  * active theme, falls back to the theme's `defaultVariant` (and writes
  * a warning to stderr).
@@ -482,9 +564,11 @@ function resolveActiveVariant(params: {
   const supported = resolveSupportedVariants(params.themeName, params.userThemes)
   const themeBlock = params.config.theme
   const fromConfig = match(themeBlock)
-    .with(undefined, () => {})
-    .otherwise((block) => block.variant)
-  const requested = params.override ?? fromConfig
+    .with(undefined, () => undefined)
+    .otherwise((block) => block.defaultVariant)
+  const requested = match(params.override)
+    .with(P.nonNullable, (o) => o)
+    .otherwise(() => normaliseConfigVariant(fromConfig))
   if (requested !== undefined && supported.includes(requested)) {
     return requested
   }
@@ -504,13 +588,31 @@ function resolveActiveVariant(params: {
 }
 
 /**
+ * Coerce a `ThemeSettings.defaultVariant` value (which accepts `'system'`)
+ * into a concrete `ThemeVariant`. `'system'` defers to the theme's own
+ * declared default, so it is treated as `undefined` here.
+ *
+ * @private
+ * @param raw - Raw default-variant value from config
+ * @returns Concrete `ThemeVariant` or `undefined`
+ */
+function normaliseConfigVariant(
+  raw: 'light' | 'dark' | 'system' | undefined
+): ThemeVariant | undefined {
+  if (raw === 'light' || raw === 'dark') {
+    return raw
+  }
+  return undefined
+}
+
+/**
  * Variants declared by the active theme (built-in or user). Used to
- * validate `theme.variant` overrides and to fall back to a sensible
- * default when the request is unsupported.
+ * validate `theme.defaultVariant` overrides and to fall back to a
+ * sensible default when the request is unsupported.
  *
  * @private
  * @param themeName - Resolved theme name
- * @param userThemes - Validated user themes from `config.themes`
+ * @param userThemes - Validated user themes from `theme.themes`
  * @returns Variants the theme supports
  */
 function resolveSupportedVariants(
@@ -530,15 +632,27 @@ function resolveSupportedVariants(
 }
 
 /**
- * Resolve whether the theme switcher is enabled.
+ * Resolve whether the named-theme switcher is enabled.
+ *
+ * Defaults to `true` when more than one theme is declared in
+ * `theme.themes`, since the picker becomes visually meaningful then;
+ * explicit `theme.themeSwitcher` always wins.
  *
  * @private
  * @param config - Ciderpress config object
  * @returns True if the theme switcher is enabled
  */
 function resolveThemeSwitcher(config: CiderpressConfig): boolean {
-  if (config.theme && config.theme.switcher) {
-    return config.theme.switcher
+  const themeBlock = config.theme
+  if (themeBlock === undefined) {
+    return false
+  }
+  if (themeBlock.themeSwitcher !== undefined) {
+    return themeBlock.themeSwitcher
+  }
+  const themes = themeBlock.themes
+  if (themes !== undefined && themes.length > 1) {
+    return true
   }
   return false
 }
@@ -552,31 +666,65 @@ function resolveThemeSwitcher(config: CiderpressConfig): boolean {
  * @returns Theme color overrides
  */
 function resolveThemeColors(config: CiderpressConfig): ThemeColors {
-  if (config.theme && config.theme.colors) {
-    return config.theme.colors
+  if (config.theme && config.theme.overrides) {
+    return config.theme.overrides
   }
   return {}
 }
 
 /**
- * Resolve theme color overrides applied to the `dark` variant,
- * defaulting to empty object.
+ * Resolve theme color overrides applied to the `dark` variant.
+ *
+ * The new `ThemeSettings` block flattens light/dark overrides into a
+ * single `overrides` field; the per-variant split that used to live on
+ * `theme.darkColors` is gone. Return an empty object so the runtime
+ * never tries to apply a dark-only set.
+ *
+ * @private
+ * @param _config - Ciderpress config object
+ * @returns Empty `ThemeColors` object
+ */
+function resolveThemeDarkColors(_config: CiderpressConfig): ThemeColors {
+  return {}
+}
+
+/**
+ * Extract the custom-theme inputs from a `ThemeEntry[]` array — bare
+ * built-in names are skipped; `{ name }` wrappers without a full custom
+ * theme are skipped; full custom theme definitions (with or without a
+ * `default` marker) are stripped of that marker and returned.
  *
  * @private
  * @param config - Ciderpress config object
- * @returns Dark variant color overrides
+ * @returns Plain custom-theme inputs in declaration order
  */
-function resolveThemeDarkColors(config: CiderpressConfig): ThemeColors {
-  if (config.theme && config.theme.darkColors) {
-    return config.theme.darkColors
+function resolveUserThemeInputs(config: CiderpressConfig): readonly CiderpressThemeInput[] {
+  const themes = config.theme && config.theme.themes
+  if (!themes) {
+    return []
   }
-  return {}
+  return themes.flatMap((entry) => {
+    if (typeof entry === 'string') {
+      return []
+    }
+    const obj = entry as Record<string, unknown>
+    // Full custom themes carry a `variants` field; the `{ name }` shorthand does not.
+    if (!('variants' in obj)) {
+      return []
+    }
+    // Strip the optional `default` marker before handing to `defineTheme`.
+    const { default: _default, ...rest } = obj as { readonly default?: boolean } & Record<
+      string,
+      unknown
+    >
+    return [rest as unknown as CiderpressThemeInput]
+  })
 }
 
 /**
- * Validate and freeze every `CiderpressThemeInput` declared in `config.themes`,
- * producing fully-typed `CiderpressTheme` instances ready for CSS emission and
- * registry serialisation.
+ * Validate and freeze every `CiderpressThemeInput` declared in
+ * `theme.themes`, producing fully-typed `CiderpressTheme` instances
+ * ready for CSS emission and registry serialisation.
  *
  * Each input flows through `defineTheme`, which runs each variant's token
  * tree through `tokensSchema` — surfaced validation errors are intentional
@@ -587,10 +735,7 @@ function resolveThemeDarkColors(config: CiderpressConfig): ThemeColors {
  * @returns Resolved user theme definitions, in declaration order
  */
 function resolveUserThemes(config: CiderpressConfig): readonly CiderpressTheme[] {
-  if (!config.themes) {
-    return []
-  }
-  return config.themes.map(defineTheme)
+  return resolveUserThemeInputs(config).map(defineTheme)
 }
 
 /**
@@ -602,7 +747,7 @@ function resolveUserThemes(config: CiderpressConfig): readonly CiderpressTheme[]
  */
 function resolveSidebarLinks(params: {
   readonly config: CiderpressConfig
-  readonly position: 'above' | 'below'
+  readonly position: 'top' | 'bottom'
 }): readonly {
   text: string
   link: string
@@ -610,38 +755,232 @@ function resolveSidebarLinks(params: {
   style?: 'brand' | 'alt' | 'ghost'
   shape?: 'square' | 'rounded' | 'circle'
 }[] {
-  const items = params.config.sidebar && params.config.sidebar[params.position]
+  const sidebar = params.config.sidebar
+  if (sidebar === undefined) {
+    return []
+  }
+  const items = sidebar[params.position]
   if (!items) {
     return []
   }
   return items.map((item) => ({
     text: item.text,
-    link: item.link,
+    link: item.href,
     icon: serializeIcon(resolveOptionalIcon(item.icon)),
-    style: item.style,
+    style: mapButtonVariantToStyle(item.variant),
     shape: item.shape,
   }))
 }
 
 /**
- * Resolve home page layout config with defaults.
- * Workspaces default to 2 columns.
+ * Map the unified `ButtonConfig.variant` vocabulary back into the
+ * legacy `style` string the runtime theme components were authored
+ * against. `'primary'` → `'brand'`, `'secondary'` → `'alt'`, `'ghost'`
+ * passes through unchanged.
  *
  * @private
- * @param config - Ciderpress config object
- * @returns Resolved home config
+ * @param variant - Optional button variant from the unified config
+ * @returns Legacy `style` token consumed by the runtime
  */
-function resolveHomeConfig(config: CiderpressConfig): HomeConfig {
-  if (config.home) {
-    return {
-      ...config.home,
-      workspaces: {
-        columns: 2,
-        ...config.home.workspaces,
-      },
-    }
+function mapButtonVariantToStyle(
+  variant: ButtonConfig['variant']
+): 'brand' | 'alt' | 'ghost' | undefined {
+  return match(variant)
+    .with(undefined, () => undefined)
+    .with('primary', () => 'brand' as const)
+    .with('secondary', () => 'alt' as const)
+    .with('ghost', () => 'ghost' as const)
+    .exhaustive()
+}
+
+/**
+ * Serialize the unified `SocialLink[]` carried at the top level of
+ * `CiderpressConfig` into a plain `{ icon, url, label }` shape consumed
+ * at runtime by `<CiderpressNavSocialLinks />`. The legacy Rspress
+ * `mode` / `content` discriminator is gone — every link is rendered as
+ * a plain anchor.
+ *
+ * @private
+ * @param socials - Optional socials array from the top-level config
+ * @returns Serialised social-link records
+ */
+function serializeSocials(socials: CiderpressConfig['socials']): readonly {
+  readonly icon: unknown
+  readonly url: string
+  readonly label: string | undefined
+}[] {
+  if (socials === undefined) {
+    return []
   }
-  return { workspaces: { columns: 2 } }
+  return socials.map((entry) => ({
+    icon: entry.icon,
+    url: entry.url,
+    label: entry.label,
+  }))
+}
+
+/**
+ * Promoted `Site*`-style block surfaced to the runtime — kept distinct
+ * from the unified `CiderpressConfig` shape so the React layer can keep
+ * reading `site.{edit,report,topbarCta,sidebarPromo,announcement,footer,version}`
+ * without re-deriving every render.
+ */
+interface SiteBlock {
+  readonly version: string | undefined
+  readonly edit:
+    | {
+        readonly repo: string
+        readonly branch?: string
+        readonly directory?: string
+        readonly label?: string
+      }
+    | undefined
+  readonly report:
+    | {
+        readonly repo: string
+        readonly branch?: string
+        readonly directory?: string
+        readonly label?: string
+      }
+    | undefined
+  readonly topbarCta: { readonly text: string; readonly href: string } | undefined
+  readonly sidebarPromo:
+    | {
+        readonly title: string
+        readonly body: string
+        readonly cta: { readonly text: string; readonly href: string }
+      }
+    | undefined
+  readonly announcement:
+    | {
+        readonly id?: string
+        readonly lead?: string
+        readonly message: string
+        readonly cta?: { readonly href: string; readonly label: string }
+        readonly persistent?: boolean
+      }
+    | undefined
+  readonly footer:
+    | {
+        readonly columns?: readonly {
+          readonly heading: string
+          readonly links: readonly { readonly text: string; readonly href: string }[]
+        }[]
+        readonly tagline?: string
+        readonly brandMark?: string
+      }
+    | undefined
+}
+
+/**
+ * Project the unified config into the runtime `SiteBlock`. The new
+ * config shape promotes `version` to top-level, replaces `site.edit`
+ * with `editLink`, splits `topbar` / `sidebar` / `footer` into their
+ * own blocks, and removes the `site` wrapper entirely; the React layer
+ * still reads through `site.*`, so we rebuild that view here.
+ *
+ * @private
+ * @param params - Slices of the unified config relevant to the runtime view
+ * @returns Serialised `Site`-shape consumed by theme components
+ */
+function buildSiteBlock(params: {
+  readonly config: CiderpressConfig
+  readonly editLink: CiderpressConfig['editLink']
+  readonly reportLink: CiderpressConfig['reportLink']
+  readonly topbar: CiderpressConfig['topbar']
+  readonly sidebar: CiderpressConfig['sidebar']
+  readonly footer: CiderpressConfig['footer']
+}): SiteBlock {
+  const editBlock = match(params.editLink)
+    .with(undefined, () => undefined)
+    .with(false, () => undefined)
+    .otherwise((e) => {
+      if (e.repo === undefined) {
+        return undefined
+      }
+      return {
+        repo: e.repo,
+        branch: e.branch,
+        directory: e.directory,
+        label: e.label,
+      }
+    })
+
+  const reportBlock = match(params.reportLink)
+    .with(undefined, () => undefined)
+    .with(false, () => undefined)
+    .otherwise((r) => {
+      if (r.repo === undefined) {
+        return undefined
+      }
+      return {
+        repo: r.repo,
+        branch: r.branch,
+        directory: r.directory,
+        label: r.label,
+      }
+    })
+
+  const topbar = params.topbar
+  const topbarCta = match(topbar)
+    .with(undefined, () => undefined)
+    .otherwise((t) => {
+      const cta = t.cta
+      if (cta === undefined) {
+        return undefined
+      }
+      return { text: cta.text, href: cta.href }
+    })
+
+  const announcement = match(topbar)
+    .with(undefined, () => undefined)
+    .otherwise((t) => t.announcement)
+
+  const sidebar = params.sidebar
+  const sidebarPromo = match(sidebar)
+    .with(undefined, () => undefined)
+    .otherwise((s) => s.promo)
+
+  const footer = params.footer
+  const footerBlock = match(footer)
+    .with(undefined, () => undefined)
+    .otherwise((f) => ({
+      columns: f.columns,
+      tagline: f.tagline,
+      brandMark: f.brandMark,
+    }))
+
+  return {
+    version: params.config.version,
+    edit: editBlock,
+    report: reportBlock,
+    topbarCta,
+    sidebarPromo,
+    announcement,
+    footer: footerBlock,
+  }
+}
+
+/**
+ * Resolve home page layout config with defaults.
+ * Showcase defaults to 2 columns.
+ *
+ * @private
+ * @param home - Raw home config from the user
+ * @returns Resolved home config with showcase defaults applied
+ */
+function resolveHomeConfig(home: HomeConfig | undefined): HomeConfig {
+  const fallbackShowcase: HomeShowcaseConfig = { columns: 2 }
+  if (home === undefined) {
+    return { hero: {}, showcase: fallbackShowcase }
+  }
+  return {
+    ...home,
+    showcase: {
+      columns: 2,
+      ...home.showcase,
+    },
+  }
 }
 
 /**
@@ -722,7 +1061,7 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
   // plain http with no service worker, an errored bundle, etc.). The
   // setTimeout flips `data-cp-ready` after `loaderMaxMs` so the loader
   // can't get visually stuck. Skipped entirely when the loader is
-  // disabled (`config.loader === false`) — otherwise we'd flip
+  // disabled (`brand.loader === false`) — otherwise we'd flip
   // `data-cp-ready` on pages that have no loader to dismiss, which
   // would still fire user CSS hooked on that attribute.
   const fallbackJs = match(options.loaderEnabled)
@@ -740,17 +1079,22 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
 }
 
 /**
- * Normalize `config.loader` into the `LoaderStyle` consumed by
+ * Raw loader value pulled from `config.brand.loader`. The new `BrandConfig`
+ * union accepts `false`, `'apple' | 'classic'`, a static-glyph object, or a
+ * React-component object.
+ */
+type BrandLoaderRaw = false | 'apple' | 'classic' | LoaderConfig | undefined
+
+/**
+ * Normalize `brand.loader` into the `LoaderStyle` consumed by
  * `getThemeCss`. Defaults to `'apple'` when omitted; `false` flows
  * through unchanged; `LoaderConfig` objects flow through unchanged.
  *
  * @private
- * @param loader - Raw `config.loader` value
+ * @param loader - Raw `brand.loader` value
  * @returns Resolved `LoaderStyle`
  */
-function resolveLoaderStyle(
-  loader: CiderpressConfig['loader']
-): false | 'apple' | 'classic' | LoaderConfig {
+function resolveLoaderStyle(loader: BrandLoaderRaw): false | 'apple' | 'classic' | LoaderConfig {
   if (loader === undefined) {
     return 'apple'
   }
@@ -761,10 +1105,10 @@ function resolveLoaderStyle(
  * Resolve the minimum loader display time in ms.
  *
  * @private
- * @param loader - Raw `config.loader` value
+ * @param loader - Raw `brand.loader` value
  * @returns Minimum display time in ms
  */
-export function resolveLoaderMinMs(loader: CiderpressConfig['loader']): number {
+export function resolveLoaderMinMs(loader: BrandLoaderRaw): number {
   if (isLoaderConfig(loader) && typeof loader.minDisplayMs === 'number') {
     return loader.minDisplayMs
   }
@@ -775,10 +1119,10 @@ export function resolveLoaderMinMs(loader: CiderpressConfig['loader']): number {
  * Resolve the forced-dismiss timeout in ms.
  *
  * @private
- * @param loader - Raw `config.loader` value
+ * @param loader - Raw `brand.loader` value
  * @returns Forced-dismiss timeout in ms
  */
-export function resolveLoaderMaxMs(loader: CiderpressConfig['loader']): number {
+export function resolveLoaderMaxMs(loader: BrandLoaderRaw): number {
   if (isLoaderConfig(loader) && typeof loader.maxDisplayMs === 'number') {
     return loader.maxDisplayMs
   }
@@ -790,23 +1134,23 @@ export function resolveLoaderMaxMs(loader: CiderpressConfig['loader']): number {
  * `minDisplayMs` / `maxDisplayMs` off raw config values.
  *
  * @private
- * @param loader - Raw `config.loader` value
+ * @param loader - Raw `brand.loader` value
  * @returns True when `loader` is the `LoaderConfig` object form
  */
-function isLoaderConfig(loader: CiderpressConfig['loader']): loader is LoaderConfig {
+function isLoaderConfig(loader: BrandLoaderRaw): loader is LoaderConfig {
   return typeof loader === 'object' && loader !== null
 }
 
 /**
  * Resolve the favicon path Rspress writes to `<link rel="icon">`.
- * Accepts the `FaviconConfig` union — string shorthand or `{ src, type }`
+ * Accepts the `ImageSource` union — string shorthand or `{ src, type }`
  * object — and returns the resolved string path.
  *
  * @private
- * @param favicon - Raw `config.favicon` value
+ * @param favicon - Raw `brand.favicon` value
  * @returns Favicon path string
  */
-function resolveFaviconPath(favicon: FaviconConfig | undefined): string {
+function resolveFaviconPath(favicon: ImageSource | undefined): string {
   if (favicon === undefined) {
     return '/icon.svg'
   }
@@ -818,16 +1162,16 @@ function resolveFaviconPath(favicon: FaviconConfig | undefined): string {
 
 /**
  * Build any extra `<link rel="icon">` head tags needed to honour
- * `config.favicon`'s `type` field. Rspress's built-in `icon` field
+ * `brand.favicon`'s `type` field. Rspress's built-in `icon` field
  * emits a `<link>` with auto-derived `type` from the file extension —
  * if the user supplied an explicit `type` we add a second link tag
  * with the exact MIME they asked for so browsers always pick it.
  *
  * @private
- * @param favicon - Raw `config.favicon` value
+ * @param favicon - Raw `brand.favicon` value
  * @returns Head tag entries (zero or one)
  */
-function resolveFaviconLinkTags(favicon: FaviconConfig | undefined): readonly {
+function resolveFaviconLinkTags(favicon: ImageSource | undefined): readonly {
   readonly tag: string
   readonly attrs: Record<string, string>
   readonly head: true

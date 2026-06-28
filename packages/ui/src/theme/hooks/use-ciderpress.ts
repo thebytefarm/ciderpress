@@ -1,4 +1,4 @@
-import type { FooterConfig, HomeConfig, SerializedIcon, SiteConfig } from '@ciderpress/config'
+import type { FooterConfig, HomeConfig, SerializedIcon } from '@ciderpress/config'
 import { useSite } from '@rspress/core/runtime'
 
 export interface CiderpressSidebarItem {
@@ -33,6 +33,61 @@ export interface WorkspaceGroupData {
   readonly cards: readonly WorkspaceCardData[]
 }
 
+/**
+ * Serialised view of the unified `CiderpressConfig` that the runtime
+ * theme components still read through. The `site` field is rebuilt in
+ * `packages/ui/src/config.ts` (`buildSiteBlock`) from the new top-level
+ * `editLink` / `reportLink` / `topbar` / `sidebar` / `footer` / `version`
+ * config — kept under the legacy `site.*` name so theme components don't
+ * need to be rewired to look up each field individually.
+ */
+export interface CiderpressSiteBlock {
+  readonly version: string | undefined
+  readonly edit:
+    | {
+        readonly repo: string
+        readonly branch?: string
+        readonly directory?: string
+        readonly label?: string
+      }
+    | undefined
+  readonly report:
+    | {
+        readonly repo: string
+        readonly branch?: string
+        readonly directory?: string
+        readonly label?: string
+      }
+    | undefined
+  readonly topbarCta: { readonly text: string; readonly href: string } | undefined
+  readonly sidebarPromo:
+    | {
+        readonly title: string
+        readonly body: string
+        readonly cta: { readonly text: string; readonly href: string }
+      }
+    | undefined
+  readonly announcement:
+    | {
+        readonly id?: string
+        readonly lead?: string
+        readonly message: string
+        readonly cta?: { readonly href: string; readonly label: string }
+        readonly persistent?: boolean
+      }
+    | undefined
+  readonly footer:
+    | {
+        readonly columns?: readonly {
+          readonly heading: string
+          readonly links: readonly { readonly text: string; readonly href: string }[]
+        }[]
+        readonly tagline?: string
+        readonly brandMark?: string
+      }
+    | undefined
+}
+
 interface CiderpressThemeConfig {
   readonly sidebar: Record<string, readonly CiderpressSidebarItem[]>
   readonly sidebarAbove: readonly CiderpressSidebarLink[] | undefined
@@ -41,7 +96,7 @@ interface CiderpressThemeConfig {
   readonly standaloneScopePaths: readonly string[] | undefined
   readonly home: HomeConfig | undefined
   readonly ciderpressFooter: FooterConfig | undefined
-  readonly site: SiteConfig | undefined
+  readonly site: CiderpressSiteBlock | undefined
 }
 
 /**
