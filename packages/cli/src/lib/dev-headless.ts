@@ -73,6 +73,10 @@ export async function runDevHeadless(options: RunDevHeadlessOptions): Promise<vo
   })
 
   log(`ready: ${server.url}`)
+  const localUrl = `http://${server.host}:${server.port}`
+  if (server.url !== localUrl) {
+    log(`local: ${localUrl}`)
+  }
 
   if (config.devServer?.open === true) {
     openBrowser(server.url)

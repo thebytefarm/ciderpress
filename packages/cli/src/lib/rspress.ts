@@ -69,6 +69,8 @@ export type OnConfigReload = (newConfig: CiderpressConfig) => Promise<void>
  * Result returned by `startDevServer` containing the reload callback,
  * the resolved port and host the server bound to, and the
  * externally-visible URL surfaced to the terminal / browser auto-open.
+ *
+ * Callers that need the local bind URL derive it from `http://${host}:${port}`.
  */
 export interface DevServerResult {
   readonly onConfigReload: OnConfigReload

@@ -37,17 +37,18 @@ export default defineConfig({
   theme: { themes: ['midnight'] },
 
   // Dev-server configuration. `url` is the externally-visible address
-  // ciderpress prints + auto-opens; the dev server still binds to
-  // localhost:6174 underneath.
+  // we tell the user to visit; the dev server still binds to
+  // localhost:6174 underneath. When portless is running, visit
+  // https://acme.localhost. When it isn't (e.g. `pnpm dev:custom`
+  // standalone), the ready message also prints the local fallback.
   //
-  // Paired with `"portless": "acme"` in package.json so portless serves
-  // this at https://acme.localhost. Run `pnpm setup` first to verify
-  // portless is installed, then `portless` to start the proxy.
+  // `open: true` is intentionally off here so we don't auto-open an
+  // unreachable URL when portless isn't running. Run `portless` from
+  // this directory and the proxy will handle opening the right URL.
   //
   // See /guides/using-portless for the full walkthrough.
   devServer: {
     url: 'https://acme.localhost',
-    open: true,
   },
 
   brand: {
