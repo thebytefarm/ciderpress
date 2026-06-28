@@ -3,12 +3,18 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
+  "portless": "acme",
   "scripts": {
+    "setup": "zx scripts/setup.ts",
+    "dev": "ciderpress dev",
     "docs:dev": "ciderpress dev",
     "docs:build": "ciderpress build",
     "docs:serve": "ciderpress serve"
   },
   "dependencies": {
     "ciderpress": "workspace:*"
+  },
+  "devDependencies": {
+    "zx": "^8.8.5"
   }
 }

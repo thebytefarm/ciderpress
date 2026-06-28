@@ -36,14 +36,15 @@ export default defineConfig({
 
   theme: { themes: ['midnight'] },
 
-  // Dev-server configuration. Set `url` to the externally-visible address
-  // ciderpress should print + auto-open. Useful when a reverse proxy
-  // (portless.sh, ngrok, Caddy, …) fronts the dev server with a stable
-  // hostname. The dev server still binds to `host` / `port` locally —
-  // `url` is purely a display + auto-open hint.
+  // Dev-server configuration. `url` is the externally-visible address
+  // ciderpress prints + auto-opens; the dev server still binds to
+  // localhost:6174 underneath.
   //
-  // Run `portless` from this directory and visit https://acme.localhost.
-  // See `/guides/using-portless` for setup.
+  // Paired with `"portless": "acme"` in package.json so portless serves
+  // this at https://acme.localhost. Run `pnpm setup` first to verify
+  // portless is installed, then `portless` to start the proxy.
+  //
+  // See /guides/using-portless for the full walkthrough.
   devServer: {
     url: 'https://acme.localhost',
     open: true,

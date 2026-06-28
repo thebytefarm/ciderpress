@@ -10,14 +10,18 @@ description: Run ciderpress dev behind portless.sh for stable HTTPS hostnames in
 ## Install portless
 
 ```bash
-npm install -g @vercel/portless
+npm install -g portless
 ```
 
 First run on macOS / Linux generates and trusts a local CA, then binds port 443 (sudo-elevates as needed). No further setup.
 
 ## Configure ciderpress
 
-Set `devServer.url` to the portless hostname you want to be reachable at:
+Three things need to line up so portless serves your docs at the hostname you want:
+
+1. **`devServer.url`** in `ciderpress.config.ts` — where the "ready: …" message points and what the browser auto-opens.
+2. **`portless`** field in `package.json` — overrides the inferred subdomain so portless serves at `acme.localhost` instead of `<package-name>.localhost`.
+3. **`dev` script** in `package.json` — portless runs the `dev` script when invoked with no args.
 
 ```ts title="ciderpress.config.ts"
 import { defineConfig } from 'ciderpress'
@@ -28,13 +32,25 @@ export default defineConfig({
     /* ... */
   ],
   devServer: {
-    url: 'https://docs.acme.localhost',
+    url: 'https://acme.localhost',
     open: true,
   },
 })
 ```
 
+```jsonc title="package.json"
+{
+  "name": "example-custom",
+  "portless": "acme",
+  "scripts": {
+    "dev": "ciderpress dev"
+  }
+}
+```
+
 `devServer.url` does not change which port ciderpress binds to — the dev server still listens on `localhost:6174` (or your configured `host` / `port`). It only changes what the "ready: …" message prints and what `o` / `--open` opens in the browser.
+
+> **See it working:** the [`examples/custom`](https://github.com/thebytefarm/ciderpress/tree/main/examples/custom) example ships with portless pre-configured. Run `pnpm setup` inside it to verify your machine is ready, then `portless` from the same directory.
 
 ## Run portless
 
@@ -44,7 +60,7 @@ From your project directory:
 portless
 ```
 
-portless reads the `dev` script from `package.json`, picks an upstream port, runs `ciderpress dev` against it, and registers the route. Visit the URL ciderpress prints (`https://docs.acme.localhost`) — portless terminates TLS and forwards to the dev server.
+portless reads the `dev` script from `package.json`, picks an upstream port, runs `ciderpress dev` against it, and registers the route at `https://<portless-name>.localhost`. Visit the URL ciderpress prints — portless terminates TLS and forwards to the dev server.
 
 ## Why it works
 
