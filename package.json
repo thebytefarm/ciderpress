@@ -23,7 +23,7 @@
     "docs:build": "lauf run build",
     "docs:serve": "node packages/ciderpress/dist/cli.mjs serve",
     "docs:generate": "lauf run docs",
-    "dev": "turbo run dev",
+    "dev": "turbo run dev //#docs:dev",
     "stories": "pnpm --filter @ciderpress/cli stories",
     "ladle": "pnpm --filter @ciderpress/ui ladle",
     "examples": "lauf run examples",

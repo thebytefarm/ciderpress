@@ -19,6 +19,10 @@
       "cache": false,
       "persistent": true
     },
+    "//#docs:dev": {
+      "cache": false,
+      "persistent": true
+    },
     "docs:build": {
       "inputs": ["docs/**", "apps/**", "packages/**", "ciderpress.config.*", "package.json"],
       "outputs": [".ciderpress/dist/**"],
