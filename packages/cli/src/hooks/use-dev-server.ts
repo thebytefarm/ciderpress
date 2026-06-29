@@ -1,6 +1,7 @@
 import { loadConfig } from '@ciderpress/config/loader'
 import { attemptAsync } from 'massaman/control'
 import { toError } from 'massaman/conversion'
+import { match, P } from 'massaman/match'
 import { mapValues } from 'massaman/object'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -165,7 +166,10 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       serverClose.current = server.close
       set.port(server.port)
       set.url(server.url)
-      if (config.devServer?.open === true) {
+      const shouldOpen = match(config.devServer)
+        .with(P.nonNullable, (d) => d.open === true)
+        .otherwise(() => false)
+      if (shouldOpen) {
         openBrowser(server.url)
       }
 

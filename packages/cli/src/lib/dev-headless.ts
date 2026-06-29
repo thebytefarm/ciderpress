@@ -1,5 +1,6 @@
 import { loadConfig } from '@ciderpress/config/loader'
 import { toError } from 'massaman/conversion'
+import { match, P } from 'massaman/match'
 
 import { clean } from '../commands/clean.ts'
 import { createPaths } from './paths.ts'
@@ -78,7 +79,10 @@ export async function runDevHeadless(options: RunDevHeadlessOptions): Promise<vo
     log(`local: ${localUrl}`)
   }
 
-  if (config.devServer?.open === true) {
+  const shouldOpen = match(config.devServer)
+    .with(P.nonNullable, (d) => d.open === true)
+    .otherwise(() => false)
+  if (shouldOpen) {
     openBrowser(server.url)
   }
 

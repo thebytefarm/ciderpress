@@ -9,7 +9,7 @@ import { createRspressConfig } from '@ciderpress/ui/node'
 import { dev, build, serve } from '@rspress/core'
 import getPort, { portNumbers } from 'get-port'
 import { toError } from 'massaman/conversion'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 
 import type { Paths } from './paths.ts'
 
@@ -101,10 +101,19 @@ export interface DevServerResult {
 export async function startDevServer(options: ServerOptions): Promise<DevServerResult> {
   const { paths, config: initialConfig } = options
   const devServer = initialConfig.devServer
-  const preferred = options.port ?? devServer?.port ?? DEV_PORT
-  const host = options.host ?? devServer?.host ?? DEFAULT_DEV_HOST
+  const devServerPort = match(devServer)
+    .with(P.nonNullable, (d) => d.port)
+    .otherwise(() => undefined)
+  const devServerHost = match(devServer)
+    .with(P.nonNullable, (d) => d.host)
+    .otherwise(() => undefined)
+  const devServerUrl = match(devServer)
+    .with(P.nonNullable, (d) => d.url)
+    .otherwise(() => undefined)
+  const preferred = options.port ?? devServerPort ?? DEV_PORT
+  const host = options.host ?? devServerHost ?? DEFAULT_DEV_HOST
   const port = await getPort({ port: portNumbers(preferred, preferred + DEV_PORT_RANGE) })
-  const url = resolveDevUrl({ override: options.url, config: devServer?.url, host, port })
+  const url = resolveDevUrl({ override: options.url, config: devServerUrl, host, port })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
