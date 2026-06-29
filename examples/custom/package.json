@@ -5,8 +5,8 @@
   "type": "module",
   "portless": "acme",
   "scripts": {
-    "setup:portless": "zx scripts/setup.ts",
-    "predev": "zx scripts/setup.ts --quiet",
+    "setup:portless": "zx --install scripts/setup.ts",
+    "predev": "zx --install scripts/setup.ts --quiet",
     "dev": "ciderpress dev",
     "docs:dev": "ciderpress dev",
     "docs:build": "ciderpress build",

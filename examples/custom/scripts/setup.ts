@@ -1,122 +1,151 @@
 #!/usr/bin/env zx
 
 /**
- * Custom example — portless preflight.
+ * Custom example — portless setup.
  *
- * Verifies the example is ready to be served behind portless. Never
- * runs `portless trust` or any other privileged step — that's portless's
- * own one-time setup, owned by the user (`portless trust` sudo-prompts
- * once per machine and is idempotent afterward).
+ * Verifies the example is ready for portless and registers the static
+ * route `acme.localhost -> 127.0.0.1:7174` so the dev server is
+ * reachable at https://acme.localhost.
  *
- * What this checks:
- *   - Node >= 24
- *   - `portless` on PATH
- *   - package.json carries `portless: "acme"`
- *   - ciderpress.config.ts carries `devServer.url: 'https://acme.localhost'`
+ * What this does:
+ *   1. Verifies Node >= 24, portless on PATH.
+ *   2. Verifies package.json carries `portless: "acme"` and
+ *      ciderpress.config.ts carries `devServer.url` + `devServer.port`.
+ *   3. Reads `portless doctor` to confirm the proxy daemon is running
+ *      (instructs `portless proxy start` when it isn't — that's the
+ *      one step that may sudo-prompt to bind port 443).
+ *   4. Registers (or refreshes, idempotently) the alias
+ *      `acme.localhost -> 127.0.0.1:7174` via `portless alias acme 7174 --force`.
+ *   5. Confirms the alias appears in `portless list`.
  *
- * Each failed check prints the exact `Fix:` command. The script never
- * mutates anything; re-running when everything is already configured
- * is a silent no-op.
+ * What this does NOT do:
+ *   - `portless trust` (one-time CA install; user runs once per machine).
+ *   - `portless proxy start` (sudo-prompts; user runs once per session
+ *      or via `portless service install` for boot persistence).
  *
  * Modes:
- *   pnpm setup:portless           — verbose; prints every check.
+ *   pnpm setup:portless           — verbose; prints every step.
  *   pnpm setup:portless --quiet   — silent on success, loud on failure.
- *                                   Wired as the `predev` lifecycle hook
- *                                   so `pnpm dev` refuses to start when
- *                                   the example isn't configured.
- *
- * Script name is `setup:portless` (not `setup`) because `pnpm setup`
- * collides with a pnpm built-in command.
+ *                                   Wired as the `predev` lifecycle hook.
  *
  * NOTE: this script intentionally uses zx instead of laufen. Laufen is
  * being phased out across the repo — new scripts should reach for zx.
+ * `zx --install` auto-installs the script's imports (massaman) at
+ * runtime so neither lives in examples/custom's devDeps.
  */
 
 import { readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-interface CheckResult {
+import { attemptAsync } from 'massaman/control'
+import { match } from 'massaman/match'
+
+interface StepResult {
   readonly ok: boolean
   readonly detail?: string
   readonly fix?: string
 }
 
-interface Check {
+interface Step {
   readonly label: string
-  readonly run: () => Promise<CheckResult>
+  readonly run: () => Promise<StepResult>
 }
 
 $.verbose = false
+
+// portless refuses to run under pnpm / npm script wrappers because it
+// detects npm_* env vars and assumes it's being launched via `npx` or
+// `pnpm dlx`. Cleaning these vars from the inherited env makes portless
+// see a plain shell environment.
+const PORTLESS_ENV: NodeJS.ProcessEnv = Object.fromEntries(
+  Object.entries(process.env).filter(([key]) => !key.startsWith('npm_'))
+)
+const portless$ = $({ env: PORTLESS_ENV })
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url))
 const EXAMPLE_DIR = dirname(SCRIPT_DIR)
 const REQUIRED_NODE_MAJOR = 24
 const REQUIRED_HOSTNAME = 'acme'
+const REQUIRED_PORT = 7174
 const REQUIRED_URL = `https://${REQUIRED_HOSTNAME}.localhost`
 const QUIET = argv.quiet === true
 
-const checks: readonly Check[] = [
+const steps: readonly Step[] = [
   { label: 'Node >= 24', run: checkNode },
   { label: 'portless on PATH', run: checkPortless },
   { label: 'package.json portless: "acme"', run: checkPortlessConfig },
-  { label: 'ciderpress.config.ts devServer.url', run: checkDevServerUrl },
+  { label: 'ciderpress.config.ts devServer.{url,port}', run: checkDevServerConfig },
+  { label: 'portless proxy running', run: checkProxyRunning },
+  { label: `register alias acme.localhost → 127.0.0.1:${REQUIRED_PORT}`, run: registerAlias },
+  { label: 'verify alias in portless list', run: verifyAlias },
 ]
 
 if (!QUIET) {
-  console.log(chalk.cyan.bold('\n  ciderpress · custom example · portless preflight\n'))
+  console.log(chalk.cyan.bold('\n  ciderpress · custom example · portless setup\n'))
 }
 
-const results = await Promise.all(
-  checks.map(async (check) => ({ label: check.label, ...(await check.run()) }))
-)
-
-if (!QUIET) {
-  for (const result of results) {
-    const icon = result.ok ? chalk.green('✓') : chalk.red('✗')
-    const suffix = result.detail !== undefined ? chalk.gray(` — ${result.detail}`) : ''
-    console.log(`  ${icon} ${result.label}${suffix}`)
+const results: { readonly label: string; readonly result: StepResult }[] = []
+for (const step of steps) {
+  const result = await step.run()
+  results.push({ label: step.label, result })
+  if (!QUIET) {
+    printStep(step.label, result)
+  }
+  if (!result.ok) {
+    break
   }
 }
 
-const failures = results.filter((r) => !r.ok)
+const failed = results.find((r) => !r.result.ok)
 
-if (failures.length === 0) {
+if (failed === undefined) {
   if (!QUIET) {
     console.log(chalk.green.bold('\n  Ready.\n'))
-    console.log(`  Run \`portless\` from ${chalk.cyan(EXAMPLE_DIR)}`)
-    console.log(`  then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
+    console.log(`  From ${chalk.cyan(EXAMPLE_DIR)}:`)
+    console.log(`    ${chalk.cyan('$')} pnpm dev`)
+    console.log(`\n  Then open ${chalk.cyan(REQUIRED_URL)} in your browser.\n`)
   }
   process.exit(0)
 }
 
-console.log(
-  chalk.red.bold(
-    `\n  ✗ Custom example is not configured for portless (${failures.length} check(s) failed).\n`
-  )
-)
-for (const failure of failures) {
-  console.log(chalk.red(`  ✗ ${failure.label}`))
-  if (failure.detail !== undefined) {
-    console.log(chalk.gray(`    ${failure.detail}`))
-  }
-  if (failure.fix !== undefined) {
-    console.log(chalk.gray(`    Fix: ${failure.fix}`))
-  }
+console.log(chalk.red.bold(`\n  ✗ Setup failed at: ${failed.label}\n`))
+if (failed.result.detail !== undefined) {
+  console.log(chalk.gray(`    ${failed.result.detail}`))
+}
+if (failed.result.fix !== undefined) {
+  console.log(chalk.gray(`    Fix: ${failed.result.fix}`))
 }
 console.log(
   chalk.yellow(
-    `\n  See ${chalk.cyan('/guides/using-portless')} for the full setup walkthrough.\n`
+    `\n  Run \`pnpm setup:portless\` again after fixing, or see /guides/using-portless.\n`
   )
 )
 process.exit(1)
 
 /**
+ * Render a single step line with icon + label + optional detail suffix.
+ *
+ * @private
+ * @param label - Step label
+ * @param result - Step outcome
+ */
+function printStep(label: string, result: StepResult): void {
+  const icon = match(result.ok)
+    .with(true, () => chalk.green('✓'))
+    .otherwise(() => chalk.red('✗'))
+  const suffix = match(result.detail)
+    .with(undefined, () => '')
+    .otherwise((d) => chalk.gray(` — ${d}`))
+  console.log(`  ${icon} ${label}${suffix}`)
+}
+
+/**
  * Verify Node.js >= REQUIRED_NODE_MAJOR.
  *
- * @returns Check result with `ok`, optional `detail`, and optional `fix`
+ * @returns Step result
  */
-async function checkNode(): Promise<CheckResult> {
+async function checkNode(): Promise<StepResult> {
   const version = process.versions.node
   const major = Number.parseInt(version.split('.')[0] ?? '0', 10)
   if (major >= REQUIRED_NODE_MAJOR) {
@@ -130,31 +159,27 @@ async function checkNode(): Promise<CheckResult> {
 }
 
 /**
- * Verify the `portless` CLI is reachable on PATH. We never auto-install
- * — global installs are a user choice and need to happen outside this
- * script.
+ * Verify the `portless` CLI is reachable on PATH.
  *
- * @returns Check result with `ok`, optional `detail`, and optional `fix`
+ * @returns Step result
  */
-async function checkPortless(): Promise<CheckResult> {
-  try {
-    const result = await $`which portless`
-    return { ok: true, detail: result.stdout.trim() }
-  } catch {
+async function checkPortless(): Promise<StepResult> {
+  const outcome = await attemptAsync(() => $`which portless`)
+  if (!outcome.ok) {
     return {
       ok: false,
-      fix: `\`npm i -g portless\` then \`portless trust\` (one-time, sudo-prompts once)`,
+      fix: `Install: \`npm i -g portless\` then \`portless trust\` (one-time, sudo-prompts once)`,
     }
   }
+  return { ok: true, detail: outcome.value.stdout.trim() }
 }
 
 /**
- * Verify the example's package.json carries `portless: "acme"` so portless
- * serves at https://acme.localhost instead of inferring from `name`.
+ * Verify the example's package.json carries `portless: "acme"`.
  *
- * @returns Check result with `ok`, optional `detail`, and optional `fix`
+ * @returns Step result
  */
-async function checkPortlessConfig(): Promise<CheckResult> {
+async function checkPortlessConfig(): Promise<StepResult> {
   const pkg = JSON.parse(readFileSync(join(EXAMPLE_DIR, 'package.json'), 'utf8'))
   const value: unknown = pkg.portless
   if (value === REQUIRED_HOSTNAME) {
@@ -174,19 +199,87 @@ async function checkPortlessConfig(): Promise<CheckResult> {
 }
 
 /**
- * Verify ciderpress.config.ts declares the matching devServer.url so the
- * "ready: …" message and browser auto-open point at the portless host.
+ * Verify ciderpress.config.ts declares matching devServer.url + port.
  *
- * @returns Check result with `ok`, optional `detail`, and optional `fix`
+ * @returns Step result
  */
-async function checkDevServerUrl(): Promise<CheckResult> {
+async function checkDevServerConfig(): Promise<StepResult> {
   const configPath = join(EXAMPLE_DIR, 'ciderpress.config.ts')
   const source = readFileSync(configPath, 'utf8')
-  if (source.includes(`url: '${REQUIRED_URL}'`)) {
-    return { ok: true, detail: REQUIRED_URL }
+  const hasUrl = source.includes(`url: '${REQUIRED_URL}'`)
+  const hasPort = source.includes(`port: ${REQUIRED_PORT}`)
+  if (hasUrl && hasPort) {
+    return { ok: true, detail: `url=${REQUIRED_URL} port=${REQUIRED_PORT}` }
+  }
+  const missing = [
+    hasUrl ? null : `url: '${REQUIRED_URL}'`,
+    hasPort ? null : `port: ${REQUIRED_PORT}`,
+  ].filter((value): value is string => value !== null)
+  return {
+    ok: false,
+    detail: `missing in devServer: ${missing.join(', ')}`,
+    fix: `Set both fields under devServer in ciderpress.config.ts`,
+  }
+}
+
+/**
+ * Run `portless doctor` and look for the proxy-not-running warning.
+ * doctor exits 0 even when it reports warnings, so we parse stdout.
+ *
+ * @returns Step result
+ */
+async function checkProxyRunning(): Promise<StepResult> {
+  const outcome = await attemptAsync(() => portless$`portless doctor`)
+  if (!outcome.ok) {
+    return { ok: false, detail: 'portless doctor failed', fix: outcome.error.message }
+  }
+  if (outcome.value.stdout.includes('Proxy is not running')) {
+    return {
+      ok: false,
+      detail: 'portless proxy daemon is not running on port 443',
+      fix: `\`portless proxy start\` (sudo-prompts once to bind 443) — or \`portless service install\` for boot persistence`,
+    }
+  }
+  return { ok: true, detail: 'proxy responding' }
+}
+
+/**
+ * Register the static alias via `portless alias --force`. Idempotent —
+ * `--force` overwrites an existing entry so re-running this script
+ * after a port change just refreshes the route.
+ *
+ * @returns Step result
+ */
+async function registerAlias(): Promise<StepResult> {
+  const outcome = await attemptAsync(
+    () => portless$`portless alias ${REQUIRED_HOSTNAME} ${REQUIRED_PORT} --force`
+  )
+  if (!outcome.ok) {
+    return { ok: false, detail: 'portless alias failed', fix: outcome.error.message }
+  }
+  return { ok: true, detail: `${REQUIRED_HOSTNAME}.localhost → 127.0.0.1:${REQUIRED_PORT}` }
+}
+
+/**
+ * Confirm the alias actually appears in `portless list` after registration.
+ *
+ * @returns Step result
+ */
+async function verifyAlias(): Promise<StepResult> {
+  const outcome = await attemptAsync(() => portless$`portless list`)
+  if (!outcome.ok) {
+    return { ok: false, detail: 'portless list failed', fix: outcome.error.message }
+  }
+  const output = outcome.value.stdout
+  if (
+    output.includes(`${REQUIRED_HOSTNAME}.localhost`) &&
+    output.includes(`localhost:${REQUIRED_PORT}`)
+  ) {
+    return { ok: true, detail: 'visible in portless list' }
   }
   return {
     ok: false,
-    fix: `Set devServer.url to '${REQUIRED_URL}' in ciderpress.config.ts`,
+    detail: `alias not visible in portless list output`,
+    fix: `Run \`portless list\` manually — the alias step above may have silently failed`,
   }
 }

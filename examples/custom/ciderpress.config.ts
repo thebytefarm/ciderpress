@@ -36,19 +36,21 @@ export default defineConfig({
 
   theme: { themes: ['midnight'] },
 
-  // Dev-server configuration. `url` is the externally-visible address
-  // we tell the user to visit; the dev server still binds to
-  // localhost:6174 underneath. When portless is running, visit
-  // https://acme.localhost. When it isn't (e.g. `pnpm dev:custom`
-  // standalone), the ready message also prints the local fallback.
+  // Dev-server configuration. Binds 127.0.0.1:7174 locally; portless
+  // is configured (via `portless alias acme 7174` from setup) to
+  // proxy https://acme.localhost → 127.0.0.1:7174.
   //
-  // `open: true` is intentionally off here so we don't auto-open an
-  // unreachable URL when portless isn't running. Run `portless` from
-  // this directory and the proxy will handle opening the right URL.
+  // - `url` is the externally-visible address we print in the ready
+  //   message + use for the `o` (open) hotkey
+  // - `port` is pinned to 7174 so the alias is stable across runs
+  // - `open` is off so we don't auto-open https://acme.localhost when
+  //   portless isn't running locally (avoids ERR_CONNECTION_REFUSED).
+  //   Use `pnpm setup:portless` to register the alias once.
   //
   // See /guides/using-portless for the full walkthrough.
   devServer: {
     url: 'https://acme.localhost',
+    port: 7174,
   },
 
   brand: {

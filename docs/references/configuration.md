@@ -1011,7 +1011,7 @@ devServer?: {
 | -------- | --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `url`    | `string`  | `http://${host}:${port}`      | Externally-visible URL. Replaces the default `http://${host}:${port}` in the "ready: …" terminal message and the browser auto-open target. The dev server still binds locally — this is a display + auto-open hint |
 | `port`   | `number`  | `6174`                        | Preferred port. ciderpress falls forward through a 5-port range when the preferred port is occupied. CLI `--port` overrides                                                                  |
-| `host`   | `string`  | `'localhost'`                 | Bind interface. Set `'0.0.0.0'` to expose the dev server on every network interface (LAN / Docker / VM). CLI `--host` overrides                                                              |
+| `host`   | `string`  | `'127.0.0.1'`                 | Bind interface — explicit IPv4 loopback so reverse proxies (portless, nginx, Caddy) pointed at `127.0.0.1` can reach the dev server. Set `'0.0.0.0'` to expose on every network interface (LAN / Docker / VM). CLI `--host` overrides                                                              |
 | `open`   | `boolean` | `false`                       | Auto-open the resolved URL in the default browser when the dev server becomes ready                                                                                                          |
 
 CLI precedence: `--port` / `--host` / `--url` > `devServer.{port,host,url}` > built-in defaults.

@@ -36,8 +36,16 @@ interface ServerOptions {
 
 /**
  * Default bind interface for the dev server when no override is supplied.
+ *
+ * Explicitly `127.0.0.1` rather than `'localhost'` because Node.js on
+ * macOS resolves `localhost` to IPv6 (`[::1]`) first — Rsbuild then
+ * binds IPv6-only, and any reverse proxy (portless.sh, nginx, Caddy)
+ * pointed at `127.0.0.1:port` returns 502 Bad Gateway. Binding the
+ * IPv4 loopback by default keeps localhost-only security while staying
+ * compatible with every proxy. Set `devServer.host: '0.0.0.0'` to
+ * expose on every interface (LAN / Docker).
  */
-const DEFAULT_DEV_HOST = 'localhost'
+const DEFAULT_DEV_HOST = '127.0.0.1'
 
 /**
  * Server instance returned by Rspress dev().
