@@ -50,6 +50,16 @@ jobs:
       - name: Build packages
         run: pnpm build
 
+      # pnpm install creates `node_modules/.bin/ciderpress` wrappers
+      # pointing at `packages/ciderpress/dist/cli.mjs`. That file doesn't
+      # exist at install time (built two steps above), so install logs
+      # "WARN Failed to create bin at …" and skips the wrapper. Without
+      # the wrapper, `pnpm docs:build` fails with `sh: 1: ciderpress: not
+      # found`. `--offline` re-runs install against the existing cache to
+      # backfill every workspace's .bin links now that the dist exists.
+      - name: Refresh bin wrappers
+        run: pnpm install --offline
+
       - name: Build docs site
         run: pnpm docs:build
 
