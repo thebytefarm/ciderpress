@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedEntry } from '../types.ts'
 import { generateNav } from './index.ts'
 
-const autoConfig = { nav: 'auto' } as CiderpressConfig
+const autoConfig = { topbar: { nav: 'auto' } } as CiderpressConfig
 
 describe('generateNav()', () => {
   it('should exclude root sections from non-standalone nav items', () => {

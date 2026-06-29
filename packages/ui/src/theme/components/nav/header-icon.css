@@ -1,0 +1,24 @@
+/**
+ * Small brand chip rendered immediately before `<HeaderLogo />` inside
+ * `cp-header-logo`. Sized to match `--cp-header-icon-size` (default
+ * 28px — same as the logo height token) so the two slots line up
+ * vertically by default. Themes can override either token to break
+ * the lockstep.
+ */
+
+.cp-header-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: var(--cp-header-icon-size, var(--cp-header-logo-height, 28px));
+  width: var(--cp-header-icon-size, var(--cp-header-logo-height, 28px));
+  margin-right: var(--cp-header-icon-gap, 8px);
+  color: var(--cp-header-icon-color, currentColor);
+}
+
+.cp-header-icon > svg,
+.cp-header-icon__img {
+  height: 100%;
+  width: 100%;
+  display: block;
+}

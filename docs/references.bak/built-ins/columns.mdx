@@ -1,0 +1,138 @@
+---
+title: Columns
+description: Responsive grid layout for side-by-side content.
+---
+
+import { Columns, Column } from '@theme'
+
+# Columns
+
+The `<Columns>` component arranges content in a responsive grid layout with 1–4 columns. Collapses to a single column on viewports below 640px.
+
+## Basic two-column layout
+
+**Code**
+
+````mdx
+import { Columns, Column } from '@theme'
+
+<Columns>
+  <Column>
+
+**Installation**
+
+```bash
+pnpm add ciderpress
+```
+
+  </Column>
+  <Column>
+
+**Usage**
+
+```bash
+pnpm ciderpress build
+```
+
+  </Column>
+</Columns>
+````
+
+**Output**
+
+<Columns>
+  <Column>
+
+**Installation**
+
+Run `pnpm add ciderpress`
+
+  </Column>
+  <Column>
+
+**Usage**
+
+Run `pnpm ciderpress build`
+
+  </Column>
+</Columns>
+
+## Three columns
+
+**Code**
+
+```mdx
+<Columns cols={3}>
+  <Column>
+
+### Fast
+
+Sub-second HMR with Rspress.
+
+  </Column>
+  <Column>
+
+### Typed
+
+Zod-validated config with IntelliSense.
+
+  </Column>
+  <Column>
+
+### Themed
+
+Three built-in themes, fully customizable.
+
+  </Column>
+</Columns>
+```
+
+**Output**
+
+<Columns cols={3}>
+  <Column>
+
+### Fast
+
+Sub-second HMR with Rspress.
+
+  </Column>
+  <Column>
+
+### Typed
+
+Zod-validated config with IntelliSense.
+
+  </Column>
+  <Column>
+
+### Themed
+
+Three built-in themes, fully customizable.
+
+  </Column>
+</Columns>
+
+## Four columns
+
+```mdx
+<Columns cols={4}>
+  <Column>Column 1</Column>
+  <Column>Column 2</Column>
+  <Column>Column 3</Column>
+  <Column>Column 4</Column>
+</Columns>
+```
+
+## Columns props
+
+| Prop       | Type               | Required | Default | Description                                    |
+| ---------- | ------------------ | -------- | ------- | ---------------------------------------------- |
+| `cols`     | `1 \| 2 \| 3 \| 4` | no       | `2`     | Number of grid columns                         |
+| `children` | `ReactNode`        | yes      | —       | Grid content — raw children or Column wrappers |
+
+## Column props
+
+| Prop       | Type        | Required | Default | Description               |
+| ---------- | ----------- | -------- | ------- | ------------------------- |
+| `children` | `ReactNode` | yes      | —       | Content for the grid cell |

@@ -7,7 +7,7 @@ vi.mock(import('./rspress.ts'), () => ({
 
 const { runConfigCheck, presentResults } = await import('./check.ts')
 
-const validConfig = { sections: [{ title: 'Test' }] } as unknown as CiderpressConfig
+const validConfig = { pages: [{ title: 'Test' }] } as unknown as CiderpressConfig
 
 const loadError = {
   _tag: 'ConfigError' as const,

@@ -6,13 +6,15 @@ import { Icon } from '../shared/icon.tsx'
 import './ciderpress-nav-social-links.css'
 
 /**
- * Single social-link entry — matches the shape of `socialLinks` in
- * `ciderpress.config.ts`.
+ * Single social-link entry — matches the serialised `socials` shape
+ * written into `themeConfig.socialLinks` by `packages/ui/src/config.ts`.
+ *
+ * The Rspress `mode` / `content` discriminator was killed in the
+ * `rc.4` API overhaul; every link is now a plain anchor.
  */
 export interface CiderpressSocialLink {
   readonly icon: string
-  readonly mode: string
-  readonly content: string
+  readonly url: string
   readonly label?: string
 }
 
@@ -39,7 +41,7 @@ const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
  * Renders the configured social links as a cluster of icon buttons in
  * the topbar. Returns `null` when no links are configured.
  *
- * @param props - List of social links from `site.socialLinks`
+ * @param props - List of social links from `site.socials`
  * @returns Cluster of icon links, or `null`
  */
 export function CiderpressNavSocialLinks(
@@ -50,7 +52,7 @@ export function CiderpressNavSocialLinks(
   }
 
   const safeLinks = props.links
-    .map((link) => ({ link, href: safeUrl(link.content) }))
+    .map((link) => ({ link, href: safeUrl(link.url) }))
     .filter((entry): entry is { readonly link: CiderpressSocialLink; readonly href: string } => {
       if (entry.href === null) {
         return false
@@ -66,7 +68,7 @@ export function CiderpressNavSocialLinks(
     <div className="cp-nav-social">
       {safeLinks.map(({ link, href }) => (
         <a
-          key={link.content}
+          key={link.url}
           href={href}
           target="_blank"
           rel="noopener noreferrer"

@@ -1,0 +1,91 @@
+---
+title: Desktop Window
+description: Base macOS-style window chrome that all window components build on.
+---
+
+import { DesktopWindow } from '@theme'
+
+# Desktop Window
+
+The `<DesktopWindow>` component is the base window chrome with macOS-style traffic-light dots. All other window components — [BrowserWindow](/reference/built-ins/browser-window), [IDEWindow](/reference/built-ins/ide-window), and [TerminalWindow](/reference/built-ins/terminal-window) — build on top of it.
+
+Use DesktopWindow directly when you need a plain window frame without browser, IDE, or terminal styling.
+
+## Basic usage
+
+**Code**
+
+```mdx
+import { DesktopWindow } from '@theme'
+
+<DesktopWindow>
+
+Any content inside a clean window frame.
+
+</DesktopWindow>
+```
+
+**Output**
+
+<DesktopWindow>
+
+Any content inside a clean window frame.
+
+</DesktopWindow>
+
+## With title
+
+**Code**
+
+```mdx
+<DesktopWindow title="Preview">
+
+Content with a centered title in the title bar.
+
+</DesktopWindow>
+```
+
+**Output**
+
+<DesktopWindow title="Preview">
+
+Content with a centered title in the title bar.
+
+</DesktopWindow>
+
+## With tabs
+
+**Code**
+
+```mdx
+<DesktopWindow tabs={[{ name: 'Overview', active: true }, { name: 'Settings' }]}>
+
+Content with tabs in the title bar.
+
+</DesktopWindow>
+```
+
+**Output**
+
+<DesktopWindow tabs={[{ name: 'Overview', active: true }, { name: 'Settings' }]}>
+
+Content with tabs in the title bar.
+
+</DesktopWindow>
+
+## Props
+
+| Prop       | Type          | Required | Default | Description                                                                                         |
+| ---------- | ------------- | -------- | ------- | --------------------------------------------------------------------------------------------------- |
+| `title`    | `string`      | no       | —       | Title text centered in the title bar (12px mono, muted)                                             |
+| `tabs`     | `WindowTab[]` | no       | —       | Tabs rendered in the title bar (replaces title when present)                                        |
+| `variant`  | `string`      | no       | —       | Variant styling (`'terminal'`, `'ide'`, `'browser'`). Used internally by derived window components. |
+| `children` | `ReactNode`   | yes      | —       | Content rendered inside the window body                                                             |
+
+When both `title` and `tabs` are provided, `tabs` takes precedence.
+
+## References
+
+- [BrowserWindow](/reference/built-ins/browser-window)
+- [IDEWindow](/reference/built-ins/ide-window)
+- [TerminalWindow](/reference/built-ins/terminal-window)

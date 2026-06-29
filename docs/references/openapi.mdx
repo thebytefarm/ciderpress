@@ -13,23 +13,31 @@ See the [Petstore API Reference](/petstore) for a live example.
 
 ## Configuration
 
-Add `openapi` to your root config or to any workspace item:
+Attach `openapi` to a `Page` (for top-level API docs) or to a `Workspace` (for per-package API docs). There is no top-level `openapi` field — the spec lives on the node it mounts under, so a config can describe more than one API at once without implicit cross-wiring.
 
 ```ts
 export default defineConfig({
-  openapi: {
-    spec: 'openapi.json',
-    path: '/api',
-  },
+  pages: [
+    {
+      title: 'API',
+      path: '/api',
+      openapi: {
+        spec: 'openapi.json',
+        path: '/api',
+      },
+    },
+  ],
 })
 ```
 
-| Option          | Type                       | Required | Default           | Description                                                  |
-| --------------- | -------------------------- | -------- | ----------------- | ------------------------------------------------------------ |
-| `spec`          | `string`                   | yes      | —                 | Path to the OpenAPI JSON or YAML file, relative to repo root |
-| `path`          | `string`                   | yes      | —                 | URL path for generated pages (e.g. `'/api'`)                 |
-| `title`         | `string`                   | no       | `'API Reference'` | Sidebar group title and overview page heading                |
-| `sidebarLayout` | `'method-path' \| 'title'` | no       | `'method-path'`   | How operations appear in the sidebar                         |
+| Option          | Type                       | Required | Default           | Description                                                                   |
+| --------------- | -------------------------- | -------- | ----------------- | ----------------------------------------------------------------------------- |
+| `spec`          | `string`                   | yes      | —                 | Path to the OpenAPI document (`.json`, `.yaml`, `.yml`), relative to repo root |
+| `path`          | `string`                   | yes      | —                 | URL path the API operation pages mount under (must start with `/`)            |
+| `title`         | `string`                   | no       | `'API Reference'` | Sidebar group title and overview page heading                                 |
+| `sidebarLayout` | `'method-path' \| 'title'` | no       | `'method-path'`   | How operations appear in the sidebar                                          |
+
+When `openapi` is declared on a `Workspace`, the `path` must be nested under the workspace's own `path` — `path: '/apps/api'` plus `openapi: { path: '/apps/api/reference' }` works; `openapi: { path: '/elsewhere' }` fails validation.
 
 ## What gets generated
 
@@ -71,7 +79,7 @@ Each sidebar entry shows the operation's `summary` as plain text instead of the 
 
 ## Per-workspace OpenAPI
 
-Attach an OpenAPI spec to any workspace item for per-package API docs:
+Attach an OpenAPI spec to any workspace for per-package API docs. The `Workspace.openapi` shape is identical to `Page.openapi`:
 
 ```ts title="ciderpress.config.ts"
 export default defineConfig({
@@ -90,7 +98,7 @@ export default defineConfig({
             title: 'API Reference',
             sidebarLayout: 'title',
           },
-          items: [{ title: 'Overview', path: '/packages/api', include: 'packages/api/README.md' }],
+          pages: [{ title: 'Overview', path: '/packages/api', include: 'packages/api/README.md' }],
         },
       ],
     },

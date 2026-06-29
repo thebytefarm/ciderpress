@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { normalizeInclude } from '@ciderpress/config'
-import type { Section, Frontmatter } from '@ciderpress/config'
+import type { Page, Frontmatter, SortStrategy } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
@@ -13,29 +13,44 @@ import { sortEntries } from './sort.ts'
 import { deriveText, kebabToTitle, resolveSectionTitle } from './text.ts'
 
 /**
- * Resolve a recursive glob pattern into a nested section tree.
+ * Resolve a recursive glob pattern into a nested page tree.
  *
  * Scans all files matching the glob, groups them by directory structure,
  * and produces a nested `ResolvedEntry` tree mirroring the filesystem.
  *
- * @param section - Config section with a recursive glob `include` pattern
+ * @param section - Page config with a recursive glob `include` pattern
  * @param ctx - Sync context (provides repo root, exclude patterns, quiet flag)
- * @param frontmatter - Merged frontmatter inherited from parent sections
+ * @param frontmatter - Merged frontmatter inherited from parent pages
  * @param depth - Current nesting depth for collapsible auto-detection
  * @returns Flat or nested resolved entries matching the glob
  */
 export async function resolveRecursiveGlob(
-  section: Section,
+  section: Page,
   ctx: SyncContext,
   frontmatter: Frontmatter,
   depth: number
 ): Promise<ResolvedEntry[]> {
-  const ignore = [...(ctx.config.exclude ?? []), ...(section.exclude ?? [])]
-  const entryFile = section.entryFile ?? 'overview'
+  const globalIgnore = match(ctx.config.discover)
+    .with(P.nonNullable, (d) => d.ignore ?? [])
+    .otherwise(() => [] as readonly string[])
+  const sectionIgnore = match(section.discover)
+    .with(P.nonNullable, (d) => d.ignore ?? [])
+    .otherwise(() => [] as readonly string[])
+  const ignore = [...globalIgnore, ...sectionIgnore]
+  const indexFile = match(section.discover)
+    .with(P.nonNullable, (d) => d.indexFile)
+    .otherwise(() => undefined)
+  const sort = match(section.discover)
+    .with(P.nonNullable, (d) => d.sort)
+    .otherwise(() => undefined)
+  const collapsible = match(section.nav)
+    .with(P.nonNullable, (n) => n.collapsible)
+    .otherwise(() => undefined)
+  const entryFile = indexFile ?? 'overview'
 
   const patterns = normalizeInclude(section.include)
   if (patterns.length === 0) {
-    log.error('[ciderpress] resolveRecursiveGlob called without section.include')
+    log.error('[ciderpress] resolveRecursiveGlob called without page.include')
     return []
   }
 
@@ -82,8 +97,8 @@ export async function resolveRecursiveGlob(
     prefix,
     titleFrom,
     titleTransform,
-    sort: section.sort,
-    collapsible: section.collapsible,
+    sort,
+    collapsible,
     entryFile,
     ctx,
     frontmatter,
@@ -166,7 +181,7 @@ interface BuildEntryTreeParams {
   readonly prefix: string
   readonly titleFrom: 'auto' | 'filename' | 'heading' | 'frontmatter'
   readonly titleTransform: ((text: string, slug: string) => string) | null
-  readonly sort: Section['sort']
+  readonly sort: SortStrategy | undefined
   readonly collapsible: boolean | undefined
   readonly entryFile: string
   readonly ctx: SyncContext

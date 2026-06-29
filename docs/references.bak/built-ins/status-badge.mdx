@@ -1,0 +1,66 @@
+---
+title: Badge
+description: Inline labels with semantic variants and custom colors.
+---
+
+import { Badge } from '@theme'
+
+# Badge
+
+The `<Badge>` component renders inline labels for marking features, API endpoints, or documentation sections. Supports four semantic variants and arbitrary custom colors.
+
+## Variants
+
+**Code**
+
+```mdx
+import { Badge } from '@theme'
+
+- <Badge variant="info">Info</Badge> — informational
+- <Badge variant="success">Success</Badge> — completed or stable
+- <Badge variant="warning">Warning</Badge> — heads up
+- <Badge variant="error">Error</Badge> — critical or breaking
+```
+
+**Output**
+
+- <Badge variant="info">Info</Badge> — informational
+- <Badge variant="success">Success</Badge> — completed or stable
+- <Badge variant="warning">Warning</Badge> — heads up
+- <Badge variant="error">Error</Badge> — critical or breaking
+
+## Custom colors
+
+Use the `color` prop with any hex value to create custom badges. The background is automatically tinted at 12% opacity.
+
+**Code**
+
+```mdx
+- <Badge color="#d97706">Beta</Badge>
+- <Badge color="#0891b2">New</Badge>
+- <Badge color="#be185d">Deprecated</Badge>
+```
+
+**Output**
+
+- <Badge color="#d97706">Beta</Badge>
+- <Badge color="#0891b2">New</Badge>
+- <Badge color="#be185d">Deprecated</Badge>
+
+## Inline with headings
+
+```mdx
+## Authentication <Badge variant="warning">Warning</Badge>
+```
+
+## Props
+
+| Prop       | Type           | Required | Default  | Description                                         |
+| ---------- | -------------- | -------- | -------- | --------------------------------------------------- |
+| `variant`  | `BadgeVariant` | no       | `'info'` | Semantic variant. Ignored when `color` is provided. |
+| `color`    | `string`       | no       | —        | Custom color (hex, rgb, hsl). Overrides `variant`.  |
+| `children` | `ReactNode`    | yes      | —        | Badge label text                                    |
+
+### BadgeVariant
+
+`'info'` | `'success'` | `'warning'` | `'error'`

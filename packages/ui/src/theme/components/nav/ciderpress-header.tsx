@@ -2,18 +2,28 @@ import { clsx } from 'clsx'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
-import { CiderpressLogo } from '../shared/ciderpress-logo'
 import { CiderpressNavHamburger } from './ciderpress-nav-hamburger'
 import { CiderpressNavMenu } from './ciderpress-nav-menu'
 import type { CiderpressNavMenuItem } from './ciderpress-nav-menu'
 import { CiderpressNavSearch } from './ciderpress-nav-search'
 import { CiderpressNavSocialLinks } from './ciderpress-nav-social-links'
 import type { CiderpressSocialLink } from './ciderpress-nav-social-links'
+import { HeaderIcon } from './header-icon'
+import { HeaderLogo } from './header-logo'
 import { NavDivider } from './nav-divider'
 import { TopbarCTA } from './topbar-cta'
 import { VariantToggle } from './variant-toggle'
 
 import './ciderpress-header.css'
+
+/**
+ * Build-time flag: `true` when the active theme declares more than one
+ * variant AND `data-cp-variants` won't collapse the `<VariantToggle />`
+ * to `display: none`. Drives whether the trailing-cluster divider is
+ * rendered — when the toggle is hidden and neither socials nor CTA
+ * follow, the divider has nothing to separate and is omitted.
+ */
+declare const __CIDERPRESS_HAS_VARIANT_TOGGLE__: boolean
 
 /**
  * Props for the ciderpress site header.
@@ -57,6 +67,18 @@ export interface CiderpressHeaderProps {
  * @returns Sticky header element
  */
 export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactElement {
+  // Dividers only render when they actually separate two visible
+  // clusters — orphan dividers (nothing on the right) are visually
+  // noisy. `<VariantToggle />` is hidden by CSS for single-variant
+  // themes; the build-time flag captures that decision so the React
+  // tree matches the painted output. The search/menu inner divider is
+  // unconditional — both clusters always render some chrome, and
+  // gating on `navItems.length` would flip after hydration (Rspress's
+  // nav data isn't populated at SSG) and produce a hydration warning.
+  const hasSocials = props.socialLinks.length > 0
+  const hasCta = props.topbarCta !== undefined
+  const hasTrailingCluster = __CIDERPRESS_HAS_VARIANT_TOGGLE__ || hasSocials || hasCta
+
   // Landing / home pages live inside a constrained max-width container;
   // doc pages stretch full-width (sidebar + article). The header mirrors
   // the content shell so it never floats outside the page rhythm.
@@ -78,7 +100,8 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
           topbarCta={props.topbarCta}
         />
         <RouteLink href="/" className="cp-header-logo" aria-label="Home">
-          <CiderpressLogo />
+          <HeaderIcon />
+          <HeaderLogo />
         </RouteLink>
 
         {/* Right cluster wrapper. Grows from a zero basis so its width
@@ -96,7 +119,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
           <CiderpressNavMenu items={props.navItems} />
         </div>
 
-        <NavDivider />
+        {hasTrailingCluster && <NavDivider />}
         <VariantToggle />
         <CiderpressNavSocialLinks links={props.socialLinks} />
         {props.topbarCta !== undefined && (

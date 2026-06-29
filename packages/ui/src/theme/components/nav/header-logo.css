@@ -1,0 +1,16 @@
+/**
+ * Sizing for the brand mark rendered inside `cp-header-logo` by
+ * `<HeaderLogo />`.
+ *
+ * The parent `.cp-header-logo` already sets `--cp-header-logo-height`
+ * (default 28px) and `width: auto` for inline SVGs. Apply matching
+ * rules to image marks so a user `logo: '/logo.svg'` lines up exactly
+ * with the SVG wordmark height — no extra config needed.
+ */
+
+.cp-header-logo__img,
+.cp-header-logo__mark {
+  height: var(--cp-header-logo-height, 28px);
+  width: auto;
+  display: block;
+}

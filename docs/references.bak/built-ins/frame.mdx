@@ -1,0 +1,86 @@
+---
+title: Frame
+description: Media wrapper for images and videos with captions.
+---
+
+import { Frame } from '@theme'
+
+# Frame
+
+The `<Frame>` component wraps images and videos with consistent border styling, optional caption, and hint text. Uses semantic `<figure>` / `<figcaption>` HTML.
+
+## Basic image
+
+**Code**
+
+```mdx
+import { Frame } from '@theme'
+
+<Frame>
+  <img src="/images/xkcd-git.png" alt="XKCD: Git" />
+</Frame>
+```
+
+**Output**
+
+<Frame>
+  <img src="/images/xkcd-git.png" alt="XKCD: Git" />
+</Frame>
+
+## With caption
+
+**Code**
+
+```mdx
+<Frame caption="XKCD #303 — 'Are you stealing those LCDs?' 'Yeah, but I'm doing it while my code compiles.'">
+  <img src="/images/xkcd-compiling.png" alt="XKCD: Compiling" />
+</Frame>
+```
+
+**Output**
+
+<Frame caption="XKCD #303 — 'Are you stealing those LCDs?' 'Yeah, but I'm doing it while my code compiles.'">
+  <img src="/images/xkcd-compiling.png" alt="XKCD: Compiling" />
+</Frame>
+
+## With hint and caption
+
+**Code**
+
+```mdx
+<Frame hint="xkcd.com/1319" caption="The long-term time savings of automation.">
+  <img src="/images/xkcd-automation.png" alt="XKCD: Automation" />
+</Frame>
+```
+
+**Output**
+
+<Frame hint="xkcd.com/1319" caption="The long-term time savings of automation.">
+  <img src="/images/xkcd-automation.png" alt="XKCD: Automation" />
+</Frame>
+
+## Video
+
+When a `<video>` child has `autoPlay`, the Frame automatically injects `playsInline`, `loop`, and `muted` attributes.
+
+**Code**
+
+```mdx
+<Frame caption="Big Buck Bunny — Blender Foundation (CC0)">
+  <video autoPlay src="/images/bunny.mp4" />
+</Frame>
+```
+
+**Output**
+
+<Frame caption="Big Buck Bunny — Blender Foundation (CC0)">
+  <video autoPlay src="/images/bunny.mp4" />
+</Frame>
+
+## Props
+
+| Prop       | Type        | Required | Default | Description                                    |
+| ---------- | ----------- | -------- | ------- | ---------------------------------------------- |
+| `caption`  | `string`    | no       | —       | Caption text displayed below the content       |
+| `hint`     | `string`    | no       | —       | Hint text displayed above the content          |
+| `children` | `ReactNode` | yes      | —       | Image, video, or other visual content to frame |

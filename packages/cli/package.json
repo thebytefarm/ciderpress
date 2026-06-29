@@ -58,7 +58,7 @@
     "ink-gradient": "^4.0.1",
     "jiti": "^2.7.0",
     "liquidjs": "^10.27.0",
-    "massaman": "^0.2.0",
+    "massaman": "catalog:",
     "react": "^19.2.7",
     "yaml": "^2.9.0",
     "zod": "catalog:"

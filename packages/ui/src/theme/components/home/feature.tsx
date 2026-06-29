@@ -1,4 +1,4 @@
-import type { HomeGridConfig } from '@ciderpress/config'
+import type { HomeFeaturesConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match, P } from 'massaman/match'
 import type React from 'react'
@@ -6,6 +6,17 @@ import type React from 'react'
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
+
+interface FrontmatterFeaturesHeading {
+  readonly label?: string
+  readonly title?: string
+  readonly subtitle?: string
+}
+
+const DEFAULT_HEADING_EYEBROW = 'Features'
+const DEFAULT_HEADING_TITLE = 'Built for the way you ship.'
+const DEFAULT_HEADING_SUBTITLE =
+  "Everything you need, nothing you don't. Configured in TypeScript, validated at boot."
 
 /**
  * Custom HomeFeature override for ciderpress.
@@ -21,9 +32,21 @@ export function HomeFeature(): React.ReactElement | null {
   // Rspress types frontmatter as its own FrontMatterMeta shape which does not
   // include ciderpress-specific `features`. The double cast is necessary because
   // no shared Zod schema exists for frontmatter validation at runtime.
-  const features = (frontmatter as Record<string, unknown>).features as
-    | readonly FeatureItem[]
-    | undefined
+  const fm = frontmatter as Record<string, unknown>
+  const features = fm.features as readonly FeatureItem[] | undefined
+  const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
+  // Frontmatter is unvalidated user content — a `featuresHeading.title: {}`
+  // would otherwise render as `[object Object]` in the H2. Treat any
+  // non-string value as missing and fall through to the framework default.
+  const headingEyebrow = match(heading && heading.label)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_EYEBROW)
+  const headingTitle = match(heading && heading.title)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_TITLE)
+  const headingSubtitle = match(heading && heading.subtitle)
+    .with(P.string, (s) => s)
+    .otherwise(() => DEFAULT_HEADING_SUBTITLE)
 
   return match(features)
     .with(
@@ -31,12 +54,9 @@ export function HomeFeature(): React.ReactElement | null {
       (items) => (
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
-            <div className="cp-feature-section-head__eyebrow">Features</div>
-            <h2 className="cp-feature-section-head__title">Built for the way you ship.</h2>
-            <p className="cp-feature-section-head__sub">
-              Everything you need, nothing you don&apos;t. Configured in TypeScript, validated at
-              boot.
-            </p>
+            <div className="cp-feature-section-head__eyebrow">{headingEyebrow}</div>
+            <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
+            <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
           </div>
           <div className="cp-feature-grid">
             {items.map((f, i) => renderFeature(f, i, gridConfig))}
@@ -60,7 +80,7 @@ export function HomeFeature(): React.ReactElement | null {
 function renderFeature(
   feature: FeatureItem,
   index: number,
-  gridConfig: HomeGridConfig | undefined
+  gridConfig: HomeFeaturesConfig | undefined
 ): React.ReactElement {
   const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
   const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description

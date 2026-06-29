@@ -1,6 +1,6 @@
+import type { ResolvedPage } from '@ciderpress/config'
 import { describe, it, expect } from 'vitest'
 
-import type { ResolvedPage } from '../types'
 import { sortEntries } from './resolve/sort'
 import type { ResolvedEntry } from './types'
 

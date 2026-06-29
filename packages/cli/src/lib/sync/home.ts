@@ -2,7 +2,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { Feature, Section, Workspace, CiderpressConfig } from '@ciderpress/config'
+import type { Feature, Page, SerializedIcon, Workspace, CiderpressConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
@@ -15,7 +15,7 @@ import { resolveSectionTitle } from './resolve/text.ts'
 export interface HomeWorkspaceCardData {
   readonly title: string
   readonly href: string
-  readonly icon: string | { readonly id: string; readonly color: string } | undefined
+  readonly icon: SerializedIcon | undefined
   readonly scope: string | undefined
   readonly description: string | undefined
   readonly tags: readonly string[]
@@ -85,35 +85,84 @@ export async function generateDefaultHomePage(
   config: CiderpressConfig,
   repoRoot: string
 ): Promise<HomePageResult> {
-  const { tagline } = config
   const title = config.title ?? 'Documentation'
   const description = config.description ?? title
-  const firstLink = findFirstLink(config.sections)
-  const features = await match(config.features)
+  const firstLink = findFirstLink(config.pages)
+  const home = config.home
+  const hero = match(home)
+    .with(P.nonNullable, (h) => h.hero)
+    .otherwise(() => undefined)
+  const featuresItems = match(home)
+    .with(P.nonNullable, (h) => h.features)
+    .otherwise(() => undefined)
+  const explicitFeatureItems = match(featuresItems)
+    .with(P.nonNullable, (f) => f.items)
+    .otherwise(() => undefined)
+  const features = await match(explicitFeatureItems)
     .with(P.nonNullable, buildExplicitFeatures)
-    .otherwise(() => buildFeatures(config.sections, repoRoot))
+    .otherwise(() => buildFeatures(config.pages, repoRoot))
   const frontmatterFeatures = buildFrontmatterFeatures(features)
   const workspaceResult = buildWorkspaceData(config)
 
   // Landing-page extensions live on the typed `HomeConfig` now — no more
   // `Record<string, unknown>` casts. Destructure with a defaulted empty
   // object so optional fields surface as `undefined` cleanly.
-  const { eyebrow, trust, cta } = config.home ?? {}
+  const label = match(hero)
+    .with(P.nonNullable, (h) => h.label)
+    .otherwise(() => undefined)
+  const tagline = match(hero)
+    .with(P.nonNullable, (h) => h.tagline)
+    .otherwise(() => undefined)
+  const heroActions = match(hero)
+    .with(P.nonNullable, (h) => h.actions)
+    .otherwise(() => undefined)
+  const heroDemo = match(hero)
+    .with(P.nonNullable, (h) => h.demo)
+    .otherwise(() => undefined)
+  const proof = match(home)
+    .with(P.nonNullable, (h) => h.proof)
+    .otherwise(() => undefined)
+  const cta = match(home)
+    .with(P.nonNullable, (h) => h.cta)
+    .otherwise(() => undefined)
+  const split = match(home)
+    .with(P.nonNullable, (h) => h.split)
+    .otherwise(() => undefined)
+  const showcaseConfig = match(home)
+    .with(P.nonNullable, (h) => h.showcase)
+    .otherwise(() => undefined)
+  const layout = match(home)
+    .with(P.nonNullable, (h) => h.layout)
+    .otherwise(() => undefined)
+  const featuresHeading = match(featuresItems)
+    .with(P.nonNullable, (f) => f.heading)
+    .otherwise(() => undefined)
+  const workspacesHeading = match(showcaseConfig)
+    .with(P.nonNullable, (s) => s.heading)
+    .otherwise(() => undefined)
 
+  const brandBanner = match(config.brand)
+    .with(P.nonNullable, (b) => b.banner)
+    .otherwise(() => undefined)
+  const bannerSrc = match(brandBanner)
+    .with(P.string, (s) => s)
+    .otherwise(() => '/banner.svg')
+
+  const defaultActions = [{ variant: 'primary', text: 'Get Started', href: firstLink }]
   const heroConfig: Record<string, unknown> = {
     name: title,
     text: description,
-    ...match(eyebrow)
+    ...match(label)
       .with(P.nonNullable, (e) => ({ eyebrow: e }))
       .otherwise(() => ({})),
     ...match(tagline)
       .with(P.nonNullable, (t) => ({ tagline: t }))
       .otherwise(() => ({})),
-    actions: match(config.actions)
+    actions: match(heroActions)
       .with(P.nonNullable, (a) => a)
-      .otherwise(() => [{ theme: 'brand', text: 'Get Started', link: firstLink }]),
+      .otherwise(() => defaultActions),
     image: {
-      src: config.banner ?? '/banner.svg',
+      src: bannerSrc,
       alt: title,
     },
   }
@@ -124,11 +173,34 @@ export async function generateDefaultHomePage(
     ...match(frontmatterFeatures.length > 0)
       .with(true, () => ({ features: frontmatterFeatures }))
       .otherwise(() => ({})),
-    ...match(trust)
+    ...match(featuresHeading)
+      .with(P.nonNullable, (h) => ({ featuresHeading: h }))
+      .otherwise(() => ({})),
+    ...match(workspacesHeading)
+      .with(P.nonNullable, (h) => ({ workspacesHeading: h }))
+      .otherwise(() => ({})),
+    ...match(proof)
       .with(P.nonNullable, (t) => ({ trust: t }))
       .otherwise(() => ({})),
     ...match(cta)
       .with(P.nonNullable, (c) => ({ cta: c }))
+      .otherwise(() => ({})),
+    // heroDemo flows through verbatim — `false` suppresses the slot,
+    // an object selects between image and structured terminal variants
+    // at render time. The HomeLayout handles both via discriminator.
+    ...match(heroDemo)
+      .with(P.nonNullable, (h) => ({ heroDemo: h }))
+      .otherwise(() => ({})),
+    // split flows through verbatim — `false` suppresses the slot, an
+    // object overrides every framework-default copy. HomeLayout reads
+    // the object shape and renders it via HomeSplit.
+    ...match(split)
+      .with(P.nonNullable, (s) => ({ split: s }))
+      .otherwise(() => ({})),
+    // `home.layout` is plumbed into frontmatter as-is so the HomeLayout
+    // component can drive section render order from a single source.
+    ...match(layout)
+      .with(P.nonNullable, (l) => ({ layout: l }))
       .otherwise(() => ({})),
   }
 
@@ -231,7 +303,7 @@ interface ResolvedFeature {
   readonly title: string
   readonly details: string
   readonly link: string | undefined
-  readonly icon: string | { readonly id: string; readonly color: string } | null
+  readonly icon: SerializedIcon | null
 }
 
 /**
@@ -243,7 +315,7 @@ interface FrontmatterFeature {
   readonly title: string
   readonly details: string
   readonly link?: string
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: SerializedIcon
 }
 
 /**
@@ -339,14 +411,14 @@ function buildGroupData(params: BuildGroupDataParams): GroupDataResult {
 }
 
 /**
- * Find the first navigable link from the sections array.
+ * Find the first navigable link from the pages array.
  *
  * @private
- * @param sections - Config sections to search
+ * @param pages - Config pages to search
  * @returns First available link path, or '/' as fallback
  */
-function findFirstLink(sections: readonly Section[]): string {
-  const [first] = sections
+function findFirstLink(pages: readonly Page[]): string {
+  const [first] = pages
   if (!first) {
     return '/'
   }
@@ -354,20 +426,20 @@ function findFirstLink(sections: readonly Section[]): string {
 }
 
 /**
- * Build resolved feature data from the first 3 config sections
+ * Build resolved feature data from the first 3 config pages
  * with Iconify identifiers and cycled icon colors.
  *
  * @private
- * @param sections - Config sections to derive features from
+ * @param pages - Config pages to derive features from
  * @param repoRoot - Absolute path to repo root for resolving source files
- * @returns Resolved feature data for up to 3 sections
+ * @returns Resolved feature data for up to 3 pages
  */
 function buildFeatures(
-  sections: readonly Section[],
+  pages: readonly Page[],
   repoRoot: string
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
-    sections.slice(0, 3).map(async (section, _index) => {
+    pages.slice(0, 3).map(async (section, _index) => {
       const link = section.path ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
       const resolved = resolveOptionalIcon(section.icon)
@@ -379,21 +451,21 @@ function buildFeatures(
 }
 
 /**
- * Recursively find the first child link in a section's items.
+ * Recursively find the first child link in a page's children.
  *
  * @private
- * @param section - Section to search for child links
+ * @param section - Page to search for child links
  * @returns First child link path, or undefined if none found
  */
-function findFirstChildLink(section: Section): string | undefined {
-  if (!section.items) {
+function findFirstChildLink(section: Page): string | undefined {
+  if (!section.pages) {
     return undefined
   }
-  const first = section.items.find((item) => item.path)
+  const first = section.pages.find((item) => item.path)
   if (first) {
     return first.path
   }
-  const nested = section.items.find((item) => findFirstChildLink(item))
+  const nested = section.pages.find((item) => findFirstChildLink(item))
   if (nested) {
     return findFirstChildLink(nested)
   }
@@ -401,16 +473,16 @@ function findFirstChildLink(section: Section): string | undefined {
 }
 
 /**
- * Extract a description for a config section.
+ * Extract a description for a config page.
  *
- * Priority: source file frontmatter -> config frontmatter -> well-known defaults -> section title.
+ * Priority: source file frontmatter -> config defaults -> well-known defaults -> page title.
  *
  * @private
- * @param section - Section to extract description from
+ * @param section - Page to extract description from
  * @param repoRoot - Absolute path to repo root for resolving source files
- * @returns Description string for the section
+ * @returns Description string for the page
  */
-async function extractSectionDescription(section: Section, repoRoot: string): Promise<string> {
+async function extractSectionDescription(section: Page, repoRoot: string): Promise<string> {
   if (isString(section.include) && !hasGlobChars(section.include)) {
     const description = await readFrontmatterDescription(path.resolve(repoRoot, section.include))
     if (description) {
@@ -418,8 +490,8 @@ async function extractSectionDescription(section: Section, repoRoot: string): Pr
     }
   }
 
-  if (isNotNil(section.frontmatter) && section.frontmatter.description) {
-    return String(section.frontmatter.description)
+  if (isNotNil(section.defaults) && section.defaults.description) {
+    return String(section.defaults.description)
   }
 
   const titleStr = resolveSectionTitle(section)

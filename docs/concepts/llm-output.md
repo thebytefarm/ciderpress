@@ -125,5 +125,5 @@ OpenAPI-generated pages replace the standard raw markdown button with a "Copy Ma
 
 ## References
 
-- [Content](/concepts/content) — how pages and sections define your site structure
+- [Content](/concepts/content) — how pages and groups define your site structure
 - [Configuration reference](/reference/configuration) — full config field reference

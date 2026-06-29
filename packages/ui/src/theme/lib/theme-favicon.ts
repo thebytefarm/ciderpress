@@ -107,7 +107,7 @@ function buildIconDataUri(brand: string, shadow: string, surface: string): strin
 /**
  * Locate the existing `<link rel="icon">` element, creating one if the
  * document head doesn't have one yet (a defensive fallback — Rspress
- * normally renders one from `config.icon`).
+ * normally renders one from `brand.favicon`).
  *
  * @private
  * @returns Mutable link element

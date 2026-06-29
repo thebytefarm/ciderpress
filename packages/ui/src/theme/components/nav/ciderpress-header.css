@@ -76,7 +76,8 @@
   text-decoration: none;
 }
 
-.cp-header-logo > svg {
+.cp-header-logo > svg,
+.cp-header-logo > img {
   height: var(--cp-header-logo-height, 28px);
   width: auto;
 }

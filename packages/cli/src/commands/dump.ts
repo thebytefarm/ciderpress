@@ -48,7 +48,7 @@ export default command({
       quiet: true,
     }
 
-    const [resolveErr, resolved] = await resolveEntries(config.sections, syncCtx)
+    const [resolveErr, resolved] = await resolveEntries(config.pages, syncCtx)
     if (resolveErr) {
       ctx.log.error(resolveErr.message)
       process.exit(1)

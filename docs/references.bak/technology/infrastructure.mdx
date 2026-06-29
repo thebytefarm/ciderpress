@@ -1,0 +1,92 @@
+---
+title: Infrastructure
+description: Technology tags for cloud providers, hosting, CI/CD, DevOps, monitoring, message queues, and infrastructure.
+---
+
+import { Icon, TechIconTable } from '@ciderpress/ui/theme'
+
+{/* @auto-generated — do not edit. Regenerate with: lauf run docs */}
+
+# Infrastructure
+
+Cloud, hosting, CI/CD, DevOps, monitoring, message queues, and infrastructure tags for workspace cards.
+
+## Cloud and hosting
+
+<TechIconTable
+  entries={[
+    { tag: 'vercel', icon: 'devicon:vercel', label: 'Vercel' },
+    { tag: 'aws', icon: 'devicon:amazonwebservices', label: 'AWS' },
+    { tag: 'azure', icon: 'devicon:azure', label: 'Azure' },
+    { tag: 'gcp', icon: 'devicon:googlecloud', label: 'GCP' },
+    { tag: 'cloudflare', icon: 'devicon:cloudflare', label: 'Cloudflare' },
+    { tag: 'digitalocean', icon: 'devicon:digitalocean', label: 'DigitalOcean' },
+    { tag: 'heroku', icon: 'devicon:heroku', label: 'Heroku' },
+    { tag: 'netlify', icon: 'devicon:netlify', label: 'Netlify' },
+    { tag: 'firebase', icon: 'devicon:firebase', label: 'Firebase' },
+    { tag: 'supabase', icon: 'devicon:supabase', label: 'Supabase' },
+    { tag: 'railway', icon: 'devicon:railway', label: 'Railway' },
+    { tag: 'pulumi', icon: 'devicon:pulumi', label: 'Pulumi' },
+    { tag: 'fly', icon: 'logos:fly-icon', label: 'Fly.io' },
+  ]}
+/>
+## CI/CD and DevOps
+
+<TechIconTable
+  entries={[
+    { tag: 'docker', icon: 'devicon:docker', label: 'Docker' },
+    { tag: 'kubernetes', icon: 'devicon:kubernetes', label: 'Kubernetes' },
+    { tag: 'github', icon: 'devicon:github', label: 'GitHub' },
+    { tag: 'github-actions', icon: 'devicon:githubactions', label: 'GitHub Actions' },
+    { tag: 'gitlab', icon: 'devicon:gitlab', label: 'GitLab' },
+    { tag: 'circleci', icon: 'logos:circleci', label: 'CircleCI' },
+    { tag: 'terraform', icon: 'devicon:terraform', label: 'Terraform' },
+    { tag: 'ansible', icon: 'devicon:ansible', label: 'Ansible' },
+    { tag: 'jenkins', icon: 'devicon:jenkins', label: 'Jenkins' },
+    { tag: 'argocd', icon: 'devicon:argocd', label: 'Argo CD' },
+  ]}
+/>
+## Monitoring and observability
+
+<TechIconTable
+  entries={[
+    { tag: 'grafana', icon: 'devicon:grafana', label: 'Grafana' },
+    { tag: 'prometheus', icon: 'devicon:prometheus', label: 'Prometheus' },
+    { tag: 'datadog', icon: 'devicon:datadog', label: 'Datadog' },
+    { tag: 'sentry', icon: 'devicon:sentry', label: 'Sentry' },
+    { tag: 'newrelic', icon: 'devicon:newrelic', label: 'New Relic' },
+  ]}
+/>
+## Message queues
+
+<TechIconTable
+  entries={[
+    { tag: 'kafka', icon: 'devicon:apachekafka', label: 'Kafka' },
+    { tag: 'rabbitmq', icon: 'devicon:rabbitmq', label: 'RabbitMQ' },
+    { tag: 'nats', icon: 'devicon:nats', label: 'NATS' },
+  ]}
+/>
+## Infrastructure
+
+<TechIconTable
+  entries={[
+    { tag: 'node', icon: 'devicon:nodejs', label: 'Node.js' },
+    { tag: 'nginx', icon: 'devicon:nginx', label: 'Nginx' },
+    { tag: 'apache', icon: 'devicon:apache', label: 'Apache' },
+    { tag: 'linux', icon: 'devicon:linux', label: 'Linux' },
+  ]}
+/>
+
+## Example
+
+```ts
+apps: [
+  {
+    title: 'API',
+    icon: 'devicon:hono',
+    description: 'Edge API deployed to Cloudflare Workers',
+    tags: ['hono', 'cloudflare', 'docker'],
+    path: '/apps/api',
+  },
+]
+```

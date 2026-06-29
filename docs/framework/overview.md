@@ -44,10 +44,10 @@ Each type has its own structure, rules, and templates. See [Types](/framework/ty
 
 ## How this maps to ciderpress
 
-The framework maps directly to ciderpress sections. A typical project might look like:
+The framework maps directly to top-level entries in `config.pages`. A typical project might look like:
 
 ```ts
-sections: [
+pages: [
   { title: 'Getting Started' /* tutorials + quickstarts */ },
   { title: 'Guides' /* task-oriented how-tos */ },
   { title: 'Concepts' /* explanations */ },
@@ -63,4 +63,4 @@ See [Recommended](/framework/recommended) for the full recommended layout.
 
 - [Diataxis](https://diataxis.fr) — the framework that inspired this approach
 - [Types](/framework/types) — detailed breakdown of each doc type
-- [Recommended](/framework/recommended) — the recommended section layout
+- [Recommended](/framework/recommended) — the recommended layout

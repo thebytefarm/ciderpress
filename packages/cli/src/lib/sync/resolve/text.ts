@@ -1,6 +1,6 @@
 import fs from 'node:fs/promises'
 
-import type { Section } from '@ciderpress/config'
+import type { Page } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { capitalize, words } from 'massaman/string'
 
@@ -33,17 +33,17 @@ export function deriveText(
 }
 
 /**
- * Resolve a display title for a section header.
+ * Resolve a display title for a page node.
  *
  * When `title` is a string, returns it directly.
  * When `title` is a TitleConfig object (e.g. `{ from: 'heading' }`),
  * derives a human-readable name from the path's last segment.
  * Falls back to `'Section'` only when no path is available.
  *
- * @param section - Section with title and optional path
+ * @param section - Page with title and optional path
  * @returns Display title string
  */
-export function resolveSectionTitle(section: Section): string {
+export function resolveSectionTitle(section: Page): string {
   return match(section.title)
     .with(P.string, (t) => t)
     .otherwise(() => {

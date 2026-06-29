@@ -1,5 +1,5 @@
 import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { IconColor, Section, Workspace } from '@ciderpress/config'
+import type { IconColor, Page, Workspace } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
 
@@ -19,13 +19,13 @@ import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
  * deterministic without a mutable counter.
  *
  * @param entries - Resolved entry tree to walk
- * @param configSections - Original config sections for metadata lookup
+ * @param configSections - Original config pages for metadata lookup
  * @param workspaces - Workspace items for generating workspace landing pages
  * @returns New resolved entry tree with landing pages injected
  */
 export function injectLandingPages(
   entries: readonly ResolvedEntry[],
-  configSections: readonly Section[],
+  configSections: readonly Page[],
   workspaces: readonly Workspace[]
 ): readonly ResolvedEntry[] {
   const { entries: result } = injectMany({
@@ -46,7 +46,7 @@ export function injectLandingPages(
  */
 interface InjectFrame {
   readonly entries: readonly ResolvedEntry[]
-  readonly configSections: readonly Section[]
+  readonly configSections: readonly Page[]
   readonly workspaces: readonly Workspace[]
   readonly colorIndex: number
 }
@@ -96,7 +96,7 @@ function injectMany(frame: InjectFrame): InjectResult {
  */
 interface InjectOneFrame {
   readonly entry: ResolvedEntry
-  readonly configSections: readonly Section[]
+  readonly configSections: readonly Page[]
   readonly workspaces: readonly Workspace[]
   readonly colorIndex: number
 }
@@ -238,33 +238,33 @@ function generateWorkspaceLandingPage(
 }
 
 /**
- * Look up the original config Section by link for extracting metadata.
+ * Look up the original config Page by link for extracting metadata.
  *
  * @private
- * @param sections - Config sections to search
+ * @param sections - Config pages to search
  * @param link - Link path to match
- * @returns Matching section, or undefined
+ * @returns Matching page, or undefined
  */
-function findConfigSection(sections: readonly Section[], link: string): Section | undefined {
+function findConfigSection(sections: readonly Page[], link: string): Page | undefined {
   const direct = sections.find((section) => section.path === link)
   if (direct) {
     return direct
   }
   const nested = sections
-    .filter((section) => isNotNil(section.items))
-    .map((section) => findConfigSection(section.items as readonly Section[], link))
+    .filter((section) => isNotNil(section.pages))
+    .map((section) => findConfigSection(section.pages as readonly Page[], link))
     .find((result) => isNotNil(result))
   return nested
 }
 
 /**
- * Extract description from a config section.
+ * Extract description from a config page.
  *
  * @private
- * @param configSection - Optional config section
+ * @param configSection - Optional config page
  * @returns Description string, or undefined
  */
-function resolveDescription(configSection: Section | undefined): string | undefined {
+function resolveDescription(configSection: Page | undefined): string | undefined {
   if (isNil(configSection)) {
     return undefined
   }

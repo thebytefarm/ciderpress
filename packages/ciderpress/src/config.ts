@@ -8,16 +8,17 @@ export { defineConfig } from '@ciderpress/config'
 
 export type {
   CiderpressConfig,
-  Section,
+  Page,
   Feature,
   Workspace,
   WorkspaceGroup,
   Frontmatter,
   NavItem,
   CardConfig,
+  ButtonConfig,
   IconConfig,
   IconColor,
   IconId,
   SidebarConfig,
-  SidebarLink,
+  SidebarPromo,
 } from '@ciderpress/config'

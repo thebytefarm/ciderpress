@@ -1,5 +1,9 @@
 import { BRAND_COLORS, DEFAULT_THEME_NAME } from '@ciderpress/theme'
-import type React from 'react'
+// Value import (not `import type`) — Rslib emits the classic JSX runtime
+// (`React.createElement(...)`), so the `React` binding must survive
+// compilation. With a type-only import, the bundle throws `React is not
+// defined` at runtime.
+import React from 'react'
 
 const FONT_STACK = "'SF Mono', 'Fira Code', 'JetBrains Mono', Consolas, monospace"
 /**

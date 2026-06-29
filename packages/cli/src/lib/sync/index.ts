@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { Section, CiderpressConfig } from '@ciderpress/config'
+import type { Page, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
@@ -86,9 +86,26 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     await generateAssets({ config: assetConfig, publicDir: options.paths.publicDir })
   }
 
+  // Wipe top-level files in `outDir/public` so deleted user assets
+  // (e.g. a removed `repoRoot/public/logo.svg`) don't linger and
+  // silently override the freshly generated set on the next build —
+  // `copyAll` is append-only. Subdirectories are preserved because
+  // `outDir/public/images/` is the destination for the per-page
+  // `rewriteImages` step further down, which is gated by mtime
+  // caching and won't re-copy files for unchanged pages.
+  await wipePublicTopLevel(path.resolve(outDir, 'public'))
+
   // Copy public assets into content/public/ so Rspress can resolve them
   // (Rspress looks for public/ inside the root directory, which is .ciderpress/content/)
   await copyAll(options.paths.publicDir, path.resolve(outDir, 'public'))
+
+  // Overlay user-owned static assets from `<repoRoot>/public/` on top of
+  // the generated set. This is the documented opt-in path for shipping
+  // a custom `logo.svg` / `favicon.svg` / `icon.svg` / loader asset —
+  // user files win over the auto-generated ones with the same name.
+  // `copyAll` is a no-op when the source directory does not exist, so
+  // projects without a `public/` dir get the auto-generated set only.
+  await copyAll(path.resolve(repoRoot, 'public'), path.resolve(outDir, 'public'))
 
   const ctx: SyncContext = {
     repoRoot,
@@ -101,9 +118,9 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   const workspaceSections = synthesizeWorkspaceSections(config)
-  const allSections: Section[] = [...config.sections, ...workspaceSections]
+  const rootPages: Page[] = [...config.pages, ...workspaceSections]
 
-  const [resolveErr, rawResolved] = await resolveEntries(allSections, ctx)
+  const [resolveErr, rawResolved] = await resolveEntries(rootPages, ctx)
   if (resolveErr) {
     return {
       pagesWritten: 0,
@@ -118,7 +135,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  const resolved = injectLandingPages(enriched, allSections, workspaces)
+  const resolved = injectLandingPages(enriched, rootPages, workspaces)
 
   const sectionPages = collectPages(resolved)
 
@@ -335,6 +352,29 @@ async function copyAll(src: string, dest: string): Promise<void> {
 }
 
 /**
+ * Remove every top-level file inside `dir` while leaving subdirectories
+ * intact. Used before the public-asset overlay so deleted user assets
+ * don't linger, without nuking the per-page rewriteImages output at
+ * `dir/images/`.
+ *
+ * @private
+ * @param dir - Absolute path to the directory whose top-level files
+ *   should be wiped. No-op when the directory does not exist.
+ */
+async function wipePublicTopLevel(dir: string): Promise<void> {
+  const exists = await fs.stat(dir).catch(() => null)
+  if (!exists) {
+    return
+  }
+  const entries = await fs.readdir(dir, { withFileTypes: true })
+  await Promise.all(
+    entries
+      .filter((entry) => entry.isFile())
+      .map((entry) => fs.rm(path.resolve(dir, entry.name), { force: true }))
+  )
+}
+
+/**
  * Resolve the quiet flag to a boolean, defaulting to false.
  *
  * @private
@@ -403,7 +443,10 @@ function collectOpenapiScopePaths(entries: readonly OpenAPISidebarEntry[]): read
  * @returns Asset config with title and optional tagline
  */
 function buildAssetConfig(config: CiderpressConfig): AssetConfig {
-  return { title: config.title ?? 'Documentation', tagline: config.tagline }
+  const heroTagline = match(config.home)
+    .with({ hero: { tagline: P.string } }, (h) => h.hero.tagline)
+    .otherwise(() => undefined)
+  return { title: config.title ?? 'Documentation', tagline: heroTagline }
 }
 
 /**

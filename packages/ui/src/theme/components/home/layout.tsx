@@ -1,6 +1,13 @@
+import type {
+  ButtonConfig,
+  HomeHeroDemoConfig,
+  HomeSectionId,
+  HomeSplitConfig,
+} from '@ciderpress/config'
+import { DEFAULT_HOME_LAYOUT } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
-import { match } from 'massaman/match'
-import type React from 'react'
+import { match, P } from 'massaman/match'
+import React from 'react'
 
 import { SiteFooter } from '../footer/site-footer'
 import { CTA } from './cta'
@@ -8,8 +15,10 @@ import { HomeFeature } from './feature'
 import { Hero } from './hero'
 import type { HeroAction } from './hero'
 import { HeroDemo } from './hero-demo'
+import { CustomHeroDemo } from './hero-demo-custom'
 import { PageRail } from './page-rail'
 import { HomeSplit } from './split'
+import { CustomSplitVisual } from './split-visual-custom'
 import { TrustStrip } from './trust-strip'
 import { HomeWorkspaces } from './workspaces'
 
@@ -24,11 +33,11 @@ interface FrontmatterHero {
   readonly name?: string
   readonly text?: string
   readonly tagline?: string
-  readonly actions?: readonly HeroAction[]
-  readonly eyebrow?: string
+  readonly actions?: readonly ButtonConfig[]
+  readonly label?: string
 }
 
-interface FrontmatterTrust {
+interface FrontmatterProof {
   readonly lead?: string
   readonly names?: readonly string[]
 }
@@ -36,7 +45,7 @@ interface FrontmatterTrust {
 interface FrontmatterCTA {
   readonly title?: string
   readonly subtitle?: string
-  readonly actions?: readonly HeroAction[]
+  readonly actions?: readonly ButtonConfig[]
 }
 
 /**
@@ -52,25 +61,48 @@ interface FrontmatterCTA {
  */
 export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const { frontmatter } = useFrontmatter()
+
+  // SSG-MD short-circuit: the React tree is walked by
+  // `react-render-to-markdown` to produce `.md` files served to
+  // `<LlmsCopyButton />`. Rendering the home shell would dump hero
+  // text, demo blocks, and footer columns into every copied page.
+  // Return an empty fragment for SSG-MD — the home page has no
+  // canonical markdown body. The `useFrontmatter` hook above runs in
+  // both passes so hook order stays consistent.
+  if (import.meta.env.SSG_MD) {
+    return <></>
+  }
+
   const fm = frontmatter as Record<string, unknown>
 
   const hero = fm.hero as FrontmatterHero | undefined
-  const trust = fm.trust as FrontmatterTrust | undefined
+  const proof = fm.proof as FrontmatterProof | undefined
   const cta = fm.cta as FrontmatterCTA | undefined
+  // heroDemo / split frontmatter:
+  //   undefined → render the framework default
+  //   false     → suppress entirely
+  //   object    → render the user-supplied custom variant
+  const heroDemoFm = fm.heroDemo as false | HomeHeroDemoConfig | undefined
+  const splitFm = fm.split as false | HomeSplitConfig | undefined
+
+  const heroDemoEl = match(heroDemoFm)
+    .with(false, () => null)
+    .with(undefined, () => <HeroDemo />)
+    .otherwise((d) => <CustomHeroDemo config={d} />)
 
   const heroSection = match(hero)
     .with(undefined, () => null)
     .otherwise((h) => (
       <Hero
-        eyebrow={h.eyebrow}
+        eyebrow={h.label}
         title={renderTitle(h.text ?? h.name ?? '')}
         tagline={h.tagline}
-        actions={h.actions}
-        demo={<HeroDemo />}
+        actions={mapButtonsToHeroActions(h.actions)}
+        demo={heroDemoEl}
       />
     ))
 
-  const trustSection = match(trust)
+  const proofSection = match(proof)
     .with(undefined, () => null)
     .otherwise((t) => {
       const names = t.names ?? []
@@ -84,18 +116,18 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     .otherwise((c) =>
       match(c.title === undefined)
         .with(true, () => null)
-        .otherwise(() => <CTA title={c.title ?? ''} subtitle={c.subtitle} actions={c.actions} />)
+        .otherwise(() => (
+          <CTA
+            title={c.title ?? ''}
+            subtitle={c.subtitle}
+            actions={mapButtonsToHeroActions(c.actions)}
+          />
+        ))
     )
 
-  return (
-    <PageRail>
-      {props.beforeHero}
-      {heroSection}
-      {props.afterHero}
-      {trustSection}
-      {props.beforeFeatures}
-      <HomeFeature />
-      {props.afterFeatures}
+  const splitSection = match(splitFm)
+    .with(false, () => null)
+    .with(undefined, () => (
       <HomeSplit
         eyebrow="Configuration"
         title="One file. Validated. Type-safe."
@@ -109,8 +141,57 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         action={{ theme: 'brand', text: 'Read the docs', link: '/getting-started/quick-start' }}
         visual={<ConfigPreview />}
       />
-      <HomeWorkspaces />
-      {ctaSection}
+    ))
+    .with(P.nonNullable, (s) => (
+      <HomeSplit
+        eyebrow={s.label}
+        title={s.title}
+        body={s.body}
+        bullets={s.bullets ?? []}
+        action={match(s.cta)
+          .with(undefined, () => undefined)
+          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.href }))}
+        visual={match(s.visual)
+          .with(undefined, () => null)
+          .otherwise((v) => (
+            <CustomSplitVisual code={v.code} language={v.language} />
+          ))}
+      />
+    ))
+    .exhaustive()
+
+  // Section render order. `home.layout` (when provided) controls both
+  // order and visibility — sections omitted from the array are not
+  // rendered. The framework default (`DEFAULT_HOME_LAYOUT`) preserves
+  // the historical fixed order. Unknown ids are ignored at render time
+  // (the schema rejects them at config-load anyway).
+  const layout = (fm.layout as readonly HomeSectionId[] | undefined) ?? DEFAULT_HOME_LAYOUT
+  const sectionsById: Readonly<Record<HomeSectionId, React.ReactNode>> = {
+    hero: (
+      <>
+        {props.beforeHero}
+        {heroSection}
+        {props.afterHero}
+      </>
+    ),
+    proof: proofSection,
+    features: (
+      <>
+        {props.beforeFeatures}
+        <HomeFeature />
+        {props.afterFeatures}
+      </>
+    ),
+    split: splitSection,
+    showcase: <HomeWorkspaces />,
+    cta: ctaSection,
+  }
+
+  return (
+    <PageRail>
+      {layout.map((id) => (
+        <React.Fragment key={id}>{sectionsById[id]}</React.Fragment>
+      ))}
       <SiteFooter />
     </PageRail>
   )
@@ -134,16 +215,16 @@ function ConfigPreview(): React.ReactElement {
       {'  title: '}
       <span className="tok-str">'Acme Docs'</span>
       {',\n'}
-      {'  sections: [\n'}
+      {'  pages: [\n'}
       {'    { title: '}
       <span className="tok-str">'Guides'</span>
       {', include: '}
       <span className="tok-str">'docs/guides/*.md'</span>
       {' },\n'}
       {'  ],\n'}
-      {'  theme: { name: '}
+      {'  theme: { themes: ['}
       <span className="tok-str">'mulled'</span>
-      {' },\n'}
+      {'] },\n'}
       {'})'}
     </pre>
   )
@@ -180,4 +261,46 @@ function renderTitle(raw: string): React.ReactNode {
           )
         })
     })
+}
+
+/**
+ * Map the unified `ButtonConfig[]` shape (used by the new `home.hero`
+ * / `home.cta` configs) into the legacy `HeroAction[]` shape still
+ * consumed by `<Hero />` and `<CTA />`. `'primary'` → `'brand'`,
+ * `'secondary' | 'ghost'` → `'alt'`, `undefined` → `undefined`.
+ *
+ * @private
+ * @param actions - Optional list of unified button configs from frontmatter
+ * @returns Hero-action array consumed by the existing component API
+ */
+function mapButtonsToHeroActions(
+  actions: readonly ButtonConfig[] | undefined
+): readonly HeroAction[] | undefined {
+  if (actions === undefined) {
+    return undefined
+  }
+  return actions.map((action) => ({
+    text: action.text,
+    link: action.href,
+    theme: mapButtonVariantToHeroTheme(action.variant),
+  }))
+}
+
+/**
+ * Project the new `'primary' | 'secondary' | 'ghost'` variant token
+ * back into the legacy `'brand' | 'alt'` token that `<Hero />` accepts.
+ *
+ * @private
+ * @param variant - Optional variant from the unified button config
+ * @returns `'brand'`, `'alt'`, or `undefined`
+ */
+function mapButtonVariantToHeroTheme(
+  variant: ButtonConfig['variant']
+): 'brand' | 'alt' | undefined {
+  return match(variant)
+    .with(undefined, () => undefined)
+    .with('primary', () => 'brand' as const)
+    .with('secondary', () => 'alt' as const)
+    .with('ghost', () => 'alt' as const)
+    .exhaustive()
 }

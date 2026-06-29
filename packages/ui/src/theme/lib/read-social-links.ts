@@ -2,8 +2,9 @@ import type { CiderpressSocialLink } from '../components/nav/ciderpress-nav-soci
 
 /**
  * Pull social-link entries (GitHub, npm, etc) from Rspress's `site`
- * shape. Lives on `site.themeConfig.socialLinks` after Rspress
- * normalisation but isn't surfaced on the public typings.
+ * shape. Lives on `site.themeConfig.socialLinks` after the
+ * `packages/ui/src/config.ts` serialiser writes the unified `socials`
+ * config into the runtime theme config.
  *
  * @param site - Rspress site data (typically the result of `useSite().site`)
  * @returns Array of social-link entries (empty array when not configured)
@@ -22,6 +23,6 @@ export function readSocialLinks(site: unknown): readonly CiderpressSocialLink[] 
       typeof item === 'object' &&
       item !== null &&
       typeof (item as { icon?: unknown }).icon === 'string' &&
-      typeof (item as { content?: unknown }).content === 'string'
+      typeof (item as { url?: unknown }).url === 'string'
   )
 }

@@ -7,7 +7,7 @@ import {
 } from '@ciderpress/config'
 import type {
   ConfigWarning,
-  Section,
+  Page,
   TitleConfig,
   Workspace,
   CiderpressConfig,
@@ -167,24 +167,24 @@ export function generateIntroPage(workspaces: WorkspaceArrays): string {
 }
 
 /**
- * Synthesize Section entries from workspace config (categories).
+ * Synthesize Page entries from workspace config (categories).
  *
- * Produces standalone parent sections with workspace item children,
- * ready to merge into `config.sections` before resolution.
- * Skips any category whose link already exists in `config.sections`.
+ * Produces standalone parent pages with workspace item children,
+ * ready to merge into `config.pages` before resolution.
+ * Skips any category whose link already exists in `config.pages`.
  *
  * @param config - ciderpress config containing workspaces
- * @returns Section array of synthesized workspace sections
+ * @returns Page array of synthesized workspace pages
  */
-export function synthesizeWorkspaceSections(config: CiderpressConfig): Section[] {
-  const existingLinks = collectAllLinks(config.sections)
+export function synthesizeWorkspaceSections(config: CiderpressConfig): Page[] {
+  const existingLinks = collectAllLinks(config.pages)
 
   const apps = config.apps ?? []
   const packages = config.packages ?? []
   const categories = config.workspaces ?? []
 
   const appsSection = match(apps.length > 0 && !existingLinks.has('/apps'))
-    .with(true, (): Section | null => {
+    .with(true, (): Page | null => {
       const filteredItems = apps
         .filter((item) => !existingLinks.has(item.path))
         .map(workspaceToSection)
@@ -194,18 +194,18 @@ export function synthesizeWorkspaceSections(config: CiderpressConfig): Section[]
       return {
         title: 'Apps',
         path: '/apps',
-        standalone: true,
-        frontmatter: {
+        nav: { island: true },
+        defaults: {
           description:
             'Standalone applications and runnable services — APIs, workers, web apps, and anything that deploys independently.',
         },
-        items: filteredItems,
+        pages: filteredItems,
       }
     })
     .otherwise(() => null)
 
   const packagesSection = match(packages.length > 0 && !existingLinks.has('/packages'))
-    .with(true, (): Section | null => {
+    .with(true, (): Page | null => {
       const filteredItems = packages
         .filter((item) => !existingLinks.has(item.path))
         .map(workspaceToSection)
@@ -215,17 +215,17 @@ export function synthesizeWorkspaceSections(config: CiderpressConfig): Section[]
       return {
         title: 'Packages',
         path: '/packages',
-        standalone: true,
-        frontmatter: {
+        nav: { island: true },
+        defaults: {
           description:
             'Reusable modules shared across the codebase — libraries, utilities, configs, SDKs, and internal tooling.',
         },
-        items: filteredItems,
+        pages: filteredItems,
       }
     })
     .otherwise(() => null)
 
-  const categoryEntries = categories.map((category): Section | null => {
+  const categoryEntries = categories.map((category): Page | null => {
     const link = category.link ?? `/${slugify(String(category.title))}`
     if (existingLinks.has(link)) {
       return null
@@ -240,16 +240,16 @@ export function synthesizeWorkspaceSections(config: CiderpressConfig): Section[]
     return {
       title: category.title,
       path: link,
-      standalone: true,
-      frontmatter: {
+      nav: { island: true },
+      defaults: {
         description,
       },
-      items: filteredItems,
+      pages: filteredItems,
     }
   })
 
   return [appsSection, packagesSection, ...categoryEntries].filter(
-    (section): section is Section => section !== null
+    (section): section is Page => section !== null
   )
 }
 
@@ -307,18 +307,18 @@ function checkItemInclude(item: Workspace): readonly ConfigWarning[] {
 }
 
 /**
- * Recursively collect all links from a section tree.
- * Walks sections and their nested items to find every defined link.
+ * Recursively collect all links from a page tree.
+ * Walks pages and their nested children to find every defined link.
  *
  * @private
- * @param sections - Section tree to walk
+ * @param pages - Page tree to walk
  * @returns Set of all link strings found in the tree
  */
-function collectAllLinks(sections: readonly Section[]): Set<string> {
+function collectAllLinks(pages: readonly Page[]): Set<string> {
   return new Set(
-    sections.flatMap((section): string[] => {
-      const self = collectSelfLinks(section.path)
-      const nested = collectNestedLinks(section.items)
+    pages.flatMap((page): string[] => {
+      const self = collectSelfLinks(page.path)
+      const nested = collectNestedLinks(page.pages)
       return [...self, ...nested]
     })
   )
@@ -428,70 +428,39 @@ function buildWorkspaceSection(
 }
 
 /**
- * Convert a Workspace to a Section, extracting discovery fields and applying defaults.
+ * Convert a Workspace to a Page, resolving the include glob and passing
+ * Page-shaped fields (`pages`, `discover`, `defaults`) through directly.
  *
- * Uses `path` as both the section URL and URL prefix for glob-discovered children.
+ * Uses `path` as both the page URL and URL prefix for glob-discovered children.
  * The `include` field is resolved relative to the workspace item's base path
- * (derived from `path`). When `recursive` is true the default include is a deep
- * glob matching all nested markdown, otherwise a shallow single-level glob.
+ * (derived from `path`). When `discover.recursive` is `true` the default
+ * include is a deep glob matching all nested markdown, otherwise a shallow
+ * single-level glob.
  *
  * @private
  * @param item - Workspace item to convert
- * @returns Section config derived from the workspace item
+ * @returns Page config derived from the workspace item
  */
-function workspaceToSection(item: Workspace): Section {
-  const base: Section = {
-    title: item.title,
-    icon: item.icon,
-    path: item.path,
-  }
-
-  return applyOptionalFields(base, item)
-}
-
-/**
- * Apply optional discovery fields to a base section from a workspace item.
- *
- * @private
- * @param base - Base section with title, icon, and path
- * @param item - Workspace item with optional discovery fields
- * @returns Complete section with all discovery fields resolved
- */
-function applyOptionalFields(base: Section, item: Workspace): Section {
-  const defaultPattern = match(item.recursive)
-    .with(true, () => 'docs/**/*.md')
+function workspaceToSection(item: Workspace): Page {
+  const defaultPattern = match(item.discover)
+    .with({ recursive: true }, () => 'docs/**/*.md')
     .otherwise(() => 'docs/*.md')
   const fromPattern = item.include ?? defaultPattern
   const basePath = item.path.replace(/^\//, '')
   const resolvedInclude = normalizeAndResolveInclude(fromPattern, basePath)
 
-  const sort = item.sort ?? null
-
-  const recursive = item.recursive ?? null
-
-  const entryFile = match(recursive)
-    .with(true, () => item.entryFile)
-    .otherwise(() => null)
-
-  const exclude = match(item.exclude)
-    .with(P.nonNullable, (ex) => [...ex])
-    .otherwise(() => null)
-
-  const frontmatter = item.frontmatter ?? null
-
   return omitBy(
     {
-      ...base,
+      title: item.title,
+      icon: item.icon,
+      path: item.path,
       include: resolvedInclude,
-      items: item.items,
-      sort,
-      recursive,
-      entryFile,
-      exclude,
-      frontmatter,
+      pages: item.pages,
+      defaults: item.defaults,
+      discover: item.discover,
     },
     isUndefined
-  ) as Section
+  ) as Page
 }
 
 /**
@@ -509,13 +478,13 @@ function collectSelfLinks(link: string | undefined): string[] {
 }
 
 /**
- * Collect links from nested section items.
+ * Collect links from nested page entries.
  *
  * @private
- * @param items - Optional array of child sections
+ * @param items - Optional array of child pages
  * @returns Array of link strings from nested items
  */
-function collectNestedLinks(items: readonly Section[] | undefined): string[] {
+function collectNestedLinks(items: readonly Page[] | undefined): string[] {
   if (items) {
     return [...collectAllLinks(items)]
   }

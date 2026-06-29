@@ -1,0 +1,21 @@
+{
+  "name": "example-custom",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "portless": "acme",
+  "scripts": {
+    "setup:portless": "zx --install scripts/setup.ts",
+    "predev": "zx --install scripts/setup.ts --quiet",
+    "dev": "ciderpress dev",
+    "docs:dev": "ciderpress dev",
+    "docs:build": "ciderpress build",
+    "docs:serve": "ciderpress serve"
+  },
+  "dependencies": {
+    "ciderpress": "workspace:*"
+  },
+  "devDependencies": {
+    "zx": "^8.8.5"
+  }
+}

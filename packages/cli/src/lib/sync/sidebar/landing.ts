@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises'
 
 import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { IconColor } from '@ciderpress/config'
+import type { IconColor, SerializedIcon } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
@@ -21,9 +21,10 @@ export interface WorkspaceCardData {
    */
   readonly title: string
   /**
-   * Icon config — Iconify identifier string or `{ id, color }` object.
+   * Icon config — Iconify identifier string, `{ id, color }` object, or
+   * `{ kind: 'image', src, alt }` for a static image asset.
    */
-  readonly icon?: string | { readonly id: string; readonly color: string }
+  readonly icon?: SerializedIcon
   /**
    * Scope label shown above the name (e.g. 'apps/').
    */
@@ -152,9 +153,9 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
   const iconId = match(hasChildren)
     .with(true, () => 'pixelarticons:folder')
     .otherwise(() => 'pixelarticons:file')
-  const icon: string | { readonly id: string; readonly color: string } = match(iconColor)
-    .with('purple', () => iconId)
-    .otherwise(() => ({ id: iconId, color: iconColor }))
+  const icon: SerializedIcon = match(iconColor)
+    .with('purple', () => iconId as SerializedIcon)
+    .otherwise(() => ({ id: iconId, color: iconColor }) as SerializedIcon)
   const description = await resolveDescription(entry)
 
   const baseProps = [
@@ -231,7 +232,16 @@ async function extractDescription(sourcePath: string): Promise<string | undefine
  * @returns Escaped string safe for JSX prop interpolation
  */
 function escapeJsxProp(str: string): string {
-  return str.replaceAll('"', '&quot;').replaceAll('{', '&#123;').replaceAll('}', '&#125;')
+  // Backslash must escape first, otherwise the entity-replacement passes below
+  // would multiply existing backslashes. Without this, a trailing odd-count
+  // backslash (`alt: 'x\\'`) escapes the closing `"` of the emitted JSX
+  // attribute and the parser swallows the next character into the string —
+  // adjacent props become part of the value or the build errors confusingly.
+  return str
+    .replaceAll('\\', String.raw`\\`)
+    .replaceAll('"', '&quot;')
+    .replaceAll('{', '&#123;')
+    .replaceAll('}', '&#125;')
 }
 
 /**
@@ -285,13 +295,20 @@ function resolveParagraph(lines: readonly string[], headingIdx: number): readonl
  * @param icon - Icon config value (string or object)
  * @returns Array with the icon JSX prop string
  */
-function serializeIconProp(
-  icon: string | { readonly id: string; readonly color: string }
-): readonly string[] {
+function serializeIconProp(icon: SerializedIcon): readonly string[] {
   if (isString(icon)) {
     return [`icon="${icon}"`]
   }
-  return [`icon={{ id: "${icon.id}", color: "${icon.color}" }}`]
+  // Match on the discriminant value rather than `'kind' in icon` so a
+  // future variant that also carries a `kind` field (or a malformed
+  // runtime input) can't silently slip into the image branch.
+  return match(icon)
+    .with({ kind: 'image' }, (img) => {
+      const src = escapeJsxProp(img.src)
+      const alt = escapeJsxProp(img.alt)
+      return [`icon={{ kind: "image", src: "${src}", alt: "${alt}" }}`]
+    })
+    .otherwise((i) => [`icon={{ id: "${i.id}", color: "${i.color}" }}`])
 }
 
 /**

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 40" role="img" aria-label="Acme Corp">
+  <defs>
+    <linearGradient id="acme-grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(2 2)">
+    <rect x="0" y="0" width="36" height="36" rx="8" fill="url(#acme-grad)"/>
+    <path d="M10 27 L18 8 L26 27 M13.5 21 L22.5 21" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="50" y="28" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, sans-serif" font-size="22" font-weight="800" letter-spacing="-0.02em" fill="#e5e7eb">Acme</text>
+  <text x="115" y="28" font-family="ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Inter, sans-serif" font-size="22" font-weight="500" letter-spacing="-0.02em" fill="#94a3b8">Corp</text>
+</svg>

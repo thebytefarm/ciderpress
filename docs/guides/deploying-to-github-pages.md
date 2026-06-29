@@ -134,4 +134,4 @@ Then configure your DNS to point to GitHub Pages. See the [GitHub Pages custom d
 
 - [CLI reference — build](/reference/cli#build)
 - [CLI reference — sync](/reference/cli#sync)
-- [Content](/concepts/content) — how pages and sections are defined
+- [Content](/concepts/content) — how pages and groups are defined

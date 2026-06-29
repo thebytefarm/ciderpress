@@ -1,10 +1,10 @@
-import type { SiteEditConfig, SiteReportConfig } from '@ciderpress/config'
 import { useFrontmatter, useSite } from '@rspress/core/runtime'
 import { Layout as OriginalLayout } from '@rspress/core/theme-original'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 import { useEffect } from 'react'
 
+import type { CiderpressSiteBlock } from '../../hooks/use-ciderpress'
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { useNavItems } from '../../hooks/use-nav-items'
 import { readSocialLinks } from '../../lib/read-social-links'
@@ -120,6 +120,30 @@ export function Layout(): React.ReactElement {
     </ContentFooterPortal>
   )
 
+  // Rspress's SSG-MD pipeline renders the React tree through
+  // `react-render-to-markdown` to produce the `.md` files served to
+  // `<LlmsCopyButton />`. If we render our chrome (header, docs bar,
+  // footer slot wrappers) during that pass, the topbar logo, search,
+  // and nav items all get serialized as markdown and end up at the
+  // top of the copied content. Short-circuit to just the article body
+  // via `<OriginalLayout />` (Rspress's stock layout already returns a
+  // Fragment-only output for SSG-MD). The visible HTML SSG path
+  // (`SSG_MD` undefined) still gets the full chrome.
+  if (import.meta.env.SSG_MD) {
+    return (
+      <OriginalLayout
+        top={null}
+        beforeNavMenu={null}
+        afterNavMenu={null}
+        beforeSidebar={null}
+        afterSidebar={null}
+        beforeDoc={null}
+        afterDoc={null}
+        bottom={null}
+      />
+    )
+  }
+
   return (
     <>
       <CiderpressHeader
@@ -169,16 +193,17 @@ function readNavItems(site: unknown): readonly CiderpressNavMenuItem[] {
 
 /**
  * Build the list of `MetaAction`s to render under each doc page,
- * derived from `site.edit` and `site.report`. Returns an empty array
- * when neither is configured.
+ * derived from the serialised `site.edit` / `site.report` blocks
+ * (originally configured via top-level `editLink` / `reportLink`).
+ * Returns an empty array when neither is configured.
  *
  * @private
  * @param params - Site edit/report config plus current page path
  * @returns Ordered list of meta actions
  */
 function collectMetaActions(params: {
-  readonly edit: SiteEditConfig | undefined
-  readonly report: SiteReportConfig | undefined
+  readonly edit: CiderpressSiteBlock['edit']
+  readonly report: CiderpressSiteBlock['report']
   readonly pagePath: string
 }): readonly MetaAction[] {
   const { edit, report, pagePath } = params
@@ -204,9 +229,17 @@ function collectMetaActions(params: {
 }
 
 /**
+ * Construct the per-page "edit this page" URL from a serialised
+ * `editLink` block. The `buildSiteBlock` helper guarantees `repo` is
+ * present whenever the block itself is — callers should already have
+ * skipped the action when the block was `undefined`.
+ *
  * @private
+ * @param edit - Site edit block (non-undefined when called)
+ * @param pagePath - Current page's source path (with leading slash)
+ * @returns Fully-qualified URL string
  */
-function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
+function buildEditUrl(edit: NonNullable<CiderpressSiteBlock['edit']>, pagePath: string): string {
   if (edit.repo.startsWith('http')) {
     return edit.repo
   }
@@ -219,9 +252,14 @@ function buildEditUrl(edit: SiteEditConfig, pagePath: string): string {
 }
 
 /**
+ * Construct the "report an issue" URL from a serialised `reportLink`
+ * block. Same `repo`-presence contract as {@link buildEditUrl}.
+ *
  * @private
+ * @param report - Site report block (non-undefined when called)
+ * @returns Fully-qualified URL string
  */
-function buildReportUrl(report: SiteReportConfig): string {
+function buildReportUrl(report: NonNullable<CiderpressSiteBlock['report']>): string {
   if (report.repo.startsWith('http')) {
     return report.repo
   }

@@ -9,7 +9,7 @@ import { createRspressConfig } from '@ciderpress/ui/node'
 import { dev, build, serve } from '@rspress/core'
 import getPort, { portNumbers } from 'get-port'
 import { toError } from 'massaman/conversion'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 
 import type { Paths } from './paths.ts'
 
@@ -27,10 +27,25 @@ interface ServerOptions {
   readonly config: CiderpressConfig
   readonly paths: Paths
   readonly port?: number
+  readonly host?: string
+  readonly url?: string
   readonly vscode?: boolean
   readonly theme?: string
   readonly colorMode?: ThemeVariant
 }
+
+/**
+ * Default bind interface for the dev server when no override is supplied.
+ *
+ * Explicitly `127.0.0.1` rather than `'localhost'` because Node.js on
+ * macOS resolves `localhost` to IPv6 (`[::1]`) first — Rsbuild then
+ * binds IPv6-only, and any reverse proxy (portless.sh, nginx, Caddy)
+ * pointed at `127.0.0.1:port` returns 502 Bad Gateway. Binding the
+ * IPv4 loopback by default keeps localhost-only security while staying
+ * compatible with every proxy. Set `devServer.host: '0.0.0.0'` to
+ * expose on every interface (LAN / Docker).
+ */
+const DEFAULT_DEV_HOST = '127.0.0.1'
 
 /**
  * Server instance returned by Rspress dev().
@@ -59,11 +74,17 @@ interface StartServerOptions {
 export type OnConfigReload = (newConfig: CiderpressConfig) => Promise<void>
 
 /**
- * Result returned by `startDevServer` containing the reload callback and resolved port.
+ * Result returned by `startDevServer` containing the reload callback,
+ * the resolved port and host the server bound to, and the
+ * externally-visible URL surfaced to the terminal / browser auto-open.
+ *
+ * Callers that need the local bind URL derive it from `http://${host}:${port}`.
  */
 export interface DevServerResult {
   readonly onConfigReload: OnConfigReload
   readonly port: number
+  readonly host: string
+  readonly url: string
   readonly close: () => Promise<void>
 }
 
@@ -78,9 +99,21 @@ export interface DevServerResult {
  * @returns The resolved port and an async reload callback
  */
 export async function startDevServer(options: ServerOptions): Promise<DevServerResult> {
-  const { paths } = options
-  const preferred = options.port ?? DEV_PORT
+  const { paths, config: initialConfig } = options
+  const devServer = initialConfig.devServer
+  const devServerPort = match(devServer)
+    .with(P.nonNullable, (d) => d.port)
+    .otherwise(() => undefined)
+  const devServerHost = match(devServer)
+    .with(P.nonNullable, (d) => d.host)
+    .otherwise(() => undefined)
+  const devServerUrl = match(devServer)
+    .with(P.nonNullable, (d) => d.url)
+    .otherwise(() => undefined)
+  const preferred = options.port ?? devServerPort ?? DEV_PORT
+  const host = options.host ?? devServerHost ?? DEFAULT_DEV_HOST
   const port = await getPort({ port: portNumbers(preferred, preferred + DEV_PORT_RANGE) })
+  const url = resolveDevUrl({ override: options.url, config: devServerUrl, host, port })
   // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
@@ -105,6 +138,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
         extraBuilderConfig: {
           server: {
             port,
+            host,
             strictPort: true,
           },
           dev: {
@@ -182,7 +216,30 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
     }
   }
 
-  return { onConfigReload: handleConfigReload, port, close: closeServer }
+  return { onConfigReload: handleConfigReload, port, host, url, close: closeServer }
+}
+
+/**
+ * Resolve the externally-visible dev URL from precedence: CLI override
+ * (`options.url`) > config (`devServer.url`) > computed `http://${host}:${port}`.
+ *
+ * @private
+ * @param params - Override, config value, and resolved bind host + port
+ * @returns Final URL surfaced to the terminal and browser auto-open
+ */
+function resolveDevUrl(params: {
+  readonly override: string | undefined
+  readonly config: string | undefined
+  readonly host: string
+  readonly port: number
+}): string {
+  if (params.override !== undefined && params.override.length > 0) {
+    return params.override
+  }
+  if (params.config !== undefined && params.config.length > 0) {
+    return params.config
+  }
+  return `http://${params.host}:${params.port}`
 }
 
 /**

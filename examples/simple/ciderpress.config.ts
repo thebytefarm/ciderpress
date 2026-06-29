@@ -3,9 +3,13 @@ import { defineConfig } from 'ciderpress'
 export default defineConfig({
   title: 'my-lib',
   description: 'A simple utility library',
-  tagline: 'Lightweight utilities for everyday TypeScript.',
-  theme: { name: 'grannysmith' },
-  sections: [
+  theme: { themes: ['grannysmith'] },
+  home: {
+    hero: {
+      tagline: 'Lightweight utilities for everyday TypeScript.',
+    },
+  },
+  pages: [
     {
       title: 'Getting Started',
       path: '/getting-started',
@@ -23,16 +27,18 @@ export default defineConfig({
       path: '/guides',
       include: 'docs/guides/*.md',
       icon: 'pixelarticons:article',
-      sort: 'alpha',
+      discover: { sort: 'alpha' },
     },
   ],
-  nav: [
-    { title: 'Docs', link: '/getting-started' },
-    { title: 'API', link: '/api-reference' },
-    { title: 'Guides', link: '/guides' },
-  ],
+  topbar: {
+    nav: [
+      { title: 'Docs', link: '/getting-started' },
+      { title: 'API', link: '/api-reference' },
+      { title: 'Guides', link: '/guides' },
+    ],
+  },
   footer: {
     message: 'Built with ciderpress',
-    copyright: 'Copyright © 2025 my-lib',
+    copyright: { company: 'my-lib' },
   },
 })

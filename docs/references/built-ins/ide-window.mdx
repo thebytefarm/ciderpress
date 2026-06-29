@@ -22,7 +22,7 @@ import { IDEWindow } from '@theme'
   files={[{ name: 'ciderpress.config.ts', active: true }]}
   lang="ts"
   code={
-    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  pages: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
   }
 />
 ```
@@ -33,7 +33,7 @@ import { IDEWindow } from '@theme'
   files={[{ name: 'ciderpress.config.ts', active: true }]}
   lang="ts"
   code={
-    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  sections: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
+    "import { defineConfig } from 'ciderpress'\n\nexport default defineConfig({\n  title: 'My Docs',\n  description: 'A documentation site',\n  pages: [\n    {\n      title: 'Getting Started',\n      path: '/getting-started',\n      include: 'docs/getting-started/*.md',\n    },\n  ],\n})"
   }
 />
 
@@ -70,7 +70,7 @@ Use full paths for clarity in monorepo contexts:
   files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
   lang="ts"
   code={
-    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.pages)\n  await writeManifest(root, sidebar)\n}"
   }
 />
 ```
@@ -81,7 +81,7 @@ Use full paths for clarity in monorepo contexts:
   files={[{ name: 'packages/lib/src/sync/index.ts', active: true }]}
   lang="ts"
   code={
-    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.sections)\n  await writeManifest(root, sidebar)\n}"
+    "import { resolveConfig } from './config'\nimport { generateSidebar } from './sidebar'\nimport { writeManifest } from './manifest'\n\nexport const sync = async (root: string) => {\n  const config = await resolveConfig(root)\n  const sidebar = generateSidebar(config.pages)\n  await writeManifest(root, sidebar)\n}"
   }
 />
 
