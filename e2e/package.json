@@ -9,7 +9,7 @@
     "install:browsers": "playwright install --with-deps chromium"
   },
   "devDependencies": {
-    "@argos-ci/playwright": "^7.0.5",
-    "@playwright/test": "^1.60.0"
+    "@argos-ci/playwright": "^7.1.1",
+    "@playwright/test": "^1.61.1"
   }
 }

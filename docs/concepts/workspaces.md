@@ -120,12 +120,12 @@ Discovery tuning lives under `discover.*` (same shape as `Page.discover`) — so
 
 ### WorkspaceGroup fields
 
-| Field         | Type          | Required | Description                                          |
-| ------------- | ------------- | -------- | ---------------------------------------------------- |
-| `title`       | `string`      | yes      | Group label rendered as the home-page section header |
-| `icon`        | `IconConfig`  | yes      | Icon for the group header                            |
-| `description` | `string`      | no       | Sub-header copy under the section title              |
-| `items`       | `Workspace[]` | yes      | The workspaces in this group                         |
+| Field         | Type          | Required | Description                                            |
+| ------------- | ------------- | -------- | ------------------------------------------------------ |
+| `title`       | `string`      | yes      | Group label rendered as the home-page section header   |
+| `icon`        | `IconConfig`  | yes      | Icon for the group header                              |
+| `description` | `string`      | no       | Sub-header copy under the section title                |
+| `items`       | `Workspace[]` | yes      | The workspaces in this group                           |
 | `link`        | `string`      | no       | URL prefix override (defaults to `/${slugify(title)}`) |
 
 `WorkspaceGroup.icon` accepts the full `IconConfig` shape — string ID, `{ id, color }`, or `{ src, alt }` — same as anywhere else an icon appears in the config.

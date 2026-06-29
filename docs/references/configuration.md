@@ -122,13 +122,13 @@ theme: {
 }
 ```
 
-| Field             | Type                            | Default                                       | Description                                                                                                                  |
-| ----------------- | ------------------------------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
-| `themes`          | `ThemeEntry[]`                  | `['mulled']` (when `theme` is omitted)        | Mix of built-in theme names and custom `Theme` objects. First entry is default unless one is marked                          |
+| Field             | Type                            | Default                                                           | Description                                                                                         |
+| ----------------- | ------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| `themes`          | `ThemeEntry[]`                  | `['mulled']` (when `theme` is omitted)                            | Mix of built-in theme names and custom `Theme` objects. First entry is default unless one is marked |
 | `defaultVariant`  | `'light' \| 'dark' \| 'system'` | active theme's own `defaultVariant` (`'dark'` for every built-in) | Initial light/dark variant. `'system'` defers to the active theme's declared default                |
-| `themeSwitcher`   | `boolean`                       | `true` when `themes.length > 1`               | Show the named-theme picker in the topbar                                                                                    |
-| `variantSwitcher` | `boolean`                       | `true`                                        | Show the light/dark toggle in the topbar (auto-hidden when the active theme has only one variant)                            |
-| `overrides`       | `Partial<ThemeColors>`          | —                                             | Override individual color tokens across every theme in `themes`                                                              |
+| `themeSwitcher`   | `boolean`                       | `true` when `themes.length > 1`                                   | Show the named-theme picker in the topbar                                                           |
+| `variantSwitcher` | `boolean`                       | `true`                                                            | Show the light/dark toggle in the topbar (auto-hidden when the active theme has only one variant)   |
+| `overrides`       | `Partial<ThemeColors>`          | —                                                                 | Override individual color tokens across every theme in `themes`                                     |
 
 ### ThemeEntry
 
@@ -259,13 +259,13 @@ interface CardConfig {
 }
 ```
 
-| Field         | Type                           | Description                                                                                   |
-| ------------- | ------------------------------ | --------------------------------------------------------------------------------------------- |
-| `icon`        | `IconConfig`                   | Card icon. Defaults to a rotating color based on position in the parent's landing card grid   |
-| `scope`       | `string`                       | Scope kicker rendered above the title (e.g. `'apps/'`, `'packages/'`)                         |
-| `description` | `string`                       | One-line description rendered under the card title (overrides the page's own `description`)   |
-| `tags`        | `string[]`                     | Tag chips rendered below the description                                                      |
-| `badge`       | `{ src: string; alt: string }` | Logo badge rendered in the card's top-right corner                                             |
+| Field         | Type                           | Description                                                                                 |
+| ------------- | ------------------------------ | ------------------------------------------------------------------------------------------- |
+| `icon`        | `IconConfig`                   | Card icon. Defaults to a rotating color based on position in the parent's landing card grid |
+| `scope`       | `string`                       | Scope kicker rendered above the title (e.g. `'apps/'`, `'packages/'`)                       |
+| `description` | `string`                       | One-line description rendered under the card title (overrides the page's own `description`) |
+| `tags`        | `string[]`                     | Tag chips rendered below the description                                                    |
+| `badge`       | `{ src: string; alt: string }` | Logo badge rendered in the card's top-right corner                                          |
 
 Card content resolves from this priority order (highest first): `card.description` → source file frontmatter `description` → `Page.description`.
 
@@ -376,19 +376,19 @@ interface Workspace {
 }
 ```
 
-| Field         | Type                              | Required | Description                                                                                       |
-| ------------- | --------------------------------- | -------- | ------------------------------------------------------------------------------------------------- |
-| `title`       | `TitleConfig`                     | yes      | Display name. Accepts the full `TitleConfig` (was plain `string`)                                 |
-| `description` | `string`                          | yes      | Short description for cards and the workspace landing page                                        |
-| `path`        | `string`                          | yes      | URL prefix for this workspace's documentation                                                     |
-| `icon`        | `IconConfig`                      | no       | Icon for the home card and sidebar header                                                         |
-| `tags`        | `string[]`                        | no       | Tech tags — case-insensitive, mapped to icons via the tech registry                               |
-| `badge`       | `{ src: string; alt: string }`    | no       | Logo badge rendered in the card's top-right corner                                                |
-| `include`     | `string \| string[]`              | no       | Source file path(s) or glob pattern(s) for content discovery                                      |
-| `pages`       | `Page[]`                          | no       | Explicit child pages (mirrors `Page.pages`)                                                       |
-| `defaults`    | `Frontmatter`                     | no       | Default frontmatter injected into every discovered child page (mirrors `Page.defaults`)           |
-| `discover`    | (see Page)                        | no       | Glob-discovery options. Same shape as `Page.discover`                                             |
-| `openapi`     | `OpenAPISpec`                     | no       | OpenAPI spec integration for this workspace                                                       |
+| Field         | Type                           | Required | Description                                                                             |
+| ------------- | ------------------------------ | -------- | --------------------------------------------------------------------------------------- |
+| `title`       | `TitleConfig`                  | yes      | Display name. Accepts the full `TitleConfig` (was plain `string`)                       |
+| `description` | `string`                       | yes      | Short description for cards and the workspace landing page                              |
+| `path`        | `string`                       | yes      | URL prefix for this workspace's documentation                                           |
+| `icon`        | `IconConfig`                   | no       | Icon for the home card and sidebar header                                               |
+| `tags`        | `string[]`                     | no       | Tech tags — case-insensitive, mapped to icons via the tech registry                     |
+| `badge`       | `{ src: string; alt: string }` | no       | Logo badge rendered in the card's top-right corner                                      |
+| `include`     | `string \| string[]`           | no       | Source file path(s) or glob pattern(s) for content discovery                            |
+| `pages`       | `Page[]`                       | no       | Explicit child pages (mirrors `Page.pages`)                                             |
+| `defaults`    | `Frontmatter`                  | no       | Default frontmatter injected into every discovered child page (mirrors `Page.defaults`) |
+| `discover`    | (see Page)                     | no       | Glob-discovery options. Same shape as `Page.discover`                                   |
+| `openapi`     | `OpenAPISpec`                  | no       | OpenAPI spec integration for this workspace                                             |
 
 ### WorkspaceGroup
 
@@ -433,12 +433,12 @@ interface OpenAPISpec {
 }
 ```
 
-| Field           | Type                          | Required | Description                                                                                          |
-| --------------- | ----------------------------- | -------- | ---------------------------------------------------------------------------------------------------- |
-| `spec`          | `string`                      | yes      | Path to the OpenAPI document (`.json`, `.yaml`, or `.yml`), relative to the repo root                |
-| `path`          | `string`                      | yes      | URL path the API operation pages mount under (must start with `/`)                                   |
-| `title`         | `string`                      | no       | Sidebar group title (default `'API Reference'`)                                                      |
-| `sidebarLayout` | `'method-path' \| 'title'`    | no       | How operations appear in the sidebar — `method-path` shows `GET /users`; `title` shows the operation summary (default `'method-path'`) |
+| Field           | Type                       | Required | Description                                                                                                                            |
+| --------------- | -------------------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `spec`          | `string`                   | yes      | Path to the OpenAPI document (`.json`, `.yaml`, or `.yml`), relative to the repo root                                                  |
+| `path`          | `string`                   | yes      | URL path the API operation pages mount under (must start with `/`)                                                                     |
+| `title`         | `string`                   | no       | Sidebar group title (default `'API Reference'`)                                                                                        |
+| `sidebarLayout` | `'method-path' \| 'title'` | no       | How operations appear in the sidebar — `method-path` shows `GET /users`; `title` shows the operation summary (default `'method-path'`) |
 
 When declared on a `Workspace`, `path` must be nested under the workspace's own `path` — that's checked at validate time. See the [OpenAPI reference](/reference/openapi) for a full walkthrough.
 
@@ -815,12 +815,12 @@ interface HomeFeaturesConfig {
 }
 ```
 
-| Field      | Type                 | Description                                                                                                |
-| ---------- | -------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Field      | Type                 | Description                                                                                                                             |
+| ---------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
 | `items`    | `Feature[]`          | Feature cards (replaces the old top-level `features` array). Optional — omit to customise grid layout / heading without supplying cards |
-| `columns`  | `1 \| 2 \| 3 \| 4`   | Grid column count                                                                                          |
-| `truncate` | `TruncateConfig`     | Max visible lines before clipping with ellipsis                                                            |
-| `heading`  | `HomeSectionHeading` | Optional section heading (label + title) above the grid                                                    |
+| `columns`  | `1 \| 2 \| 3 \| 4`   | Grid column count                                                                                                                       |
+| `truncate` | `TruncateConfig`     | Max visible lines before clipping with ellipsis                                                                                         |
+| `heading`  | `HomeSectionHeading` | Optional section heading (label + title) above the grid                                                                                 |
 
 Each `Feature`:
 
@@ -877,14 +877,14 @@ interface HomeSplitConfig {
 }
 ```
 
-| Field     | Type               | Required | Description                                                  |
-| --------- | ------------------ | -------- | ------------------------------------------------------------ |
-| `title`   | `string`           | yes      | Section title                                                |
-| `label`   | `string`           | no       | Small label rendered above the title (renamed from `eyebrow`) |
-| `body`    | `string`           | no       | Body copy rendered under the title                           |
-| `bullets` | `string[]`         | no       | Checkmark list rendered under the body                       |
-| `cta`     | `ButtonConfig`     | no       | CTA button rendered at the bottom of the copy column         |
-| `visual`  | `HomeSplitVisual`  | no       | Visual rendered in the opposite column                       |
+| Field     | Type              | Required | Description                                                   |
+| --------- | ----------------- | -------- | ------------------------------------------------------------- |
+| `title`   | `string`          | yes      | Section title                                                 |
+| `label`   | `string`          | no       | Small label rendered above the title (renamed from `eyebrow`) |
+| `body`    | `string`          | no       | Body copy rendered under the title                            |
+| `bullets` | `string[]`        | no       | Checkmark list rendered under the body                        |
+| `cta`     | `ButtonConfig`    | no       | CTA button rendered at the bottom of the copy column          |
+| `visual`  | `HomeSplitVisual` | no       | Visual rendered in the opposite column                        |
 
 #### HomeSplitVisual
 
@@ -1007,12 +1007,12 @@ devServer?: {
 }
 ```
 
-| Field    | Type      | Default                       | Description                                                                                                                                                                                  |
-| -------- | --------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `url`    | `string`  | `http://${host}:${port}`      | Externally-visible URL. Replaces the default `http://${host}:${port}` in the "ready: …" terminal message and the browser auto-open target. The dev server still binds locally — this is a display + auto-open hint |
-| `port`   | `number`  | `6174`                        | Preferred port. ciderpress falls forward through a 5-port range when the preferred port is occupied. CLI `--port` overrides                                                                  |
-| `host`   | `string`  | `'127.0.0.1'`                 | Bind interface — explicit IPv4 loopback so reverse proxies (portless, nginx, Caddy) pointed at `127.0.0.1` can reach the dev server. Set `'0.0.0.0'` to expose on every network interface (LAN / Docker / VM). CLI `--host` overrides                                                              |
-| `open`   | `boolean` | `false`                       | Auto-open the resolved URL in the default browser when the dev server becomes ready                                                                                                          |
+| Field  | Type      | Default                  | Description                                                                                                                                                                                                                           |
+| ------ | --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `url`  | `string`  | `http://${host}:${port}` | Externally-visible URL. Replaces the default `http://${host}:${port}` in the "ready: …" terminal message and the browser auto-open target. The dev server still binds locally — this is a display + auto-open hint                    |
+| `port` | `number`  | `6174`                   | Preferred port. ciderpress falls forward through a 5-port range when the preferred port is occupied. CLI `--port` overrides                                                                                                           |
+| `host` | `string`  | `'127.0.0.1'`            | Bind interface — explicit IPv4 loopback so reverse proxies (portless, nginx, Caddy) pointed at `127.0.0.1` can reach the dev server. Set `'0.0.0.0'` to expose on every network interface (LAN / Docker / VM). CLI `--host` overrides |
+| `open` | `boolean` | `false`                  | Auto-open the resolved URL in the default browser when the dev server becomes ready                                                                                                                                                   |
 
 CLI precedence: `--port` / `--host` / `--url` > `devServer.{port,host,url}` > built-in defaults.
 
@@ -1119,12 +1119,12 @@ type SortStrategy =
 
 Used by `Page.discover.sort` and `Workspace.discover.sort`.
 
-| Value        | Behavior                                                                                                                            |
-| ------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `'default'`  | Sections first, then pinned intro files (`introduction`, `intro`, `overview`, `index`, `readme`), then alphabetical by title        |
-| `'alpha'`    | Sections first, then alphabetical by title                                                                                          |
-| `'filename'` | Sections first, then alphabetical by source filename                                                                                |
-| `'none'`     | Preserve glob-discovery order                                                                                                       |
+| Value        | Behavior                                                                                                                                                                                                   |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `'default'`  | Sections first, then pinned intro files (`introduction`, `intro`, `overview`, `index`, `readme`), then alphabetical by title                                                                               |
+| `'alpha'`    | Sections first, then alphabetical by title                                                                                                                                                                 |
+| `'filename'` | Sections first, then alphabetical by source filename                                                                                                                                                       |
+| `'none'`     | Preserve glob-discovery order                                                                                                                                                                              |
 | comparator   | `(a: ResolvedPage, b: ResolvedPage) => number` — sort by your own rule. Each `ResolvedPage` has `title`, `link`, and `frontmatter`. Your comparator owns the full order; sections-first is **not** applied |
 
 `'default'` is the implicit fallback when `discover.sort` is omitted.
