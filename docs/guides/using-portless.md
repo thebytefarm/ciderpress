@@ -71,11 +71,13 @@ pnpm setup:portless        # preflight check — verifies Node, portless on PATH
 portless                   # opens https://acme.localhost
 ```
 
-Or from the repo root, just run the dev server (the preflight runs automatically as a `predev` hook and refuses to start if portless drifts out of alignment):
+Or from the repo root, use the example runner:
 
 ```bash
-pnpm dev:custom
+pnpm examples --name custom        # runs `ciderpress dev` in examples/custom
 ```
+
+The `predev` preflight only fires when you go through `pnpm dev` inside the example directory (npm lifecycle hook) — `pnpm examples` invokes ciderpress directly, so misconfiguration surfaces as a normal dev-server error rather than a gated preflight failure.
 
 ## How it works under the hood
 
