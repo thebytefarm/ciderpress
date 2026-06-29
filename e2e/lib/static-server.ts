@@ -70,7 +70,12 @@ function resolveFile(requestPath: string): string | null {
     return [safePath, `${safePath}.html`, join(safePath, 'index.html')]
   })()
 
-  return candidates.find((path) => existsSync(path) && statSync(path).isFile()) ?? null
+  return (
+    candidates.find(
+      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constrained to safePath built from rootDir + a sanitized request URL
+      (path) => existsSync(path) && statSync(path).isFile()
+    ) ?? null
+  )
 }
 
 const server = createServer((req, res) => {
