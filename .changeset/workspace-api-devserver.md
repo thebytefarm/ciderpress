@@ -11,14 +11,14 @@
 
 The `Workspace` interface now uses the same discovery surface as `Page`. Six legacy fields are replaced with their Page-aligned equivalents:
 
-| Before (legacy) | After (Page-aligned) |
-| --- | --- |
-| `Workspace.items: Page[]` | `Workspace.pages: Page[]` |
-| `Workspace.sort` | `Workspace.discover.sort` |
-| `Workspace.recursive` | `Workspace.discover.recursive` |
-| `Workspace.exclude` | `Workspace.discover.ignore` |
-| `Workspace.entryFile` | `Workspace.discover.indexFile` |
-| `Workspace.frontmatter` | `Workspace.defaults` |
+| Before (legacy)           | After (Page-aligned)           |
+| ------------------------- | ------------------------------ |
+| `Workspace.items: Page[]` | `Workspace.pages: Page[]`      |
+| `Workspace.sort`          | `Workspace.discover.sort`      |
+| `Workspace.recursive`     | `Workspace.discover.recursive` |
+| `Workspace.exclude`       | `Workspace.discover.ignore`    |
+| `Workspace.entryFile`     | `Workspace.discover.indexFile` |
+| `Workspace.frontmatter`   | `Workspace.defaults`           |
 
 ```ts
 // Before

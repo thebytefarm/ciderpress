@@ -112,13 +112,13 @@ export default defineConfig({
 
 ### Fields
 
-| Field             | Type                                | Default                          | Purpose                                                                                          |
-| ----------------- | ----------------------------------- | -------------------------------- | ------------------------------------------------------------------------------------------------ |
-| `themes`          | `ThemeEntry[]` (required)           | —                                | Registry of every theme the site can switch between. First entry is the default unless one carries `default: true` |
-| `defaultVariant`  | `'light' \| 'dark' \| 'system'`     | `'dark'`                         | Initial variant to render on first paint                                                         |
-| `themeSwitcher`   | `boolean`                           | `true` when `themes.length > 1`  | Show the named-theme picker                                                                      |
-| `variantSwitcher` | `boolean`                           | `true`                           | Show the light/dark toggle (auto-hidden when the active theme has only one variant)              |
-| `overrides`       | `Partial<ThemeColors>`              | —                                | Color tokens applied across **every** registered theme (see [Color Overrides](#color-overrides)) |
+| Field             | Type                            | Default                         | Purpose                                                                                                            |
+| ----------------- | ------------------------------- | ------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `themes`          | `ThemeEntry[]` (required)       | —                               | Registry of every theme the site can switch between. First entry is the default unless one carries `default: true` |
+| `defaultVariant`  | `'light' \| 'dark' \| 'system'` | `'dark'`                        | Initial variant to render on first paint                                                                           |
+| `themeSwitcher`   | `boolean`                       | `true` when `themes.length > 1` | Show the named-theme picker                                                                                        |
+| `variantSwitcher` | `boolean`                       | `true`                          | Show the light/dark toggle (auto-hidden when the active theme has only one variant)                                |
+| `overrides`       | `Partial<ThemeColors>`          | —                               | Color tokens applied across **every** registered theme (see [Color Overrides](#color-overrides))                   |
 
 ### Theme entries
 
@@ -269,16 +269,16 @@ defineTheme({
 
 ### Constraints
 
-| Constraint                     | Detail                                                                                                                                                                                                                                                      |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                                          |
-| Reserved names rejected        | Custom themes cannot reuse a built-in slug (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) — those slugs are owned by `@ciderpress/theme`.                                                                                            |
-| At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                                                 |
-| Token tree must be complete    | Every leaf in `CiderpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                                              |
-| Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                                      |
-| `defaultVariant` must exist    | When provided, the value must point at a declared `variants.*` entry.                                                                                                                                                                                       |
-| Persisted theme is validated   | When the theme switcher is enabled, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.                         |
-| Persisted variant is validated | The active variant is persisted in `localStorage`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead.                        |
+| Constraint                     | Detail                                                                                                                                                                                                                                |
+| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                    |
+| Reserved names rejected        | Custom themes cannot reuse a built-in slug (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) — those slugs are owned by `@ciderpress/theme`.                                                                     |
+| At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                           |
+| Token tree must be complete    | Every leaf in `CiderpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                        |
+| Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                |
+| `defaultVariant` must exist    | When provided, the value must point at a declared `variants.*` entry.                                                                                                                                                                 |
+| Persisted theme is validated   | When the theme switcher is enabled, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.   |
+| Persisted variant is validated | The active variant is persisted in `localStorage`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
 
 ## Comparing Approaches
 

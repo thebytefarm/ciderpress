@@ -80,7 +80,8 @@ export default defineConfig({
         },
         {
           title: 'Monorepo Native',
-          description: 'First-class workspace support with sidebar islands and auto-generated landing pages.',
+          description:
+            'First-class workspace support with sidebar islands and auto-generated landing pages.',
           icon: 'pixelarticons:git-merge',
         },
         {
@@ -306,7 +307,8 @@ export default defineConfig({
         },
         {
           title: 'Using portless.sh',
-          description: 'Run the dev server behind portless for stable HTTPS hostnames instead of localhost.',
+          description:
+            'Run the dev server behind portless for stable HTTPS hostnames instead of localhost.',
           path: '/guides/using-portless',
           include: 'docs/guides/using-portless.md',
         },

@@ -30,12 +30,12 @@ export default defineConfig({
 })
 ```
 
-| Option          | Type                       | Required | Default           | Description                                                                   |
-| --------------- | -------------------------- | -------- | ----------------- | ----------------------------------------------------------------------------- |
+| Option          | Type                       | Required | Default           | Description                                                                    |
+| --------------- | -------------------------- | -------- | ----------------- | ------------------------------------------------------------------------------ |
 | `spec`          | `string`                   | yes      | —                 | Path to the OpenAPI document (`.json`, `.yaml`, `.yml`), relative to repo root |
-| `path`          | `string`                   | yes      | —                 | URL path the API operation pages mount under (must start with `/`)            |
-| `title`         | `string`                   | no       | `'API Reference'` | Sidebar group title and overview page heading                                 |
-| `sidebarLayout` | `'method-path' \| 'title'` | no       | `'method-path'`   | How operations appear in the sidebar                                          |
+| `path`          | `string`                   | yes      | —                 | URL path the API operation pages mount under (must start with `/`)             |
+| `title`         | `string`                   | no       | `'API Reference'` | Sidebar group title and overview page heading                                  |
+| `sidebarLayout` | `'method-path' \| 'title'` | no       | `'method-path'`   | How operations appear in the sidebar                                           |
 
 When `openapi` is declared on a `Workspace`, the `path` must be nested under the workspace's own `path` — `path: '/apps/api'` plus `openapi: { path: '/apps/api/reference' }` works; `openapi: { path: '/elsewhere' }` fails validation.
 

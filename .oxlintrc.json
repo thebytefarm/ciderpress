@@ -64,7 +64,7 @@
     "jsdoc-js/multiline-blocks": [
       "error",
       {
-        "noSingleLineBlocks": true
+        "noSingleLineBlocks": false
       }
     ],
     "vitest/prefer-called-times": "off",

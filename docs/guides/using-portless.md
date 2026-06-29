@@ -22,7 +22,7 @@ portless proxy start      # sudo-prompts to bind 443 (or use `portless service i
 ```jsonc title="package.json"
 {
   "name": "my-docs",
-  "portless": "acme"                   // alias hostname → https://acme.localhost
+  "portless": "acme", // alias hostname → https://acme.localhost
 }
 ```
 
@@ -35,8 +35,8 @@ export default defineConfig({
     /* ... */
   ],
   devServer: {
-    url: 'https://acme.localhost',     // what the ready message + browser auto-open use
-    port: 7174,                        // stable port the alias points at
+    url: 'https://acme.localhost', // what the ready message + browser auto-open use
+    port: 7174, // stable port the alias points at
   },
 })
 ```

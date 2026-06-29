@@ -170,12 +170,12 @@ docs/
 
 Not every project needs every page. Start with what you have:
 
-| Project size | Recommended pages                              |
-| ------------ | ---------------------------------------------- |
-| Small        | Getting Started, Reference                     |
-| Medium       | Getting Started, Guides, Concepts, Reference   |
-| Large        | All pages                                      |
-| Monorepo     | All pages + sidebar-island Apps / Packages     |
+| Project size | Recommended pages                            |
+| ------------ | -------------------------------------------- |
+| Small        | Getting Started, Reference                   |
+| Medium       | Getting Started, Guides, Concepts, Reference |
+| Large        | All pages                                    |
+| Monorepo     | All pages + sidebar-island Apps / Packages   |
 
 Add pages as your docs grow. Removing an empty page is easier than reorganizing a flat pile of docs later.
 
