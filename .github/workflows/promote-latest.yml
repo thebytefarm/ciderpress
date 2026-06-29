@@ -1,0 +1,36 @@
+name: Promote latest
+
+# Manual backstop for the RC-on-`latest` flow. The Release workflow only
+# promotes on a fresh publish; when its promote step fails (or the tags drift
+# across partial runs), dispatch this to force every public package's `latest`
+# and `rc` dist-tags onto its newest published RC.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Force latest + rc onto newest published RC
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NPM_TOKEN}" ]; then
+            echo "NPM_TOKEN secret is empty" >&2
+            exit 1
+          fi
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          for pkg in \
+            ciderpress \
+            @ciderpress/cli \
+            @ciderpress/config \
+            @ciderpress/templates \
+            @ciderpress/theme \
+            @ciderpress/ui; do
+            newest=$(npm view "$pkg" versions --json | jq -r '[.[] | select(test("-rc\\."))] | last')
+            echo "Promoting ${pkg}@${newest} -> latest, rc"
+            npm dist-tag add "${pkg}@${newest}" latest
+            npm dist-tag add "${pkg}@${newest}" rc
+          done
