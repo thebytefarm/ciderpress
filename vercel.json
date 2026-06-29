@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm build && pnpm docs:build",
+  "buildCommand": "pnpm build && pnpm install --offline && pnpm docs:build",
   "outputDirectory": ".ciderpress/dist",
   "framework": null,
   "installCommand": "pnpm install",
