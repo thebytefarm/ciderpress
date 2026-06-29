@@ -10,14 +10,18 @@
     "@ciderpress/templates": "0.1.2",
     "@ciderpress/theme": "0.3.2",
     "@ciderpress/ui": "0.9.1",
-    "ciderpress": "0.2.23"
+    "ciderpress": "0.2.23",
+    "example-custom": "0.0.1"
   },
   "changesets": [
     "ciderpress-v1-rc",
     "configurable-brand-assets",
+    "deps-bump-2026-06-28",
+    "full-customization",
     "test-ci-release",
     "upgrade-deps-latest",
     "v1-rc1-fixes",
-    "v1-release"
+    "v1-release",
+    "workspace-api-devserver"
   ]
 }
