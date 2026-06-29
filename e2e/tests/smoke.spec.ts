@@ -10,7 +10,7 @@ const ROUTES = [
   '/getting-started/',
   '/concepts/',
   '/guides/',
-  '/references/',
+  '/reference/',
   '/examples/',
   '/framework/',
 ] as const
