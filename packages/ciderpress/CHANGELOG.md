@@ -1,5 +1,22 @@
 # ciderpress
 
+## 1.0.0-rc.5
+
+### Patch Changes
+
+- aa885e7: Load icon sets more efficiently
+
+  Ciderpress no longer ships every bundled icon set to every page. Icons render
+  exactly as before, but a page now loads only the icon sets it actually uses.
+
+  This also fixes deploys to hosts with a per-file size limit — most notably
+  Cloudflare Pages, where the previous single large icon file was rejected and
+  blocked the deploy.
+
+- Updated dependencies [aa885e7]
+  - @ciderpress/ui@1.0.0-rc.5
+  - @ciderpress/cli@1.0.0-rc.5
+
 ## 1.0.0-rc.4
 
 ### Minor Changes
