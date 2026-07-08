@@ -569,7 +569,7 @@ const reportLinkConfigSchema = z
   })
   .strict()
 
-export const feedbackConfigSchema = z
+const feedbackConfigSchema = z
   .object({
     question: z.string().optional(),
   })
