@@ -4,10 +4,14 @@
 // workspace dependencies here — they will cause "factory is undefined" runtime
 // errors. See packages/ui/AGENTS.md for details.
 //
-// IMPORTANT: mermaid must stay on v10.x. Mermaid v11 uses langium for its parser,
-// which depends on vscode-languageserver-types and has broken ESM exports that
-// Rspack cannot resolve. It also lazy-loads every diagram type via dynamic
-// import() — incompatible with Rspress's webpack compilation of global components.
+// MERMAID v11: works fine here — no pin needed. The earlier v10 pin blamed
+// langium/lazy-loading, but mermaid.render() actually resolves correctly. The
+// real bug was local: `config` defaults to a fresh {} each render, so keying
+// renderMermaid on it re-created the callback every render and re-fired the
+// render effect in a loop. Each loop iteration called mermaid.render() into the
+// same element id, clobbering the just-injected SVG — the diagram went blank
+// until an unrelated re-render happened to run last. Fixed by keying on a stable
+// serialized config value (see configKey below).
 
 // oxlint-disable no-ternary
 
@@ -214,12 +218,25 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
 
   const [svg, setSvg] = useState('')
   const [renderError, setRenderError] = useState(false)
+  // Monotonic counter for per-render element ids. mermaid.render() renders into a
+  // node keyed by the id we pass; reusing one id across calls (React StrictMode
+  // double-invokes the mount effect) lets a later call clobber the SVG an earlier
+  // call already injected. A fresh id per call makes every render self-contained.
+  const renderSeq = useRef(0)
   const [transform, setTransform] = useState<Transform>(INITIAL_TRANSFORM)
   const transformRef = useRef<Transform>(INITIAL_TRANSFORM)
   const [fullscreen, setFullscreen] = useState(false)
   const [tab, setTab] = useState<Tab>('preview')
 
   const highlightedCode = useMemo(() => highlightMermaid(code), [code])
+
+  // Stable value-key for the config object. `config` defaults to a fresh {} on
+  // every render, so depending on it directly re-creates renderMermaid each
+  // render, which re-fires the render effect in a loop. Each re-render calls
+  // mermaid.render() into the same element id — which clobbers the SVG we just
+  // injected, leaving the diagram blank until an unrelated re-render happens to
+  // land last. Keying on the serialized value keeps renderMermaid stable.
+  const configKey = JSON.stringify(config)
 
   transformRef.current = transform
 
@@ -235,14 +252,15 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
       ...config,
     }
 
+    const renderId = `${id.replaceAll(':', '')}-${(renderSeq.current += 1)}`
     try {
       mermaid.initialize(mermaidConfig)
-      const result = await mermaid.render(id.replaceAll(':', ''), code as string)
+      const result = await mermaid.render(renderId, code as string)
       setSvg(result.svg)
     } catch {
       setRenderError(true)
     }
-  }, [code, config, id])
+  }, [code, configKey, id])
 
   useEffect(() => {
     renderMermaid()
