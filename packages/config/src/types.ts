@@ -134,6 +134,110 @@ export type ImageSource =
     }
 
 /**
+ * Semantic color variant for a page badge. Maps to the theme's badge
+ * palette; `neutral` renders a muted gray chip.
+ */
+export type BadgeVariant = 'info' | 'success' | 'warning' | 'danger' | 'neutral'
+
+/**
+ * A sidebar/page text badge like `ALPHA` or `WIP`, in object form.
+ *
+ * Use the string shorthand ({@link Badge}) when only the label matters —
+ * it expands to `{ text, variant: 'neutral' }`.
+ */
+export interface BadgeConfig {
+  /**
+   * Badge label — the visible text (e.g. `'ALPHA'`, `'WIP'`).
+   */
+  readonly text: string
+  /**
+   * Semantic color variant. Defaults to `'neutral'`. Ignored when
+   * `color` is set.
+   */
+  readonly variant?: BadgeVariant
+  /**
+   * Custom color (hex/rgb/hsl) — overrides `variant` with a tinted chip.
+   */
+  readonly color?: string
+  /**
+   * Hover tooltip text. Defaults to the badge `text` when omitted.
+   */
+  readonly tooltip?: string
+}
+
+/**
+ * A single badge — string shorthand for the label, or a full
+ * {@link BadgeConfig} for variant/color/tooltip control.
+ */
+export type Badge = string | BadgeConfig
+
+/**
+ * One or more badges. A page may carry several (e.g. `ALPHA` + `v2`).
+ */
+export type BadgeInput = Badge | readonly Badge[]
+
+/**
+ * A glob-based badge rule declared under the top-level `badges` config.
+ * Applies its `badge` and/or `status` to every page whose route path
+ * matches `match` and that does not declare its own badge/status in
+ * frontmatter or `defaults` (frontmatter and `defaults` win over rules).
+ *
+ * Declare at least one of `badge` or `status`.
+ */
+export interface BadgeRule {
+  /**
+   * Glob pattern(s) matched against a page's route path (e.g.
+   * `'/api/experimental/**'`). Supports `*`, `**`, and `?`.
+   */
+  readonly match: string | readonly string[]
+  /**
+   * Ad-hoc badge(s) applied to matching pages.
+   */
+  readonly badge?: BadgeInput
+  /**
+   * Named status id(s) from the {@link Status} registry, applied to
+   * matching pages.
+   */
+  readonly status?: string | readonly string[]
+}
+
+/**
+ * A named, documented status in the registry — the semantic layer over
+ * {@link BadgeConfig}. Referenced by `id` from a page's `status`
+ * frontmatter (or a {@link BadgeRule}); resolves to a badge chip whose
+ * label is `title`, tooltip is `description`, and color is `color`
+ * (raw) or `variant` (theme-aware).
+ *
+ * The built-in registry ({@link DEFAULT_STATUSES}) ships common software
+ * maturity statuses (`alpha`, `beta`, `wip`, …); user `statuses` entries
+ * are merged over it by `id` — matching ids override, new ids extend.
+ */
+export interface Status {
+  /**
+   * Reference handle used by `status: <id>` on a page (e.g. `'alpha'`).
+   */
+  readonly id: string
+  /**
+   * Display label rendered in the chip (e.g. `'Alpha'`).
+   */
+  readonly title: string
+  /**
+   * Human-readable meaning — used as the chip's hover tooltip (and
+   * available for a future status legend).
+   */
+  readonly description: string
+  /**
+   * Theme-aware color variant. Preferred for built-ins so chips adapt to
+   * dark/light and every theme. Ignored when `color` is set.
+   */
+  readonly variant?: BadgeVariant
+  /**
+   * Raw color (hex/rgb/hsl) escape hatch — overrides `variant`.
+   */
+  readonly color?: string
+}
+
+/**
  * Rspress frontmatter fields injectable at build time.
  *
  * Schema: `frontmatterSchema` in schema.ts validates this shape with
@@ -199,6 +303,18 @@ export interface Frontmatter {
    * appended to the document head.
    */
   readonly head?: readonly [string, Record<string, string>][]
+  /**
+   * Page badge(s) — a label like `ALPHA` or `WIP`, or a
+   * {@link BadgeConfig} with variant/color/tooltip. Renders in both the
+   * sidebar and the breadcrumb. Set on a file's own frontmatter or on a
+   * page/workspace `defaults` (frontmatter wins).
+   */
+  readonly badge?: BadgeInput
+  /**
+   * Named status id(s) from the {@link Status} registry (e.g. `'alpha'`).
+   * Resolves to a badge chip using the status's title/color/description.
+   */
+  readonly status?: string | readonly string[]
 }
 
 /**
@@ -1139,6 +1255,13 @@ export interface SidebarConfig {
    * Promo card rendered at the bottom of the docs sidebar.
    */
   readonly promo?: SidebarPromo
+  /**
+   * Show badges on collapsible group items that are also docs (a nav row
+   * that both toggles children and links to a page). Defaults to `false` —
+   * the badge is hidden there to avoid colliding with the collapse chevron,
+   * and still shows on the page's breadcrumb. Set `true` to show it anyway.
+   */
+  readonly groupBadges?: boolean
 }
 
 /**
@@ -1620,6 +1743,20 @@ export interface CiderpressConfig {
    * Sidebar chrome — persistent top/bottom links and promo card.
    */
   readonly sidebar?: SidebarConfig
+  /**
+   * Glob-based badge rules — apply a badge (or named status) to every
+   * page whose route path matches, without touching each file. Badges
+   * render in both the sidebar and the breadcrumb. A page's own
+   * frontmatter or `defaults` badge/status overrides a matching rule.
+   */
+  readonly badges?: readonly BadgeRule[]
+  /**
+   * Named status registry — the semantic layer over badges. Entries are
+   * merged over the built-in {@link DEFAULT_STATUSES} by `id` (matching
+   * ids override, new ids extend). Reference a status from a page with
+   * `status: <id>`.
+   */
+  readonly statuses?: readonly Status[]
   /**
    * Site footer — message, copyright, columns, tagline, brand mark,
    * social icons.

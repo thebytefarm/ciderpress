@@ -53,6 +53,7 @@ import './components/content-footer/feedback.css'
 import './components/content-footer/meta-actions.css'
 import './components/content-footer/page-pager.css'
 import './components/sidebar/framework-picker.css'
+import './components/sidebar/sidebar-badge.css'
 import './components/sidebar/sidebar-promo.css'
 import './components/sidebar/sidebar-toggle.css'
 import './components/home/page-rail.css'
@@ -89,6 +90,8 @@ export { HomeFeature } from './components/home/feature'
 export { HomeLayout } from './components/home/layout'
 /** @internal Sidebar override — multi-scope filtering for standalone sections */
 export { Sidebar } from './components/sidebar/sidebar-scope'
+/** @internal Tag override — renders ciderpress sidebar badges, delegates other tags to Rspress */
+export { Tag } from './components/sidebar/sidebar-badge'
 
 export { FeatureCard, FeatureGrid } from './components/home/feature-card'
 export type { FeatureCardProps, FeatureItem } from './components/home/feature-card'

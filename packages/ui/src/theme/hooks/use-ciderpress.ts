@@ -1,4 +1,4 @@
-import type { FooterConfig, HomeConfig, SerializedIcon } from '@ciderpress/config'
+import type { BadgeConfig, FooterConfig, HomeConfig, SerializedIcon } from '@ciderpress/config'
 import { useSite } from '@rspress/core/runtime'
 
 export interface CiderpressSidebarItem {
@@ -101,6 +101,7 @@ interface CiderpressThemeConfig {
   readonly home: HomeConfig | undefined
   readonly ciderpressFooter: FooterConfig | undefined
   readonly site: CiderpressSiteBlock | undefined
+  readonly pageBadges: Record<string, readonly BadgeConfig[]> | undefined
 }
 
 /**

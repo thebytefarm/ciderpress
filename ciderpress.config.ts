@@ -410,6 +410,12 @@ export default defineConfig({
           include: 'docs/references/frontmatter.md',
         },
         {
+          title: 'Badges & Statuses',
+          description: 'Label pages with badges and a named status registry.',
+          path: '/reference/badges',
+          include: 'docs/references/badges.md',
+        },
+        {
           title: 'VSCode Extension',
           description: 'Preview your ciderpress docs site directly inside VS Code.',
           path: '/reference/vscode-extension',

@@ -29,6 +29,9 @@ import { z } from 'zod'
 
 import type {
   AnnouncementConfig,
+  BadgeConfig,
+  BadgeRule,
+  Status,
   BannerConfig,
   BannerFn,
   BrandConfig,
@@ -106,6 +109,44 @@ const logoConfigSchema = z.union([z.string(), logoFnSchema])
 
 const bannerConfigSchema = z.union([z.string(), bannerFnSchema])
 
+const badgeVariantSchema = z.enum(['info', 'success', 'warning', 'danger', 'neutral'])
+
+const badgeConfigSchema = z
+  .object({
+    text: z.string(),
+    variant: badgeVariantSchema.optional(),
+    color: z.string().optional(),
+    tooltip: z.string().optional(),
+  })
+  .strict()
+
+const badgeSchema = z.union([z.string(), badgeConfigSchema])
+
+const badgeInputSchema = z.union([badgeSchema, z.array(badgeSchema)])
+
+const statusRefSchema = z.union([z.string(), z.array(z.string())])
+
+const badgeRuleSchema = z
+  .object({
+    match: z.union([z.string(), z.array(z.string())]),
+    badge: badgeInputSchema.optional(),
+    status: statusRefSchema.optional(),
+  })
+  .strict()
+  .refine((rule) => rule.badge !== undefined || rule.status !== undefined, {
+    message: 'A badge rule must declare at least one of `badge` or `status`.',
+  })
+
+const statusSchema = z
+  .object({
+    id: z.string(),
+    title: z.string(),
+    description: z.string(),
+    variant: badgeVariantSchema.optional(),
+    color: z.string().optional(),
+  })
+  .strict()
+
 const frontmatterSchema = z
   .object({
     title: z.string().optional(),
@@ -123,6 +164,8 @@ const frontmatterSchema = z
     footer: z.boolean().optional(),
     pageClass: z.string().optional(),
     head: z.array(z.tuple([z.string(), z.record(z.string(), z.string())])).optional(),
+    badge: badgeInputSchema.optional(),
+    status: statusRefSchema.optional(),
   })
   .strict()
 
@@ -338,6 +381,7 @@ const sidebarConfigSchema = z
     top: z.array(buttonConfigSchema).optional(),
     bottom: z.array(buttonConfigSchema).optional(),
     promo: sidebarPromoSchema.optional(),
+    groupBadges: z.boolean().optional(),
   })
   .strict()
 
@@ -699,6 +743,8 @@ export const ciderpressConfigSchema = z
     socials: z.array(socialLinkSchema).optional(),
     topbar: topbarConfigSchema.optional(),
     sidebar: sidebarConfigSchema.optional(),
+    badges: z.array(badgeRuleSchema).optional(),
+    statuses: z.array(statusSchema).optional(),
     footer: footerConfigSchema.optional(),
     editLink: z.union([z.literal(false), editLinkConfigSchema]).optional(),
     reportLink: z.union([z.literal(false), reportLinkConfigSchema]).optional(),
@@ -731,6 +777,12 @@ export const pathsSchema = z
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardBadgeConfig: z.ZodType<BadgeConfig> = badgeConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardBadgeRule: z.ZodType<BadgeRule> = badgeRuleSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardStatus: z.ZodType<Status> = statusSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardWorkspace: z.ZodType<Workspace> = workspaceSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

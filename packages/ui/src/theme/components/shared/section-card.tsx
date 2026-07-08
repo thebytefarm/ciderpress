@@ -1,6 +1,9 @@
+import type { BadgeConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { useCiderpress } from '../../hooks/use-ciderpress'
+import { BadgeChips } from '../sidebar/sidebar-badge'
 import { Card } from './card'
 import { CardIcon } from './card-icon'
 import type { CardIconInput } from './resolve-card-icon'
@@ -26,6 +29,8 @@ export function SectionCard({
   description,
   icon = 'pixelarticons:file',
 }: SectionCardProps): React.ReactElement {
+  const { pageBadges } = useCiderpress()
+  const badges = lookupBadges({ pageBadges, href })
   const resolved = resolveCardIcon(icon) ?? {
     kind: 'iconify' as const,
     id: 'pixelarticons:file',
@@ -40,8 +45,31 @@ export function SectionCard({
       <div className="cp-section-card__header">
         <CardIcon resolved={resolved} className="cp-section-card__icon" />
         <span className="cp-section-card__title">{title}</span>
+        {badges.length > 0 && (
+          <span className="cp-section-card__badges">
+            <BadgeChips badges={badges} />
+          </span>
+        )}
       </div>
       {descEl}
     </Card>
   )
+}
+
+/**
+ * Look up a page's badges from the route→badges map by its href.
+ *
+ * @private
+ * @param params - The route→badges map (if present) and card destination.
+ * @returns The page's badges, or an empty array when none apply
+ */
+function lookupBadges(params: {
+  readonly pageBadges: Record<string, readonly BadgeConfig[]> | undefined
+  readonly href: string
+}): readonly BadgeConfig[] {
+  const { pageBadges, href } = params
+  if (pageBadges === undefined) {
+    return []
+  }
+  return pageBadges[href] ?? []
 }

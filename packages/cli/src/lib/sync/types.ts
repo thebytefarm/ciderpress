@@ -154,6 +154,11 @@ export interface ResolvedEntry {
    * rather than explicitly set in the config.
    */
   readonly autoLink?: boolean
+  /**
+   * Encoded Rspress sidebar `tag` string carrying this entry's badge(s).
+   * Produced by `applyBadges`; consumed by `_meta.json` generation.
+   */
+  readonly badgeTag?: string
 }
 
 /**
