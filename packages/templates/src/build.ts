@@ -4,7 +4,7 @@ import type { Result, Template, TemplateError, TemplateErrorType } from './types
 
 const TYPE_PATTERN = /^[a-z0-9-]+$/
 const PLACEHOLDER_PATTERN = /\{\{\s*([^}]+?)\s*\}\}/g
-const ALLOWED_FIELDS = new Set(['label', 'hint'])
+const ALLOWED_FIELDS = new Set(['label', 'hint', 'group'])
 const ALLOWED_PLACEHOLDERS = new Set(['title'])
 
 /**
@@ -16,6 +16,12 @@ export interface BuildTemplateInput {
   readonly data: Record<string, unknown>
   readonly content: string
   readonly extension: '.md' | '.mdx'
+  /**
+   * Group derived from the template's location (e.g. its sub-directory). Used
+   * when the frontmatter omits an explicit `group`; a frontmatter `group`
+   * always wins.
+   */
+  readonly group?: string
 }
 
 /**
@@ -56,7 +62,7 @@ export function buildTemplate(input: BuildTemplateInput): Result<Template, Templ
     return [
       templateError(
         'unknown_field',
-        `Unknown frontmatter field "${unknownField}" in template "${type}" (allowed: label, hint)`
+        `Unknown frontmatter field "${unknownField}" in template "${type}" (allowed: label, hint, group)`
       ),
       null,
     ]
@@ -72,6 +78,11 @@ export function buildTemplate(input: BuildTemplateInput): Result<Template, Templ
     return [hintError, null]
   }
 
+  const [groupError, frontmatterGroup] = readOptionalGroup({ type, value: data.group })
+  if (groupError) {
+    return [groupError, null]
+  }
+
   if (content.trim().length === 0) {
     return [templateError('empty_body', `Template "${type}" has an empty body`), null]
   }
@@ -81,7 +92,11 @@ export function buildTemplate(input: BuildTemplateInput): Result<Template, Templ
     return [placeholderError, null]
   }
 
-  return [null, { type, label, hint, body: content, extension }]
+  const group = frontmatterGroup ?? input.group
+  if (group === undefined) {
+    return [null, { type, label, hint, body: content, extension }]
+  }
+  return [null, { type, label, hint, body: content, extension, group }]
 }
 
 /**
@@ -121,6 +136,34 @@ function readStringField(input: {
       templateError(
         'missing_field',
         `Template "${type}" is missing required "${field}" (must be a non-empty string)`
+      ),
+      null,
+    ]
+  }
+  return [null, value.trim()]
+}
+
+/**
+ * Read the optional `group` frontmatter field: absent yields `undefined`, a
+ * non-empty string is trimmed, and any other value is rejected.
+ *
+ * @private
+ * @param input - The template type and the raw `group` value
+ * @returns A Result tuple: the trimmed group or `undefined`, or an `invalid_group` error
+ */
+function readOptionalGroup(input: {
+  readonly type: string
+  readonly value: unknown
+}): Result<string | undefined, TemplateError> {
+  const { type, value } = input
+  if (value === undefined) {
+    return [null, undefined]
+  }
+  if (!isString(value) || value.trim().length === 0) {
+    return [
+      templateError(
+        'invalid_group',
+        `Template "${type}" has an invalid "group" (must be a non-empty string when set)`
       ),
       null,
     ]

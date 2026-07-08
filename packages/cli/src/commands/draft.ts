@@ -3,22 +3,22 @@ import path from 'node:path'
 
 import { loadConfig } from '@ciderpress/config/loader'
 import { render, toSlug } from '@ciderpress/templates'
-import type { Template } from '@ciderpress/templates'
 import { command } from '@kidd-cli/core'
 import { match, P } from 'massaman/match'
 import { z } from 'zod'
 
 import { createPaths } from '../lib/paths.ts'
-import { configTemplates, resolveTemplates } from '../lib/templates.ts'
+import { configTemplates, resolveTemplates, toTemplateSelectOptions } from '../lib/templates.ts'
 
 /**
  * Scaffold a new documentation file from a template.
  *
- * Prompts for the doc type and title when not provided via args,
- * then writes the rendered template to the specified output directory.
- * Templates declared via the `templates` config field are merged with the
- * built-ins (user templates override built-ins by type); when no config or
- * `templates` field is present, only built-ins are offered.
+ * With a known `type` arg, scaffolds straight away. With no `type`, walks the
+ * user through an interactive picker — a single grouped list of built-in and
+ * config templates — then prompts for a title. Templates declared via the
+ * `templates` config field are merged with the built-ins (user templates
+ * override built-ins by type); when no config or `templates` field is present,
+ * only built-ins are offered.
  */
 export default command({
   name: 'draft',
@@ -33,7 +33,10 @@ export default command({
 
     const paths = createPaths(process.cwd())
     const [, config] = await loadConfig(paths.repoRoot)
-    const { registry } = await resolveTemplates({ templates: configTemplates(config), paths })
+    const { registry, resolved } = await resolveTemplates({
+      templates: configTemplates(config),
+      paths,
+    })
 
     const typeArg = ctx.args.type
     const hasValidType = match(typeArg)
@@ -45,11 +48,7 @@ export default command({
       .otherwise(() =>
         ctx.prompts.select<string>({
           message: 'Select a doc type',
-          options: registry.list().map((t: Template) => ({
-            value: t.type,
-            label: t.label,
-            hint: t.hint,
-          })),
+          options: [...toTemplateSelectOptions(resolved)],
         })
       )
 
