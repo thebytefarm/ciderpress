@@ -702,7 +702,11 @@ export const ciderpressConfigSchema = z
     footer: footerConfigSchema.optional(),
     editLink: z.union([z.literal(false), editLinkConfigSchema]).optional(),
     reportLink: z.union([z.literal(false), reportLinkConfigSchema]).optional(),
-    feedback: z.union([z.literal(false), feedbackConfigSchema]).optional(),
+    // Feedback is the one block that is ENABLED by default (edit/report are
+    // off-by-absence). `.default({})` makes that explicit at parse time so
+    // consumers reading config directly through `@ciderpress/config` see the
+    // resolved "enabled" value instead of a bare `undefined`.
+    feedback: z.union([z.literal(false), feedbackConfigSchema]).default({}),
     home: homeConfigSchema.optional(),
     discover: discoverConfigSchema.optional(),
     templates: z.union([z.string(), z.array(z.string())]).optional(),

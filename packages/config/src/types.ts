@@ -1637,8 +1637,11 @@ export interface CiderpressConfig {
   readonly reportLink?: false | ReportLinkConfig
   /**
    * "Was this page helpful?" feedback widget rendered under every doc page.
-   * Enabled by default. Set to `false` to disable site-wide, or pass an
-   * object to customise the question text.
+   * Enabled by default — omitting it (or passing `{}`) renders the widget
+   * with the default question. Set to `false` to disable site-wide, or pass
+   * an object to customise the question text.
+   *
+   * @default {}
    */
   readonly feedback?: false | FeedbackConfig
   /**

@@ -10,9 +10,14 @@ const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { versi
 const currentVersion = packageJson.version
 
 try {
+  // `io: 'input'` emits the schema for the config a user *writes*, not the
+  // parsed output. Fields carrying a `.default()` stay optional (a default
+  // means "you may omit it") while still surfacing their `default` value for
+  // editor hints — the 'output' target would instead mark them `required`.
   const rawJsonSchema = z.toJSONSchema(ciderpressConfigSchema, {
     target: 'draft-7',
     unrepresentable: 'any',
+    io: 'input',
   })
   const jsonSchema = applyTupleLengthBounds(rawJsonSchema) as Record<string, unknown>
 

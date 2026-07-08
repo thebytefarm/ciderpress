@@ -1946,6 +1946,7 @@
       ]
     },
     "feedback": {
+      "default": {},
       "anyOf": [
         {
           "type": "boolean",
