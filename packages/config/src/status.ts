@@ -8,6 +8,7 @@
  * and resolves a status reference into badge chips ({@link resolveStatusBadges}).
  */
 
+import { match, P } from 'massaman/match'
 import { isString } from 'massaman/predicate'
 
 import type { BadgeConfig, Status } from './types.ts'
@@ -131,13 +132,10 @@ export function statusToBadge(status: Status): BadgeConfig {
  * @returns `{ color }`, `{ variant }`, or an empty object
  */
 function colorField(status: Status): Pick<BadgeConfig, 'color' | 'variant'> {
-  if (status.color !== undefined) {
-    return { color: status.color }
-  }
-  if (status.variant !== undefined) {
-    return { variant: status.variant }
-  }
-  return {}
+  return match(status)
+    .with({ color: P.string }, (s) => ({ color: s.color }))
+    .with({ variant: P.string }, (s) => ({ variant: s.variant }))
+    .otherwise(() => ({}))
 }
 
 /**

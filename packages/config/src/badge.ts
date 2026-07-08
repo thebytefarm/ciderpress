@@ -113,8 +113,8 @@ function buildBadge(value: BadgeShape): BadgeConfig {
   return {
     text: value.text.trim(),
     ...variantField(value.variant),
-    ...stringField('color', value.color),
-    ...stringField('tooltip', value.tooltip),
+    ...stringField({ key: 'color', value: value.color }),
+    ...stringField({ key: 'tooltip', value: value.tooltip }),
   }
 }
 
@@ -137,11 +137,14 @@ function variantField(value: unknown): { readonly variant?: BadgeVariant } {
  * Build an optional string field, omitted when the value is not a string.
  *
  * @private
- * @param key - Field name
- * @param value - Raw field value
+ * @param params - Field name and raw value
  * @returns Single-key object or an empty object
  */
-function stringField(key: 'color' | 'tooltip', value: unknown): Record<string, string> {
+function stringField(params: {
+  readonly key: 'color' | 'tooltip'
+  readonly value: unknown
+}): Record<string, string> {
+  const { key, value } = params
   if (isString(value)) {
     return { [key]: value }
   }

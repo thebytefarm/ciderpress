@@ -121,7 +121,7 @@ export function CiderpressDocsBar(): React.ReactElement | null {
   const pageTitle = readStringField(fmRecord.title)
 
   const { pageBadges } = useCiderpress()
-  const badges = lookupPageBadges(pageBadges, pathname)
+  const badges = lookupPageBadges({ pageBadges, pathname })
 
   const breadcrumbs = buildBreadcrumbs(pathname, pageTitle)
   const outlineEnabled = match(fmRecord.outline)
@@ -270,14 +270,14 @@ interface Crumb {
  * a trailing slash on the pathname (map keys are stored without one).
  *
  * @private
- * @param pageBadges - Route→badges map from theme config, if present.
- * @param pathname - The current location pathname.
+ * @param params - The route→badges map (if present) and current pathname.
  * @returns The page's badges, or an empty array when none apply.
  */
-function lookupPageBadges(
-  pageBadges: Record<string, readonly BadgeConfig[]> | undefined,
-  pathname: string
-): readonly BadgeConfig[] {
+function lookupPageBadges(params: {
+  readonly pageBadges: Record<string, readonly BadgeConfig[]> | undefined
+  readonly pathname: string
+}): readonly BadgeConfig[] {
+  const { pageBadges, pathname } = params
   if (pageBadges === undefined) {
     return []
   }

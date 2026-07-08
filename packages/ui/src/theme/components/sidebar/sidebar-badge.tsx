@@ -136,7 +136,9 @@ function variantClass(variant: BadgeVariant | undefined): string {
     .with('success', () => 'cp-sbadge cp-sbadge--success')
     .with('warning', () => 'cp-sbadge cp-sbadge--warning')
     .with('danger', () => 'cp-sbadge cp-sbadge--danger')
-    .otherwise(() => 'cp-sbadge cp-sbadge--neutral')
+    .with('neutral', () => 'cp-sbadge cp-sbadge--neutral')
+    .with(undefined, () => 'cp-sbadge cp-sbadge--neutral')
+    .exhaustive()
 }
 
 /**

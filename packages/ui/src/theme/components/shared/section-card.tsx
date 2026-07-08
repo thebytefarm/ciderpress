@@ -30,7 +30,7 @@ export function SectionCard({
   icon = 'pixelarticons:file',
 }: SectionCardProps): React.ReactElement {
   const { pageBadges } = useCiderpress()
-  const badges = lookupBadges(pageBadges, href)
+  const badges = lookupBadges({ pageBadges, href })
   const resolved = resolveCardIcon(icon) ?? {
     kind: 'iconify' as const,
     id: 'pixelarticons:file',
@@ -60,14 +60,14 @@ export function SectionCard({
  * Look up a page's badges from the route→badges map by its href.
  *
  * @private
- * @param pageBadges - Route→badges map from theme config, if present
- * @param href - The card's destination route
+ * @param params - The route→badges map (if present) and card destination.
  * @returns The page's badges, or an empty array when none apply
  */
-function lookupBadges(
-  pageBadges: Record<string, readonly BadgeConfig[]> | undefined,
-  href: string
-): readonly BadgeConfig[] {
+function lookupBadges(params: {
+  readonly pageBadges: Record<string, readonly BadgeConfig[]> | undefined
+  readonly href: string
+}): readonly BadgeConfig[] {
+  const { pageBadges, href } = params
   if (pageBadges === undefined) {
     return []
   }

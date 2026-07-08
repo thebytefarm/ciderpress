@@ -133,6 +133,9 @@ const badgeRuleSchema = z
     status: statusRefSchema.optional(),
   })
   .strict()
+  .refine((rule) => rule.badge !== undefined || rule.status !== undefined, {
+    message: 'A badge rule must declare at least one of `badge` or `status`.',
+  })
 
 const statusSchema = z
   .object({
