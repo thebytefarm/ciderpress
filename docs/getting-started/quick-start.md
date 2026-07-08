@@ -78,19 +78,19 @@ Pass `--headless` for non-interactive shells (CI, Docker, nodemon) — the defau
 
 ## Commands
 
-| Command            | Purpose                                                                             |
-| ------------------ | ----------------------------------------------------------------------------------- |
-| `ciderpress setup` | Create a starter config and generate SVG assets                                     |
-| `ciderpress dev`   | Start the dev server with live reload                                               |
-| `ciderpress build` | Build the static site for production                                                |
-| `ciderpress serve` | Preview the production build locally                                                |
-| `ciderpress sync`  | Sync source files into `.ciderpress/content/`                                       |
-| `ciderpress check` | Validate config and check for broken links                                          |
-| `ciderpress diff`  | Show changed files in configured source directories — useful for CI `ignoreCommand` |
-| `ciderpress draft` | Scaffold a new documentation file from a template                                   |
-| `ciderpress templates` | List (`list`) and validate (`check`) built-in and custom document templates     |
-| `ciderpress clean` | Remove build artifacts, synced content, and cache                                   |
-| `ciderpress dump`  | Print the resolved site structure as JSON                                           |
+| Command                | Purpose                                                                             |
+| ---------------------- | ----------------------------------------------------------------------------------- |
+| `ciderpress setup`     | Create a starter config and generate SVG assets                                     |
+| `ciderpress dev`       | Start the dev server with live reload                                               |
+| `ciderpress build`     | Build the static site for production                                                |
+| `ciderpress serve`     | Preview the production build locally                                                |
+| `ciderpress sync`      | Sync source files into `.ciderpress/content/`                                       |
+| `ciderpress check`     | Validate config and check for broken links                                          |
+| `ciderpress diff`      | Show changed files in configured source directories — useful for CI `ignoreCommand` |
+| `ciderpress draft`     | Scaffold a new documentation file from a template                                   |
+| `ciderpress templates` | List (`list`) and validate (`check`) built-in and custom document templates         |
+| `ciderpress clean`     | Remove build artifacts, synced content, and cache                                   |
+| `ciderpress dump`      | Print the resolved site structure as JSON                                           |
 
 ## Project structure
 

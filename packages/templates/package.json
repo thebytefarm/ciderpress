@@ -1,6 +1,6 @@
 {
   "name": "@ciderpress/templates",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0-rc.4",
   "description": "Documentation templates SDK for ciderpress — use built-in templates, extend them, or register custom ones",
   "keywords": [
     "ciderpress",

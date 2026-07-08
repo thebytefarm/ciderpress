@@ -15,9 +15,12 @@
   },
   "changesets": [
     "ciderpress-v1-rc",
+    "config-driven-templates",
     "configurable-brand-assets",
     "deps-bump-2026-06-28",
+    "fix-openapi-copy-markdown",
     "full-customization",
+    "glob-ignore-agent-files",
     "icon-collection-chunking",
     "test-ci-release",
     "upgrade-deps-latest",

@@ -206,7 +206,7 @@ ciderpress templates list    # List built-in and custom templates
 ciderpress templates check   # Validate template frontmatter and syntax
 ```
 
-| Subcommand | Description                                                                        |
+| Subcommand | Description                                                                       |
 | ---------- | --------------------------------------------------------------------------------- |
 | `list`     | Print built-in and custom templates, grouped by source; overrides marked with `*` |
 | `check`    | Validate every template's frontmatter and placeholders; exits `1` on any issue    |
