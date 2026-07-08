@@ -11,7 +11,7 @@ All commands are run from your repo root where `ciderpress.config.ts` lives.
 ciderpress <command> [flags]
 ```
 
-The ten registered commands are: [`setup`](#setup), [`dev`](#dev), [`build`](#build), [`serve`](#serve), [`sync`](#sync), [`check`](#check), [`diff`](#diff), [`draft`](#draft), [`clean`](#clean), [`dump`](#dump).
+The eleven registered commands are: [`setup`](#setup), [`dev`](#dev), [`build`](#build), [`serve`](#serve), [`sync`](#sync), [`check`](#check), [`diff`](#diff), [`draft`](#draft), [`templates`](#templates), [`clean`](#clean), [`dump`](#dump).
 
 ## Common flags
 
@@ -177,7 +177,7 @@ Validate config and check for broken links.
 ciderpress check
 ```
 
-Validates the config file, syncs content, then runs a build to detect deadlinks. Reports results for both config validation and link checking. Exits with code `1` if any check fails. Useful for CI pipelines.
+Validates the config file, syncs content, then runs a build to detect deadlinks. Also validates any custom templates declared via the [`templates`](/reference/configuration) config field. Reports results for config, templates, and link checking. Exits with code `1` if any check fails. Useful for CI pipelines.
 
 ## draft
 
@@ -194,6 +194,24 @@ ciderpress draft [--type <type>] [--title <title>] [--out <dir>]
 | `--out`   | `string` | `"."`   | Output directory for the new file   |
 
 When `--type` or `--title` are omitted, an interactive prompt lets you select from the available templates and enter a title. The output filename is derived from the title slug (e.g. `"Authentication"` → `authentication.md`).
+
+The available templates are the built-ins plus any declared via the [`templates`](/reference/configuration) config field. A custom template whose filename matches a built-in overrides it, and `.mdx` templates scaffold to `.mdx` files. See [Templates](/framework/templates) for the authoring format.
+
+## templates
+
+List and validate document templates.
+
+```bash
+ciderpress templates list    # List built-in and custom templates
+ciderpress templates check   # Validate template frontmatter and syntax
+```
+
+| Subcommand | Description                                                                        |
+| ---------- | --------------------------------------------------------------------------------- |
+| `list`     | Print built-in and custom templates, grouped by source; overrides marked with `*` |
+| `check`    | Validate every template's frontmatter and placeholders; exits `1` on any issue    |
+
+`check` reports frontmatter errors (missing/unknown fields), invalid types, unknown `{{placeholders}}`, and duplicate types. The same validation runs as part of [`check`](#check) and [`build`](#build). See [Templates](/framework/templates) for how to declare and author custom templates.
 
 ## References
 

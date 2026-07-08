@@ -12,6 +12,7 @@ import dump from './commands/dump.ts'
 import serve from './commands/serve.ts'
 import setup from './commands/setup.ts'
 import sync from './commands/sync.ts'
+import templates from './commands/templates.ts'
 import { reportCrash, writeFatalToStderr } from './lib/crash-reporter.ts'
 import { errorBoundary } from './middleware/error-boundary.ts'
 
@@ -32,9 +33,33 @@ await cli({
   version: __KIDD_VERSION__,
   description: 'CLI for building and serving documentation',
   middleware: [errorBoundary()],
-  commands: { build, check, clean: cleanCmd, dev, diff, draft, dump, serve, setup, sync },
+  commands: {
+    build,
+    check,
+    clean: cleanCmd,
+    dev,
+    diff,
+    draft,
+    dump,
+    serve,
+    setup,
+    sync,
+    templates,
+  },
   help: {
-    order: ['setup', 'dev', 'build', 'serve', 'sync', 'check', 'diff', 'draft', 'clean', 'dump'],
+    order: [
+      'setup',
+      'dev',
+      'build',
+      'serve',
+      'sync',
+      'check',
+      'diff',
+      'draft',
+      'templates',
+      'clean',
+      'dump',
+    ],
   },
 })
 

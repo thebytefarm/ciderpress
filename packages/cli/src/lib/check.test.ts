@@ -50,6 +50,7 @@ describe('presentResults()', () => {
   it('should return true when both config passed and build passed', () => {
     const result = presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -59,6 +60,7 @@ describe('presentResults()', () => {
   it('should return false when config failed', () => {
     const result = presentResults({
       configResult: { passed: false, errors: [loadError], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -68,6 +70,7 @@ describe('presentResults()', () => {
   it('should return false when build has deadlinks', () => {
     const result = presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
       buildResult: {
         status: 'failed',
         deadlinks: [{ file: 'docs/page.md', links: ['/missing'] }],
@@ -80,6 +83,7 @@ describe('presentResults()', () => {
   it('should call logger.success when config is valid', () => {
     presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -89,6 +93,7 @@ describe('presentResults()', () => {
   it('should call logger.error when config failed', () => {
     presentResults({
       configResult: { passed: false, errors: [loadError], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
       buildResult: { status: 'skipped' },
       logger: mockLogger,
     })

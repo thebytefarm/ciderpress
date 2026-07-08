@@ -1629,6 +1629,13 @@ export interface CiderpressConfig {
    */
   readonly discover?: DiscoverConfig
   /**
+   * Directory or directories holding custom document templates
+   * (`.md`/`.mdx` files with `label`/`hint` frontmatter). Discovered by
+   * `ciderpress draft`, `templates list`, and `templates check`. A template
+   * whose filename matches a built-in type overrides that built-in.
+   */
+  readonly templates?: string | readonly string[]
+  /**
    * Dev-server configuration — host, port, externally-visible URL,
    * and browser auto-open. Applies to `ciderpress dev`; CLI flags
    * override values supplied here.

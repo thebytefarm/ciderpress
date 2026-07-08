@@ -97,7 +97,16 @@ By default, output is a space-separated file list on stdout (suitable for script
 ciderpress draft [--type <type>] [--title <title>] [--out <dir>]
 ```
 
-Scaffolds a new documentation file from a template. Prompts for doc type and title when not provided via args, then writes the rendered template to the specified output directory.
+Scaffolds a new documentation file from a template. Prompts for doc type and title when not provided via args, then writes the rendered template to the specified output directory. The template set is the built-ins merged with any declared via the `templates` config field (user templates override built-ins by type). The output file preserves the template's extension, so `.mdx` templates scaffold to `.mdx`.
+
+### `templates`
+
+```bash
+ciderpress templates list    # list built-in + custom templates (overrides marked *)
+ciderpress templates check   # validate template frontmatter and syntax; exits 1 on failure
+```
+
+Resolves templates the same way `draft` does (`lib/templates.ts` → `resolveTemplates`), surfacing frontmatter, placeholder, and duplicate-type issues. `templates check` shares its validation with `ciderpress check` and `ciderpress build`.
 
 ### `clean`
 

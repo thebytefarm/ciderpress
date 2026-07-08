@@ -24,6 +24,50 @@ ciderpress draft --type guide --title "Deploy to Vercel" --out docs/guides
 
 This renders the template with your title and writes it to the output directory.
 
+## Custom templates
+
+Point Ciderpress at one or more directories of your own templates via the `templates` field in `ciderpress.config.ts`:
+
+```ts
+export default defineConfig({
+  // A single directory, or an array of directories
+  templates: ['docs/.templates', 'shared/templates'],
+})
+```
+
+Each template is a plain `.md` or `.mdx` file with `label` and `hint` frontmatter. The **filename is the type** (`adr.md` becomes type `adr`), and `{{title}}` is the only supported placeholder:
+
+```md
+---
+label: ADR
+hint: Architecture decision record
+---
+
+# {{title}}
+
+## Context
+
+## Decision
+
+## Consequences
+```
+
+- **`.mdx` templates** scaffold to `.mdx` files, so JSX and components flow through the MDX pipeline.
+- A custom template whose filename matches a built-in **overrides** it — a `guide.md` replaces the bundled Guide.
+- Frontmatter is always stripped from the scaffolded output.
+
+## Listing and validating
+
+```bash
+# List built-in and custom templates (overrides marked with *)
+ciderpress templates list
+
+# Validate template frontmatter and placeholder syntax
+ciderpress templates check
+```
+
+Template validation also runs as part of `ciderpress check` and `ciderpress build`.
+
 ## Using the SDK
 
 You can import `@ciderpress/templates` directly to integrate with your own CLI or tooling:

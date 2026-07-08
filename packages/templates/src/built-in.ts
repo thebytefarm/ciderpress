@@ -12,49 +12,57 @@ const BUILT_IN_TEMPLATE_RECORD: Record<TemplateType, Template> = {
     type: 'tutorial',
     label: 'Tutorial',
     hint: 'Guided learning experience',
-    body: readTemplate('tutorial.liquid'),
+    body: readTemplate('tutorial.md'),
+    extension: '.md',
   },
   guide: {
     type: 'guide',
     label: 'Guide',
     hint: 'Step-by-step task instructions',
-    body: readTemplate('guide.liquid'),
+    body: readTemplate('guide.md'),
+    extension: '.md',
   },
   quickstart: {
     type: 'quickstart',
     label: 'Quickstart',
     hint: 'Fast-track to working result',
-    body: readTemplate('quickstart.liquid'),
+    body: readTemplate('quickstart.md'),
+    extension: '.md',
   },
   explanation: {
     type: 'explanation',
     label: 'Explanation',
     hint: 'Conceptual background',
-    body: readTemplate('explanation.liquid'),
+    body: readTemplate('explanation.md'),
+    extension: '.md',
   },
   reference: {
     type: 'reference',
     label: 'Reference',
     hint: 'Technical descriptions',
-    body: readTemplate('reference.liquid'),
+    body: readTemplate('reference.md'),
+    extension: '.md',
   },
   standard: {
     type: 'standard',
     label: 'Standard',
     hint: 'Rules and conventions',
-    body: readTemplate('standard.liquid'),
+    body: readTemplate('standard.md'),
+    extension: '.md',
   },
   troubleshooting: {
     type: 'troubleshooting',
     label: 'Troubleshooting',
     hint: 'Common problems and fixes',
-    body: readTemplate('troubleshooting.liquid'),
+    body: readTemplate('troubleshooting.md'),
+    extension: '.md',
   },
   runbook: {
     type: 'runbook',
     label: 'Runbook',
     hint: 'Operational procedures',
-    body: readTemplate('runbook.liquid'),
+    body: readTemplate('runbook.md'),
+    extension: '.md',
   },
 }
 
@@ -68,10 +76,10 @@ export function getBuiltInTemplates(): Record<TemplateType, Template> {
 }
 
 /**
- * Reads a `.liquid` template file from the `templates/` directory.
+ * Reads a markdown template file from the `templates/` directory.
  *
  * @private
- * @param filename - The filename of the template to read (e.g. `'guide.liquid'`)
+ * @param filename - The filename of the template to read (e.g. `'guide.md'`)
  * @returns The raw template string
  */
 function readTemplate(filename: string): string {

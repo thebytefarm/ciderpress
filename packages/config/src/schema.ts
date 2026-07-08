@@ -697,6 +697,7 @@ export const ciderpressConfigSchema = z
     reportLink: z.union([z.literal(false), reportLinkConfigSchema]).optional(),
     home: homeConfigSchema.optional(),
     discover: discoverConfigSchema.optional(),
+    templates: z.union([z.string(), z.array(z.string())]).optional(),
     devServer: devServerConfigSchema.optional(),
   })
   .strict()
