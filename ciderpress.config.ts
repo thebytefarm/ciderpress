@@ -34,7 +34,7 @@ export default defineConfig({
       { text: 'Changelog', href: '/changelog', icon: 'pixelarticons:notes' },
     ],
     bottom: [
-      { text: 'Examples', href: '/examples', icon: 'pixelarticons:layout-grid' },
+      { text: 'Examples', href: '/examples', icon: 'pixelarticons:app-windows' },
       { text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' },
     ],
     promo: {
@@ -227,7 +227,7 @@ export default defineConfig({
       title: 'Examples',
       path: '/examples',
       include: 'docs/examples/index.mdx',
-      icon: 'pixelarticons:layout-grid',
+      icon: 'pixelarticons:app-windows',
       // Surfaced via the sidebar bottom links (next to Contributing), not as a
       // top-level section in the main sidebar tree.
       nav: { hidden: true },
