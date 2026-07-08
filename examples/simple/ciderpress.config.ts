@@ -4,6 +4,7 @@ export default defineConfig({
   title: 'my-lib',
   description: 'A simple utility library',
   theme: { themes: ['grannysmith'] },
+  templates: '.templates',
   home: {
     hero: {
       tagline: 'Lightweight utilities for everyday TypeScript.',
