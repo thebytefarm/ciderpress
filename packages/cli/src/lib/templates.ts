@@ -93,6 +93,30 @@ export function configTemplates(
 }
 
 /**
+ * A selectable option for a single-select template prompt.
+ */
+export interface TemplateOption {
+  readonly value: string
+  readonly label: string
+  readonly hint: string
+}
+
+/**
+ * Build a flat option list for a single-select template prompt. Templates that
+ * declare a group — via a `group` frontmatter field or a sub-directory under
+ * the templates dir — render as `Group/Label` (e.g. `guides/UI`); ungrouped
+ * templates (files at the templates root and all built-ins) render flat.
+ *
+ * @param resolved - The resolved templates from {@link resolveTemplates}
+ * @returns The options in resolved order, prefixed only for grouped templates
+ */
+export function toTemplateSelectOptions(
+  resolved: readonly ResolvedTemplate[]
+): readonly TemplateOption[] {
+  return resolved.map((entry) => toOption(entry.template))
+}
+
+/**
  * A user template successfully loaded from a file.
  */
 interface LoadedTemplate {
@@ -153,7 +177,29 @@ async function loadDir(input: { readonly repoRoot: string; readonly dir: string 
   readonly issues: readonly TemplateIssue[]
 }> {
   const { repoRoot, dir } = input
-  const absDir = path.resolve(repoRoot, dir)
+  return walkTemplates({ absDir: path.resolve(repoRoot, dir), relDir: dir, group: undefined })
+}
+
+/**
+ * Recursively load supported template files under a directory, tagging each
+ * with the group derived from its location. Files at the configured root are
+ * ungrouped; each nested directory contributes a `parent/child` group segment.
+ * A frontmatter `group` overrides the derived value in {@link buildTemplate}.
+ *
+ * @private
+ * @param input - The current absolute + repo-relative dir and the accumulated
+ *   group for files at this level
+ * @returns Loaded templates and any per-file or directory-read issues
+ */
+async function walkTemplates(input: {
+  readonly absDir: string
+  readonly relDir: string
+  readonly group: string | undefined
+}): Promise<{
+  readonly loaded: readonly LoadedTemplate[]
+  readonly issues: readonly TemplateIssue[]
+}> {
+  const { absDir, relDir, group } = input
 
   const read = await attemptAsync(() => fs.readdir(absDir, { withFileTypes: true }))
   if (!read.ok) {
@@ -161,7 +207,7 @@ async function loadDir(input: { readonly repoRoot: string; readonly dir: string 
       loaded: [],
       issues: [
         {
-          file: dir,
+          file: relDir,
           type: 'read_error',
           message: `Cannot read templates directory: ${read.error.message}`,
         },
@@ -169,7 +215,9 @@ async function loadDir(input: { readonly repoRoot: string; readonly dir: string 
     }
   }
 
-  const candidates = read.value
+  const entries = read.value
+
+  const candidates = entries
     .filter((entry) => entry.isFile())
     .map((entry) => ({ name: entry.name, extension: toExtension(entry.name) }))
     .flatMap((candidate) => {
@@ -183,26 +231,60 @@ async function loadDir(input: { readonly repoRoot: string; readonly dir: string 
     candidates.map((candidate) =>
       loadTemplateFile({
         absPath: path.join(absDir, candidate.name),
-        relPath: path.join(dir, candidate.name),
+        relPath: path.join(relDir, candidate.name),
         extension: candidate.extension,
+        group,
       })
     )
   )
 
+  const subResults = await Promise.all(
+    entries
+      .filter((entry) => entry.isDirectory())
+      .map((entry) =>
+        walkTemplates({
+          absDir: path.join(absDir, entry.name),
+          relDir: path.join(relDir, entry.name),
+          group: extendGroup(group, entry.name),
+        })
+      )
+  )
+
   return {
-    loaded: outcomes.flatMap((outcome) => {
-      if (outcome.kind === 'ok') {
-        return [outcome.loaded]
-      }
-      return []
-    }),
-    issues: outcomes.flatMap((outcome) => {
-      if (outcome.kind === 'issue') {
-        return [outcome.issue]
-      }
-      return []
-    }),
+    loaded: [
+      ...outcomes.flatMap((outcome) => {
+        if (outcome.kind === 'ok') {
+          return [outcome.loaded]
+        }
+        return []
+      }),
+      ...subResults.flatMap((result) => result.loaded),
+    ],
+    issues: [
+      ...outcomes.flatMap((outcome) => {
+        if (outcome.kind === 'issue') {
+          return [outcome.issue]
+        }
+        return []
+      }),
+      ...subResults.flatMap((result) => result.issues),
+    ],
   }
+}
+
+/**
+ * Extend a group path with a nested directory segment.
+ *
+ * @private
+ * @param group - The parent group, or undefined at the configured root
+ * @param name - The nested directory name
+ * @returns `name` at the root, otherwise `group/name`
+ */
+function extendGroup(group: string | undefined, name: string): string {
+  if (group === undefined) {
+    return name
+  }
+  return `${group}/${name}`
 }
 
 /**
@@ -216,8 +298,9 @@ async function loadTemplateFile(input: {
   readonly absPath: string
   readonly relPath: string
   readonly extension: '.md' | '.mdx'
+  readonly group: string | undefined
 }): Promise<FileOutcome> {
-  const { absPath, relPath, extension } = input
+  const { absPath, relPath, extension, group } = input
 
   const read = await attemptAsync(() => fs.readFile(absPath, 'utf8'))
   if (!read.ok) {
@@ -241,6 +324,7 @@ async function loadTemplateFile(input: {
     data: matter.data,
     content: matter.content,
     extension,
+    group,
   })
   if (buildError) {
     return {
@@ -314,4 +398,20 @@ function buildResolvedList(unique: readonly LoadedTemplate[]): readonly Resolved
   }))
 
   return [...builtInResolved, ...userResolved]
+}
+
+/**
+ * Map a template to a selectable prompt option, prefixing its label with the
+ * template's group when one is set.
+ *
+ * @private
+ * @param template - The template to project
+ * @returns The option with a `Group/Label` display label, or a flat label
+ */
+function toOption(template: Template): TemplateOption {
+  const { type, label, hint, group } = template
+  if (group === undefined || group.length === 0) {
+    return { value: type, label, hint }
+  }
+  return { value: type, label: `${group}/${label}`, hint }
 }

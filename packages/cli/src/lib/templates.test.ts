@@ -1,11 +1,11 @@
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { createPaths } from './paths'
-import { resolveTemplates } from './templates'
+import { resolveTemplates, toTemplateSelectOptions } from './templates'
 
 // oxlint-disable-next-line functional/no-let -- per-test temp dir, reassigned in beforeEach
 let dir: string
@@ -26,6 +26,18 @@ afterEach(() => {
  */
 function write(name: string, body: string): void {
   writeFileSync(join(dir, name), body, 'utf8')
+}
+
+/**
+ * Write a template file into a sub-directory of the current temp dir.
+ *
+ * @param subdir - Sub-directory (relative to the temp dir), created if needed
+ * @param name - File name (with extension)
+ * @param body - Full file contents
+ */
+function writeIn(subdir: string, name: string, body: string): void {
+  mkdirSync(join(dir, subdir), { recursive: true })
+  writeFileSync(join(dir, subdir, name), body, 'utf8')
 }
 
 describe('resolveTemplates()', () => {
@@ -96,5 +108,56 @@ describe('resolveTemplates()', () => {
       paths: createPaths(dir),
     })
     expect(issues.some((issue) => issue.type === 'read_error')).toBe(true)
+  })
+
+  it('should discover templates nested in sub-directories and tag their group', async () => {
+    writeIn('guides', 'ui.md', '---\nlabel: UI\nhint: UI guide\n---\n# {{title}}\n')
+    const { registry, issues } = await resolveTemplates({
+      templates: [dir],
+      paths: createPaths(dir),
+    })
+    expect(issues).toStrictEqual([])
+    expect(registry.get('ui')).toMatchObject({ group: 'guides' })
+  })
+})
+
+describe('toTemplateSelectOptions()', () => {
+  it('should return flat, unprefixed labels when only built-ins exist', async () => {
+    const { resolved } = await resolveTemplates({ templates: undefined, paths: createPaths(dir) })
+    const options = toTemplateSelectOptions(resolved)
+    expect(options.length).toBeGreaterThan(0)
+    expect(options.some((option) => option.value === 'guide')).toBe(true)
+    expect(options.every((option) => !option.label.includes('/'))).toBe(true)
+  })
+
+  it('should carry each option as a value/label/hint row', async () => {
+    const { resolved } = await resolveTemplates({ templates: undefined, paths: createPaths(dir) })
+    const [option] = toTemplateSelectOptions(resolved)
+    expect(option).toMatchObject({
+      value: expect.any(String),
+      label: expect.any(String),
+      hint: expect.any(String),
+    })
+  })
+
+  it('should leave a root-level custom template unprefixed', async () => {
+    write('adr.md', '---\nlabel: ADR\nhint: Decision\n---\n# {{title}}\n')
+    const { resolved } = await resolveTemplates({ templates: [dir], paths: createPaths(dir) })
+    const options = toTemplateSelectOptions(resolved)
+    expect(options.find((option) => option.value === 'adr')).toMatchObject({ label: 'ADR' })
+  })
+
+  it('should prefix a sub-directory template with its folder group', async () => {
+    writeIn('guides', 'ui.md', '---\nlabel: UI\nhint: UI guide\n---\n# {{title}}\n')
+    const { resolved } = await resolveTemplates({ templates: [dir], paths: createPaths(dir) })
+    const options = toTemplateSelectOptions(resolved)
+    expect(options.find((option) => option.value === 'ui')).toMatchObject({ label: 'guides/UI' })
+  })
+
+  it('should let a frontmatter group override the directory-derived group', async () => {
+    writeIn('guides', 'api.md', '---\nlabel: API\nhint: API doc\ngroup: foobar\n---\n# {{title}}\n')
+    const { resolved } = await resolveTemplates({ templates: [dir], paths: createPaths(dir) })
+    const options = toTemplateSelectOptions(resolved)
+    expect(options.find((option) => option.value === 'api')).toMatchObject({ label: 'foobar/API' })
   })
 })
