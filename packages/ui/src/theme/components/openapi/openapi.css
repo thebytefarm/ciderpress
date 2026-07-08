@@ -5,20 +5,6 @@
  * Uses BEM naming: block__element--modifier.
  */
 
-/* ── Hide Rspress default LLMs copy button on OpenAPI pages ── */
-/* OpenAPI pages use a custom CopyMarkdownButton with build-time rendered markdown */
-:has(.cp-oas-operation) > .rp-llms-container,
-:has(.cp-oas-overview) > .rp-llms-container {
-  display: none;
-}
-
-/* ── Copy markdown button ─────────────────────────────────── */
-.cp-oas-copy-markdown {
-  float: right;
-  margin-top: 8px;
-  margin-bottom: 0;
-}
-
 /* ── Two-column operation layout ───────────────────────────── */
 .cp-oas-operation {
   display: grid;
