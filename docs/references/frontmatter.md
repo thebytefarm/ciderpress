@@ -35,6 +35,8 @@ See the [Content](/concepts/content#frontmatter-and-defaults) concept for inject
 | `footer`        | `boolean`                                 | `true`  | Show or hide the page footer                                                                               |
 | `pageClass`     | `string`                                  | —       | Custom CSS class added to the page container                                                               |
 | `head`          | `[string, Record<string, string>][]`      | —       | Extra elements injected into `<head>` (see below)                                                          |
+| `badge`         | `string \| BadgeConfig \| array`          | —       | Ad-hoc page badge(s) shown in the sidebar and breadcrumb (see [Badges](/reference/badges))                 |
+| `status`        | `string \| string[]`                      | —       | Named status id(s) from the registry (see [Badges](/reference/badges))                                     |
 
 ## Layout values
 

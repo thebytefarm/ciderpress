@@ -604,6 +604,44 @@ interface SidebarPromo {
 | `body`  | `string`       | Body copy      |
 | `cta`   | `ButtonConfig` | CTA button     |
 
+## `badges`
+
+Glob rules that apply a badge — or a named [status](#statuses) — to every page whose route path matches, without touching each file. Badges render in both the sidebar and the breadcrumb. A page's own frontmatter or `defaults` badge/status wins over a rule. See the [Badges](/reference/badges) reference for the full model.
+
+```ts
+badges: [
+  { match: '/api/experimental/**', status: 'alpha' },
+  { match: ['/v2/**', '/beta/**'], badge: { text: 'v2', variant: 'info' } },
+]
+```
+
+| Field    | Type                     | Description                                             |
+| -------- | ------------------------ | ------------------------------------------------------ |
+| `match`  | `string \| string[]`     | Glob pattern(s) matched against the route path         |
+| `badge`  | `string \| BadgeConfig \| array` | Ad-hoc badge(s) applied to matching pages      |
+| `status` | `string \| string[]`     | Named status id(s) applied to matching pages           |
+
+Declare at least one of `badge` or `status`. `match` supports `*`, `**`, and `?`.
+
+## `statuses`
+
+The named status registry — the semantic layer over badges. A status is a reusable, documented preset referenced by `id` from a page's `status` field. Entries merge over the [built-in defaults](/reference/badges#built-in-statuses) by `id` (matching ids override, new ids extend).
+
+```ts
+statuses: [
+  { id: 'alpha', title: 'Alpha', description: 'Early and unstable — expect changes.', variant: 'warning' },
+  { id: 'design-partner', title: 'Design Partner', description: 'Available to design partners only.', color: '#7c3aed' },
+]
+```
+
+| Field         | Type           | Required | Description                                    |
+| ------------- | -------------- | -------- | ---------------------------------------------- |
+| `id`          | `string`       | yes      | Reference handle used by `status: <id>`        |
+| `title`       | `string`       | yes      | Chip label                                     |
+| `description` | `string`       | yes      | Hover tooltip                                  |
+| `variant`     | `BadgeVariant` | no       | Theme-aware color; ignored when `color` is set |
+| `color`       | `string`       | no       | Raw color — overrides `variant`                |
+
 ## `footer`
 
 Unified footer config — the old top-level `footer` and `site.footer` are now one block.
