@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { Page, CiderpressConfig } from '@ciderpress/config'
+import type { BadgeRule, Page, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
@@ -11,6 +11,7 @@ import { isNil, isNotNil } from 'massaman/predicate'
 import { generateAssets } from '../banner/index.ts'
 import type { AssetConfig } from '../banner/types.ts'
 import type { Paths } from '../paths.ts'
+import { applyBadges } from './badges.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
@@ -135,7 +136,11 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  const resolved = injectLandingPages(enriched, rootPages, workspaces)
+  const withLandings = injectLandingPages(enriched, rootPages, workspaces)
+
+  // Stamp sidebar badges (frontmatter + defaults + glob rules) onto the
+  // tree so `_meta.json` generation can carry them as Rspress `tag`s.
+  const resolved = await applyBadges(withLandings, resolveBadgeRules(config))
 
   const sectionPages = collectPages(resolved)
 
@@ -269,6 +274,19 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
+}
+
+/**
+ * Extract the glob badge rules from a config's sidebar block.
+ *
+ * @private
+ * @param config - Loaded ciderpress config
+ * @returns Badge rules, or an empty array when none are configured
+ */
+function resolveBadgeRules(config: CiderpressConfig): readonly BadgeRule[] {
+  return match(config.sidebar)
+    .with(P.nonNullable, (sidebar) => sidebar.badges ?? [])
+    .otherwise(() => [])
 }
 
 /**

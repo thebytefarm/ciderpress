@@ -35,6 +35,10 @@ export interface MetaDirItem {
   readonly name: string
   readonly label: string
   readonly collapsed?: boolean
+  /**
+   * Rspress sidebar tag — carries this entry's encoded badge(s).
+   */
+  readonly tag?: string
 }
 
 /**
@@ -44,6 +48,10 @@ export interface MetaFileItem {
   readonly type: 'file'
   readonly name: string
   readonly label: string
+  /**
+   * Rspress sidebar tag — carries this entry's encoded badge(s).
+   */
+  readonly tag?: string
 }
 
 /**
@@ -52,6 +60,10 @@ export interface MetaFileItem {
 export interface MetaSectionHeaderItem {
   readonly type: 'section-header'
   readonly label: string
+  /**
+   * Rspress sidebar tag — carries this entry's encoded badge(s).
+   */
+  readonly tag?: string
 }
 
 /**
@@ -92,9 +104,13 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
               return []
             }
             if (hasChildren(child)) {
-              return [{ type: 'dir' as const, name, label: child.title }]
+              return [
+                { type: 'dir' as const, name, label: child.title, ...maybeTag(child.badgeTag) },
+              ]
             }
-            return [{ type: 'file' as const, name, label: child.title }]
+            return [
+              { type: 'file' as const, name, label: child.title, ...maybeTag(child.badgeTag) },
+            ]
           })
       }
 
@@ -107,6 +123,7 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
           type: 'dir' as const,
           name,
           label: entry.title,
+          ...maybeTag(entry.badgeTag),
         },
       ]
     })
@@ -514,6 +531,7 @@ function leafToMetaItem(entry: ResolvedEntry): MetaItem {
     type: 'file' as const,
     name,
     label: entry.title,
+    ...maybeTag(entry.badgeTag),
   }
 }
 
@@ -534,6 +552,7 @@ function sectionToMetaItem(entry: ResolvedEntry): MetaItem {
     name,
     label: entry.title,
     ...maybeCollapsed(entry.collapsible),
+    ...maybeTag(entry.badgeTag),
   }
 }
 
@@ -596,6 +615,21 @@ function maybeCollapsed(collapsible: boolean | undefined): { readonly collapsed?
     return { collapsed: true }
   }
   return {}
+}
+
+/**
+ * Build the optional `tag` field for a meta item, omitted when the entry
+ * carries no badge.
+ *
+ * @private
+ * @param badgeTag - Encoded badge tag string, or undefined
+ * @returns `{ tag }` or an empty object
+ */
+function maybeTag(badgeTag: string | undefined): { readonly tag?: string } {
+  if (badgeTag === undefined) {
+    return {}
+  }
+  return { tag: badgeTag }
 }
 
 /**

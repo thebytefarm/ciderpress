@@ -24,6 +24,28 @@
     }
   }
 
+  /* ── Long titles — single-line ellipsis, badge stays pinned ──── */
+  /* The item's left slot holds the label; constrain it so the label
+     truncates instead of pushing the badge (right slot) out of view.
+     A `title` attribute is added by the Sidebar effect on overflow. */
+  html .rp-sidebar-item__left {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  html .rp-sidebar-item__left > .rp-doc {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  html .rp-sidebar-item__right {
+    flex: 0 0 auto;
+    margin-left: 6px;
+  }
+
   /* ── Group section headers — mono ALL CAPS (mockup pattern) ──── */
   html .rp-sidebar-section-header {
     font-family: var(--cp-font-family-mono);

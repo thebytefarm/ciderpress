@@ -29,6 +29,8 @@ import { z } from 'zod'
 
 import type {
   AnnouncementConfig,
+  BadgeConfig,
+  BadgeRule,
   BannerConfig,
   BannerFn,
   BrandConfig,
@@ -106,6 +108,28 @@ const logoConfigSchema = z.union([z.string(), logoFnSchema])
 
 const bannerConfigSchema = z.union([z.string(), bannerFnSchema])
 
+const badgeVariantSchema = z.enum(['info', 'success', 'warning', 'danger', 'neutral'])
+
+const badgeConfigSchema = z
+  .object({
+    text: z.string(),
+    variant: badgeVariantSchema.optional(),
+    color: z.string().optional(),
+    tooltip: z.string().optional(),
+  })
+  .strict()
+
+const badgeSchema = z.union([z.string(), badgeConfigSchema])
+
+const badgeInputSchema = z.union([badgeSchema, z.array(badgeSchema)])
+
+const badgeRuleSchema = z
+  .object({
+    match: z.union([z.string(), z.array(z.string())]),
+    badge: badgeInputSchema,
+  })
+  .strict()
+
 const frontmatterSchema = z
   .object({
     title: z.string().optional(),
@@ -123,6 +147,7 @@ const frontmatterSchema = z
     footer: z.boolean().optional(),
     pageClass: z.string().optional(),
     head: z.array(z.tuple([z.string(), z.record(z.string(), z.string())])).optional(),
+    badge: badgeInputSchema.optional(),
   })
   .strict()
 
@@ -338,6 +363,7 @@ const sidebarConfigSchema = z
     top: z.array(buttonConfigSchema).optional(),
     bottom: z.array(buttonConfigSchema).optional(),
     promo: sidebarPromoSchema.optional(),
+    badges: z.array(badgeRuleSchema).optional(),
   })
   .strict()
 
@@ -731,6 +757,10 @@ export const pathsSchema = z
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardBadgeConfig: z.ZodType<BadgeConfig> = badgeConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardBadgeRule: z.ZodType<BadgeRule> = badgeRuleSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardWorkspace: z.ZodType<Workspace> = workspaceSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

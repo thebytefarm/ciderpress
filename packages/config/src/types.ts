@@ -134,6 +134,67 @@ export type ImageSource =
     }
 
 /**
+ * Semantic color variant for a page badge. Maps to the theme's badge
+ * palette; `neutral` renders a muted gray chip.
+ */
+export type BadgeVariant = 'info' | 'success' | 'warning' | 'danger' | 'neutral'
+
+/**
+ * A sidebar/page text badge like `ALPHA` or `WIP`, in object form.
+ *
+ * Use the string shorthand ({@link Badge}) when only the label matters —
+ * it expands to `{ text, variant: 'neutral' }`.
+ */
+export interface BadgeConfig {
+  /**
+   * Badge label — the visible text (e.g. `'ALPHA'`, `'WIP'`).
+   */
+  readonly text: string
+  /**
+   * Semantic color variant. Defaults to `'neutral'`. Ignored when
+   * `color` is set.
+   */
+  readonly variant?: BadgeVariant
+  /**
+   * Custom color (hex/rgb/hsl) — overrides `variant` with a tinted chip.
+   */
+  readonly color?: string
+  /**
+   * Hover tooltip text. Defaults to the badge `text` when omitted.
+   */
+  readonly tooltip?: string
+}
+
+/**
+ * A single badge — string shorthand for the label, or a full
+ * {@link BadgeConfig} for variant/color/tooltip control.
+ */
+export type Badge = string | BadgeConfig
+
+/**
+ * One or more badges. A page may carry several (e.g. `ALPHA` + `v2`).
+ */
+export type BadgeInput = Badge | readonly Badge[]
+
+/**
+ * A glob-based badge rule declared under `sidebar.badges`. Applies its
+ * `badge` to every page whose route path matches `match` and that does
+ * not declare its own badge in frontmatter or `defaults` (frontmatter and
+ * `defaults` win over glob rules).
+ */
+export interface BadgeRule {
+  /**
+   * Glob pattern(s) matched against a page's route path (e.g.
+   * `'/api/experimental/**'`). Supports `*`, `**`, and `?`.
+   */
+  readonly match: string | readonly string[]
+  /**
+   * Badge(s) applied to matching pages.
+   */
+  readonly badge: BadgeInput
+}
+
+/**
  * Rspress frontmatter fields injectable at build time.
  *
  * Schema: `frontmatterSchema` in schema.ts validates this shape with
@@ -199,6 +260,12 @@ export interface Frontmatter {
    * appended to the document head.
    */
   readonly head?: readonly [string, Record<string, string>][]
+  /**
+   * Sidebar badge(s) for this page — a label like `ALPHA` or `WIP`, or a
+   * {@link BadgeConfig} with variant/color/tooltip. Set on a file's own
+   * frontmatter or on a page/workspace `defaults` (frontmatter wins).
+   */
+  readonly badge?: BadgeInput
 }
 
 /**
@@ -1139,6 +1206,12 @@ export interface SidebarConfig {
    * Promo card rendered at the bottom of the docs sidebar.
    */
   readonly promo?: SidebarPromo
+  /**
+   * Glob-based badge rules — apply a badge to every page whose route path
+   * matches, without touching each file. A page's own frontmatter or
+   * `defaults` badge overrides a matching rule.
+   */
+  readonly badges?: readonly BadgeRule[]
 }
 
 /**

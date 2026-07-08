@@ -585,6 +585,83 @@
                   "minItems": 2,
                   "maxItems": 2
                 }
+              },
+              "badge": {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "variant": {
+                            "type": "string",
+                            "enum": [
+                              "info",
+                              "success",
+                              "warning",
+                              "danger",
+                              "neutral"
+                            ]
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "tooltip": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "text": {
+                              "type": "string"
+                            },
+                            "variant": {
+                              "type": "string",
+                              "enum": [
+                                "info",
+                                "success",
+                                "warning",
+                                "danger",
+                                "neutral"
+                              ]
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "tooltip": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                ]
               }
             },
             "additionalProperties": false
@@ -872,6 +949,83 @@
                   "minItems": 2,
                   "maxItems": 2
                 }
+              },
+              "badge": {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "variant": {
+                            "type": "string",
+                            "enum": [
+                              "info",
+                              "success",
+                              "warning",
+                              "danger",
+                              "neutral"
+                            ]
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "tooltip": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "text": {
+                              "type": "string"
+                            },
+                            "variant": {
+                              "type": "string",
+                              "enum": [
+                                "info",
+                                "success",
+                                "warning",
+                                "danger",
+                                "neutral"
+                              ]
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "tooltip": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                ]
               }
             },
             "additionalProperties": false
@@ -1209,6 +1363,83 @@
                         "minItems": 2,
                         "maxItems": 2
                       }
+                    },
+                    "badge": {
+                      "anyOf": [
+                        {
+                          "anyOf": [
+                            {
+                              "type": "string"
+                            },
+                            {
+                              "type": "object",
+                              "properties": {
+                                "text": {
+                                  "type": "string"
+                                },
+                                "variant": {
+                                  "type": "string",
+                                  "enum": [
+                                    "info",
+                                    "success",
+                                    "warning",
+                                    "danger",
+                                    "neutral"
+                                  ]
+                                },
+                                "color": {
+                                  "type": "string"
+                                },
+                                "tooltip": {
+                                  "type": "string"
+                                }
+                              },
+                              "required": [
+                                "text"
+                              ],
+                              "additionalProperties": false
+                            }
+                          ]
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "anyOf": [
+                              {
+                                "type": "string"
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "text": {
+                                    "type": "string"
+                                  },
+                                  "variant": {
+                                    "type": "string",
+                                    "enum": [
+                                      "info",
+                                      "success",
+                                      "warning",
+                                      "danger",
+                                      "neutral"
+                                    ]
+                                  },
+                                  "color": {
+                                    "type": "string"
+                                  },
+                                  "tooltip": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "text"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          }
+                        }
+                      ]
                     }
                   },
                   "additionalProperties": false
@@ -1726,6 +1957,109 @@
             "cta"
           ],
           "additionalProperties": false
+        },
+        "badges": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "match": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
+              },
+              "badge": {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "variant": {
+                            "type": "string",
+                            "enum": [
+                              "info",
+                              "success",
+                              "warning",
+                              "danger",
+                              "neutral"
+                            ]
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "tooltip": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "text": {
+                              "type": "string"
+                            },
+                            "variant": {
+                              "type": "string",
+                              "enum": [
+                                "info",
+                                "success",
+                                "warning",
+                                "danger",
+                                "neutral"
+                              ]
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "tooltip": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            },
+            "required": [
+              "match",
+              "badge"
+            ],
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
@@ -2954,6 +3288,83 @@
                 "minItems": 2,
                 "maxItems": 2
               }
+            },
+            "badge": {
+              "anyOf": [
+                {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "text": {
+                          "type": "string"
+                        },
+                        "variant": {
+                          "type": "string",
+                          "enum": [
+                            "info",
+                            "success",
+                            "warning",
+                            "danger",
+                            "neutral"
+                          ]
+                        },
+                        "color": {
+                          "type": "string"
+                        },
+                        "tooltip": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "text"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "anyOf": [
+                      {
+                        "type": "string"
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "variant": {
+                            "type": "string",
+                            "enum": [
+                              "info",
+                              "success",
+                              "warning",
+                              "danger",
+                              "neutral"
+                            ]
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "tooltip": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  }
+                }
+              ]
             }
           },
           "additionalProperties": false

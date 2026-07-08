@@ -18,6 +18,11 @@ export type {
   ThemeEntry,
   CiderpressThemeInput,
   Frontmatter,
+  Badge,
+  BadgeConfig,
+  BadgeInput,
+  BadgeVariant,
+  BadgeRule,
   NavItem,
   CardConfig,
   Page,
@@ -94,6 +99,8 @@ export type {
 export { ICON_PREFIXES, VALID_ICON_IDS } from './icons.generated.ts'
 
 export { hasGlobChars, normalizeInclude, isSingleFileInclude, hasAnyGlobInclude } from './glob.ts'
+
+export { BADGE_TAG_PREFIX, normalizeBadgeInput, encodeBadges, decodeBadges } from './badge.ts'
 
 export { collectAllWorkspaceItems } from './workspace.ts'
 

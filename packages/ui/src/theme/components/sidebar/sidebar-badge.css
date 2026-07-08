@@ -1,0 +1,50 @@
+/**
+ * Sidebar badge chips — small uppercase labels (ALPHA, WIP, …) rendered
+ * in a sidebar item's right slot via the `Tag` override.
+ */
+
+@layer ciderpress.overrides {
+  .cp-sbadge {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 5px;
+    border-radius: var(--cp-radius-pill, 9999px);
+    font-family: var(--cp-font-family-mono, inherit);
+    font-size: 9px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  .cp-sbadge + .cp-sbadge {
+    margin-left: 4px;
+  }
+
+  .cp-sbadge--info {
+    background: var(--cp-c-badge-info-bg);
+    color: var(--cp-c-badge-info-fg);
+  }
+
+  .cp-sbadge--success {
+    background: var(--cp-c-badge-success-bg);
+    color: var(--cp-c-badge-success-fg);
+  }
+
+  .cp-sbadge--warning {
+    background: var(--cp-c-badge-warning-bg);
+    color: var(--cp-c-badge-warning-fg);
+  }
+
+  .cp-sbadge--danger {
+    background: var(--cp-c-badge-error-bg);
+    color: var(--cp-c-badge-error-fg);
+  }
+
+  .cp-sbadge--neutral {
+    background: var(--rp-c-bg-mute);
+    color: var(--rp-c-text-2);
+  }
+}
