@@ -7,6 +7,7 @@ import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 import { isNotNil } from 'massaman/predicate'
 
+import { excludeGlobbedAgentFiles } from '../agent-files.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
@@ -54,12 +55,13 @@ export async function resolveRecursiveGlob(
     return []
   }
 
-  const files = await fg(patterns as string[], {
+  const matched = await fg(patterns as string[], {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
     onlyFiles: true,
   })
+  const files = excludeGlobbedAgentFiles(matched, patterns)
 
   const titleStr = resolveSectionTitle(section)
 
