@@ -33,9 +33,14 @@ export default defineConfig({
   ],
   topbar: {
     nav: [
-      { title: 'Docs', link: '/getting-started' },
-      { title: 'API', link: '/api-reference' },
-      { title: 'Guides', link: '/guides' },
+      { title: 'Getting Started', link: '/getting-started' },
+      {
+        title: 'Reference',
+        items: [
+          { title: 'API Reference', link: '/api-reference' },
+          { title: 'Guides', link: '/guides' },
+        ],
+      },
     ],
   },
   footer: {

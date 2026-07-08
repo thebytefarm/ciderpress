@@ -193,13 +193,65 @@ function readNavItems(site: unknown): readonly CiderpressNavMenuItem[] {
   if (!Array.isArray(candidate)) {
     return []
   }
-  return candidate.filter(
-    (item): item is CiderpressNavMenuItem =>
-      typeof item === 'object' &&
-      item !== null &&
-      typeof (item as { text?: unknown }).text === 'string' &&
-      typeof (item as { link?: unknown }).link === 'string'
-  )
+  return candidate.map(toNavItem).filter((item): item is CiderpressNavMenuItem => item !== null)
+}
+
+/**
+ * Coerce one raw Rspress nav entry into a `CiderpressNavMenuItem`,
+ * recursing into `items` for dropdown parents. Entries missing a
+ * string `text`, or that are neither a link nor a non-empty dropdown,
+ * are dropped (returned as `null`).
+ *
+ * @private
+ * @param raw - Untyped nav entry read off `site.nav`
+ * @returns Parsed nav item, or `null` when the entry is unusable
+ */
+function toNavItem(raw: unknown): CiderpressNavMenuItem | null {
+  if (typeof raw !== 'object' || raw === null) {
+    return null
+  }
+  const record = raw as {
+    readonly text?: unknown
+    readonly link?: unknown
+    readonly items?: unknown
+  }
+  if (typeof record.text !== 'string') {
+    return null
+  }
+  const link = match(record.link)
+    .with(P.string, (value) => value)
+    .otherwise(() => undefined)
+  const items = match(Array.isArray(record.items))
+    .with(true, () =>
+      (record.items as readonly unknown[])
+        .map(toNavItem)
+        .filter((child): child is CiderpressNavMenuItem => child !== null)
+    )
+    .otherwise(() => [])
+  return buildNavItem({ text: record.text, link, items })
+}
+
+/**
+ * Assemble a `CiderpressNavMenuItem` from its parsed parts, keeping
+ * only the properties that are actually present so the result matches
+ * the optional-field contract. Returns `null` for a dead entry (no
+ * link and no children).
+ *
+ * @private
+ * @param params - The parsed text, optional link, and child items
+ * @returns A nav item, or `null` when there is nothing to render
+ */
+function buildNavItem(params: {
+  readonly text: string
+  readonly link: string | undefined
+  readonly items: readonly CiderpressNavMenuItem[]
+}): CiderpressNavMenuItem | null {
+  const { text, link, items } = params
+  return match({ hasLink: link !== undefined, hasItems: items.length > 0 })
+    .with({ hasLink: true, hasItems: true }, () => ({ text, link, items }))
+    .with({ hasLink: true, hasItems: false }, () => ({ text, link }))
+    .with({ hasLink: false, hasItems: true }, () => ({ text, items }))
+    .otherwise(() => null)
 }
 
 /**

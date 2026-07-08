@@ -1,3 +1,4 @@
+import { match } from 'massaman/match'
 import { useState } from 'react'
 import type React from 'react'
 import { Dialog, Modal, ModalOverlay } from 'react-aria-components'
@@ -71,15 +72,12 @@ export function CiderpressNavHamburger(props: CiderpressNavHamburgerProps): Reac
             </header>
 
             <nav className="cp-nav-drawer__nav" aria-label="Primary">
-              {props.navItems.map((item) => (
-                <RouteLink
-                  key={item.link}
-                  href={item.link}
-                  className="cp-nav-drawer__link"
-                  onClick={() => setOpen(false)}
-                >
-                  {item.text}
-                </RouteLink>
+              {props.navItems.map((item, index) => (
+                <DrawerNavEntry
+                  key={`${drawerItemKey(item)}::${index}`}
+                  item={item}
+                  onNavigate={() => setOpen(false)}
+                />
               ))}
             </nav>
 
@@ -110,3 +108,91 @@ export function CiderpressNavHamburger(props: CiderpressNavHamburgerProps): Reac
 }
 
 export { CiderpressNavHamburger as default }
+
+/**
+ * Render one entry in the mobile drawer nav. Leaf items are a single
+ * link; dropdown parents become a collapsible {@link DrawerNavGroup}.
+ *
+ * @private
+ * @param props - The nav item and a callback to close the drawer.
+ * @returns The drawer entry element.
+ */
+function DrawerNavEntry(props: {
+  readonly item: CiderpressNavMenuItem
+  readonly onNavigate: () => void
+}): React.ReactElement {
+  const { item, onNavigate } = props
+  const children = item.items ?? []
+  return match(children.length > 0)
+    .with(true, () => <DrawerNavGroup item={item} onNavigate={onNavigate} />)
+    .otherwise(() => (
+      <RouteLink href={item.link ?? '#'} className="cp-nav-drawer__link" onClick={onNavigate}>
+        {item.text}
+      </RouteLink>
+    ))
+}
+
+/**
+ * A collapsible dropdown section in the mobile drawer: a tappable header
+ * that toggles its child links open/closed. Collapsed by default so a
+ * deep nav doesn't fill the drawer on open.
+ *
+ * @private
+ * @param props - The dropdown item and a callback to close the drawer.
+ * @returns The collapsible group element.
+ */
+function DrawerNavGroup(props: {
+  readonly item: CiderpressNavMenuItem
+  readonly onNavigate: () => void
+}): React.ReactElement {
+  const { item, onNavigate } = props
+  const [expanded, setExpanded] = useState(false)
+  const children = item.items ?? []
+  return (
+    <div className="cp-nav-drawer__group" role="group" aria-label={item.text}>
+      <button
+        type="button"
+        className="cp-nav-drawer__group-toggle"
+        onClick={() => setExpanded((current) => !current)}
+        aria-expanded={expanded}
+      >
+        <span>{item.text}</span>
+        <Icon
+          className="cp-nav-drawer__group-chevron"
+          icon="pixelarticons:chevron-down"
+          width={16}
+          height={16}
+        />
+      </button>
+      {expanded && (
+        <div className="cp-nav-drawer__group-items">
+          {children.map((child, index) => (
+            <RouteLink
+              key={`${drawerItemKey(child)}::${index}`}
+              href={child.link ?? '#'}
+              className="cp-nav-drawer__link cp-nav-drawer__link--nested"
+              onClick={onNavigate}
+            >
+              {child.text}
+            </RouteLink>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Stable React key for a drawer nav item — its link when present,
+ * otherwise its label (dropdown parents may have no link of their own).
+ *
+ * @private
+ * @param item - Nav item to key.
+ * @returns Key string.
+ */
+function drawerItemKey(item: CiderpressNavMenuItem): string {
+  if (item.link !== undefined && item.link !== '') {
+    return item.link
+  }
+  return item.text
+}
