@@ -55,15 +55,24 @@ export default lauf({
     }
 
     ctx.spinner.start(`Building ${examples.length} example ${plural(examples.length, 'site')}`)
-    const exampleResults = await Promise.all(
-      examples.map((example) =>
-        runExampleBuild({
+    // Build examples serially, not with Promise.all. Each example spawns its
+    // own rspack, which itself forks CPU-count minifier workers, so a parallel
+    // fan-out peaks ~9 GB locally — past CI build containers' memory ceiling
+    // (Vercel's default is 8 GB). Overshooting OOM-kills a worker; rspack then
+    // hangs waiting on the dead worker instead of erroring, so the build never
+    // finishes and the deploy times out. Serial caps peak to one rspack build.
+    const exampleResults = await examples.reduce<Promise<readonly number[]>>(
+      async (accP, example) => {
+        const acc = await accP
+        const code = await runExampleBuild({
           pkg: example.pkg,
           cwd: root,
           env: { CIDERPRESS_BASE: example.mountBase },
           logger: ctx.logger,
         })
-      )
+        return [...acc, code]
+      },
+      Promise.resolve([])
     )
     const failedExamples = exampleResults
       .map((code, i) => ({ code, example: examples[i] }))
