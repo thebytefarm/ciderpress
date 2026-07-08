@@ -14,7 +14,7 @@ import type { SidebarData } from '@rspress/core'
 import { useActiveMatcher, useLocation, useSidebar } from '@rspress/core/runtime'
 import { SidebarList } from '@rspress/core/theme-original'
 import type React from 'react'
-import { useLayoutEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useState } from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import { resolveScopedSidebar } from './sidebar-filter'
@@ -59,7 +59,30 @@ export function Sidebar(): React.ReactElement {
     setSidebarData(initializeCollapsed(filteredData, activeMatcher))
   }, [activeMatcher, filteredData])
 
+  useEffect(() => {
+    decorateOverflowTitles()
+  }, [sidebarData])
+
   return <SidebarList sidebarData={sidebarData} setSidebarData={setSidebarData} />
+}
+
+/**
+ * Add a `title` attribute to sidebar labels that overflow their column so
+ * the full text shows on hover; clear it when the label fits. Runs after
+ * render because overflow is a measured, layout-dependent property.
+ *
+ * @private
+ */
+function decorateOverflowTitles(): void {
+  const labels = [...document.querySelectorAll<HTMLElement>('.rp-sidebar-item__left > .rp-doc')]
+  labels.reduce<null>((_, label) => {
+    if (label.scrollWidth > label.clientWidth) {
+      label.setAttribute('title', label.textContent ?? '')
+    } else {
+      label.removeAttribute('title')
+    }
+    return null
+  }, null)
 }
 
 /**

@@ -1,3 +1,4 @@
+import type { BadgeConfig } from '@ciderpress/config'
 import { useFrontmatter, useLocation } from '@rspress/core/runtime'
 import {
   LlmsContainer,
@@ -13,8 +14,10 @@ import { match, P } from 'massaman/match'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type React from 'react'
 
+import { useCiderpress } from '../../hooks/use-ciderpress'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { Icon } from '../shared/icon.tsx'
+import { BadgeChips } from '../sidebar/sidebar-badge'
 import { useCiderpressLayout } from './ciderpress-layout-context'
 
 import './ciderpress-docs-bar.css'
@@ -117,6 +120,9 @@ export function CiderpressDocsBar(): React.ReactElement | null {
 
   const pageTitle = readStringField(fmRecord.title)
 
+  const { pageBadges } = useCiderpress()
+  const badges = lookupPageBadges({ pageBadges, pathname })
+
   const breadcrumbs = buildBreadcrumbs(pathname, pageTitle)
   const outlineEnabled = match(fmRecord.outline)
     .with(false, () => false)
@@ -174,18 +180,23 @@ export function CiderpressDocsBar(): React.ReactElement | null {
                 <span className="cp-docs-bar__sep">›</span>
                 {match(crumb.current)
                   .with(true, () => (
-                    <span className="cp-docs-bar__crumb" aria-current="page">
+                    <span className="cp-docs-bar__crumb" aria-current="page" title={crumb.label}>
                       {crumb.label}
                     </span>
                   ))
                   .otherwise(() => (
-                    <RouteLink href={crumb.href} className="cp-docs-bar__crumb">
+                    <RouteLink href={crumb.href} className="cp-docs-bar__crumb" title={crumb.label}>
                       {crumb.label}
                     </RouteLink>
                   ))}
               </span>
             ))}
           </nav>
+        )}
+        {badges.length > 0 && (
+          <span className="cp-docs-bar__badges">
+            <BadgeChips badges={badges} />
+          </span>
         )}
         <div className="cp-docs-bar__llms">
           <LlmsContainer>
@@ -252,6 +263,26 @@ interface Crumb {
   readonly label: string
   readonly href: string
   readonly current: boolean
+}
+
+/**
+ * Look up the current page's badges from the route→badges map, tolerating
+ * a trailing slash on the pathname (map keys are stored without one).
+ *
+ * @private
+ * @param params - The route→badges map (if present) and current pathname.
+ * @returns The page's badges, or an empty array when none apply.
+ */
+function lookupPageBadges(params: {
+  readonly pageBadges: Record<string, readonly BadgeConfig[]> | undefined
+  readonly pathname: string
+}): readonly BadgeConfig[] {
+  const { pageBadges, pathname } = params
+  if (pageBadges === undefined) {
+    return []
+  }
+  const stripped = pathname.replace(/\/$/, '')
+  return pageBadges[pathname] ?? pageBadges[stripped] ?? []
 }
 
 /**

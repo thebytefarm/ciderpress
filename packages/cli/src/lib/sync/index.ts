@@ -3,7 +3,7 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import type { Page, CiderpressConfig } from '@ciderpress/config'
-import { collectAllWorkspaceItems } from '@ciderpress/config'
+import { collectAllWorkspaceItems, resolveStatuses } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
@@ -11,6 +11,7 @@ import { isNil, isNotNil } from 'massaman/predicate'
 import { generateAssets } from '../banner/index.ts'
 import type { AssetConfig } from '../banner/types.ts'
 import type { Paths } from '../paths.ts'
+import { applyBadges } from './badges.ts'
 import { copyPage } from './copy.ts'
 import { buildWorkspaceData, generateDefaultHomePage } from './home.ts'
 import { loadManifest, saveManifest, cleanStaleFiles } from './manifest.ts'
@@ -135,7 +136,22 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  const resolved = injectLandingPages(enriched, rootPages, workspaces)
+  const withLandings = injectLandingPages(enriched, rootPages, workspaces)
+
+  // Stamp badges (frontmatter/defaults/glob + named statuses) onto the
+  // tree so `_meta.json` generation can carry them as Rspress `tag`s, and
+  // collect a route→badges map for page-level rendering (breadcrumbs).
+  const badgeResult = await applyBadges(withLandings, {
+    rules: config.badges ?? [],
+    registry: resolveStatuses(config.statuses),
+    groupBadges: resolveGroupBadges(config),
+  })
+  const resolved = badgeResult.tree
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/badges.json'),
+    JSON.stringify(badgeResult.badgeMap, null, 2),
+    'utf8'
+  )
 
   const sectionPages = collectPages(resolved)
 
@@ -269,6 +285,19 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
+}
+
+/**
+ * Read the `sidebar.groupBadges` toggle (default `false`).
+ *
+ * @private
+ * @param config - Loaded ciderpress config
+ * @returns True when collapsible-doc groups should show their sidebar badge
+ */
+function resolveGroupBadges(config: CiderpressConfig): boolean {
+  return match(config.sidebar)
+    .with(P.nonNullable, (sidebar) => sidebar.groupBadges ?? false)
+    .otherwise(() => false)
 }
 
 /**

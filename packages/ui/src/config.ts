@@ -137,6 +137,11 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     name: 'scopes.json',
     fallback: [],
   })
+  const pageBadges = loadGenerated<Record<string, unknown>>({
+    contentDir: paths.contentDir,
+    name: 'badges.json',
+    fallback: {},
+  })
   const gitBranch = detectGitBranch()
 
   const brand = config.brand
@@ -367,7 +372,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       llmsUI: { placement: 'outline' },
       // Custom ciderpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
-      ...({ workspaces, standaloneScopePaths } as Record<string, unknown>),
+      ...({ workspaces, standaloneScopePaths, pageBadges } as Record<string, unknown>),
       ...({
         socialLinks: serializeSocials(config.socials),
         sidebarAbove: resolveSidebarLinks({ config, position: 'top' }),

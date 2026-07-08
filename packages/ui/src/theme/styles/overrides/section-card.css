@@ -31,6 +31,15 @@
   gap: 10px;
 }
 
+/* Page badges pinned to the right of the card title row. */
+.cp-section-card__badges {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+}
+
 .cp-section-card:hover {
   border-color: var(--cp-c-brand-1);
   background: var(--cp-c-bg-elv);
