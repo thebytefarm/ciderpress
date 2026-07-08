@@ -39,6 +39,7 @@ import type {
   DiscoverConfig,
   EditLinkConfig,
   Feature,
+  FeedbackConfig,
   FooterColumn,
   FooterConfig,
   Frontmatter,
@@ -568,6 +569,12 @@ const reportLinkConfigSchema = z
   })
   .strict()
 
+const feedbackConfigSchema = z
+  .object({
+    question: z.string().optional(),
+  })
+  .strict()
+
 const discoverConfigSchema = z
   .object({
     ignore: z.array(z.string()).optional(),
@@ -695,6 +702,7 @@ export const ciderpressConfigSchema = z
     footer: footerConfigSchema.optional(),
     editLink: z.union([z.literal(false), editLinkConfigSchema]).optional(),
     reportLink: z.union([z.literal(false), reportLinkConfigSchema]).optional(),
+    feedback: z.union([z.boolean(), feedbackConfigSchema]).optional(),
     home: homeConfigSchema.optional(),
     discover: discoverConfigSchema.optional(),
     templates: z.union([z.string(), z.array(z.string())]).optional(),
@@ -811,6 +819,8 @@ const _guardOpenAPISpec: z.ZodType<OpenAPISpec> = openAPISpecSchema
 const _guardDiscoverConfig: z.ZodType<DiscoverConfig> = discoverConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardDevServerConfig: z.ZodType<DevServerConfig> = devServerConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardFeedbackConfig: z.ZodType<FeedbackConfig> = feedbackConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardTruncateConfig: z.ZodType<TruncateConfig> = truncateConfigSchema
 

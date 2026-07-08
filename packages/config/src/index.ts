@@ -37,6 +37,7 @@ export type {
   CopyrightConfig,
   EditLinkConfig,
   ReportLinkConfig,
+  FeedbackConfig,
   DiscoverConfig,
   ResolvedPage,
   ResolvedSection,

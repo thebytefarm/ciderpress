@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.4/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.5/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -1940,6 +1940,22 @@
             },
             "url": {},
             "onResolve": {}
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "feedback": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string"
+            }
           },
           "additionalProperties": false
         }

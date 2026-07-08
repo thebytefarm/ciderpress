@@ -86,6 +86,10 @@ export interface CiderpressSiteBlock {
         readonly brandMark?: string
       }
     | undefined
+  readonly feedback: {
+    readonly enabled: boolean
+    readonly question: string | undefined
+  }
 }
 
 interface CiderpressThemeConfig {

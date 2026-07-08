@@ -48,6 +48,12 @@ export interface Template {
    * Defaults to `.md`; `.mdx` routes the drafted file through the MDX pipeline.
    */
   readonly extension?: '.md' | '.mdx'
+  /**
+   * Optional group used to cluster the template in interactive pickers. Set
+   * from a `group` frontmatter field or derived from the template's
+   * sub-directory; absent for ungrouped and built-in templates.
+   */
+  readonly group?: string
 }
 
 /**
@@ -59,6 +65,7 @@ export type TemplateErrorType =
   | 'invalid_type'
   | 'unknown_placeholder'
   | 'empty_body'
+  | 'invalid_group'
 
 /**
  * A template validation failure. Distinct from a frontmatter parse failure
