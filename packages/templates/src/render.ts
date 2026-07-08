@@ -2,10 +2,13 @@ import { kebabCase } from 'massaman/string'
 
 import type { Template, TemplateVariables } from './types.ts'
 
-// Matches a `{{ key }}` marker, tolerating any interior whitespace and
+// Matches a `{{ key }}` fill marker, tolerating any interior whitespace and
 // capturing the trimmed key. The empty-marker form `{{ }}` matches with an
-// empty capture. Global so a single pass covers every marker in the body.
-const MARKER_PATTERN = /\{\{\s*([^}]*?)\s*\}\}/g
+// empty capture. The key is deliberately limited to identifier/phrase
+// characters (word chars, spaces, hyphens, dots) so JSX/MDX inline objects
+// like `style={{ color: 'red' }}` — which carry `:`, quotes, and commas — are
+// never mistaken for markers. Global so a single pass covers the whole body.
+const MARKER_PATTERN = /\{\{\s*([\w .-]*?)\s*\}\}/g
 
 /**
  * Render a template by replacing every `{{ key }}` marker whose key appears in

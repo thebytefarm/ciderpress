@@ -104,7 +104,7 @@ At draft time each declared variable is filled from a `--var id=value` argument,
 
 ### The no-leftover-markers lint
 
-`ciderpress check` and `ciderpress build` fail when a **published** doc still contains a `{{ }}` marker, so a half-filled draft can't ship. Markers inside fenced or inline code are ignored, so docs that _demonstrate_ the convention (like this one) don't trip it.
+`ciderpress check` and `ciderpress build` fail when a **published** doc still contains a `{{ }}` marker, so a half-filled draft can't ship. Markers inside fenced or inline code are ignored, so docs that _demonstrate_ the convention (like this one) don't trip it. A marker's key is limited to identifier and phrase characters, so JSX/MDX inline objects such as `style={{ color: 'red' }}` are never mistaken for markers.
 
 ## Listing and validating
 

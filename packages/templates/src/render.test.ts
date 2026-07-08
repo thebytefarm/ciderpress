@@ -84,6 +84,21 @@ describe('findMarkers()', () => {
   it('should return an empty array when no markers remain', () => {
     expect(findMarkers('nothing to fill here')).toStrictEqual([])
   })
+
+  it('should ignore JSX/MDX inline objects like style={{ ... }}', () => {
+    const jsx = "<span style={{ display: 'inline-flex', color: '#34d399' }} />"
+    expect(findMarkers(jsx)).toStrictEqual([])
+  })
+
+  it('should not substitute a JSX inline object as if it were a marker', () => {
+    const template: Template = {
+      type: 'test',
+      label: 'Test',
+      hint: 'test',
+      body: "<span style={{ color: 'red' }}>{{ title }}</span>",
+    }
+    expect(render(template, { title: 'Auth' })).toBe("<span style={{ color: 'red' }}>Auth</span>")
+  })
 })
 
 describe('toSlug()', () => {

@@ -56,6 +56,12 @@ describe('scanMarkers()', () => {
     expect(issues).toStrictEqual([])
   })
 
+  it('should ignore JSX inline-style objects in mdx', async () => {
+    write('content/icons.mdx', "# Icons\n\n<span style={{ color: '#34d399', width: 36 }} />\n")
+    const issues = await scanMarkers({ contentDir: join(dir, 'content'), repoRoot: dir })
+    expect(issues).toStrictEqual([])
+  })
+
   it('should scan nested directories and mdx files', async () => {
     write('content/guides/deep.mdx', '# Deep\n\n{{ todo }}\n')
     const issues = await scanMarkers({ contentDir: join(dir, 'content'), repoRoot: dir })
