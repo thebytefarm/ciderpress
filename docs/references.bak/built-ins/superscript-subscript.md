@@ -28,24 +28,24 @@ Wrap text with tildes:
 **Code**
 
 ```md
-H~2~O
+H~~2~~O
 ```
 
 **Output**
 
-H~2~O
+H~~2~~O
 
 ## More examples
 
 **Code**
 
 ```md
-CO~2~ emissions have increased by 10^6^ metric tons.
+CO~~2~~ emissions have increased by 10^6^ metric tons.
 ```
 
 **Output**
 
-CO~2~ emissions have increased by 10^6^ metric tons.
+CO~~2~~ emissions have increased by 10^6^ metric tons.
 
 **Code**
 
@@ -60,9 +60,9 @@ The 1^st^ law of thermodynamics states that energy is conserved.
 **Code**
 
 ```md
-a^2^ + b^2^ = c^2^ is the Pythagorean theorem, where a~1~ and b~1~ are the legs.
+a^2^ + b^2^ = c^2^ is the Pythagorean theorem, where a~~1~~ and b~~1~~ are the legs.
 ```
 
 **Output**
 
-a^2^ + b^2^ = c^2^ is the Pythagorean theorem, where a~1~ and b~1~ are the legs.
+a^2^ + b^2^ = c^2^ is the Pythagorean theorem, where a~~1~~ and b~~1~~ are the legs.

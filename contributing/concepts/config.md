@@ -23,15 +23,9 @@ export default defineConfig({
   title: 'My Docs',
   description: 'Platform documentation',
   tagline: 'A short tagline for the hero section',
-  sections: [
-    /* entry tree */
-  ],
-  apps: [
-    /* workspace items */
-  ],
-  packages: [
-    /* workspace items */
-  ],
+  sections: [/* entry tree */],
+  apps: [/* workspace items */],
+  packages: [/* workspace items */],
   nav: 'auto',
 })
 ```
