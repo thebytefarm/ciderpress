@@ -721,6 +721,27 @@ reportLink: { repo: 'acme/docs' },
 reportLink: false,
 ```
 
+## `feedback`
+
+Controls the "Was this page helpful?" yes/no widget rendered at the bottom of every doc page. Enabled by default.
+
+```ts
+feedback?: false | { question?: string }
+```
+
+| Value               | Effect                                   |
+| ------------------- | ---------------------------------------- |
+| omitted / `{}`      | Widget renders with the default question |
+| `{ question: '…' }` | Widget renders with a custom question    |
+| `false`             | Widget does not render                   |
+
+```ts
+// custom question
+feedback: { question: 'Did this help?' },
+// disable site-wide
+feedback: false,
+```
+
 ## `home`
 
 Home page layout — hero, proof strip, features grid, showcase grid, split section, final CTA, and the render-order layout list.

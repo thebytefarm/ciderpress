@@ -59,7 +59,14 @@ export function Layout(): React.ReactElement {
     .with(true, () => configNavItems)
     .otherwise(() => scrapedNavItems)
   const socialLinks = readSocialLinks(rspressSite)
-  const { announcement, topbarCta, sidebarPromo: sidebarPromoConfig, edit, report } = site ?? {}
+  const {
+    announcement,
+    topbarCta,
+    sidebarPromo: sidebarPromoConfig,
+    edit,
+    report,
+    feedback,
+  } = site ?? {}
   const { frontmatter } = useFrontmatter()
   const fmRecord = frontmatter as Record<string, unknown>
   const isHome = fmRecord.pageType === 'home'
@@ -113,9 +120,14 @@ export function Layout(): React.ReactElement {
 
   const metaActions = collectMetaActions({ edit, report, pagePath })
 
+  const feedbackSlot = match(feedback)
+    .with(undefined, () => <Feedback />)
+    .with({ enabled: false }, () => null)
+    .otherwise((f) => <Feedback question={f.question} />)
+
   const afterDocSlot = (
     <ContentFooterPortal>
-      <Feedback />
+      {feedbackSlot}
       <MetaActions actions={metaActions} />
     </ContentFooterPortal>
   )

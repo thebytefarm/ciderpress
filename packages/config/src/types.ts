@@ -1221,6 +1221,22 @@ export interface FooterConfig {
 }
 
 /**
+ * Feedback widget configuration.
+ *
+ * Controls the "Was this page helpful?" yes/no widget rendered at the
+ * bottom of every doc page. Set `feedback` to `false` to disable the
+ * widget site-wide.
+ */
+export interface FeedbackConfig {
+  /**
+   * Question shown to the reader.
+   *
+   * @default "Was this page helpful?"
+   */
+  readonly question?: string
+}
+
+/**
  * Edit-this-page link configuration (matches industry vocabulary —
  * VitePress / Nextra `editLink`).
  *
@@ -1619,6 +1635,12 @@ export interface CiderpressConfig {
    * the link entirely.
    */
   readonly reportLink?: false | ReportLinkConfig
+  /**
+   * "Was this page helpful?" feedback widget rendered under every doc page.
+   * Enabled by default. Set to `false` to disable site-wide, or pass an
+   * object to customise the question text.
+   */
+  readonly feedback?: false | FeedbackConfig
   /**
    * Home page configuration — hero, proof, features, showcase, split,
    * cta, and render order.
