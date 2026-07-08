@@ -7,12 +7,14 @@
 '@ciderpress/templates': patch
 ---
 
-Upgrade dependencies to latest across the workspace.
+Upgrade dependencies to latest across the workspace, and fix Mermaid rendering on Mermaid v11.
 
-- Catalog: `@rslib/core` ^0.21.5, `@rspress/core` ^2.0.12, `@typescript/native-preview` 7.0.0-dev.20260519.1, `vitest` ^4.1.7, `zod` ^4.4.3
-- CLI: `@clack/prompts` ^1.4.0, `@kidd-cli/core` ^0.24.0, `ink` ^7.0.3, `jiti` ^2.7.0, `liquidjs` ^10.27.0
-- UI: `katex` ^0.16.47, `openapi-sampler` ^1.7.3, `ts-morph` ^28.0.0, iconify icon sets, React 19.2.6
-- Config: `c12` 4.0.0-beta.5, `tsx` ^4.22.3
-- Tooling: `oxlint` ^1.66.0, `oxfmt` ^0.51.0, `turbo` ^2.9.14, `@types/node` ^25.9.1, `@types/react` ^19.2.15
+- Catalog: `@rspress/core` ^2.0.16, `@typescript/native-preview` 7.0.0-dev.20260707.2, `type-fest` ^5.8.0, `vitest` ^4.1.10
+- UI: `mermaid` ^11.16.0 (was v10), iconify icon sets
+- CLI: `@clack/prompts` ^1.7.0
+- Config: `tsx` ^4.23.0, `@types/node` ^26.1.0
+- Tooling: `oxlint` ^1.73.0, `oxfmt` ^0.58.0, `turbo` ^2.10.4
 
-`mermaid` stays pinned at ^10.9.5 — v11 uses langium for parsing and breaks Rspress's webpack compilation of global components.
+`@rslib/core` is held at `0.23.1`: 0.23.2 regressed the ESM build (emitted `.js` instead of `.mjs` and dropped the bundled type declarations).
+
+Mermaid is now on **v11** — the previous v10 pin was based on a misdiagnosis. `mermaid.render()` resolves correctly on v11; the blank-diagram symptom was a defect in `MermaidRenderer.tsx`: `config` defaulted to a fresh `{}` each render, re-firing the render effect in a loop that repeatedly rendered into the same element id and clobbered the injected SVG. Fixed by keying the render callback on a serialized config value and using a unique element id per render call. Diagrams now paint on first load without interaction and survive theme toggles.

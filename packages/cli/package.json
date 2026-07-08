@@ -47,7 +47,7 @@
     "@ciderpress/templates": "workspace:*",
     "@ciderpress/theme": "workspace:*",
     "@ciderpress/ui": "workspace:*",
-    "@clack/prompts": "^1.6.0",
+    "@clack/prompts": "^1.7.0",
     "@kidd-cli/core": "^0.24.0",
     "@rspress/core": "catalog:",
     "fast-glob": "^3.3.3",
@@ -59,13 +59,13 @@
     "jiti": "^2.7.0",
     "liquidjs": "^10.27.1",
     "massaman": "catalog:",
-    "react": "^19.2.7",
+    "react": "catalog:",
     "yaml": "^2.9.0",
     "zod": "catalog:"
   },
   "devDependencies": {
     "@kidd-cli/cli": "^0.11.9",
-    "@types/react": "^19.2.17",
+    "@types/react": "catalog:",
     "typescript": "catalog:",
     "vitest": "catalog:"
   },

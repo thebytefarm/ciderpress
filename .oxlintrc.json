@@ -80,6 +80,7 @@
     "max-lines": "off",
     "max-lines-per-function": "off",
     "unicorn/prefer-ternary": "off",
+    "unicorn/no-confusing-array-with": "off",
     "unicorn/numeric-separators-style": "off",
     "unicorn/no-object-as-default-parameter": "off",
     "unicorn/no-array-callback-reference": "off",
