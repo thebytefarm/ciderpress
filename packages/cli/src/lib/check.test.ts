@@ -51,6 +51,7 @@ describe('presentResults()', () => {
     const result = presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
       templatesResult: { status: 'passed', count: 0 },
+      markersResult: { status: 'passed' },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -61,6 +62,7 @@ describe('presentResults()', () => {
     const result = presentResults({
       configResult: { passed: false, errors: [loadError], warnings: [] },
       templatesResult: { status: 'passed', count: 0 },
+      markersResult: { status: 'passed' },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -71,6 +73,7 @@ describe('presentResults()', () => {
     const result = presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
       templatesResult: { status: 'passed', count: 0 },
+      markersResult: { status: 'passed' },
       buildResult: {
         status: 'failed',
         deadlinks: [{ file: 'docs/page.md', links: ['/missing'] }],
@@ -84,6 +87,7 @@ describe('presentResults()', () => {
     presentResults({
       configResult: { passed: true, errors: [], warnings: [] },
       templatesResult: { status: 'passed', count: 0 },
+      markersResult: { status: 'passed' },
       buildResult: { status: 'passed' },
       logger: mockLogger,
     })
@@ -94,9 +98,24 @@ describe('presentResults()', () => {
     presentResults({
       configResult: { passed: false, errors: [loadError], warnings: [] },
       templatesResult: { status: 'passed', count: 0 },
+      markersResult: { status: 'passed' },
       buildResult: { status: 'skipped' },
       logger: mockLogger,
     })
     expect(mockLogger.error).toHaveBeenCalledWith('Config validation failed:')
+  })
+
+  it('should return false when a doc has unfilled markers', () => {
+    const result = presentResults({
+      configResult: { passed: true, errors: [], warnings: [] },
+      templatesResult: { status: 'passed', count: 0 },
+      markersResult: {
+        status: 'failed',
+        issues: [{ file: 'content/adr.md', markers: ['{{ decision }}'] }],
+      },
+      buildResult: { status: 'passed' },
+      logger: mockLogger,
+    })
+    expect(result).toBe(false)
   })
 })

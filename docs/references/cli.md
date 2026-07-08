@@ -184,16 +184,19 @@ Validates the config file, syncs content, then runs a build to detect deadlinks.
 Scaffold a new documentation file from a template.
 
 ```bash
-ciderpress draft [--type <type>] [--title <title>] [--out <dir>]
+ciderpress draft [--type <type>] [--title <title>] [--out <dir>] [--var <id=value>...]
 ```
 
-| Flag      | Type     | Default | Description                         |
-| --------- | -------- | ------- | ----------------------------------- |
-| `--type`  | `string` | —       | Template type (prompts if omitted)  |
-| `--title` | `string` | —       | Document title (prompts if omitted) |
-| `--out`   | `string` | `"."`   | Output directory for the new file   |
+| Flag      | Type       | Default | Description                                       |
+| --------- | ---------- | ------- | ------------------------------------------------- |
+| `--type`  | `string`   | —       | Template type (prompts if omitted)                |
+| `--title` | `string`   | —       | Document title (prompts if omitted)               |
+| `--out`   | `string`   | `"."`   | Output directory for the new file                 |
+| `--var`   | `string[]` | —       | Fill a template variable, `id=value` (repeatable) |
 
 When `--type` or `--title` are omitted, an interactive prompt lets you select from the available templates and enter a title. The output filename is derived from the title slug (e.g. `"Authentication"` → `authentication.md`).
+
+Built-in variables (`{{title}}`, `{{slug}}`, `{{date}}`, `{{filename}}`) are always substituted. A template's declared `vars` are filled from `--var`, then prompted for on an interactive terminal; anything left blank stays as a raw `{{ id }}` marker and is reported as a checklist. See [Variables](/framework/templates#variables).
 
 The available templates are the built-ins plus any declared via the [`templates`](/reference/configuration) config field. A custom template whose filename matches a built-in overrides it, and `.mdx` templates scaffold to `.mdx` files. See [Templates](/framework/templates) for the authoring format.
 
@@ -209,9 +212,9 @@ ciderpress templates check   # Validate template frontmatter and syntax
 | Subcommand | Description                                                                       |
 | ---------- | --------------------------------------------------------------------------------- |
 | `list`     | Print built-in and custom templates, grouped by source; overrides marked with `*` |
-| `check`    | Validate every template's frontmatter and placeholders; exits `1` on any issue    |
+| `check`    | Validate every template's frontmatter and `vars`; exits `1` on any issue          |
 
-`check` reports frontmatter errors (missing/unknown fields), invalid types, unknown `{{placeholders}}`, and duplicate types. The same validation runs as part of [`check`](#check) and [`build`](#build). See [Templates](/framework/templates) for how to declare and author custom templates.
+`check` reports frontmatter errors (missing/unknown fields), invalid types, invalid `vars`, and duplicate types. `{{ }}` markers in a template body are always allowed. The same validation runs as part of [`check`](#check) and [`build`](#build), which additionally fail on unfilled markers in published docs. See [Templates](/framework/templates) for how to declare and author custom templates.
 
 ## References
 

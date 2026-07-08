@@ -93,13 +93,23 @@ describe('resolveTemplates()', () => {
   })
 
   it('should collect validation issues without registering the bad template', async () => {
-    write('bad.md', '---\nlabel: Bad\nhint: x\n---\n# {{title}}\n\n{{oops}}\n')
+    write('bad.md', '---\nhint: x\n---\n# {{title}}\n')
     const { registry, issues } = await resolveTemplates({
       templates: [dir],
       paths: createPaths(dir),
     })
     expect(registry.has('bad')).toBe(false)
-    expect(issues.some((issue) => issue.type === 'unknown_placeholder')).toBe(true)
+    expect(issues.some((issue) => issue.type === 'missing_field')).toBe(true)
+  })
+
+  it('should register a template that uses undeclared {{ }} markers', async () => {
+    write('note.md', '---\nlabel: Note\nhint: x\n---\n# {{title}}\n\n{{ decision }} and {{ }}\n')
+    const { registry, issues } = await resolveTemplates({
+      templates: [dir],
+      paths: createPaths(dir),
+    })
+    expect(registry.has('note')).toBe(true)
+    expect(issues).toStrictEqual([])
   })
 
   it('should report an unreadable templates directory as an issue', async () => {
