@@ -155,7 +155,7 @@ The prefix selects the icon set, and the name selects the specific icon within t
 
 ## Supported icon sets
 
-Nine icon collections are bundled and available out of the box:
+Ten icon collections are bundled and available out of the box:
 
 <table>
 <thead>
@@ -246,7 +246,7 @@ Workspace cards display technology tags with auto-resolved icons. See the [Techn
 Icons are validated at config load time. An icon must:
 
 - Contain exactly one \`:\` separator
-- Use a recognized \`prefix\` (one of the nine bundled sets)
+- Use a recognized \`prefix\` (one of the ten bundled sets)
 
 Invalid icons produce a config error with type \`invalid_icon\`.
 

@@ -23,18 +23,25 @@ export interface CiderpressNavSocialLinksProps {
 }
 
 /**
- * Maps Rspress's social-link `icon` slugs to pixelarticons icon ids.
- * Fallback for unmapped slugs is the generic `link` glyph.
+ * Maps Rspress's social-link `icon` slugs to `pixel` icon ids — one pixel-art
+ * glyph per {@link SocialLinkIcon} the config enum accepts, in the same
+ * aesthetic as the rest of the theme. Unmapped slugs fall back to the generic
+ * `pixel:link` chain glyph.
  */
 const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
-  github: 'pixelarticons:github',
-  npm: 'pixelarticons:package',
-  twitter: 'pixelarticons:twitter',
-  x: 'pixelarticons:twitter',
-  discord: 'pixelarticons:chat',
-  youtube: 'pixelarticons:play',
-  bluesky: 'pixelarticons:bluesky',
-  mastodon: 'pixelarticons:user',
+  github: 'pixel:github',
+  npm: 'pixel:npm',
+  twitter: 'pixel:twitter',
+  x: 'pixel:twitter',
+  discord: 'pixel:discord',
+  youtube: 'pixel:youtube',
+  bluesky: 'pixel:bluesky',
+  mastodon: 'pixel:mastodon',
+  slack: 'pixel:slack',
+  linkedin: 'pixel:linkedin',
+  gitlab: 'pixel:gitlab',
+  instagram: 'pixel:instagram',
+  facebook: 'pixel:facebook-round',
 })
 
 /**
@@ -75,11 +82,7 @@ export function CiderpressNavSocialLinks(
           className="cp-nav-social__item"
           aria-label={link.label ?? link.icon}
         >
-          <Icon
-            icon={ICON_MAP[link.icon.toLowerCase()] ?? 'pixelarticons:link'}
-            width={20}
-            height={20}
-          />
+          <Icon icon={ICON_MAP[link.icon.toLowerCase()] ?? 'pixel:link'} width={20} height={20} />
         </a>
       ))}
     </div>

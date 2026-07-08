@@ -115,6 +115,13 @@ export const ICON_SETS: readonly IconSetSpec[] = [
     example: 'pixelarticons:book-open',
   },
   {
+    prefix: 'pixel',
+    name: 'Pixel Icons',
+    url: 'https://icon-sets.iconify.design/pixel/',
+    bestFor: 'Social/brand glyphs, pixel-art UI',
+    example: 'pixel:slack',
+  },
+  {
     prefix: 'devicon',
     name: 'Devicon',
     url: 'https://devicon.dev',

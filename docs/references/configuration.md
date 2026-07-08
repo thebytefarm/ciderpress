@@ -473,9 +473,8 @@ Built-in `SocialLinkIcon` values:
 ```ts
 import type { SocialLinkIcon } from '@ciderpress/config'
 
-// 'lark' | 'discord' | 'facebook' | 'github' | 'instagram' | 'linkedin'
-// | 'slack' | 'x' | 'youtube' | 'wechat' | 'qq' | 'juejin' | 'zhihu'
-// | 'bilibili' | 'weibo' | 'gitlab' | 'X' | 'bluesky' | 'npm'
+// 'discord' | 'facebook' | 'github' | 'instagram' | 'linkedin' | 'slack'
+// | 'x' | 'youtube' | 'gitlab' | 'X' | 'bluesky' | 'npm'
 ```
 
 Any icon outside this set must be supplied as `{ svg: '<svg>...</svg>' }`.

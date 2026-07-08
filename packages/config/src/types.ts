@@ -25,6 +25,7 @@ export type IconPrefix =
   | 'logos'
   | 'material-icon-theme'
   | 'mdi'
+  | 'pixel'
   | 'pixelarticons'
   | 'simple-icons'
   | 'skill-icons'
@@ -1093,7 +1094,6 @@ export interface HomeConfig {
  * enum and the {@link SocialLinkIcon} union below.
  */
 export const SOCIAL_LINK_ICONS = Object.freeze([
-  'lark',
   'discord',
   'facebook',
   'github',
@@ -1102,12 +1102,6 @@ export const SOCIAL_LINK_ICONS = Object.freeze([
   'slack',
   'x',
   'youtube',
-  'wechat',
-  'qq',
-  'juejin',
-  'zhihu',
-  'bilibili',
-  'weibo',
   'gitlab',
   'X',
   'bluesky',
