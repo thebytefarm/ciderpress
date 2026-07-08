@@ -38,20 +38,22 @@ JS — whatever works without extra dependencies.
 3. If the file exists in both `src/` and `dist/` as identical `.tsx`, it is
    raw-copied
 
-### Mermaid version constraint
+### Mermaid version
 
-**`mermaid` must stay on v10.x.** Do not upgrade to v11+.
+**`mermaid` runs on v11.** The earlier "must stay on v10" constraint was based on
+a misdiagnosis and no longer applies:
 
-Mermaid v11 introduces two breaking incompatibilities with Rspress's webpack
-compilation of global components:
-
-1. **Langium dependency** — v11 uses `langium` for its parser, which depends on
-   `vscode-languageserver-types` and has broken ESM exports (`CancellationToken`,
-   `Emitter` not found). Rspack fails to resolve these.
-2. **Lazy-loaded diagram types** — Every diagram renderer is loaded via dynamic
-   `import("./chunks/mermaid.core/...")`. When Rspress's webpack re-bundles the
-   component, these chunk paths cannot be resolved, so `mermaid.render()` throws
-   at runtime.
+1. **Langium** — no longer relevant. As of 11.16 mermaid's parser uses chevrotain
+   (`@mermaid-js/parser` → `@chevrotain/types`); langium is not in the tree.
+2. **Lazy-loaded diagram types** — real, but harmless here. `mermaid.render()`
+   resolves correctly with a valid SVG; it does not throw. The blank-diagram
+   symptom that looked like a v11 bug was actually a React defect in
+   `MermaidRenderer.tsx`: `config` defaulted to a fresh `{}` each render, so
+   keying `renderMermaid` on it re-fired the render effect in a loop, and each
+   `mermaid.render()` into the same element id clobbered the SVG just injected.
+   Fixed by keying on a serialized config value and using a unique element id per
+   render call. Verified with Playwright: diagrams paint on first load, no
+   interaction, and survive theme toggles.
 
 ### Adding new raw-copied components
 
