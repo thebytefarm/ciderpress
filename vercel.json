@@ -5,5 +5,5 @@
   "installCommand": "pnpm install",
   "cleanUrls": true,
   "trailingSlash": false,
-  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" = \"changeset-release/main\" ]; then exit 0; fi; [ -z \"$(pnpm ciderpress diff)\" ]"
+  "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" = \"changeset-release/main\" ]"
 }
