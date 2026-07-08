@@ -145,18 +145,22 @@ html .rp-doc-layout__sidebar > :first-child:not(.cp-sidebar-top) {
 }
 
 html .cp-sidebar-bottom {
-  /* Grow to fill the remaining sidebar space so the nav tree stacks
-     from the top and this band occupies everything below it. When the
-     nav tree is short, the band is tall and its content (promo +
-     below-links) sits at its bottom via `justify-content: flex-end`. */
-  flex: 1 0 auto;
+  /* Size to content and sit directly under the nav tree. `flex: 0 0 auto`
+     (no grow) is deliberate: growing to fill (`1 0 auto`) stretched the
+     band across all leftover sidebar height, and a short nav tree left a
+     tall empty band with its content (promo + below-links) stranded at the
+     bottom. With no grow the band is exactly as tall as its content and
+     the promo/links hug the last nav item. */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  /* When the sidebar scrolls (nav tree taller than viewport), this band
-     stays glued to the viewport bottom so the promo is always visible.
-     `z-index: 3` so the band paints above the thin overlay scrollbar
-     thumb so it doesn't appear to "go through" the band region. */
+  /* When the nav tree overflows the viewport the sidebar scrolls; this
+     band stays glued to the viewport bottom (`sticky bottom: 0`) so the
+     promo/links remain visible while the tree scrolls behind them. With a
+     short (non-scrolling) nav tree the sticky offset is never engaged, so
+     the band simply flows under the last nav item. `z-index: 3` paints it
+     above the thin overlay scrollbar thumb so it doesn't appear to "go
+     through" the band region. */
   position: sticky;
   bottom: 0;
   z-index: 3;
