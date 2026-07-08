@@ -19,6 +19,8 @@ import { isString } from 'massaman/predicate'
 import type { Paths } from './paths.ts'
 import { buildSiteForCheck } from './rspress.ts'
 import { checkWorkspaceIncludes } from './sync/workspace.ts'
+import { resolveTemplates } from './templates.ts'
+import type { TemplateIssue } from './templates.ts'
 
 // oxlint-disable-next-line prefer-regex-literals, no-control-regex -- regex literal is clearer for a well-known ANSI escape pattern
 const ANSI_PATTERN = /\u001B\[[0-9;]*m/g
@@ -45,6 +47,11 @@ type BuildCheckResult =
   | { readonly status: 'skipped' }
   | { readonly status: 'error'; readonly message: string }
 
+type TemplatesCheckResult =
+  | { readonly status: 'passed'; readonly count: number }
+  | { readonly status: 'failed'; readonly issues: readonly TemplateIssue[] }
+  | { readonly status: 'skipped' }
+
 interface CaptureResult<T> {
   readonly result: T | null
   readonly error: Error | null
@@ -53,6 +60,7 @@ interface CaptureResult<T> {
 
 interface PresentResultsParams {
   readonly configResult: ConfigCheckResult
+  readonly templatesResult: TemplatesCheckResult
   readonly buildResult: BuildCheckResult
   readonly logger: Log
 }
@@ -92,6 +100,30 @@ export function runConfigCheck(params: RunConfigCheckParams): ConfigCheckResult 
   }
   const warnings = checkWorkspaceIncludes(config)
   return { passed: true, errors: [], warnings }
+}
+
+/**
+ * Validate documentation templates declared via `config.templates`.
+ *
+ * Resolves the templates the same way `draft` and `templates check` do,
+ * surfacing frontmatter, syntax, and collision issues. Built-ins are always
+ * valid, so a project without a `templates` field passes trivially.
+ *
+ * @param params - The configured template dir(s) and paths for resolution
+ * @returns A `TemplatesCheckResult` with pass/fail status and any issues
+ */
+export async function runTemplatesCheck(params: {
+  readonly templates: string | readonly string[] | undefined
+  readonly paths: Paths
+}): Promise<TemplatesCheckResult> {
+  const { resolved, issues } = await resolveTemplates({
+    templates: params.templates,
+    paths: params.paths,
+  })
+  if (issues.length > 0) {
+    return { status: 'failed', issues }
+  }
+  return { status: 'passed', count: resolved.length }
 }
 
 /**
@@ -139,7 +171,7 @@ export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildC
  * @returns `true` if all checks passed, `false` otherwise
  */
 export function presentResults(params: PresentResultsParams): boolean {
-  const { configResult, buildResult, logger } = params
+  const { configResult, templatesResult, buildResult, logger } = params
 
   if (configResult.passed) {
     logger.success('Config valid')
@@ -161,6 +193,13 @@ export function presentResults(params: PresentResultsParams): boolean {
     })
   }
 
+  if (templatesResult.status === 'passed') {
+    logger.success('Templates valid')
+  } else if (templatesResult.status === 'failed') {
+    logger.error(`Found ${templatesResult.issues.length} template issue(s):`)
+    logger.message(templatesResult.issues.map(formatTemplateIssue).join('\n'))
+  }
+
   if (buildResult.status === 'passed') {
     logger.success('No broken links')
   } else if (buildResult.status === 'skipped') {
@@ -174,7 +213,20 @@ export function presentResults(params: PresentResultsParams): boolean {
     logger.message(block)
   }
 
-  return configResult.passed && buildResult.status === 'passed'
+  return (
+    configResult.passed && templatesResult.status !== 'failed' && buildResult.status === 'passed'
+  )
+}
+
+/**
+ * Format a single template issue as an indented line.
+ *
+ * @private
+ * @param issue - The template issue to format
+ * @returns Formatted line for CLI output
+ */
+function formatTemplateIssue(issue: TemplateIssue): string {
+  return `  ${RED}✖${RESET} ${issue.file} ${DIM}—${RESET} ${issue.message}`
 }
 
 /**

@@ -994,6 +994,24 @@ discover: {
 
 Per-page `discover.ignore` is appended to this list — globals always apply.
 
+## `templates`
+
+Directory or directories holding custom document templates used by [`ciderpress draft`](/reference/cli). Each is a `.md`/`.mdx` file with `label`/`hint` frontmatter; the filename is the template type. Paths are relative to the repo root.
+
+```ts
+templates?: string | string[]
+```
+
+| Field       | Type                 | Description                                                              |
+| ----------- | -------------------- | ----------------------------------------------------------------------- |
+| `templates` | `string \| string[]` | Directory (or directories) of custom `.md`/`.mdx` template files        |
+
+```ts
+templates: ['docs/.templates', 'shared/templates'],
+```
+
+A custom template whose filename matches a built-in (e.g. `guide.md`) overrides it. `.mdx` templates scaffold to `.mdx` files. Templates are validated by [`ciderpress templates check`](/reference/cli) and as part of `check`/`build`. See [Templates](/framework/templates) for the authoring format and the SDK.
+
 ## `devServer`
 
 Dev-server configuration — controls how `ciderpress dev` binds and how the dev URL is presented in the terminal and browser auto-open. All fields are optional.

@@ -91,7 +91,7 @@ function resolveBody(base: string, override: ExtendTemplateOptions['body']): str
  */
 function applyExtension(base: Template, options: ExtendTemplateOptions): Template {
   return {
-    type: base.type,
+    ...base,
     label: options.label ?? base.label,
     hint: options.hint ?? base.hint,
     body: resolveBody(base.body, options.body),

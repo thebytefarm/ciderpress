@@ -31,10 +31,10 @@ Why this standard exists and what it applies to.
 
 ## Enforcement
 
-| Rule   | Enforced By   | Severity |
-| ------ | ------------- | -------- |
-| Rule A | Linter / CI   | Error    |
-| Rule B | Code review   | Warning  |
+| Rule   | Enforced By | Severity |
+| ------ | ----------- | -------- |
+| Rule A | Linter / CI | Error    |
+| Rule B | Code review | Warning  |
 
 ## References
 

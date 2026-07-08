@@ -88,6 +88,7 @@ Pass `--headless` for non-interactive shells (CI, Docker, nodemon) — the defau
 | `ciderpress check` | Validate config and check for broken links                                          |
 | `ciderpress diff`  | Show changed files in configured source directories — useful for CI `ignoreCommand` |
 | `ciderpress draft` | Scaffold a new documentation file from a template                                   |
+| `ciderpress templates` | List (`list`) and validate (`check`) built-in and custom document templates     |
 | `ciderpress clean` | Remove build artifacts, synced content, and cache                                   |
 | `ciderpress dump`  | Print the resolved site structure as JSON                                           |
 

@@ -6,10 +6,11 @@ import { z } from 'zod'
 
 import { generateAssets } from '../lib/banner/index.ts'
 import type { AssetConfig } from '../lib/banner/index.ts'
-import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
+import { presentResults, runBuildCheck, runConfigCheck, runTemplatesCheck } from '../lib/check.ts'
 import { createPaths } from '../lib/paths.ts'
 import { buildSite } from '../lib/rspress.ts'
 import { sync } from '../lib/sync/index.ts'
+import { configTemplates } from '../lib/templates.ts'
 import { clean } from './clean.ts'
 
 /**
@@ -58,6 +59,12 @@ export default command({
       ctx.log.step('Validating config...')
       const configResult = runConfigCheck({ config, loadError: configErr })
 
+      ctx.log.step('Validating templates...')
+      const templatesResult = await runTemplatesCheck({
+        templates: configTemplates(config),
+        paths,
+      })
+
       ctx.log.step('Syncing content...')
       const syncResult = await sync(config, { paths, quiet: true })
       if (syncResult.error) {
@@ -70,7 +77,7 @@ export default command({
       ctx.log.step('Building & checking for broken links...')
       const buildResult = await runBuildCheck({ config, paths, verbose })
 
-      const passed = presentResults({ configResult, buildResult, logger: ctx.log })
+      const passed = presentResults({ configResult, templatesResult, buildResult, logger: ctx.log })
       if (!passed) {
         ctx.log.outro('Build failed')
         process.exit(1)

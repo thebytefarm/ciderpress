@@ -1,7 +1,7 @@
 import { loadConfig } from '@ciderpress/config/loader'
 import { command } from '@kidd-cli/core'
 
-import { presentResults, runBuildCheck, runConfigCheck } from '../lib/check.ts'
+import { presentResults, runBuildCheck, runConfigCheck, runTemplatesCheck } from '../lib/check.ts'
 import { createPaths } from '../lib/paths.ts'
 import { sync } from '../lib/sync/index.ts'
 
@@ -23,11 +23,15 @@ export default command({
 
     // If config is invalid, present the error and bail — sync/build need valid config
     if (configErr || !config) {
+      const templatesResult = { status: 'skipped' } as const
       const buildResult = { status: 'skipped' } as const
-      presentResults({ configResult, buildResult, logger: ctx.log })
+      presentResults({ configResult, templatesResult, buildResult, logger: ctx.log })
       ctx.log.outro('Checks failed')
       process.exit(1)
     }
+
+    ctx.log.step('Validating templates...')
+    const templatesResult = await runTemplatesCheck({ templates: config.templates, paths })
 
     ctx.log.step('Syncing content...')
     const syncResult = await sync(config, { paths, quiet: true })
@@ -42,7 +46,7 @@ export default command({
     ctx.log.step('Checking for broken links...')
     const buildResult = await runBuildCheck({ config, paths })
 
-    const passed = presentResults({ configResult, buildResult, logger: ctx.log })
+    const passed = presentResults({ configResult, templatesResult, buildResult, logger: ctx.log })
 
     if (passed) {
       ctx.log.outro('All checks passed')

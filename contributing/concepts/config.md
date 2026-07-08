@@ -46,6 +46,7 @@ export default defineConfig({
 | `packages`    | Workspace items for shared package docs           |
 | `workspaces`  | Custom workspace groups                           |
 | `nav`         | Top-level navigation (`'auto'` or explicit array) |
+| `templates`   | Directory (or directories) of custom `.md`/`.mdx` document templates |
 
 ## Output Structure
 
