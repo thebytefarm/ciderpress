@@ -567,11 +567,12 @@ sidebar: {
 }
 ```
 
-| Field    | Type            | Description                                                      |
-| -------- | --------------- | ---------------------------------------------------------------- |
-| `top`    | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`) |
-| `bottom` | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`) |
-| `promo`  | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar              |
+| Field         | Type            | Description                                                                                             |
+| ------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
+| `top`         | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`)                                        |
+| `bottom`      | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`)                                        |
+| `promo`       | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar                                                     |
+| `groupBadges` | `boolean`       | Show badges on collapsible group items that are also docs. Defaults to `false` (see [Badges](/reference/badges#where-badges-render)) |
 
 ### SidebarLink
 

@@ -136,7 +136,8 @@ Within a single source, `status` and `badge` both render.
 | -------------- | ------------------------------------------------------------------------ |
 | Sidebar item   | Chip after the page label. Long labels truncate with an ellipsis.        |
 | Breadcrumb     | Chip right of the trail on the page.                                     |
-| Collapsible group that is also a doc | No sidebar chip (it would collide with the collapse toggle) — the badge shows on the page's breadcrumb instead. |
+| Landing card   | Chip on the child's card on an auto-generated section landing page.      |
+| Collapsible group that is also a doc | No sidebar chip by default (it would collide with the collapse toggle) — the badge still shows on the breadcrumb and landing card. Set [`sidebar.groupBadges: true`](/reference/configuration#sidebar) to show it in the sidebar too. |
 
 ## References
 

@@ -39,6 +39,12 @@ export interface BadgeContext {
    * The effective status registry (built-in defaults + user overrides).
    */
   readonly registry: readonly Status[]
+  /**
+   * Show sidebar badges on collapsible group items that are also docs
+   * (`sidebar.groupBadges`). Defaults to `false` — suppressed to avoid
+   * colliding with the collapse chevron.
+   */
+  readonly groupBadges: boolean
 }
 
 /**
@@ -98,7 +104,7 @@ async function applyToEntry(
   return {
     tree: {
       ...entry,
-      ...tagField(sidebarTag(entry, badgeTag)),
+      ...tagField(sidebarTag(entry, badgeTag, ctx.groupBadges)),
       ...itemsField(children.tree),
     },
     badgeMap: { ...selfMap, ...children.badgeMap },
@@ -113,10 +119,15 @@ async function applyToEntry(
  * @private
  * @param entry - Entry being stamped
  * @param badgeTag - Encoded tag, or undefined when the entry has no badge
+ * @param groupBadges - When true, do not suppress collapsible-doc badges
  * @returns The tag to emit, or undefined to suppress it
  */
-function sidebarTag(entry: ResolvedEntry, badgeTag: string | undefined): string | undefined {
-  if (isCollapsibleDoc(entry)) {
+function sidebarTag(
+  entry: ResolvedEntry,
+  badgeTag: string | undefined,
+  groupBadges: boolean
+): string | undefined {
+  if (!groupBadges && isCollapsibleDoc(entry)) {
     return undefined
   }
   return badgeTag

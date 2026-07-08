@@ -378,6 +378,7 @@ const sidebarConfigSchema = z
     top: z.array(buttonConfigSchema).optional(),
     bottom: z.array(buttonConfigSchema).optional(),
     promo: sidebarPromoSchema.optional(),
+    groupBadges: z.boolean().optional(),
   })
   .strict()
 

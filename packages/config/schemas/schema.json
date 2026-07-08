@@ -1996,6 +1996,9 @@
             "cta"
           ],
           "additionalProperties": false
+        },
+        "groupBadges": {
+          "type": "boolean"
         }
       },
       "additionalProperties": false

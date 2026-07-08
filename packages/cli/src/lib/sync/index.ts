@@ -144,6 +144,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   const badgeResult = await applyBadges(withLandings, {
     rules: config.badges ?? [],
     registry: resolveStatuses(config.statuses),
+    groupBadges: resolveGroupBadges(config),
   })
   const resolved = badgeResult.tree
   await fs.writeFile(
@@ -284,6 +285,19 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
+}
+
+/**
+ * Read the `sidebar.groupBadges` toggle (default `false`).
+ *
+ * @private
+ * @param config - Loaded ciderpress config
+ * @returns True when collapsible-doc groups should show their sidebar badge
+ */
+function resolveGroupBadges(config: CiderpressConfig): boolean {
+  return match(config.sidebar)
+    .with(P.nonNullable, (sidebar) => sidebar.groupBadges ?? false)
+    .otherwise(() => false)
 }
 
 /**

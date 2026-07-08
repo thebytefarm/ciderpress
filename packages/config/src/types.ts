@@ -1255,6 +1255,13 @@ export interface SidebarConfig {
    * Promo card rendered at the bottom of the docs sidebar.
    */
   readonly promo?: SidebarPromo
+  /**
+   * Show badges on collapsible group items that are also docs (a nav row
+   * that both toggles children and links to a page). Defaults to `false` —
+   * the badge is hidden there to avoid colliding with the collapse chevron,
+   * and still shows on the page's breadcrumb. Set `true` to show it anyway.
+   */
+  readonly groupBadges?: boolean
 }
 
 /**
