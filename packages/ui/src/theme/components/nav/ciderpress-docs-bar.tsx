@@ -180,12 +180,12 @@ export function CiderpressDocsBar(): React.ReactElement | null {
                 <span className="cp-docs-bar__sep">›</span>
                 {match(crumb.current)
                   .with(true, () => (
-                    <span className="cp-docs-bar__crumb" aria-current="page">
+                    <span className="cp-docs-bar__crumb" aria-current="page" title={crumb.label}>
                       {crumb.label}
                     </span>
                   ))
                   .otherwise(() => (
-                    <RouteLink href={crumb.href} className="cp-docs-bar__crumb">
+                    <RouteLink href={crumb.href} className="cp-docs-bar__crumb" title={crumb.label}>
                       {crumb.label}
                     </RouteLink>
                   ))}

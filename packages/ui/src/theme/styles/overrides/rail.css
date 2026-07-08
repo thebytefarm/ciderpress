@@ -193,6 +193,19 @@ html .rp-outline__title {
   display: none;
 }
 
+/* "On this page" outline — truncate long headings to a single line with
+   an ellipsis instead of wrapping. Rspress already sets a native `title`
+   on each `.rp-toc-item` anchor, so hovering a truncated heading reveals
+   the full text. Targets `.rp-toc-item__text`, shared by the desktop
+   rail and the mobile outline dropdown. */
+html .rp-toc-item__text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 html .rp-doc-layout__doc {
   background: var(--cp-c-bg);
 }
