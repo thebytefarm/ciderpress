@@ -8,6 +8,7 @@ import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
 import { isNil, isNotNil, isString } from 'massaman/predicate'
 
+import { excludeGlobbedAgentFiles } from '../agent-files.ts'
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
@@ -349,12 +350,13 @@ async function resolveGlob(
   }
 
   const patterns = normalizeInclude(section.include)
-  const files = await fg(patterns as string[], {
+  const matched = await fg(patterns as string[], {
     cwd: ctx.repoRoot,
     ignore,
     absolute: false,
     onlyFiles: true,
   })
+  const files = excludeGlobbedAgentFiles(matched, patterns)
 
   const titleStr = resolveSectionTitle(section)
 

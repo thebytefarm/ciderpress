@@ -6,6 +6,7 @@ import fg from 'fast-glob'
 import { groupBy } from 'massaman/array'
 import { range } from 'massaman/math'
 
+import { excludeGlobbedAgentFiles } from './agent-files.ts'
 import { linkToOutputPath } from './resolve/path.ts'
 import { deriveText, kebabToTitle } from './resolve/text.ts'
 import { stripXmlTags } from './strip-xml.ts'
@@ -46,11 +47,12 @@ export async function discoverPlanningPages(ctx: SyncContext): Promise<readonly 
     return []
   }
 
-  const files = await fg('**/*.md', {
+  const matched = await fg('**/*.md', {
     cwd: planningDir,
     onlyFiles: true,
     ignore: ['**/_*'],
   })
+  const files = excludeGlobbedAgentFiles(matched, ['**/*.md'])
 
   if (files.length === 0) {
     return []

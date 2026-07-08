@@ -270,6 +270,24 @@ When `discover.sort` is omitted, the `'default'` strategy is used.
 
 Global ignores in the top-level `discover.ignore` field apply to every page's auto-discovery.
 
+### Agent instruction files
+
+Coding-agent instruction files are **automatically skipped** by glob discovery, so a repo-wide pattern like `docs/**/*.md` never leaks them into your site. Matching is case-sensitive against the uppercase convention only — a lowercase `claude.md` is treated as ordinary content.
+
+| Skipped by globs (all-caps)                       | Treated as content       |
+| ------------------------------------------------- | ------------------------ |
+| `CLAUDE.md`, `AGENTS.md`, `AGENT.md`, `GEMINI.md` | `claude.md`, `readme.md` |
+
+To publish one of these files anyway, name it with a **literal** (non-glob) `include` — an explicit path is always honored, so the deny list only applies to glob matches:
+
+```ts
+{
+  title: 'Agent Guide',
+  path: '/agent-guide',
+  include: 'apps/web/CLAUDE.md', // literal path — served despite the deny list
+}
+```
+
 ### Deduplication
 
 When combining explicit `pages` with `include`, explicit entries win. If an explicit entry has the same slug as a glob-discovered file, the glob match is dropped.
