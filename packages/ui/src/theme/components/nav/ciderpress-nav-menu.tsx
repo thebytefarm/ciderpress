@@ -1,4 +1,4 @@
-import { useLocation } from '@rspress/core/runtime'
+import { removeBase, useLocation } from '@rspress/core/runtime'
 import { clsx } from 'clsx'
 import { match } from 'massaman/match'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -287,7 +287,11 @@ function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
   return [...anchors]
     .map((anchor) => ({
       text: readAnchorText(anchor),
-      link: anchor.getAttribute('href') ?? '',
+      // Rspress's rendered `.rp-nav-menu` hrefs already carry the site `base`.
+      // Strip it here so `RouteLink` (→ Rspress `<Link>`) can re-apply it once
+      // rather than doubling the mount prefix on a subpath deploy (the
+      // `/examples/<slug>/examples/<slug>/…` 404 on mounted example sites).
+      link: removeBase(anchor.getAttribute('href') ?? ''),
     }))
     .filter((item) => item.text !== '' && item.link !== '')
 }

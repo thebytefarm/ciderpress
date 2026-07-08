@@ -1,3 +1,4 @@
+import { removeBase } from '@rspress/core/runtime'
 import { useEffect, useState } from 'react'
 
 import type { CiderpressNavMenuItem } from '../components/nav/ciderpress-nav-menu'
@@ -53,7 +54,10 @@ function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
   return [...anchors]
     .map((anchor) => ({
       text: readAnchorText(anchor),
-      link: anchor.getAttribute('href') ?? '',
+      // Rspress's rendered hrefs already include the site `base`; strip it so
+      // the consuming `<Link>` re-applies it once instead of doubling the mount
+      // prefix on subpath deploys (the `/examples/<slug>/examples/<slug>/…` 404).
+      link: removeBase(anchor.getAttribute('href') ?? ''),
     }))
     .filter((item) => item.text !== '' && item.link !== '')
 }
