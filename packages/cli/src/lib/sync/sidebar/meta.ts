@@ -84,10 +84,10 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
     .filter((e) => !e.hidden)
     .flatMap((entry) => {
       if (entry.root && entry.items) {
-        return entry.items.filter((child) => !child.hidden).flatMap(entryToRootMetaItem)
+        return entry.items.filter((child) => !child.hidden).flatMap(entryToRootMetaItems)
       }
 
-      return entryToRootMetaItem(entry)
+      return entryToRootMetaItems(entry)
     })
 }
 
@@ -103,7 +103,7 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
  * @param entry - Top-level resolved entry (section or leaf)
  * @returns Single-element meta item array, or empty when no name resolves
  */
-function entryToRootMetaItem(entry: ResolvedEntry): readonly (MetaDirItem | MetaFileItem)[] {
+function entryToRootMetaItems(entry: ResolvedEntry): readonly (MetaDirItem | MetaFileItem)[] {
   if (hasChildren(entry)) {
     const name = resolveDirName(entry)
     if (name === null) {
