@@ -1,0 +1,243 @@
+/**
+ * AdvancedTable — interactive table with sorting and per-column filters.
+ */
+
+.cp-advanced-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+}
+
+.cp-advanced-table__toolbar {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cp-advanced-table__clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-md-sm);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-2);
+  font-size: 12px;
+  font-family: var(--cp-font-family-base);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.cp-advanced-table__clear:hover {
+  border-color: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-1);
+}
+
+.cp-advanced-table__clear svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+}
+
+.cp-advanced-table__scroll {
+  overflow-x: auto;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--rp-radius);
+}
+
+/* Descendant selector (0,2,0) so it beats Rspress's base rule
+   `table:not(.rp-table-scroll-container > table) { margin: 1.5rem 0 }`,
+   which would otherwise float the table inside its bordered container. */
+.cp-advanced-table__scroll .cp-advanced-table__table {
+  width: 100%;
+  margin: 0;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.cp-advanced-table__table th,
+.cp-advanced-table__table td {
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--cp-c-border);
+  line-height: 1.5;
+}
+
+.cp-advanced-table__table thead th {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+  font-weight: 600;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.cp-advanced-table__table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cp-advanced-table__table tbody tr:hover td {
+  background: var(--cp-c-bg-soft);
+}
+
+.cp-advanced-table__header {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cp-advanced-table__sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+}
+
+.cp-advanced-table__sort:focus-visible {
+  outline: 2px solid var(--cp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.cp-advanced-table__sort-icon {
+  display: inline-flex;
+  align-items: center;
+  color: var(--cp-c-text-3);
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+
+.cp-advanced-table__sort:hover .cp-advanced-table__sort-icon {
+  opacity: 0.9;
+}
+
+.cp-advanced-table__sort-icon[data-active='true'] {
+  opacity: 1;
+  color: var(--cp-c-brand-1);
+}
+
+.cp-advanced-table__sort-icon svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.cp-advanced-table__filter-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--cp-radius-sm);
+  background: none;
+  color: var(--cp-c-text-3);
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    color 0.15s,
+    border-color 0.15s,
+    background 0.15s;
+}
+
+.cp-advanced-table__filter-trigger:hover {
+  opacity: 1;
+  color: var(--cp-c-text-1);
+  background: var(--cp-c-bg);
+}
+
+.cp-advanced-table__filter-trigger:focus-visible {
+  outline: 2px solid var(--cp-c-brand-1);
+  outline-offset: 1px;
+}
+
+.cp-advanced-table__filter-trigger[data-active='true'] {
+  opacity: 1;
+  color: var(--cp-c-brand-1);
+  border-color: var(--cp-c-brand-1);
+  background: var(--cp-c-bg);
+}
+
+.cp-advanced-table__filter-trigger svg {
+  display: block;
+  width: 13px;
+  height: 13px;
+}
+
+.cp-advanced-table__filter-popover {
+  z-index: 20;
+}
+
+.cp-advanced-table__filter-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 208px;
+  padding: 8px;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-md);
+  background: var(--cp-c-bg);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 18%);
+  outline: none;
+}
+
+.cp-advanced-table__filter-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 9px;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-sm);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+  font-size: 13px;
+  font-family: var(--cp-font-family-base);
+  line-height: 1.4;
+}
+
+.cp-advanced-table__filter-input:focus-visible {
+  outline: 2px solid var(--cp-c-brand-1);
+  outline-offset: 1px;
+}
+
+.cp-advanced-table__filter-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.cp-advanced-table__filter-clear {
+  padding: 4px 12px;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-sm);
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-2);
+  font-size: 12px;
+  font-family: var(--cp-font-family-base);
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.cp-advanced-table__filter-clear:hover {
+  border-color: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-1);
+}
+
+.cp-advanced-table__empty {
+  padding: 24px 14px;
+  color: var(--cp-c-text-3);
+  text-align: center;
+  font-style: italic;
+}

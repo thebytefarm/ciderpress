@@ -6,6 +6,7 @@ import { match } from 'massaman/match'
 import { useEffect, useMemo, useState } from 'react'
 import type React from 'react'
 
+import { EnhancedMarkdownTable } from '../shared/enhanced-markdown-table'
 import { CiderpressLayoutContext } from './ciderpress-layout-context'
 
 /**
@@ -54,6 +55,9 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
     afterSidebar,
     components,
   } = props
+  // Override the intrinsic markdown `table` element so plain markdown
+  // tables are automatically upgraded to interactive AdvancedTables.
+  const mdxComponents = { ...components, table: EnhancedMarkdownTable }
   const { frontmatter } = useFrontmatter()
   const fmRecord = frontmatter as Record<string, unknown>
   const isOverviewPage = fmRecord.overview === true
@@ -112,10 +116,10 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
       <>
         {match(isOverviewPage)
           .with(true, () => (
-            <Overview content={<DocContent components={components} isOverviewPage />} />
+            <Overview content={<DocContent components={mdxComponents} isOverviewPage />} />
           ))
           .otherwise(() => (
-            <DocContent components={components} />
+            <DocContent components={mdxComponents} />
           ))}
       </>
     )
@@ -150,7 +154,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
     .with(true, () => (
       <main className="rp-doc-layout__overview">
         {beforeDocContent}
-        <Overview content={<DocContent components={components} isOverviewPage />} />
+        <Overview content={<DocContent components={mdxComponents} isOverviewPage />} />
         {afterDocContent}
       </main>
     ))
@@ -159,7 +163,7 @@ export function CiderpressDocLayout(props: DocLayoutProps): React.ReactElement {
         <main className="rp-doc-layout__doc-container">
           {beforeDocContent}
           <div className="rp-doc rspress-doc" ref={rspressDocRef}>
-            <DocContent components={components} />
+            <DocContent components={mdxComponents} />
           </div>
           {afterDocContent}
           {beforeDocFooter}

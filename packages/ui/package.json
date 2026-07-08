@@ -66,6 +66,7 @@
     "@iconify-json/skill-icons": "^1.2.4",
     "@iconify-json/vscode-icons": "^1.2.62",
     "@iconify/react": "^6.0.2",
+    "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
     "katex": "^0.17.0",
     "massaman": "catalog:",
