@@ -125,7 +125,7 @@ function readStringField(input: {
       null,
     ]
   }
-  return [null, value]
+  return [null, value.trim()]
 }
 
 /**

@@ -34,35 +34,44 @@ describe('buildTemplate()', () => {
   })
 
   it('should reject a non-slug type', () => {
-    const [error] = buildTemplate({ ...validInput, type: 'Not A Slug' })
+    const [error, template] = buildTemplate({ ...validInput, type: 'Not A Slug' })
     expect(error).toMatchObject({ _tag: 'TemplateError', type: 'invalid_type' })
+    expect(template).toBeNull()
   })
 
   it('should reject unknown frontmatter fields', () => {
-    const [error] = buildTemplate({
+    const [error, template] = buildTemplate({
       ...validInput,
       data: { label: 'ADR', hint: 'x', author: 'zac' },
     })
     expect(error).toMatchObject({ type: 'unknown_field' })
+    expect(template).toBeNull()
   })
 
   it('should reject a missing label', () => {
-    const [error] = buildTemplate({ ...validInput, data: { hint: 'x' } })
+    const [error, template] = buildTemplate({ ...validInput, data: { hint: 'x' } })
     expect(error).toMatchObject({ type: 'missing_field' })
+    expect(template).toBeNull()
   })
 
   it('should reject an empty-string hint', () => {
-    const [error] = buildTemplate({ ...validInput, data: { label: 'ADR', hint: '   ' } })
+    const [error, template] = buildTemplate({ ...validInput, data: { label: 'ADR', hint: '   ' } })
     expect(error).toMatchObject({ type: 'missing_field' })
+    expect(template).toBeNull()
   })
 
   it('should reject an empty body', () => {
-    const [error] = buildTemplate({ ...validInput, content: '   \n' })
+    const [error, template] = buildTemplate({ ...validInput, content: '   \n' })
     expect(error).toMatchObject({ type: 'empty_body' })
+    expect(template).toBeNull()
   })
 
   it('should reject a placeholder other than title', () => {
-    const [error] = buildTemplate({ ...validInput, content: '# {{title}}\n\n{{author}}\n' })
+    const [error, template] = buildTemplate({
+      ...validInput,
+      content: '# {{title}}\n\n{{author}}\n',
+    })
     expect(error).toMatchObject({ type: 'unknown_placeholder' })
+    expect(template).toBeNull()
   })
 })
