@@ -9,9 +9,23 @@
   margin: 16px 0;
 }
 
+/* Always rendered so toggling the clear button never reflows the table.
+   The row count anchors the left so the reserved strip reads as intentional
+   chrome rather than an empty gap. */
 .cp-advanced-table__toolbar {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  /* Matches the clear button's rendered height so the toolbar never grows
+     when the button toggles in — the reserved strip keeps the table fixed. */
+  min-height: 28px;
+}
+
+.cp-advanced-table__count {
+  color: var(--cp-c-text-3);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
 .cp-advanced-table__clear {
@@ -48,12 +62,18 @@
   border-radius: var(--rp-radius);
 }
 
-/* Descendant selector (0,2,0) so it beats Rspress's base rule
-   `table:not(.rp-table-scroll-container > table) { margin: 1.5rem 0 }`,
-   which would otherwise float the table inside its bordered container. */
+/* Descendant selector (0,2,0) so it beats Rspress's base rules:
+   - `table:not(...) { margin: 1.5rem 0 }` — would float the table inside
+     its bordered container.
+   - `html table { border-radius; overflow: hidden }` plus Rspress's default
+     table border — would draw a SECOND rounded outline nested just inside
+     the scroll wrapper's border. The wrapper owns all the card chrome, so
+     the inner table stays borderless and square. */
 .cp-advanced-table__scroll .cp-advanced-table__table {
   width: 100%;
   margin: 0;
+  border: none;
+  border-radius: 0;
   border-collapse: collapse;
   font-size: 14px;
 }

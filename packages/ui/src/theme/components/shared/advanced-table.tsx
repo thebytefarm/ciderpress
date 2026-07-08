@@ -121,16 +121,19 @@ export function AdvancedTable({
 
   return (
     <div className="cp-advanced-table">
-      {match(hasState)
-        .with(true, () => (
-          <div className="cp-advanced-table__toolbar">
+      <div className="cp-advanced-table__toolbar">
+        <span className="cp-advanced-table__count">
+          {rowCountLabel(bodyRows.length, rows.length)}
+        </span>
+        {match(hasState)
+          .with(true, () => (
             <button type="button" className="cp-advanced-table__clear" onClick={clearAll}>
               <Icon icon="pixelarticons:close" />
               <span>Clear all</span>
             </button>
-          </div>
-        ))
-        .otherwise(() => null)}
+          ))
+          .otherwise(() => null)}
+      </div>
       <div className="cp-advanced-table__scroll">
         <table
           ref={tableRef}
@@ -285,6 +288,34 @@ function ColumnFilter({ column, active }: ColumnFilterProps): React.ReactElement
       </Popover>
     </DialogTrigger>
   )
+}
+
+/**
+ * Build the toolbar row-count label, showing the filtered subset only when
+ * the visible count differs from the total.
+ *
+ * @private
+ * @param visible - Number of rows after filtering
+ * @param total - Total number of rows
+ * @returns A label such as "18 rows" or "3 of 18 rows"
+ */
+function rowCountLabel(visible: number, total: number): string {
+  return match(visible === total)
+    .with(true, () => `${total} ${rowWord(total)}`)
+    .otherwise(() => `${visible} of ${total} ${rowWord(total)}`)
+}
+
+/**
+ * Pick the singular or plural form of "row".
+ *
+ * @private
+ * @param count - Count that governs the plurality
+ * @returns "row" when the count is 1, otherwise "rows"
+ */
+function rowWord(count: number): string {
+  return match(count)
+    .with(1, () => 'row')
+    .otherwise(() => 'rows')
 }
 
 /**
