@@ -35,6 +35,27 @@ export function Tag({ tag }: TagProps): React.ReactElement | null {
   if (badges === null) {
     return <RspressTag tag={tag} />
   }
+  return <BadgeChips badges={badges} />
+}
+
+/**
+ * Props for {@link BadgeChips}.
+ */
+export interface BadgeChipsProps {
+  readonly badges: readonly BadgeConfig[]
+}
+
+/**
+ * Render a list of badge chips (variant color, custom-color tint, hover
+ * tooltip). Used by the sidebar `Tag` override and the breadcrumb bar.
+ *
+ * @param props - The badges to render
+ * @returns Chip elements, or `null` when there are no badges
+ */
+export function BadgeChips({ badges }: BadgeChipsProps): React.ReactElement | null {
+  if (badges.length === 0) {
+    return null
+  }
   return (
     <>
       {badges.map((badge, index) => (

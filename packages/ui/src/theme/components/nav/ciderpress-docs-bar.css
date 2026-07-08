@@ -90,9 +90,19 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  flex: 1 1 auto;
+  /* Shrink-to-content (not grow) so page badges sit snug to the right of
+     the trail; long trails still truncate via `overflow: hidden`. */
+  flex: 0 1 auto;
   min-width: 0;
   overflow: hidden;
+}
+
+/* Page badges (ALPHA / WIP …) immediately right of the breadcrumb trail. */
+.cp-docs-bar__badges {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
 }
 
 .cp-docs-bar__crumb-wrap {
@@ -358,6 +368,8 @@ html[data-cp-outline-collapsed='true'] .cp-docs-bar__chev {
    `styles/overrides/rspress.css`. ──────────────────────────────── */
 .cp-docs-bar__llms {
   flex-shrink: 0;
+  /* Crumbs no longer grow, so push the LLMs cluster to the far right. */
+  margin-left: auto;
 }
 
 .cp-docs-bar__llms .rp-llms-container {

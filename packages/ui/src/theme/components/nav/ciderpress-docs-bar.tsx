@@ -1,3 +1,4 @@
+import type { BadgeConfig } from '@ciderpress/config'
 import { useFrontmatter, useLocation } from '@rspress/core/runtime'
 import {
   LlmsContainer,
@@ -13,8 +14,10 @@ import { match, P } from 'massaman/match'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type React from 'react'
 
+import { useCiderpress } from '../../hooks/use-ciderpress'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { Icon } from '../shared/icon.tsx'
+import { BadgeChips } from '../sidebar/sidebar-badge'
 import { useCiderpressLayout } from './ciderpress-layout-context'
 
 import './ciderpress-docs-bar.css'
@@ -117,6 +120,9 @@ export function CiderpressDocsBar(): React.ReactElement | null {
 
   const pageTitle = readStringField(fmRecord.title)
 
+  const { pageBadges } = useCiderpress()
+  const badges = lookupPageBadges(pageBadges, pathname)
+
   const breadcrumbs = buildBreadcrumbs(pathname, pageTitle)
   const outlineEnabled = match(fmRecord.outline)
     .with(false, () => false)
@@ -187,6 +193,11 @@ export function CiderpressDocsBar(): React.ReactElement | null {
             ))}
           </nav>
         )}
+        {badges.length > 0 && (
+          <span className="cp-docs-bar__badges">
+            <BadgeChips badges={badges} />
+          </span>
+        )}
         <div className="cp-docs-bar__llms">
           <LlmsContainer>
             <LlmsCopyButton />
@@ -252,6 +263,26 @@ interface Crumb {
   readonly label: string
   readonly href: string
   readonly current: boolean
+}
+
+/**
+ * Look up the current page's badges from the route→badges map, tolerating
+ * a trailing slash on the pathname (map keys are stored without one).
+ *
+ * @private
+ * @param pageBadges - Route→badges map from theme config, if present.
+ * @param pathname - The current location pathname.
+ * @returns The page's badges, or an empty array when none apply.
+ */
+function lookupPageBadges(
+  pageBadges: Record<string, readonly BadgeConfig[]> | undefined,
+  pathname: string
+): readonly BadgeConfig[] {
+  if (pageBadges === undefined) {
+    return []
+  }
+  const stripped = pathname.replace(/\/$/, '')
+  return pageBadges[pathname] ?? pageBadges[stripped] ?? []
 }
 
 /**

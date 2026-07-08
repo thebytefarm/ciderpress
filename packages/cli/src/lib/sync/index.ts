@@ -139,8 +139,15 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   const withLandings = injectLandingPages(enriched, rootPages, workspaces)
 
   // Stamp sidebar badges (frontmatter + defaults + glob rules) onto the
-  // tree so `_meta.json` generation can carry them as Rspress `tag`s.
-  const resolved = await applyBadges(withLandings, resolveBadgeRules(config))
+  // tree so `_meta.json` generation can carry them as Rspress `tag`s, and
+  // collect a route→badges map for page-level rendering (breadcrumbs).
+  const badgeResult = await applyBadges(withLandings, resolveBadgeRules(config))
+  const resolved = badgeResult.tree
+  await fs.writeFile(
+    path.resolve(outDir, '.generated/badges.json'),
+    JSON.stringify(badgeResult.badgeMap, null, 2),
+    'utf8'
+  )
 
   const sectionPages = collectPages(resolved)
 
