@@ -23,12 +23,25 @@ const OVERFLOW_TOGGLE_WIDTH = 96
 const DEFAULT_GAP_PX = 16
 
 /**
+ * Grace period before a hover-opened dropdown closes on mouse-leave.
+ * Long enough to cross the gap into the popover without it snapping
+ * shut, short enough not to feel sticky.
+ */
+const CLOSE_DELAY_MS = 220
+
+/**
  * Single primary-nav entry — matches the shape of `site.nav[*]` in
  * `ciderpress.config.ts`.
+ *
+ * An entry is either a leaf (has `link`, no `items`) or a dropdown
+ * parent (has `items`, `link` optional). When a parent has children,
+ * its own `link` is ignored — the label toggles the submenu rather
+ * than navigating.
  */
 export interface CiderpressNavMenuItem {
   readonly text: string
-  readonly link: string
+  readonly link?: string
+  readonly items?: readonly CiderpressNavMenuItem[]
 }
 
 /**
@@ -151,24 +164,25 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
   return (
     <>
       <div ref={measureRef} className="cp-nav-menu-measure" aria-hidden="true">
-        {items.map((item) => (
-          <span key={item.link} data-cp-menu-item className="cp-nav-menu__item">
+        {items.map((item, index) => (
+          <span
+            key={`${itemKey(item)}::${index}`}
+            data-cp-menu-item
+            className={clsx('cp-nav-menu__item', {
+              // Mirror the live dropdown toggle's label→chevron gap so the
+              // measured width matches what actually renders inline.
+              'cp-nav-menu__item--measured-dropdown': hasChildren(item),
+            })}
+          >
             {item.text}
+            {hasChildren(item) && <Icon icon="pixelarticons:chevron-down" width={12} height={12} />}
           </span>
         ))}
       </div>
 
       <nav ref={containerRef} className="cp-nav-menu" aria-label="Primary">
-        {visible.map((item) => (
-          <RouteLink
-            key={item.link}
-            href={item.link}
-            className={clsx('cp-nav-menu__item', {
-              'cp-nav-menu__item--active': isActive(pathname, item.link),
-            })}
-          >
-            {item.text}
-          </RouteLink>
+        {visible.map((item, index) => (
+          <NavMenuEntry key={`${itemKey(item)}::${index}`} item={item} pathname={pathname} />
         ))}
         {hasOverflow && (
           <div ref={overflowRef} className="cp-nav-menu__overflow">
@@ -184,19 +198,13 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
             </button>
             {overflowOpen && (
               <ul className="cp-nav-menu__overflow-popover" role="menu">
-                {overflow.map((item) => (
-                  <li key={item.link} role="none">
-                    <RouteLink
-                      href={item.link}
-                      role="menuitem"
-                      className={clsx('cp-nav-menu__overflow-item', {
-                        'cp-nav-menu__overflow-item--active': isActive(pathname, item.link),
-                      })}
-                      onClick={() => setOverflowOpen(false)}
-                    >
-                      {item.text}
-                    </RouteLink>
-                  </li>
+                {overflow.map((item, index) => (
+                  <OverflowEntry
+                    key={`${itemKey(item)}::${index}`}
+                    item={item}
+                    pathname={pathname}
+                    onNavigate={() => setOverflowOpen(false)}
+                  />
                 ))}
               </ul>
             )}
@@ -208,6 +216,286 @@ export function CiderpressNavMenu(props: CiderpressNavMenuProps): React.ReactEle
 }
 
 export { CiderpressNavMenu as default }
+
+/**
+ * Render a single inline nav entry — a plain link when the item is a
+ * leaf, or a hover/click dropdown when it carries child `items`.
+ *
+ * @private
+ * @param props - The nav item and the current pathname.
+ * @returns The entry element.
+ */
+function NavMenuEntry(props: {
+  readonly item: CiderpressNavMenuItem
+  readonly pathname: string
+}): React.ReactElement {
+  const { item, pathname } = props
+  return match(hasChildren(item))
+    .with(true, () => <NavMenuDropdown item={item} pathname={pathname} />)
+    .otherwise(() => (
+      <RouteLink
+        href={item.link ?? '#'}
+        className={clsx('cp-nav-menu__item', {
+          'cp-nav-menu__item--active': isActiveLink(pathname, item.link),
+        })}
+      >
+        {item.text}
+      </RouteLink>
+    ))
+}
+
+/**
+ * A topbar dropdown: a toggle button plus a popover of child links.
+ * Opens on hover and on click, closes on outside click, on child
+ * navigation, or on `Escape`. The toggle is marked active when the
+ * current route matches any child link.
+ *
+ * @private
+ * @param props - The dropdown item and the current pathname.
+ * @returns The dropdown element.
+ */
+function NavMenuDropdown(props: {
+  readonly item: CiderpressNavMenuItem
+  readonly pathname: string
+}): React.ReactElement {
+  const { item, pathname } = props
+  // Two independent inputs: `hovering` (pointer preview) and `pinned`
+  // (an explicit click/tap/Enter latch). The menu is open when either is
+  // set. This keeps hover-to-preview and click-to-toggle from fighting —
+  // clicking an already-hover-open menu pins it instead of closing it.
+  const [hovering, setHovering] = useState(false)
+  const [pinned, setPinned] = useState(false)
+  const open = hovering || pinned
+  const ref = useRef<HTMLDivElement>(null)
+  const toggleRef = useRef<HTMLButtonElement>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const children = item.items ?? []
+
+  // Cancel any pending hover-close (mouse re-entered, or an explicit action).
+  function cancelClose(): void {
+    if (closeTimer.current !== null) {
+      clearTimeout(closeTimer.current)
+      closeTimer.current = null
+    }
+  }
+
+  // Fully close: drop both hover and pin. Used by Escape, outside-click,
+  // and child navigation.
+  function close(): void {
+    cancelClose()
+    setHovering(false)
+    setPinned(false)
+  }
+
+  // Drop the hover preview after a short grace period so brief excursions
+  // off the toggle (crossing into the popover, a jittery pointer) don't
+  // snap it shut. A pinned menu stays open regardless.
+  function scheduleClose(): void {
+    cancelClose()
+    closeTimer.current = setTimeout(() => setHovering(false), CLOSE_DELAY_MS)
+  }
+
+  useEffect(() => () => cancelClose(), [])
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+    function onDocClick(event: MouseEvent): void {
+      const target = event.target as Node | null
+      if (target !== null && ref.current !== null && !ref.current.contains(target)) {
+        close()
+      }
+    }
+    function onKeyDown(event: KeyboardEvent): void {
+      if (event.key === 'Escape') {
+        close()
+        // Return focus to the toggle so a keyboard user isn't stranded
+        // on a link that just unmounted.
+        if (toggleRef.current !== null) {
+          toggleRef.current.focus()
+        }
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onDocClick)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  const active = children.some((child) => isActiveLink(pathname, child.link))
+
+  function handleMouseEnter(): void {
+    cancelClose()
+    setHovering(true)
+  }
+
+  // Close when focus leaves the dropdown entirely (Tab past the last
+  // link). Keep it open while focus moves between the toggle and items.
+  function handleBlur(event: React.FocusEvent<HTMLDivElement>): void {
+    const next = event.relatedTarget
+    if (ref.current !== null && next instanceof Node && ref.current.contains(next)) {
+      return
+    }
+    close()
+  }
+
+  // Click/tap/Enter is an explicit latch: pin it open, or unpin (and drop
+  // any lingering hover) to close. Works identically for mouse, touch,
+  // and keyboard.
+  function handleToggleClick(): void {
+    cancelClose()
+    if (pinned) {
+      setPinned(false)
+      setHovering(false)
+      return
+    }
+    setPinned(true)
+  }
+
+  return (
+    <div
+      ref={ref}
+      className="cp-nav-menu__dropdown"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={scheduleClose}
+      onBlur={handleBlur}
+    >
+      <button
+        ref={toggleRef}
+        type="button"
+        className={clsx('cp-nav-menu__item', 'cp-nav-menu__dropdown-toggle', {
+          'cp-nav-menu__item--active': active,
+        })}
+        onClick={handleToggleClick}
+        aria-haspopup="menu"
+        aria-expanded={open}
+      >
+        <span>{item.text}</span>
+        <Icon icon="pixelarticons:chevron-down" width={12} height={12} />
+      </button>
+      {open && (
+        <ul className="cp-nav-menu__dropdown-popover" role="menu" aria-label={item.text}>
+          {children.map((child, index) => (
+            <li key={`${itemKey(child)}::${index}`} role="none">
+              <RouteLink
+                href={child.link ?? '#'}
+                role="menuitem"
+                className={clsx('cp-nav-menu__overflow-item', {
+                  'cp-nav-menu__overflow-item--active': isActiveLink(pathname, child.link),
+                })}
+                onClick={close}
+              >
+                {child.text}
+              </RouteLink>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Render an entry inside the "More" overflow popover. Leaf items become
+ * a single menu link; dropdown parents become a labelled group with
+ * their children listed beneath.
+ *
+ * @private
+ * @param props - The item, current pathname, and a navigate callback.
+ * @returns The overflow entry list element.
+ */
+function OverflowEntry(props: {
+  readonly item: CiderpressNavMenuItem
+  readonly pathname: string
+  readonly onNavigate: () => void
+}): React.ReactElement {
+  const { item, pathname, onNavigate } = props
+  const children = item.items ?? []
+  return match(children.length > 0)
+    .with(true, () => (
+      <li className="cp-nav-menu__overflow-group" role="none">
+        <span className="cp-nav-menu__overflow-group-label" aria-hidden="true">
+          {item.text}
+        </span>
+        <ul className="cp-nav-menu__overflow-sublist" role="menu" aria-label={item.text}>
+          {children.map((child, index) => (
+            <li key={`${itemKey(child)}::${index}`} role="none">
+              <RouteLink
+                href={child.link ?? '#'}
+                role="menuitem"
+                className={clsx('cp-nav-menu__overflow-item', {
+                  'cp-nav-menu__overflow-item--active': isActiveLink(pathname, child.link),
+                })}
+                onClick={onNavigate}
+              >
+                {child.text}
+              </RouteLink>
+            </li>
+          ))}
+        </ul>
+      </li>
+    ))
+    .otherwise(() => (
+      <li role="none">
+        <RouteLink
+          href={item.link ?? '#'}
+          role="menuitem"
+          className={clsx('cp-nav-menu__overflow-item', {
+            'cp-nav-menu__overflow-item--active': isActiveLink(pathname, item.link),
+          })}
+          onClick={onNavigate}
+        >
+          {item.text}
+        </RouteLink>
+      </li>
+    ))
+}
+
+/**
+ * Whether a nav item carries a non-empty `items` array (making it a
+ * dropdown parent rather than a leaf).
+ *
+ * @private
+ * @param item - Nav item to test.
+ * @returns True when the item has at least one child.
+ */
+function hasChildren(item: CiderpressNavMenuItem): boolean {
+  return item.items !== undefined && item.items.length > 0
+}
+
+/**
+ * Stable React key for a nav item — its link when present, otherwise
+ * its label (dropdown parents may have no link of their own).
+ *
+ * @private
+ * @param item - Nav item to key.
+ * @returns Key string.
+ */
+function itemKey(item: CiderpressNavMenuItem): string {
+  if (item.link !== undefined && item.link !== '') {
+    return item.link
+  }
+  return item.text
+}
+
+/**
+ * Active-route test that tolerates an absent link (dropdown parents),
+ * delegating to {@link isActive} only when a link is present.
+ *
+ * @private
+ * @param pathname - Current route pathname.
+ * @param link - Item link, possibly undefined.
+ * @returns True when the link is present and matches the route.
+ */
+function isActiveLink(pathname: string, link: string | undefined): boolean {
+  if (link === undefined) {
+    return false
+  }
+  return isActive(pathname, link)
+}
 
 /**
  * Walk the per-item widths left-to-right, accumulating until we'd
@@ -275,18 +563,85 @@ function gapAt(index: number, gap: number): number {
 }
 
 /**
- * Read every anchor under Rspress's hidden `.rp-nav-menu` and project
- * it into a `{ text, link }` item. Anchors with empty text or `href`
- * are dropped so we never surface a placeholder entry.
+ * Reconstruct the primary nav from Rspress's hidden `.rp-nav-menu`,
+ * preserving dropdowns. Each top-level `.rp-nav-menu__item` is either a
+ * leaf (its container is an anchor) or a dropdown parent (it wraps a
+ * `.rp-hover-group` of child links). Items with empty text, or dropdown
+ * parents with no usable children, are dropped.
  *
  * @private
  * @returns Nav items currently in the DOM (empty array when not mounted).
  */
 function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
-  const anchors = document.querySelectorAll<HTMLAnchorElement>('.rp-nav-menu .rp-nav-menu__item a')
+  return navMenuRoots()
+    .map(scrapeNavItem)
+    .filter((item): item is CiderpressNavMenuItem => item !== null)
+}
+
+/**
+ * Collect the top-level `.rp-nav-menu__item` `<li>`s to scrape. Rspress
+ * renders separate left and right nav `<ul>`s; the ciderpress topbar is
+ * right-aligned, so we read the right menu and only fall back to the
+ * unscoped selector when it isn't present.
+ *
+ * @private
+ * @returns Top-level nav item elements.
+ */
+function navMenuRoots(): readonly HTMLElement[] {
+  const right = document.querySelectorAll<HTMLElement>('.rp-nav-menu--right > .rp-nav-menu__item')
+  if (right.length > 0) {
+    return [...right]
+  }
+  return [...document.querySelectorAll<HTMLElement>('.rp-nav-menu > .rp-nav-menu__item')]
+}
+
+/**
+ * Project a single top-level `.rp-nav-menu__item` element into a nav
+ * item, recursing one level into its `.rp-hover-group` dropdown when
+ * present.
+ *
+ * @private
+ * @param root - Top-level nav `<li>` element.
+ * @returns Parsed nav item, or `null` when unusable.
+ */
+function scrapeNavItem(root: HTMLElement): CiderpressNavMenuItem | null {
+  const container = root.querySelector(':scope > .rp-nav-menu__item__container')
+  if (container === null) {
+    return null
+  }
+  const text = readElementText(container)
+  if (text === '') {
+    return null
+  }
+  const group = root.querySelector(':scope > .rp-hover-group')
+  if (group !== null) {
+    const items = scrapeGroupItems(group)
+    if (items.length === 0) {
+      return null
+    }
+    return { text, items }
+  }
+  const href = container.getAttribute('href')
+  if (href === null || href === '') {
+    return null
+  }
+  // Un-base the scraped href so `<Link>` re-applies the site `base` once
+  // rather than doubling the mount prefix on subpath deploys.
+  return { text, link: removeBase(href) }
+}
+
+/**
+ * Read the child links out of a Rspress `.rp-hover-group` dropdown.
+ *
+ * @private
+ * @param group - The `.rp-hover-group` element.
+ * @returns Child nav items with text + link (empties dropped).
+ */
+function scrapeGroupItems(group: Element): readonly CiderpressNavMenuItem[] {
+  const anchors = group.querySelectorAll<HTMLAnchorElement>('.rp-hover-group__item__link')
   return [...anchors]
     .map((anchor) => ({
-      text: readAnchorText(anchor),
+      text: readElementText(anchor),
       // Rspress's rendered `.rp-nav-menu` hrefs already carry the site `base`.
       // Strip it here so `RouteLink` (→ Rspress `<Link>`) can re-apply it once
       // rather than doubling the mount prefix on a subpath deploy (the
@@ -297,16 +652,16 @@ function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
 }
 
 /**
- * Pull the trimmed text content from an anchor. Returns an empty
+ * Pull the trimmed text content from an element. Returns an empty
  * string when `textContent` is missing — callers treat empty as "skip
- * this anchor".
+ * this element".
  *
  * @private
- * @param anchor - Anchor element to read.
+ * @param element - Element to read.
  * @returns Trimmed inner text, or empty string when absent.
  */
-function readAnchorText(anchor: HTMLAnchorElement): string {
-  const text = anchor.textContent
+function readElementText(element: Element): string {
+  const text = element.textContent
   if (text === null) {
     return ''
   }
