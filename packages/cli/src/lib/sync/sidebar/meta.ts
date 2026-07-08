@@ -84,32 +84,39 @@ export function buildRootMeta(entries: readonly ResolvedEntry[]): readonly MetaI
     .filter((e) => !e.hidden)
     .flatMap((entry) => {
       if (entry.root && entry.items) {
-        return entry.items
-          .filter((child) => !child.hidden)
-          .flatMap((child): readonly (MetaDirItem | MetaFileItem)[] => {
-            const name = resolveDirName(child)
-            if (name === null) {
-              return []
-            }
-            if (hasChildren(child)) {
-              return [{ type: 'dir' as const, name, label: child.title }]
-            }
-            return [{ type: 'file' as const, name, label: child.title }]
-          })
+        return entry.items.filter((child) => !child.hidden).flatMap(entryToRootMetaItems)
       }
 
-      const name = resolveDirName(entry)
-      if (name === null) {
-        return []
-      }
-      return [
-        {
-          type: 'dir' as const,
-          name,
-          label: entry.title,
-        },
-      ]
+      return entryToRootMetaItems(entry)
     })
+}
+
+/**
+ * Convert a top-level entry to its root `_meta.json` item.
+ *
+ * Sections (entries with children) map to `dir` items so Rspress recurses
+ * into their subdirectory. Leaf pages (no children) map to `file` items so
+ * Rspress renders a plain link — without this gate a depth-0 leaf renders as
+ * a collapsible group with a dead chevron.
+ *
+ * @private
+ * @param entry - Top-level resolved entry (section or leaf)
+ * @returns Single-element meta item array, or empty when no name resolves
+ */
+function entryToRootMetaItems(entry: ResolvedEntry): readonly (MetaDirItem | MetaFileItem)[] {
+  if (hasChildren(entry)) {
+    const name = resolveDirName(entry)
+    if (name === null) {
+      return []
+    }
+    return [{ type: 'dir' as const, name, label: entry.title }]
+  }
+
+  const name = resolveFileStem(entry) ?? resolveDirName(entry)
+  if (name === null) {
+    return []
+  }
+  return [{ type: 'file' as const, name, label: entry.title }]
 }
 
 /**
