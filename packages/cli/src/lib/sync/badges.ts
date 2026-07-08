@@ -21,11 +21,25 @@
 
 import fs from 'node:fs'
 
-import { encodeBadges, normalizeBadgeInput } from '@ciderpress/config'
-import type { BadgeConfig, BadgeRule } from '@ciderpress/config'
+import { encodeBadges, normalizeBadgeInput, resolveStatusBadges } from '@ciderpress/config'
+import type { BadgeConfig, BadgeRule, Status } from '@ciderpress/config'
 
 import { splitFrontmatter } from '../matter.ts'
 import type { ResolvedEntry } from './types.ts'
+
+/**
+ * Inputs to the badge pass: glob rules and the resolved status registry.
+ */
+export interface BadgeContext {
+  /**
+   * Glob badge rules from the top-level `badges` config.
+   */
+  readonly rules: readonly BadgeRule[]
+  /**
+   * The effective status registry (built-in defaults + user overrides).
+   */
+  readonly registry: readonly Status[]
+}
 
 /**
  * The result of a badge pass: the badged entry tree and a flat
@@ -48,14 +62,14 @@ export interface BadgeResult {
  * route→badges map. Returns a new tree; the input is not mutated.
  *
  * @param entries - Resolved entry tree
- * @param rules - Glob badge rules from `sidebar.badges`
+ * @param ctx - Glob rules and the resolved status registry
  * @returns The badged tree and the route→badges map
  */
 export async function applyBadges(
   entries: readonly ResolvedEntry[],
-  rules: readonly BadgeRule[]
+  ctx: BadgeContext
 ): Promise<BadgeResult> {
-  const results = await Promise.all(entries.map((entry) => applyToEntry(entry, rules)))
+  const results = await Promise.all(entries.map((entry) => applyToEntry(entry, ctx)))
   return {
     tree: results.map((r) => r.tree),
     badgeMap: mergeMaps(results.map((r) => r.badgeMap)),
@@ -67,19 +81,19 @@ export async function applyBadges(
  *
  * @private
  * @param entry - Entry to stamp
- * @param rules - Glob badge rules
+ * @param ctx - Glob rules and the resolved status registry
  * @returns The badged entry (with children) and its subtree's badge map
  */
 async function applyToEntry(
   entry: ResolvedEntry,
-  rules: readonly BadgeRule[]
+  ctx: BadgeContext
 ): Promise<{
   readonly tree: ResolvedEntry
   readonly badgeMap: Record<string, readonly BadgeConfig[]>
 }> {
-  const badges = await resolveEntryBadges(entry, rules)
+  const badges = await resolveEntryBadges(entry, ctx)
   const badgeTag = encodeBadges(badges)
-  const children = await resolveChildren(entry.items, rules)
+  const children = await resolveChildren(entry.items, ctx)
   const selfMap = mapField(entry.link, badges)
   return {
     tree: {
@@ -127,12 +141,12 @@ function isCollapsibleDoc(entry: ResolvedEntry): boolean {
  *
  * @private
  * @param items - Child entries, if any
- * @param rules - Glob badge rules
+ * @param ctx - Glob rules and the resolved status registry
  * @returns Badged children (or undefined) and their merged badge map
  */
 async function resolveChildren(
   items: readonly ResolvedEntry[] | undefined,
-  rules: readonly BadgeRule[]
+  ctx: BadgeContext
 ): Promise<{
   readonly tree: readonly ResolvedEntry[] | undefined
   readonly badgeMap: Record<string, readonly BadgeConfig[]>
@@ -140,7 +154,7 @@ async function resolveChildren(
   if (items === undefined) {
     return { tree: undefined, badgeMap: {} }
   }
-  const result = await applyBadges(items, rules)
+  const result = await applyBadges(items, ctx)
   return { tree: result.tree, badgeMap: result.badgeMap }
 }
 
@@ -177,37 +191,65 @@ function mapField(
 }
 
 /**
- * Resolve the effective badges for an entry by precedence.
+ * Resolve the effective badges for an entry by precedence. Each source
+ * contributes both its ad-hoc `badge` and its named `status`; the first
+ * source that yields any badge wins (file → defaults → glob).
  *
  * @private
  * @param entry - Entry to resolve badges for
- * @param rules - Glob badge rules
+ * @param ctx - Glob rules and the resolved status registry
  * @returns Normalized badges (empty when none apply)
  */
 async function resolveEntryBadges(
   entry: ResolvedEntry,
-  rules: readonly BadgeRule[]
+  ctx: BadgeContext
 ): Promise<readonly BadgeConfig[]> {
-  const fromFile = await readFileBadges(entry)
+  const fromFile = await readFileBadges(entry, ctx.registry)
   if (fromFile.length > 0) {
     return fromFile
   }
-  const fromDefaults = normalizeBadgeInput(readFrontmatterBadge(entry))
+  const fromDefaults = collectSource(
+    readFrontmatterField(entry, 'badge'),
+    readFrontmatterField(entry, 'status'),
+    ctx.registry
+  )
   if (fromDefaults.length > 0) {
     return fromDefaults
   }
-  return matchRuleBadges(entry.link, rules)
+  return matchRuleBadges(entry.link, ctx)
 }
 
 /**
- * Read and normalize the `badge` field from an entry's source file
- * frontmatter (the file's own YAML wins over config `defaults`).
+ * Combine a source's ad-hoc `badge` input and named `status` reference(s)
+ * into a flat list of badge chips.
+ *
+ * @private
+ * @param badgeInput - Raw `badge` value from the source
+ * @param statusInput - Raw `status` reference from the source
+ * @param registry - The resolved status registry
+ * @returns Badges from the status refs followed by the ad-hoc badges
+ */
+function collectSource(
+  badgeInput: unknown,
+  statusInput: unknown,
+  registry: readonly Status[]
+): readonly BadgeConfig[] {
+  return [...resolveStatusBadges(statusInput, registry), ...normalizeBadgeInput(badgeInput)]
+}
+
+/**
+ * Read the `badge`/`status` fields from an entry's source file frontmatter
+ * (the file's own YAML wins over config `defaults`).
  *
  * @private
  * @param entry - Entry whose source file to read
- * @returns Normalized badges from file frontmatter (empty when absent)
+ * @param registry - The resolved status registry
+ * @returns Badges from file frontmatter (empty when absent)
  */
-async function readFileBadges(entry: ResolvedEntry): Promise<readonly BadgeConfig[]> {
+async function readFileBadges(
+  entry: ResolvedEntry,
+  registry: readonly Status[]
+): Promise<readonly BadgeConfig[]> {
   const source = readSource(entry)
   if (source === null) {
     return []
@@ -220,30 +262,27 @@ async function readFileBadges(entry: ResolvedEntry): Promise<readonly BadgeConfi
   if (parseErr) {
     return []
   }
-  return normalizeBadgeInput(file.data.badge)
+  return collectSource(file.data.badge, file.data.status, registry)
 }
 
 /**
- * Match an entry's route path against glob badge rules, returning the
- * first matching rule's badges.
+ * Match an entry's route path against glob rules, returning the first
+ * matching rule's badges (its `badge` and `status`).
  *
  * @private
  * @param link - Entry route path (e.g. `/api/foo`)
- * @param rules - Glob badge rules
- * @returns Normalized badges from the first matching rule (empty when none)
+ * @param ctx - Glob rules and the resolved status registry
+ * @returns Badges from the first matching rule (empty when none)
  */
-function matchRuleBadges(
-  link: string | undefined,
-  rules: readonly BadgeRule[]
-): readonly BadgeConfig[] {
+function matchRuleBadges(link: string | undefined, ctx: BadgeContext): readonly BadgeConfig[] {
   if (link === undefined) {
     return []
   }
-  const rule = rules.find((r) => patternsOf(r.match).some((p) => matchesRoute(link, p)))
+  const rule = ctx.rules.find((r) => patternsOf(r.match).some((p) => matchesRoute(link, p)))
   if (rule === undefined) {
     return []
   }
-  return normalizeBadgeInput(rule.badge)
+  return collectSource(rule.badge, rule.status, ctx.registry)
 }
 
 /**
@@ -281,18 +320,19 @@ function globToRegExp(pattern: string): RegExp {
 }
 
 /**
- * Read the config-level `badge` from an entry's merged page frontmatter.
+ * Read a field from an entry's merged page frontmatter (config `defaults`).
  *
  * @private
  * @param entry - Entry to inspect
- * @returns The raw `badge` value, or `undefined`
+ * @param field - Frontmatter field to read (`'badge'` or `'status'`)
+ * @returns The raw field value, or `undefined`
  */
-function readFrontmatterBadge(entry: ResolvedEntry): unknown {
+function readFrontmatterField(entry: ResolvedEntry, field: 'badge' | 'status'): unknown {
   const { page } = entry
   if (page === undefined) {
     return undefined
   }
-  return page.frontmatter.badge
+  return page.frontmatter[field]
 }
 
 /**

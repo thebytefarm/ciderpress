@@ -177,10 +177,12 @@ export type Badge = string | BadgeConfig
 export type BadgeInput = Badge | readonly Badge[]
 
 /**
- * A glob-based badge rule declared under `sidebar.badges`. Applies its
- * `badge` to every page whose route path matches `match` and that does
- * not declare its own badge in frontmatter or `defaults` (frontmatter and
- * `defaults` win over glob rules).
+ * A glob-based badge rule declared under the top-level `badges` config.
+ * Applies its `badge` and/or `status` to every page whose route path
+ * matches `match` and that does not declare its own badge/status in
+ * frontmatter or `defaults` (frontmatter and `defaults` win over rules).
+ *
+ * Declare at least one of `badge` or `status`.
  */
 export interface BadgeRule {
   /**
@@ -189,9 +191,50 @@ export interface BadgeRule {
    */
   readonly match: string | readonly string[]
   /**
-   * Badge(s) applied to matching pages.
+   * Ad-hoc badge(s) applied to matching pages.
    */
-  readonly badge: BadgeInput
+  readonly badge?: BadgeInput
+  /**
+   * Named status id(s) from the {@link Status} registry, applied to
+   * matching pages.
+   */
+  readonly status?: string | readonly string[]
+}
+
+/**
+ * A named, documented status in the registry — the semantic layer over
+ * {@link BadgeConfig}. Referenced by `id` from a page's `status`
+ * frontmatter (or a {@link BadgeRule}); resolves to a badge chip whose
+ * label is `title`, tooltip is `description`, and color is `color`
+ * (raw) or `variant` (theme-aware).
+ *
+ * The built-in registry ({@link DEFAULT_STATUSES}) ships common software
+ * maturity statuses (`alpha`, `beta`, `wip`, …); user `statuses` entries
+ * are merged over it by `id` — matching ids override, new ids extend.
+ */
+export interface Status {
+  /**
+   * Reference handle used by `status: <id>` on a page (e.g. `'alpha'`).
+   */
+  readonly id: string
+  /**
+   * Display label rendered in the chip (e.g. `'Alpha'`).
+   */
+  readonly title: string
+  /**
+   * Human-readable meaning — used as the chip's hover tooltip (and
+   * available for a future status legend).
+   */
+  readonly description: string
+  /**
+   * Theme-aware color variant. Preferred for built-ins so chips adapt to
+   * dark/light and every theme. Ignored when `color` is set.
+   */
+  readonly variant?: BadgeVariant
+  /**
+   * Raw color (hex/rgb/hsl) escape hatch — overrides `variant`.
+   */
+  readonly color?: string
 }
 
 /**
@@ -261,11 +304,17 @@ export interface Frontmatter {
    */
   readonly head?: readonly [string, Record<string, string>][]
   /**
-   * Sidebar badge(s) for this page — a label like `ALPHA` or `WIP`, or a
-   * {@link BadgeConfig} with variant/color/tooltip. Set on a file's own
-   * frontmatter or on a page/workspace `defaults` (frontmatter wins).
+   * Page badge(s) — a label like `ALPHA` or `WIP`, or a
+   * {@link BadgeConfig} with variant/color/tooltip. Renders in both the
+   * sidebar and the breadcrumb. Set on a file's own frontmatter or on a
+   * page/workspace `defaults` (frontmatter wins).
    */
   readonly badge?: BadgeInput
+  /**
+   * Named status id(s) from the {@link Status} registry (e.g. `'alpha'`).
+   * Resolves to a badge chip using the status's title/color/description.
+   */
+  readonly status?: string | readonly string[]
 }
 
 /**
@@ -1206,12 +1255,6 @@ export interface SidebarConfig {
    * Promo card rendered at the bottom of the docs sidebar.
    */
   readonly promo?: SidebarPromo
-  /**
-   * Glob-based badge rules — apply a badge to every page whose route path
-   * matches, without touching each file. A page's own frontmatter or
-   * `defaults` badge overrides a matching rule.
-   */
-  readonly badges?: readonly BadgeRule[]
 }
 
 /**
@@ -1693,6 +1736,20 @@ export interface CiderpressConfig {
    * Sidebar chrome — persistent top/bottom links and promo card.
    */
   readonly sidebar?: SidebarConfig
+  /**
+   * Glob-based badge rules — apply a badge (or named status) to every
+   * page whose route path matches, without touching each file. Badges
+   * render in both the sidebar and the breadcrumb. A page's own
+   * frontmatter or `defaults` badge/status overrides a matching rule.
+   */
+  readonly badges?: readonly BadgeRule[]
+  /**
+   * Named status registry — the semantic layer over badges. Entries are
+   * merged over the built-in {@link DEFAULT_STATUSES} by `id` (matching
+   * ids override, new ids extend). Reference a status from a page with
+   * `status: <id>`.
+   */
+  readonly statuses?: readonly Status[]
   /**
    * Site footer — message, copyright, columns, tagline, brand mark,
    * social icons.

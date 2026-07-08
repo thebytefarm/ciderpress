@@ -4,23 +4,31 @@
 '@ciderpress/ui': minor
 ---
 
-Add sidebar page badges — labels like `ALPHA` or `WIP` on sidebar items.
+Add page badges and a named status registry.
 
-Declare a badge in a page's frontmatter, inherit one across a section via `defaults`, or apply one by route with glob rules under `sidebar.badges`. Frontmatter and `defaults` win over glob rules. Long sidebar titles now truncate with an ellipsis and show the full text on hover.
+Badges are labels like `ALPHA` or `WIP` that render in **both** the sidebar and the breadcrumb. Declare one ad-hoc in a page's frontmatter (`badge`), reference a named status (`status`), inherit across a section via `defaults`, or apply by route with top-level `badges` glob rules. Frontmatter and `defaults` win over glob rules.
+
+**Statuses** are the semantic layer over badges: a named, documented preset (`title` + `description` + color) you define once and reference by `id`. Ciderpress ships built-in defaults (`alpha`, `beta`, `wip`, `experimental`, `new`, `stable`, `deprecated`, `internal`, `planned`); your `statuses` entries merge over them by `id`. A status's `description` becomes the chip's hover tooltip.
 
 ```md
 ---
 title: Streaming API
-badge: ALPHA
+status: alpha        # named status → Alpha chip + its description tooltip
+badge: v2            # ad-hoc badge, coexists
 ---
 ```
 
 ```ts
-sidebar: {
-  badges: [{ match: '/api/experimental/**', badge: { text: 'ALPHA', variant: 'warning' } }],
-}
+defineConfig({
+  // route-based rules (global — badges show in sidebar + breadcrumb)
+  badges: [{ match: '/api/experimental/**', status: 'alpha' }],
+  // override or extend the built-in status registry
+  statuses: [{ id: 'alpha', title: 'Alpha', description: 'Early and unstable…', variant: 'warning' }],
+})
 ```
 
-- **`@ciderpress/config`** — new `Badge`, `BadgeConfig`, `BadgeVariant`, `BadgeInput`, and `BadgeRule` types; `Frontmatter.badge` and `SidebarConfig.badges` fields; a shared badge wire-format (`encodeBadges` / `decodeBadges` / `normalizeBadgeInput`) so the CLI and theme stay in sync. A badge is a string shorthand or `{ text, variant, color, tooltip }`; variants are `info | success | warning | danger | neutral`.
-- **`@ciderpress/cli`** — sync resolves badges (file frontmatter → `defaults` → glob rule, first match wins) and emits them as Rspress sidebar `tag`s on `_meta.json` items.
-- **`@ciderpress/ui`** — a `Tag` override renders badge chips with variant color, custom-color tint, and a hover tooltip, delegating any non-ciderpress tag to Rspress's native rendering; sidebar labels get single-line ellipsis with a `title` tooltip on overflow.
+Long titles truncate with an ellipsis and reveal the full text on hover — in the sidebar, the breadcrumb, and the "On this page" outline.
+
+- **`@ciderpress/config`** — `Badge` / `BadgeConfig` / `BadgeVariant` / `BadgeInput` / `BadgeRule` / `Status` types; `Frontmatter.badge` + `Frontmatter.status`; top-level `badges` (glob rules) and `statuses` (registry); a shared badge wire-format (`encodeBadges` / `decodeBadges` / `normalizeBadgeInput`) and status resolver (`DEFAULT_STATUSES` / `resolveStatuses` / `resolveStatusBadges` / `statusToBadge`).
+- **`@ciderpress/cli`** — sync resolves badges + statuses (file frontmatter → `defaults` → glob, first source wins) and emits them as Rspress sidebar `tag`s plus a route→badges map (`.generated/badges.json`). A collapsible group that is also a doc gets no sidebar tag (its badge shows on the page instead).
+- **`@ciderpress/ui`** — a `Tag` override renders badge chips (variant color, custom-color tint, hover tooltip), delegating other tags to Rspress; badges also render beside the breadcrumb via `themeConfig.pageBadges`; sidebar, breadcrumb, and outline entries get single-line ellipsis with a `title` tooltip on overflow.

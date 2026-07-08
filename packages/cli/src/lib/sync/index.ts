@@ -2,8 +2,8 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { BadgeRule, Page, CiderpressConfig } from '@ciderpress/config'
-import { collectAllWorkspaceItems } from '@ciderpress/config'
+import type { Page, CiderpressConfig } from '@ciderpress/config'
+import { collectAllWorkspaceItems, resolveStatuses } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
@@ -138,10 +138,13 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   const workspaces = collectAllWorkspaceItems(config)
   const withLandings = injectLandingPages(enriched, rootPages, workspaces)
 
-  // Stamp sidebar badges (frontmatter + defaults + glob rules) onto the
+  // Stamp badges (frontmatter/defaults/glob + named statuses) onto the
   // tree so `_meta.json` generation can carry them as Rspress `tag`s, and
   // collect a route→badges map for page-level rendering (breadcrumbs).
-  const badgeResult = await applyBadges(withLandings, resolveBadgeRules(config))
+  const badgeResult = await applyBadges(withLandings, {
+    rules: config.badges ?? [],
+    registry: resolveStatuses(config.statuses),
+  })
   const resolved = badgeResult.tree
   await fs.writeFile(
     path.resolve(outDir, '.generated/badges.json'),
@@ -281,19 +284,6 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   }
 
   return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
-}
-
-/**
- * Extract the glob badge rules from a config's sidebar block.
- *
- * @private
- * @param config - Loaded ciderpress config
- * @returns Badge rules, or an empty array when none are configured
- */
-function resolveBadgeRules(config: CiderpressConfig): readonly BadgeRule[] {
-  return match(config.sidebar)
-    .with(P.nonNullable, (sidebar) => sidebar.badges ?? [])
-    .otherwise(() => [])
 }
 
 /**
