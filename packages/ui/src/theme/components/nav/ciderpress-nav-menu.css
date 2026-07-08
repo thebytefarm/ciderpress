@@ -50,6 +50,13 @@
   color: var(--cp-nav-menu-item-color-active, var(--cp-c-brand-1, currentColor));
 }
 
+/* Measurement-only: dropdown items render a label→chevron gap in the
+   live toggle, so the hidden measure span must include it to size
+   correctly. Applied only in the measure row. */
+.cp-nav-menu__item--measured-dropdown {
+  gap: 4px;
+}
+
 /* ── Hidden measurement layer ──────────────────────────────────────────
    Renders every item at full natural width so the JS layer always has
    a stable per-item measurement no matter how narrow the live menu
@@ -127,4 +134,85 @@
 
 .cp-nav-menu__overflow-item--active {
   color: var(--cp-nav-menu-item-color-active, var(--cp-c-brand-1, currentColor));
+}
+
+/* ── Inline dropdown (nav item with children) ──────────────────────── */
+.cp-nav-menu__dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.cp-nav-menu__dropdown-toggle {
+  gap: 4px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.cp-nav-menu__dropdown-popover {
+  position: absolute;
+  /* Sit below the toggle with breathing room. The visual gap is bridged
+     by the transparent `::before` band below, so the whole toggle→menu
+     path stays inside the hover region and moving toward the menu never
+     crosses empty space that would trigger a close. */
+  top: calc(100% + 12px);
+  /* Anchor to the toggle's right edge. The primary nav is right-aligned
+     in the topbar, so opening leftward keeps the popover on-screen
+     instead of overflowing the viewport's right edge. */
+  right: 0;
+  z-index: 60;
+  min-width: 200px;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--cp-nav-menu-overflow-bg, var(--cp-c-bg, #1e1e2e));
+  border: 1px solid var(--cp-nav-menu-overflow-border, var(--cp-c-border, #313244));
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.24);
+}
+
+/* Invisible bridge: a transparent band spanning the visual gap between
+   the toggle and the popover surface (and a little to each side), so the
+   pointer stays within the dropdown's hover region the whole way down.
+   Without it, the 6px gap is dead space and mouse-leave fires mid-move. */
+.cp-nav-menu__dropdown-popover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: -12px;
+  right: -12px;
+  /* Taller than the 12px offset so the band overlaps both the toggle and
+     the popover surface — no hairline seam for the pointer to slip through. */
+  height: 16px;
+}
+
+/* ── Dropdown parents collapsed into the "More" popover ────────────── */
+.cp-nav-menu__overflow-group {
+  padding: 4px 0;
+}
+
+.cp-nav-menu__overflow-group + .cp-nav-menu__overflow-group,
+.cp-nav-menu__overflow-item + .cp-nav-menu__overflow-group {
+  margin-top: 4px;
+  border-top: 1px solid var(--cp-nav-menu-overflow-border, var(--cp-c-border, #313244));
+}
+
+.cp-nav-menu__overflow-group-label {
+  display: block;
+  padding: 6px 12px 2px;
+  /* text-2 (not text-3): these small uppercase labels need AA contrast,
+     and text-3's low alpha fails 4.5:1 on the light themes. */
+  color: var(--cp-c-text-2, #9399b2);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cp-nav-menu__overflow-sublist {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }

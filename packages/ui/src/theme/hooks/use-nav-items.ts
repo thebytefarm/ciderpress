@@ -41,34 +41,99 @@ export function useNavItems(): readonly CiderpressNavMenuItem[] {
 }
 
 /**
- * Read every anchor under Rspress's hidden `.rp-nav-menu` and project
- * it into a `{ text, link }` item. Anchors with empty text or `href`
- * are dropped so we never surface a placeholder entry.
+ * Reconstruct the primary nav from Rspress's hidden `.rp-nav-menu`,
+ * preserving dropdowns. Each top-level `.rp-nav-menu__item` is either a
+ * leaf (its container is an anchor) or a dropdown parent (it wraps a
+ * `.rp-hover-group` of child links). Items with empty text, or dropdown
+ * parents with no usable children, are dropped.
  *
  * @private
  * @returns Nav items currently in the DOM (empty array when not mounted).
  */
 function scrapeNavItems(): readonly CiderpressNavMenuItem[] {
-  const anchors = document.querySelectorAll<HTMLAnchorElement>('.rp-nav-menu .rp-nav-menu__item a')
+  return navMenuRoots()
+    .map(scrapeNavItem)
+    .filter((item): item is CiderpressNavMenuItem => item !== null)
+}
+
+/**
+ * Collect the top-level `.rp-nav-menu__item` `<li>`s to scrape. Rspress
+ * renders separate left and right nav `<ul>`s; the ciderpress topbar is
+ * right-aligned, so we read the right menu and only fall back to the
+ * unscoped selector when it isn't present.
+ *
+ * @private
+ * @returns Top-level nav item elements.
+ */
+function navMenuRoots(): readonly HTMLElement[] {
+  const right = document.querySelectorAll<HTMLElement>('.rp-nav-menu--right > .rp-nav-menu__item')
+  if (right.length > 0) {
+    return [...right]
+  }
+  return [...document.querySelectorAll<HTMLElement>('.rp-nav-menu > .rp-nav-menu__item')]
+}
+
+/**
+ * Project a single top-level `.rp-nav-menu__item` element into a nav
+ * item, recursing one level into its `.rp-hover-group` dropdown when
+ * present.
+ *
+ * @private
+ * @param root - Top-level nav `<li>` element.
+ * @returns Parsed nav item, or `null` when unusable.
+ */
+function scrapeNavItem(root: HTMLElement): CiderpressNavMenuItem | null {
+  const container = root.querySelector(':scope > .rp-nav-menu__item__container')
+  if (container === null) {
+    return null
+  }
+  const text = readElementText(container)
+  if (text === '') {
+    return null
+  }
+  const group = root.querySelector(':scope > .rp-hover-group')
+  if (group !== null) {
+    const items = scrapeGroupItems(group)
+    if (items.length === 0) {
+      return null
+    }
+    return { text, items }
+  }
+  const href = container.getAttribute('href')
+  if (href === null || href === '') {
+    return null
+  }
+  return { text, link: href }
+}
+
+/**
+ * Read the child links out of a Rspress `.rp-hover-group` dropdown.
+ *
+ * @private
+ * @param group - The `.rp-hover-group` element.
+ * @returns Child nav items with text + link (empties dropped).
+ */
+function scrapeGroupItems(group: Element): readonly CiderpressNavMenuItem[] {
+  const anchors = group.querySelectorAll<HTMLAnchorElement>('.rp-hover-group__item__link')
   return [...anchors]
     .map((anchor) => ({
-      text: readAnchorText(anchor),
+      text: readElementText(anchor),
       link: anchor.getAttribute('href') ?? '',
     }))
     .filter((item) => item.text !== '' && item.link !== '')
 }
 
 /**
- * Pull the trimmed text content from an anchor. Returns an empty
+ * Pull the trimmed text content from an element. Returns an empty
  * string when `textContent` is missing — callers treat empty as "skip
- * this anchor".
+ * this element".
  *
  * @private
- * @param anchor - Anchor element to read.
+ * @param element - Element to read.
  * @returns Trimmed inner text, or empty string when absent.
  */
-function readAnchorText(anchor: HTMLAnchorElement): string {
-  const text = anchor.textContent
+function readElementText(element: Element): string {
+  const text = element.textContent
   if (text === null) {
     return ''
   }
