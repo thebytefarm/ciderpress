@@ -213,6 +213,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     config,
     editLink,
     reportLink,
+    feedback: config.feedback,
     topbar,
     sidebar,
     footer,
@@ -870,6 +871,10 @@ interface SiteBlock {
         readonly brandMark?: string
       }
     | undefined
+  readonly feedback: {
+    readonly enabled: boolean
+    readonly question: string | undefined
+  }
 }
 
 /**
@@ -887,6 +892,7 @@ function buildSiteBlock(params: {
   readonly config: CiderpressConfig
   readonly editLink: CiderpressConfig['editLink']
   readonly reportLink: CiderpressConfig['reportLink']
+  readonly feedback: CiderpressConfig['feedback']
   readonly topbar: CiderpressConfig['topbar']
   readonly sidebar: CiderpressConfig['sidebar']
   readonly footer: CiderpressConfig['footer']
@@ -950,6 +956,11 @@ function buildSiteBlock(params: {
       brandMark: f.brandMark,
     }))
 
+  const feedbackBlock = match(params.feedback)
+    .with(true, () => ({ enabled: true, question: undefined }))
+    .with(P.union(false, undefined), () => ({ enabled: false, question: undefined }))
+    .otherwise((f) => ({ enabled: true, question: f.question }))
+
   return {
     version: params.config.version,
     edit: editBlock,
@@ -958,6 +969,7 @@ function buildSiteBlock(params: {
     sidebarPromo,
     announcement,
     footer: footerBlock,
+    feedback: feedbackBlock,
   }
 }
 
