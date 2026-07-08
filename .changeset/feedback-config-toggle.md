@@ -5,7 +5,7 @@
 
 Add `feedback` config to toggle the "Was this page helpful?" widget.
 
-The widget is enabled by default. Set `feedback: false` to disable it site-wide, or `feedback: { question: '...' }` to customise the question text.
+The widget is off by default. Set `feedback: true` to enable it with the default question, or `feedback: { question: '...' }` to enable it with custom text.
 
-- **`@ciderpress/config`** — new `feedback?: false | FeedbackConfig` field on `CiderpressConfig`, with an exported `FeedbackConfig` type.
-- **`@ciderpress/ui`** — `SiteBlock` and `CiderpressSiteBlock` gain a `feedback: { enabled, question }` field; `Layout` conditionally renders `<Feedback />` based on the resolved value.
+- **`@ciderpress/config`** — new `feedback?: boolean | FeedbackConfig` field on `CiderpressConfig`, with an exported `FeedbackConfig` type.
+- **`@ciderpress/ui`** — `SiteBlock` and `CiderpressSiteBlock` gain a `feedback: { enabled, question }` field; `Layout` renders `<Feedback />` only when feedback is enabled.

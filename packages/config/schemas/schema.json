@@ -1946,11 +1946,9 @@
       ]
     },
     "feedback": {
-      "default": {},
       "anyOf": [
         {
-          "type": "boolean",
-          "const": false
+          "type": "boolean"
         },
         {
           "type": "object",

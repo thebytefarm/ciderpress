@@ -121,9 +121,8 @@ export function Layout(): React.ReactElement {
   const metaActions = collectMetaActions({ edit, report, pagePath })
 
   const feedbackSlot = match(feedback)
-    .with(undefined, () => <Feedback />)
-    .with({ enabled: false }, () => null)
-    .otherwise((f) => <Feedback question={f.question} />)
+    .with({ enabled: true }, (f) => <Feedback question={f.question} />)
+    .otherwise(() => null)
 
   const afterDocSlot = (
     <ContentFooterPortal>

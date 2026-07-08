@@ -723,23 +723,23 @@ reportLink: false,
 
 ## `feedback`
 
-Controls the "Was this page helpful?" yes/no widget rendered at the bottom of every doc page. Enabled by default.
+Controls the "Was this page helpful?" yes/no widget rendered at the bottom of every doc page. Off by default.
 
 ```ts
-feedback?: false | { question?: string }
+feedback?: boolean | { question?: string }
 ```
 
 | Value               | Effect                                   |
 | ------------------- | ---------------------------------------- |
-| omitted / `{}`      | Widget renders with the default question |
+| omitted / `false`   | Widget does not render                   |
+| `true`              | Widget renders with the default question |
 | `{ question: '…' }` | Widget renders with a custom question    |
-| `false`             | Widget does not render                   |
 
 ```ts
-// custom question
+// enable with the default question
+feedback: true,
+// enable with a custom question
 feedback: { question: 'Did this help?' },
-// disable site-wide
-feedback: false,
 ```
 
 ## `home`

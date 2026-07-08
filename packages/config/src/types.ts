@@ -1224,8 +1224,8 @@ export interface FooterConfig {
  * Feedback widget configuration.
  *
  * Controls the "Was this page helpful?" yes/no widget rendered at the
- * bottom of every doc page. Set `feedback` to `false` to disable the
- * widget site-wide.
+ * bottom of every doc page. The widget is off by default; passing an
+ * object (or `feedback: true`) enables it.
  */
 export interface FeedbackConfig {
   /**
@@ -1637,13 +1637,11 @@ export interface CiderpressConfig {
   readonly reportLink?: false | ReportLinkConfig
   /**
    * "Was this page helpful?" feedback widget rendered under every doc page.
-   * Enabled by default — omitting it (or passing `{}`) renders the widget
-   * with the default question. Set to `false` to disable site-wide, or pass
-   * an object to customise the question text.
-   *
-   * @default {}
+   * Off by default. Set `feedback: true` to enable it with the default
+   * question, or pass an object to enable it with a custom question.
+   * `false` (or omitting it) keeps the widget hidden.
    */
-  readonly feedback?: false | FeedbackConfig
+  readonly feedback?: boolean | FeedbackConfig
   /**
    * Home page configuration — hero, proof, features, showcase, split,
    * cta, and render order.

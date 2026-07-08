@@ -957,8 +957,8 @@ function buildSiteBlock(params: {
     }))
 
   const feedbackBlock = match(params.feedback)
-    .with(false, () => ({ enabled: false, question: undefined }))
-    .with(undefined, () => ({ enabled: true, question: undefined }))
+    .with(true, () => ({ enabled: true, question: undefined }))
+    .with(P.union(false, undefined), () => ({ enabled: false, question: undefined }))
     .otherwise((f) => ({ enabled: true, question: f.question }))
 
   return {
