@@ -149,8 +149,6 @@ export type { StepsProps, StepProps } from './components/shared/steps'
 export { Field, FieldGroup } from './components/shared/field'
 export type { FieldProps, FieldGroupProps } from './components/shared/field'
 
-export { CopyMarkdownButton } from './components/openapi'
-export type { CopyMarkdownButtonProps } from './components/openapi'
 export { OpenAPIOperation } from './components/openapi'
 export type { OpenAPIOperationProps } from './components/openapi'
 export { OpenAPIOverview } from './components/openapi'
