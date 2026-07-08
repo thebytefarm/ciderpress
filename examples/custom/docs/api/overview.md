@@ -38,9 +38,7 @@ Collection endpoints return a `cursor`-based page envelope:
 
 ```json
 {
-  "data": [
-    /* … */
-  ],
+  "data": [/* … */],
   "page": {
     "next_cursor": "eyJpZCI6IjIwMjUtMDEifQ==",
     "has_more": true

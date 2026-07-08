@@ -38,9 +38,7 @@ defineConfig({
   description: 'Documentation for the Acme platform',
   base: '/',
   version: 'v1.0',
-  pages: [
-    /* ... */
-  ],
+  pages: [/* ... */],
 })
 ```
 
@@ -566,11 +564,11 @@ sidebar: {
 }
 ```
 
-| Field         | Type            | Description                                                                                             |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
-| `top`         | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`)                                        |
-| `bottom`      | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`)                                        |
-| `promo`       | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar                                                     |
+| Field         | Type            | Description                                                                                                                          |
+| ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| `top`         | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`)                                                                     |
+| `bottom`      | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`)                                                                     |
+| `promo`       | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar                                                                                  |
 | `groupBadges` | `boolean`       | Show badges on collapsible group items that are also docs. Defaults to `false` (see [Badges](/reference/badges#where-badges-render)) |
 
 ### SidebarLink
@@ -615,11 +613,11 @@ badges: [
 ]
 ```
 
-| Field    | Type                     | Description                                             |
-| -------- | ------------------------ | ------------------------------------------------------ |
-| `match`  | `string \| string[]`     | Glob pattern(s) matched against the route path         |
+| Field    | Type                             | Description                                    |
+| -------- | -------------------------------- | ---------------------------------------------- |
+| `match`  | `string \| string[]`             | Glob pattern(s) matched against the route path |
 | `badge`  | `string \| BadgeConfig \| array` | Ad-hoc badge(s) applied to matching pages      |
-| `status` | `string \| string[]`     | Named status id(s) applied to matching pages           |
+| `status` | `string \| string[]`             | Named status id(s) applied to matching pages   |
 
 Declare at least one of `badge` or `status`. `match` supports `*`, `**`, and `?`.
 
@@ -629,8 +627,18 @@ The named status registry — the semantic layer over badges. A status is a reus
 
 ```ts
 statuses: [
-  { id: 'alpha', title: 'Alpha', description: 'Early and unstable — expect changes.', variant: 'warning' },
-  { id: 'design-partner', title: 'Design Partner', description: 'Available to design partners only.', color: '#7c3aed' },
+  {
+    id: 'alpha',
+    title: 'Alpha',
+    description: 'Early and unstable — expect changes.',
+    variant: 'warning',
+  },
+  {
+    id: 'design-partner',
+    title: 'Design Partner',
+    description: 'Available to design partners only.',
+    color: '#7c3aed',
+  },
 ]
 ```
 
@@ -1187,11 +1195,7 @@ Universal image source — string path or a fully described image object. Used b
 
 ```ts
 type SortStrategy =
-  | 'default'
-  | 'alpha'
-  | 'filename'
-  | 'none'
-  | ((a: ResolvedPage, b: ResolvedPage) => number)
+  'default' | 'alpha' | 'filename' | 'none' | ((a: ResolvedPage, b: ResolvedPage) => number)
 ```
 
 Used by `Page.discover.sort` and `Workspace.discover.sort`.

@@ -1,5 +1,116 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.7
+
+### Minor Changes
+
+- 395da42: Add `feedback` config to toggle the "Was this page helpful?" widget.
+
+  The widget is off by default. Set `feedback: true` to enable it with the default question, or `feedback: { question: '...' }` to enable it with custom text.
+
+  - **`@ciderpress/config`** — new `feedback?: boolean | FeedbackConfig` field on `CiderpressConfig`, with an exported `FeedbackConfig` type.
+  - **`@ciderpress/ui`** — `SiteBlock` and `CiderpressSiteBlock` gain a `feedback: { enabled, question }` field; `Layout` renders `<Feedback />` only when feedback is enabled.
+
+- c66ef61: Add the `pixel` icon set and give every social link a real glyph
+
+  The [Pixel Icons](https://icon-sets.iconify.design/pixel/) collection is now
+  bundled and resolvable by the `pixel:` prefix, both in `IconConfig` values and
+  `VALID_ICON_IDS` validation.
+
+  Every `SocialLinkIcon` value now maps to a real `pixel:` brand glyph — `slack`,
+  `linkedin`, `gitlab`, `instagram`, and `facebook` previously fell back to a
+  generic chain icon.
+
+  The `SocialLinkIcon` enum was trimmed to the platforms with a pixel-art glyph:
+  `lark`, `wechat`, `qq`, `juejin`, `zhihu`, `bilibili`, and `weibo` are no longer
+  accepted values (use `{ svg: '<svg>...</svg>' }` for those).
+
+- 0d6b434: Add page badges and a named status registry.
+
+  Badges are labels like `ALPHA` or `WIP` that render in **both** the sidebar and the breadcrumb. Declare one ad-hoc in a page's frontmatter (`badge`), reference a named status (`status`), inherit across a section via `defaults`, or apply by route with top-level `badges` glob rules. Frontmatter and `defaults` win over glob rules.
+
+  **Statuses** are the semantic layer over badges: a named, documented preset (`title` + `description` + color) you define once and reference by `id`. Ciderpress ships built-in defaults (`alpha`, `beta`, `wip`, `experimental`, `new`, `stable`, `deprecated`, `internal`, `planned`); your `statuses` entries merge over them by `id`. A status's `description` becomes the chip's hover tooltip.
+
+  ```md
+  ---
+  title: Streaming API
+  status: alpha # named status → Alpha chip + its description tooltip
+  badge: v2 # ad-hoc badge, coexists
+  ---
+  ```
+
+  ```ts
+  defineConfig({
+    // route-based rules (global — badges show in sidebar + breadcrumb)
+    badges: [{ match: '/api/experimental/**', status: 'alpha' }],
+    // override or extend the built-in status registry
+    statuses: [
+      {
+        id: 'alpha',
+        title: 'Alpha',
+        description: 'Early and unstable…',
+        variant: 'warning',
+      },
+    ],
+  })
+  ```
+
+  Badges also render on the child cards of auto-generated section landing pages. A collapsible group that is also a doc hides its sidebar badge by default (to avoid the collapse chevron) — set `sidebar.groupBadges: true` to show it there too.
+
+  Long titles truncate with an ellipsis and reveal the full text on hover — in the sidebar, the breadcrumb, and the "On this page" outline.
+
+  - **`@ciderpress/config`** — `Badge` / `BadgeConfig` / `BadgeVariant` / `BadgeInput` / `BadgeRule` / `Status` types; `Frontmatter.badge` + `Frontmatter.status`; top-level `badges` (glob rules) and `statuses` (registry); a shared badge wire-format (`encodeBadges` / `decodeBadges` / `normalizeBadgeInput`) and status resolver (`DEFAULT_STATUSES` / `resolveStatuses` / `resolveStatusBadges` / `statusToBadge`).
+  - **`@ciderpress/cli`** — sync resolves badges + statuses (file frontmatter → `defaults` → glob, first source wins) and emits them as Rspress sidebar `tag`s plus a route→badges map (`.generated/badges.json`). A collapsible group that is also a doc gets no sidebar tag (its badge shows on the page instead).
+  - **`@ciderpress/ui`** — a `Tag` override renders badge chips (variant color, custom-color tint, hover tooltip), delegating other tags to Rspress; badges also render beside the breadcrumb via `themeConfig.pageBadges`; sidebar, breadcrumb, and outline entries get single-line ellipsis with a `title` tooltip on overflow.
+
+- 51d6979: Render topbar nav dropdowns. Nav items with an `items` array now paint as
+  submenus instead of being dropped: on desktop as a hover/click popover (with a
+  hover bridge and close delay so it doesn't snap shut), and on mobile as a
+  collapsible accordion in the drawer. `CiderpressNavMenuItem.link` is now
+  optional and `items` is supported, matching the config-side `NavItem` shape.
+
+### Patch Changes
+
+- 6edf324: Upgrade dependencies to latest across the workspace, and fix Mermaid rendering on Mermaid v11.
+
+  - Catalog: `@rspress/core` ^2.0.16, `@typescript/native-preview` 7.0.0-dev.20260707.2, `type-fest` ^5.8.0, `vitest` ^4.1.10
+  - UI: `mermaid` ^11.16.0 (was v10), iconify icon sets
+  - CLI: `@clack/prompts` ^1.7.0
+  - Config: `tsx` ^4.23.0, `@types/node` ^26.1.0
+  - Tooling: `oxlint` ^1.73.0, `oxfmt` ^0.58.0, `turbo` ^2.10.4
+
+  `@rslib/core` is held at `0.23.1`: 0.23.2 regressed the ESM build (emitted `.js` instead of `.mjs` and dropped the bundled type declarations).
+
+  Mermaid is now on **v11** — the previous v10 pin was based on a misdiagnosis. `mermaid.render()` resolves correctly on v11; the blank-diagram symptom was a defect in `MermaidRenderer.tsx`: `config` defaulted to a fresh `{}` each render, re-firing the render effect in a loop that repeatedly rendered into the same element id and clobbered the injected SVG. Fixed by keying the render callback on a serialized config value and using a unique element id per render call. Diagrams now paint on first load without interaction and survive theme toggles.
+
+- 8313290: Fix top-nav links doubling the mount prefix on subpath deploys.
+
+  The theme's primary nav is built by scraping Rspress's rendered `.rp-nav-menu`, whose hrefs already carry the site `base`. Those already-based hrefs were passed straight to `<Link>`, so react-router's `basename` applied the prefix a second time — every mounted example site (`base: /examples/<slug>/`) produced `/examples/<slug>/examples/<slug>/…` links that 404'd on click and hard refresh. The scraped hrefs are now un-based with `removeBase` before routing, so `<Link>` re-applies the prefix exactly once. The root docs site (`base: /`) is unaffected — `removeBase` is a no-op there.
+
+- 4ae912b: Size the sidebar bottom band to its content
+
+  The sidebar bottom band (`.cp-sidebar-bottom`, which holds the promo card and
+  below-links) grew to fill all remaining sidebar height (`flex: 1 0 auto`) and
+  bottom-aligned its content (`justify-content: flex-end`). When the nav tree was
+  short — or the promo was disabled, leaving only the below-links — the band
+  stretched full-height and stranded its content at the very bottom of the
+  sidebar, leaving a large block of dead space between the last nav item and the
+  links/promo.
+
+  The band now sizes to its content (`flex: 0 0 auto`, no bottom-align) so the
+  promo and links sit directly beneath the last nav item. `position: sticky;
+bottom: 0` is kept, so when the nav tree overflows the viewport and the sidebar
+  scrolls, the band still pins to the viewport bottom and stays visible — the
+  sticky offset is simply inert on a short, non-scrolling nav.
+
+- Updated dependencies [6edf324]
+- Updated dependencies [395da42]
+- Updated dependencies [c66ef61]
+- Updated dependencies [8313290]
+- Updated dependencies [0d6b434]
+  - @ciderpress/config@1.0.0-rc.6
+  - @ciderpress/theme@1.0.0-rc.4
+
 ## 1.0.0-rc.6
 
 ### Patch Changes
@@ -458,7 +569,7 @@ example:custom:serve`.
 
   **Fixes**
 
-  - `safe-url.ts` regex is now stored with ` - ` escape
+  - `safe-url.ts` regex is now stored with `�- ` escape
     sequences instead of raw control bytes. Git no longer marks the file as
     binary; editors render it correctly.
   - Deleted orphaned `packages/ui/src/head/js/color-mode-{dark,light}.js`.
@@ -802,9 +913,7 @@ example:custom:serve`.
   workspaces: [
     {
       name: 'Integrations',
-      items: [
-        /* ... */
-      ],
+      items: [/* ... */],
     },
   ]
 
@@ -812,9 +921,7 @@ example:custom:serve`.
   workspaces: [
     {
       title: 'Integrations',
-      items: [
-        /* ... */
-      ],
+      items: [/* ... */],
     },
   ]
   ```
