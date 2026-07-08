@@ -130,15 +130,6 @@ export default defineConfig({
       include: 'docs/architecture.md',
     },
     {
-      // Agent-file override: `apps/web/docs/CLAUDE.md` is hidden from the
-      // `/apps/web` `docs/*.md` glob by the agent-file deny list, but a literal
-      // (non-glob) `include` names it directly and is served here on purpose.
-      title: 'Agent Guide',
-      icon: 'pixelarticons:robot',
-      path: '/agent-guide',
-      include: 'apps/web/docs/CLAUDE.md',
-    },
-    {
       title: 'Guides',
       path: '/guides',
       include: 'docs/guides/*.md',
@@ -181,6 +172,16 @@ export default defineConfig({
           discover: { sort: 'alpha' },
         },
       ],
+    },
+    {
+      // Agent-file override: `apps/web/docs/CLAUDE.md` is hidden from the
+      // `/apps/web` `docs/*.md` glob by the agent-file deny list, but a literal
+      // (non-glob) `include` names it directly and is served here on purpose.
+      // Kept last so it stays out of the home's first-three feature cards.
+      title: 'Agent Guide',
+      icon: 'pixelarticons:robot',
+      path: '/agent-guide',
+      include: 'apps/web/docs/CLAUDE.md',
     },
   ],
   sidebar: {
