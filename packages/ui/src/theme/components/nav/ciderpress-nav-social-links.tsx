@@ -23,18 +23,35 @@ export interface CiderpressNavSocialLinksProps {
 }
 
 /**
- * Maps Rspress's social-link `icon` slugs to pixelarticons icon ids.
- * Fallback for unmapped slugs is the generic `link` glyph.
+ * Maps Rspress's social-link `icon` slugs to Iconify ids, covering the full
+ * {@link SocialLinkIcon} roster the config enum accepts.
+ *
+ * Slugs resolve to the `pixel` set wherever it has a matching pixel-art glyph
+ * (the same aesthetic as the rest of the theme). The China-centric platforms
+ * `pixel` doesn't ship (`wechat`, `qq`, `juejin`, `zhihu`, `bilibili`, `weibo`)
+ * fall back to the monochrome `simple-icons` brand set. `lark` has no glyph in
+ * any bundled set, so it hits the generic `pixel:link` fallback below.
  */
 const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
-  github: 'pixelarticons:github',
-  npm: 'pixelarticons:package',
-  twitter: 'pixelarticons:twitter',
-  x: 'pixelarticons:twitter',
-  discord: 'pixelarticons:chat',
-  youtube: 'pixelarticons:play',
-  bluesky: 'pixelarticons:bluesky',
-  mastodon: 'pixelarticons:user',
+  github: 'pixel:github',
+  npm: 'pixel:npm',
+  twitter: 'pixel:twitter',
+  x: 'pixel:twitter',
+  discord: 'pixel:discord',
+  youtube: 'pixel:youtube',
+  bluesky: 'pixel:bluesky',
+  mastodon: 'pixel:mastodon',
+  slack: 'pixel:slack',
+  linkedin: 'pixel:linkedin',
+  gitlab: 'pixel:gitlab',
+  instagram: 'pixel:instagram',
+  facebook: 'pixel:facebook-round',
+  wechat: 'simple-icons:wechat',
+  qq: 'simple-icons:tencentqq',
+  juejin: 'simple-icons:juejin',
+  zhihu: 'simple-icons:zhihu',
+  bilibili: 'simple-icons:bilibili',
+  weibo: 'simple-icons:sinaweibo',
 })
 
 /**
@@ -75,11 +92,7 @@ export function CiderpressNavSocialLinks(
           className="cp-nav-social__item"
           aria-label={link.label ?? link.icon}
         >
-          <Icon
-            icon={ICON_MAP[link.icon.toLowerCase()] ?? 'pixelarticons:link'}
-            width={20}
-            height={20}
-          />
+          <Icon icon={ICON_MAP[link.icon.toLowerCase()] ?? 'pixel:link'} width={20} height={20} />
         </a>
       ))}
     </div>

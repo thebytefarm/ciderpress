@@ -25,6 +25,7 @@ export type IconPrefix =
   | 'logos'
   | 'material-icon-theme'
   | 'mdi'
+  | 'pixel'
   | 'pixelarticons'
   | 'simple-icons'
   | 'skill-icons'

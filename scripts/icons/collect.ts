@@ -33,6 +33,7 @@ export const ICON_SET_PACKAGES: readonly string[] = [
   'logos',
   'material-icon-theme',
   'mdi',
+  'pixel',
   'pixelarticons',
   'simple-icons',
   'skill-icons',

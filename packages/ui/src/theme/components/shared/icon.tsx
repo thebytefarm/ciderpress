@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
  * Per-collection lazy loaders keyed by Iconify prefix.
  *
  * Each entry is a bare dynamic `import()` so the consuming site's Rsbuild
- * build emits **one async chunk per collection** instead of folding all nine
+ * build emits **one async chunk per collection** instead of folding all ten
  * `icons.json` files into a single eager ~30MB chunk pulled on every route.
  * Two consequences fall out of that:
  *
@@ -28,6 +28,7 @@ const COLLECTION_LOADERS: Record<string, () => Promise<{ readonly default: unkno
   logos: () => import('@iconify-json/logos/icons.json'),
   'material-icon-theme': () => import('@iconify-json/material-icon-theme/icons.json'),
   mdi: () => import('@iconify-json/mdi/icons.json'),
+  pixel: () => import('@iconify-json/pixel/icons.json'),
   pixelarticons: () => import('@iconify-json/pixelarticons/icons.json'),
   'simple-icons': () => import('@iconify-json/simple-icons/icons.json'),
   'skill-icons': () => import('@iconify-json/skill-icons/icons.json'),

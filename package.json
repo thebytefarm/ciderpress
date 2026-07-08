@@ -51,6 +51,7 @@
     "@iconify-json/logos": "^1.2.11",
     "@iconify-json/material-icon-theme": "^1.2.69",
     "@iconify-json/mdi": "^1.2.3",
+    "@iconify-json/pixel": "^1.2.2",
     "@iconify-json/pixelarticons": "^1.2.7",
     "@iconify-json/simple-icons": "^1.2.89",
     "@iconify-json/skill-icons": "^1.2.4",

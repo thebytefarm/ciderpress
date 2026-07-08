@@ -11,7 +11,7 @@ catalogs:
       version: 0.23.1
     '@rspress/core':
       specifier: ^2.0.16
-      version: 2.0.16
+      version: 2.0.15
     '@types/react':
       specifier: ^19.2.17
       version: 19.2.17
@@ -74,6 +74,9 @@ importers:
       '@iconify-json/mdi':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/pixel':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@iconify-json/pixelarticons':
         specifier: ^1.2.7
         version: 1.2.7
@@ -139,7 +142,7 @@ importers:
         version: 6.0.3
       vitest:
         specifier: 'catalog:'
-        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
 
   benchmarks:
     dependencies:
@@ -149,10 +152,10 @@ importers:
     devDependencies:
       '@codspeed/vitest-plugin':
         specifier: ^5.7.1
-        version: 5.7.1(tinybench@2.9.0)(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))(vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)))
+        version: 5.7.1(tinybench@2.9.0)(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))(vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)))
       vitest:
         specifier: 'catalog:'
-        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
+        version: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
 
   e2e:
     devDependencies:
@@ -420,6 +423,9 @@ importers:
       '@iconify-json/mdi':
         specifier: ^1.2.3
         version: 1.2.3
+      '@iconify-json/pixel':
+        specifier: ^1.2.2
+        version: 1.2.2
       '@iconify-json/pixelarticons':
         specifier: ^1.2.7
         version: 1.2.7
@@ -1465,6 +1471,9 @@ packages:
 
   '@iconify-json/mdi@1.2.3':
     resolution: {integrity: sha512-O3cLwbDOK7NNDf2ihaQOH5F9JglnulNDFV7WprU2dSoZu3h3cWH//h74uQAB87brHmvFVxIOkuBX2sZSzYhScg==}
+
+  '@iconify-json/pixel@1.2.2':
+    resolution: {integrity: sha512-33uIyTe0teB9ykpRNucSXveMFYb4Hd0lxSO0oShs44OEixTuQdQk7kZpZWMMHdjDTGORpLTuOrV26pFkoIYSng==}
 
   '@iconify-json/pixelarticons@1.2.7':
     resolution: {integrity: sha512-81h/yovmRFsHC5xYsDPnZibiofVKU/97PaA5rR//8sfgTFOQ/r3M3nhGCQU3HLWv0C5knMrsp6CFXAZ2qv7O1w==}
@@ -8044,12 +8053,12 @@ snapshots:
       - debug
       - supports-color
 
-  '@codspeed/vitest-plugin@5.7.1(tinybench@2.9.0)(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))(vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)))':
+  '@codspeed/vitest-plugin@5.7.1(tinybench@2.9.0)(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))(vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)))':
     dependencies:
       '@codspeed/core': 5.7.1
       tinybench: 2.9.0
-      vite: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
-      vitest: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
+      vite: 8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
+      vitest: 4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
     transitivePeerDependencies:
       - debug
       - supports-color
@@ -8393,6 +8402,10 @@ snapshots:
       '@iconify/types': 2.0.0
 
   '@iconify-json/mdi@1.2.3':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify-json/pixel@1.2.2':
     dependencies:
       '@iconify/types': 2.0.0
 
@@ -8982,6 +8995,11 @@ snapshots:
       '@tybys/wasm-util': 0.10.2
     optional: true
 
+  '@napi-rs/wasm-runtime@1.1.6':
+    dependencies:
+      '@tybys/wasm-util': 0.10.3
+    optional: true
+
   '@napi-rs/wasm-runtime@1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)':
     dependencies:
       '@emnapi/core': 1.10.0
@@ -9313,6 +9331,14 @@ snapshots:
       '@emnapi/core': 1.10.0
       '@emnapi/runtime': 1.10.0
       '@napi-rs/wasm-runtime': 1.1.6(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)
+    optional: true
+
+  '@rolldown/binding-wasm32-wasi@1.0.0-rc.9':
+    dependencies:
+      '@napi-rs/wasm-runtime': 1.1.6
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
     optional: true
 
   '@rolldown/binding-wasm32-wasi@1.0.0-rc.9(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)':
@@ -10391,6 +10417,15 @@ snapshots:
     optionalDependencies:
       msw: 2.15.0(@types/node@26.1.0)(typescript@6.0.3)
       vite: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
+
+  '@vitest/mocker@4.1.10(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))':
+    dependencies:
+      '@vitest/spy': 4.1.10
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      msw: 2.15.0(@types/node@26.1.0)(typescript@6.0.3)
+      vite: 8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
 
   '@vitest/pretty-format@4.1.10':
     dependencies:
@@ -13990,6 +14025,30 @@ snapshots:
       '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.17
       '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.17
 
+  rolldown@1.0.0-rc.9:
+    dependencies:
+      '@oxc-project/types': 0.115.0
+      '@rolldown/pluginutils': 1.0.0-rc.9
+    optionalDependencies:
+      '@rolldown/binding-android-arm64': 1.0.0-rc.9
+      '@rolldown/binding-darwin-arm64': 1.0.0-rc.9
+      '@rolldown/binding-darwin-x64': 1.0.0-rc.9
+      '@rolldown/binding-freebsd-x64': 1.0.0-rc.9
+      '@rolldown/binding-linux-arm-gnueabihf': 1.0.0-rc.9
+      '@rolldown/binding-linux-arm64-gnu': 1.0.0-rc.9
+      '@rolldown/binding-linux-arm64-musl': 1.0.0-rc.9
+      '@rolldown/binding-linux-ppc64-gnu': 1.0.0-rc.9
+      '@rolldown/binding-linux-s390x-gnu': 1.0.0-rc.9
+      '@rolldown/binding-linux-x64-gnu': 1.0.0-rc.9
+      '@rolldown/binding-linux-x64-musl': 1.0.0-rc.9
+      '@rolldown/binding-openharmony-arm64': 1.0.0-rc.9
+      '@rolldown/binding-wasm32-wasi': 1.0.0-rc.9
+      '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.9
+      '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.9
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
   rolldown@1.0.0-rc.9(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2):
     dependencies:
       '@oxc-project/types': 0.115.0
@@ -14899,6 +14958,25 @@ snapshots:
       - '@emnapi/core'
       - '@emnapi/runtime'
 
+  vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0):
+    dependencies:
+      '@oxc-project/runtime': 0.115.0
+      lightningcss: 1.32.0
+      picomatch: 4.0.5
+      postcss: 8.5.16
+      rolldown: 1.0.0-rc.9
+      tinyglobby: 0.2.17
+    optionalDependencies:
+      '@types/node': 26.1.0
+      esbuild: 0.27.7
+      fsevents: 2.3.3
+      jiti: 2.7.0
+      tsx: 4.23.0
+      yaml: 2.9.0
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
+
   vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)):
     dependencies:
       '@vitest/expect': 4.1.10
@@ -14948,6 +15026,34 @@ snapshots:
       tinyglobby: 0.2.17
       tinyrainbow: 3.1.0
       vite: 8.0.0(@emnapi/core@1.10.0)(@emnapi/runtime@1.11.2)(@types/node@26.1.0)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
+      why-is-node-running: 2.3.0
+    optionalDependencies:
+      '@opentelemetry/api': 1.9.0
+      '@types/node': 26.1.0
+    transitivePeerDependencies:
+      - msw
+
+  vitest@4.1.10(@opentelemetry/api@1.9.0)(@types/node@26.1.0)(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)):
+    dependencies:
+      '@vitest/expect': 4.1.10
+      '@vitest/mocker': 4.1.10(msw@2.15.0(@types/node@26.1.0)(typescript@6.0.3))(vite@8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0))
+      '@vitest/pretty-format': 4.1.10
+      '@vitest/runner': 4.1.10
+      '@vitest/snapshot': 4.1.10
+      '@vitest/spy': 4.1.10
+      '@vitest/utils': 4.1.10
+      es-module-lexer: 2.3.0
+      expect-type: 1.4.0
+      magic-string: 0.30.21
+      obug: 2.1.3
+      pathe: 2.0.3
+      picomatch: 4.0.5
+      std-env: 4.2.0
+      tinybench: 2.9.0
+      tinyexec: 1.2.4
+      tinyglobby: 0.2.17
+      tinyrainbow: 3.1.0
+      vite: 8.0.0(@types/node@26.1.0)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.0)(yaml@2.9.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
       '@opentelemetry/api': 1.9.0
