@@ -74,4 +74,43 @@ describe('buildTemplate()', () => {
     expect(error).toMatchObject({ type: 'unknown_placeholder' })
     expect(template).toBeNull()
   })
+
+  it('should read a group from frontmatter', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: { label: 'ADR', hint: 'x', group: 'foobar' },
+    })
+    expect(error).toBeNull()
+    expect(template).toMatchObject({ group: 'foobar' })
+  })
+
+  it('should fall back to the directory group when frontmatter omits one', () => {
+    const [error, template] = buildTemplate({ ...validInput, group: 'guides' })
+    expect(error).toBeNull()
+    expect(template).toMatchObject({ group: 'guides' })
+  })
+
+  it('should let a frontmatter group override the directory group', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: { label: 'ADR', hint: 'x', group: 'frontmatter' },
+      group: 'directory',
+    })
+    expect(error).toBeNull()
+    expect(template).toMatchObject({ group: 'frontmatter' })
+  })
+
+  it('should reject an empty-string group', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: { label: 'ADR', hint: 'x', group: '   ' },
+    })
+    expect(error).toMatchObject({ type: 'invalid_group' })
+    expect(template).toBeNull()
+  })
+
+  it('should omit group when neither frontmatter nor directory sets one', () => {
+    const [, template] = buildTemplate(validInput)
+    expect(template).not.toHaveProperty('group')
+  })
 })
