@@ -1,6 +1,7 @@
 export type {
   Template,
   TemplateType,
+  TemplateVar,
   TemplateVariables,
   TemplateRegistry,
   ExtendTemplateOptions,
@@ -19,4 +20,4 @@ export { defineTemplate } from './define.ts'
 export { buildTemplate } from './build.ts'
 export type { BuildTemplateInput } from './build.ts'
 
-export { render, toSlug } from './render.ts'
+export { render, toSlug, findMarkers } from './render.ts'

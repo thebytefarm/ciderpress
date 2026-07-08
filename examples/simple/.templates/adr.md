@@ -1,21 +1,28 @@
 ---
 label: ADR
 hint: Architecture decision record
+vars:
+  - id: decision
+    title: Decision
+    description: The change being proposed or made
+  - id: consequences
+    title: Consequences
+    description: What becomes easier or harder as a result
 ---
 
 # {{title}}
 
-- **Status:** proposed
-- **Date:** YYYY-MM-DD
+- **Status:** {{ status }}
+- **Date:** {{date}}
 
 ## Context
 
-What is the issue we're seeing that motivates this decision?
+{{ context }}
 
 ## Decision
 
-What is the change we're proposing or doing?
+{{ decision }}
 
 ## Consequences
 
-What becomes easier or harder as a result?
+{{ consequences }}

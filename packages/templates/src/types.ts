@@ -36,6 +36,23 @@ export interface TemplateVariables {
 }
 
 /**
+ * A fillable variable a template declares in its frontmatter under `vars`.
+ *
+ * Declared vars are the `{{ id }}` markers a `draft` fills — from `--var`
+ * arguments or an interactive prompt — leaving any it can't resolve as the raw
+ * marker for a human or agent to complete later. `title` and `description` are
+ * surfaced as the prompt label and hint. Only `id` is required.
+ */
+export interface TemplateVar {
+  /** The placeholder id: the token inside `{{ }}` (e.g. `decision`). */
+  readonly id: string
+  /** Human-readable label shown when prompting for this var. */
+  readonly title?: string
+  /** Guidance shown alongside the prompt describing what to fill in. */
+  readonly description?: string
+}
+
+/**
  * A documentation template definition.
  */
 export interface Template {
@@ -43,6 +60,12 @@ export interface Template {
   readonly label: string
   readonly hint: string
   readonly body: string
+  /**
+   * Fillable variables declared in the template's `vars` frontmatter. Absent
+   * when the template declares none; undeclared `{{ }}` markers in the body are
+   * always allowed and pass through as plain text.
+   */
+  readonly vars?: readonly TemplateVar[]
   /**
    * Output file extension used when scaffolding a document from this template.
    * Defaults to `.md`; `.mdx` routes the drafted file through the MDX pipeline.
@@ -63,7 +86,7 @@ export type TemplateErrorType =
   | 'missing_field'
   | 'unknown_field'
   | 'invalid_type'
-  | 'unknown_placeholder'
+  | 'invalid_vars'
   | 'empty_body'
   | 'invalid_group'
 

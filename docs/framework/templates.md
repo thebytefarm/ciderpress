@@ -20,9 +20,12 @@ ciderpress draft --type guide --title "Deploy to Vercel"
 
 # Output to a specific directory
 ciderpress draft --type guide --title "Deploy to Vercel" --out docs/guides
+
+# Fill declared variables up front (repeatable)
+ciderpress draft --type adr --title "Use Postgres" --var decision="Adopt Postgres"
 ```
 
-This renders the template with your title and writes it to the output directory.
+This renders the template with your title (plus any variables) and writes it to the output directory. Variables you don't supply are left as raw `{{ }}` markers for you — or a coding agent — to fill in later, and `draft` prints a checklist of what remains.
 
 ## Custom templates
 
@@ -35,7 +38,7 @@ export default defineConfig({
 })
 ```
 
-Each template is a plain `.md` or `.mdx` file with `label` and `hint` frontmatter. The **filename is the type** (`adr.md` becomes type `adr`), and `{{title}}` is the only supported placeholder:
+Each template is a plain `.md` or `.mdx` file with `label` and `hint` frontmatter. The **filename is the type** (`adr.md` becomes type `adr`):
 
 ```md
 ---
@@ -56,17 +59,64 @@ hint: Architecture decision record
 - A custom template whose filename matches a built-in **overrides** it — a `guide.md` replaces the bundled Guide.
 - Frontmatter is always stripped from the scaffolded output.
 
+## Variables
+
+A template body can contain `{{ marker }}` variables. Interior whitespace is ignored, so `{{title}}` and `{{ title }}` are equivalent.
+
+**Built-in variables** are always substituted at draft time:
+
+| Variable       | Value                                        |
+| -------------- | -------------------------------------------- |
+| `{{title}}`    | The `--title` you pass (or are prompted for) |
+| `{{slug}}`     | Kebab-case slug of the title                 |
+| `{{date}}`     | Today's date, `YYYY-MM-DD`                   |
+| `{{filename}}` | The output filename (slug + extension)       |
+
+**Declared variables** are the fillable blanks a template names under `vars`. Only `id` is required; `title` and `description` drive the interactive prompt:
+
+```md
+---
+label: ADR
+hint: Architecture decision record
+vars:
+  - id: decision
+    title: Decision
+    description: The change being proposed or made
+  - id: consequences
+---
+
+# {{title}}
+
+- **Date:** {{date}}
+
+## Decision
+
+{{ decision }}
+
+## Consequences
+
+{{ consequences }}
+```
+
+At draft time each declared variable is filled from a `--var id=value` argument, then — on an interactive terminal — prompted for. Anything left blank (or every declared variable when running non-interactively, e.g. from a coding agent) stays as a raw `{{ id }}` marker.
+
+**Undeclared markers** pass through untouched as plain text — no error, no substitution. This lets you leave hand-authored blanks a template doesn't formally declare.
+
+### The no-leftover-markers lint
+
+`ciderpress check` and `ciderpress build` fail when a **published** doc still contains a `{{ }}` marker, so a half-filled draft can't ship. Markers inside fenced or inline code are ignored, so docs that _demonstrate_ the convention (like this one) don't trip it.
+
 ## Listing and validating
 
 ```bash
 # List built-in and custom templates (overrides marked with *)
 ciderpress templates list
 
-# Validate template frontmatter and placeholder syntax
+# Validate template frontmatter and vars
 ciderpress templates check
 ```
 
-Template validation also runs as part of `ciderpress check` and `ciderpress build`.
+Template validation also runs as part of `ciderpress check` and `ciderpress build`, alongside the [no-leftover-markers lint](#the-no-leftover-markers-lint).
 
 ## Using the SDK
 
@@ -96,6 +146,15 @@ const extended = registry.extend('guide', {
 })
 ```
 
+`render` substitutes only the keys you pass and leaves the rest as raw markers. Use `findMarkers` to list what remains:
+
+```ts
+import { findMarkers, render } from '@ciderpress/templates'
+
+const output = render(adr, { title: 'Use Postgres' })
+findMarkers(output) // e.g. ['{{ decision }}', '{{ consequences }}']
+```
+
 ## Available templates
 
 | Template                            | Type              | Diataxis quadrant |
@@ -109,7 +168,7 @@ const extended = registry.extend('guide', {
 | [Troubleshooting](#troubleshooting) | `troubleshooting` | —                 |
 | [Runbook](#runbook)                 | `runbook`         | —                 |
 
-Templates use `{{title}}` as the placeholder, which is replaced when rendering.
+These built-in templates use `{{title}}`; see [Variables](#variables) for the full substitution model.
 
 ## Tutorial
 

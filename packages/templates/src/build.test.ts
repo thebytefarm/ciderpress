@@ -48,6 +48,59 @@ describe('buildTemplate()', () => {
     expect(template).toBeNull()
   })
 
+  it('should read declared vars from frontmatter', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: {
+        label: 'ADR',
+        hint: 'x',
+        vars: [
+          { id: 'decision', title: 'Decision', description: 'The change being made' },
+          { id: 'status' },
+        ],
+      },
+    })
+    expect(error).toBeNull()
+    expect(template).toMatchObject({
+      vars: [
+        { id: 'decision', title: 'Decision', description: 'The change being made' },
+        { id: 'status' },
+      ],
+    })
+  })
+
+  it('should omit vars when frontmatter declares none', () => {
+    const [, template] = buildTemplate(validInput)
+    expect(template).not.toHaveProperty('vars')
+  })
+
+  it('should reject vars that are not a list', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: { label: 'ADR', hint: 'x', vars: 'decision' },
+    })
+    expect(error).toMatchObject({ type: 'invalid_vars' })
+    expect(template).toBeNull()
+  })
+
+  it('should reject a var entry missing an id', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      data: { label: 'ADR', hint: 'x', vars: [{ title: 'No id' }] },
+    })
+    expect(error).toMatchObject({ type: 'invalid_vars' })
+    expect(template).toBeNull()
+  })
+
+  it('should allow undeclared {{ }} markers to pass through', () => {
+    const [error, template] = buildTemplate({
+      ...validInput,
+      content: '# {{title}}\n\n{{ decision }} and {{ }}\n',
+    })
+    expect(error).toBeNull()
+    expect(template).toMatchObject({ body: '# {{title}}\n\n{{ decision }} and {{ }}\n' })
+  })
+
   it('should reject a missing label', () => {
     const [error, template] = buildTemplate({ ...validInput, data: { hint: 'x' } })
     expect(error).toMatchObject({ type: 'missing_field' })
@@ -63,15 +116,6 @@ describe('buildTemplate()', () => {
   it('should reject an empty body', () => {
     const [error, template] = buildTemplate({ ...validInput, content: '   \n' })
     expect(error).toMatchObject({ type: 'empty_body' })
-    expect(template).toBeNull()
-  })
-
-  it('should reject a placeholder other than title', () => {
-    const [error, template] = buildTemplate({
-      ...validInput,
-      content: '# {{title}}\n\n{{author}}\n',
-    })
-    expect(error).toMatchObject({ type: 'unknown_placeholder' })
     expect(template).toBeNull()
   })
 

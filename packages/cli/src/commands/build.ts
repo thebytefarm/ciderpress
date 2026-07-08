@@ -6,7 +6,13 @@ import { z } from 'zod'
 
 import { generateAssets } from '../lib/banner/index.ts'
 import type { AssetConfig } from '../lib/banner/index.ts'
-import { presentResults, runBuildCheck, runConfigCheck, runTemplatesCheck } from '../lib/check.ts'
+import {
+  presentResults,
+  runBuildCheck,
+  runConfigCheck,
+  runMarkersCheck,
+  runTemplatesCheck,
+} from '../lib/check.ts'
 import { createPaths } from '../lib/paths.ts'
 import { buildSite } from '../lib/rspress.ts'
 import { sync } from '../lib/sync/index.ts'
@@ -74,10 +80,22 @@ export default command({
 
       await runAssetGeneration({ config, paths, log: ctx.log, quiet: true })
 
+      ctx.log.step('Checking for unfilled markers...')
+      const markersResult = await runMarkersCheck({
+        contentDir: paths.contentDir,
+        repoRoot: paths.repoRoot,
+      })
+
       ctx.log.step('Building & checking for broken links...')
       const buildResult = await runBuildCheck({ config, paths, verbose })
 
-      const passed = presentResults({ configResult, templatesResult, buildResult, logger: ctx.log })
+      const passed = presentResults({
+        configResult,
+        templatesResult,
+        markersResult,
+        buildResult,
+        logger: ctx.log,
+      })
       if (!passed) {
         ctx.log.outro('Build failed')
         process.exit(1)

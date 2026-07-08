@@ -16,6 +16,8 @@ import { toError } from 'massaman/conversion'
 import { sumBy } from 'massaman/math'
 import { isString } from 'massaman/predicate'
 
+import { scanMarkers } from './markers.ts'
+import type { MarkerIssue } from './markers.ts'
 import type { Paths } from './paths.ts'
 import { buildSiteForCheck } from './rspress.ts'
 import { checkWorkspaceIncludes } from './sync/workspace.ts'
@@ -52,6 +54,11 @@ type TemplatesCheckResult =
   | { readonly status: 'failed'; readonly issues: readonly TemplateIssue[] }
   | { readonly status: 'skipped' }
 
+type MarkersCheckResult =
+  | { readonly status: 'passed' }
+  | { readonly status: 'failed'; readonly issues: readonly MarkerIssue[] }
+  | { readonly status: 'skipped' }
+
 interface CaptureResult<T> {
   readonly result: T | null
   readonly error: Error | null
@@ -61,6 +68,7 @@ interface CaptureResult<T> {
 interface PresentResultsParams {
   readonly configResult: ConfigCheckResult
   readonly templatesResult: TemplatesCheckResult
+  readonly markersResult: MarkersCheckResult
   readonly buildResult: BuildCheckResult
   readonly logger: Log
 }
@@ -127,6 +135,27 @@ export async function runTemplatesCheck(params: {
 }
 
 /**
+ * Scan synced content for docs that still carry unfilled `{{ }}` fill markers.
+ *
+ * Runs after sync so it sees exactly what ships. Fails when any published doc
+ * retains a template's fill marker; templates themselves are not synced and so
+ * are excluded. Fenced and inline code are ignored (see {@link scanMarkers}).
+ *
+ * @param params - The synced content directory and repo root
+ * @returns A `MarkersCheckResult` with pass/fail status and any issues
+ */
+export async function runMarkersCheck(params: {
+  readonly contentDir: string
+  readonly repoRoot: string
+}): Promise<MarkersCheckResult> {
+  const issues = await scanMarkers({ contentDir: params.contentDir, repoRoot: params.repoRoot })
+  if (issues.length > 0) {
+    return { status: 'failed', issues }
+  }
+  return { status: 'passed' }
+}
+
+/**
  * Run a silent Rspress build to detect deadlinks.
  *
  * Rspress's `remarkLink` plugin checks internal links during build. In
@@ -171,7 +200,7 @@ export async function runBuildCheck(params: RunBuildCheckParams): Promise<BuildC
  * @returns `true` if all checks passed, `false` otherwise
  */
 export function presentResults(params: PresentResultsParams): boolean {
-  const { configResult, templatesResult, buildResult, logger } = params
+  const { configResult, templatesResult, markersResult, buildResult, logger } = params
 
   if (configResult.passed) {
     logger.success('Config valid')
@@ -200,6 +229,14 @@ export function presentResults(params: PresentResultsParams): boolean {
     logger.message(templatesResult.issues.map(formatTemplateIssue).join('\n'))
   }
 
+  if (markersResult.status === 'passed') {
+    logger.success('No unfilled markers')
+  } else if (markersResult.status === 'failed') {
+    const total = sumBy(markersResult.issues, (issue) => issue.markers.length)
+    logger.error(`Found ${total} unfilled marker(s):`)
+    logger.message(markersResult.issues.map(formatMarkerGroup).join('\n'))
+  }
+
   if (buildResult.status === 'passed') {
     logger.success('No broken links')
   } else if (buildResult.status === 'skipped') {
@@ -214,7 +251,10 @@ export function presentResults(params: PresentResultsParams): boolean {
   }
 
   return (
-    configResult.passed && templatesResult.status !== 'failed' && buildResult.status === 'passed'
+    configResult.passed &&
+    templatesResult.status !== 'failed' &&
+    markersResult.status !== 'failed' &&
+    buildResult.status === 'passed'
   )
 }
 
@@ -227,6 +267,20 @@ export function presentResults(params: PresentResultsParams): boolean {
  */
 function formatTemplateIssue(issue: TemplateIssue): string {
   return `  ${RED}✖${RESET} ${issue.file} ${DIM}—${RESET} ${issue.message}`
+}
+
+/**
+ * Format a single marker issue as a compact multi-line group, mirroring the
+ * deadlink report: a file header followed by each leftover marker.
+ *
+ * @private
+ * @param issue - The marker issue with file path and leftover markers
+ * @returns Formatted multi-line string for CLI output
+ */
+function formatMarkerGroup(issue: MarkerIssue): string {
+  const header = `  ${RED}✖${RESET} ${issue.file}`
+  const markers = issue.markers.map((marker) => `      ${DIM}→${RESET} ${marker}`)
+  return [header, ...markers].join('\n')
 }
 
 /**
