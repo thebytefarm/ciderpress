@@ -1302,7 +1302,6 @@
               {
                 "type": "string",
                 "enum": [
-                  "lark",
                   "discord",
                   "facebook",
                   "github",
@@ -1311,12 +1310,6 @@
                   "slack",
                   "x",
                   "youtube",
-                  "wechat",
-                  "qq",
-                  "juejin",
-                  "zhihu",
-                  "bilibili",
-                  "weibo",
                   "gitlab",
                   "X",
                   "bluesky",
@@ -1454,7 +1447,6 @@
                       {
                         "type": "string",
                         "enum": [
-                          "lark",
                           "discord",
                           "facebook",
                           "github",
@@ -1463,12 +1455,6 @@
                           "slack",
                           "x",
                           "youtube",
-                          "wechat",
-                          "qq",
-                          "juejin",
-                          "zhihu",
-                          "bilibili",
-                          "weibo",
                           "gitlab",
                           "X",
                           "bluesky",
@@ -1835,7 +1821,6 @@
                       {
                         "type": "string",
                         "enum": [
-                          "lark",
                           "discord",
                           "facebook",
                           "github",
@@ -1844,12 +1829,6 @@
                           "slack",
                           "x",
                           "youtube",
-                          "wechat",
-                          "qq",
-                          "juejin",
-                          "zhihu",
-                          "bilibili",
-                          "weibo",
                           "gitlab",
                           "X",
                           "bluesky",

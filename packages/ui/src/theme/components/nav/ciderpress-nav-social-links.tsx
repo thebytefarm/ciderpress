@@ -23,14 +23,10 @@ export interface CiderpressNavSocialLinksProps {
 }
 
 /**
- * Maps Rspress's social-link `icon` slugs to Iconify ids, covering the full
- * {@link SocialLinkIcon} roster the config enum accepts.
- *
- * Slugs resolve to the `pixel` set wherever it has a matching pixel-art glyph
- * (the same aesthetic as the rest of the theme). The China-centric platforms
- * `pixel` doesn't ship (`wechat`, `qq`, `juejin`, `zhihu`, `bilibili`, `weibo`)
- * fall back to the monochrome `simple-icons` brand set. `lark` has no glyph in
- * any bundled set, so it hits the generic `pixel:link` fallback below.
+ * Maps Rspress's social-link `icon` slugs to `pixel` icon ids — one pixel-art
+ * glyph per {@link SocialLinkIcon} the config enum accepts, in the same
+ * aesthetic as the rest of the theme. Unmapped slugs fall back to the generic
+ * `pixel:link` chain glyph.
  */
 const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
   github: 'pixel:github',
@@ -46,12 +42,6 @@ const ICON_MAP: Readonly<Record<string, string>> = Object.freeze({
   gitlab: 'pixel:gitlab',
   instagram: 'pixel:instagram',
   facebook: 'pixel:facebook-round',
-  wechat: 'simple-icons:wechat',
-  qq: 'simple-icons:tencentqq',
-  juejin: 'simple-icons:juejin',
-  zhihu: 'simple-icons:zhihu',
-  bilibili: 'simple-icons:bilibili',
-  weibo: 'simple-icons:sinaweibo',
 })
 
 /**
