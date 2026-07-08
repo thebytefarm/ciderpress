@@ -33,7 +33,10 @@ export default defineConfig({
       { text: 'Home', href: '/', icon: 'pixelarticons:home' },
       { text: 'Changelog', href: '/changelog', icon: 'pixelarticons:notes' },
     ],
-    bottom: [{ text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' }],
+    bottom: [
+      { text: 'Examples', href: '/examples', icon: 'pixelarticons:layout-grid' },
+      { text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' },
+    ],
     promo: {
       title: 'Ship docs that stay in sync',
       body: 'Pull docs from your codebase and keep them green automatically.',
@@ -225,6 +228,9 @@ export default defineConfig({
       path: '/examples',
       include: 'docs/examples/index.mdx',
       icon: 'pixelarticons:layout-grid',
+      // Surfaced via the sidebar bottom links (next to Contributing), not as a
+      // top-level section in the main sidebar tree.
+      nav: { hidden: true },
     },
     {
       title: 'Getting Started',
