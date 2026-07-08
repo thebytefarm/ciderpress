@@ -58,6 +58,16 @@ export function parseVarArgs(args: readonly string[] | undefined): ParsedVarArgs
 }
 
 /**
+ * The always-available built-in variables resolved for every draft.
+ */
+export interface BuiltInVars {
+  readonly title: string
+  readonly slug: string
+  readonly date: string
+  readonly filename: string
+}
+
+/**
  * The outcome of parsing a single `--var` argument.
  */
 type VarArgOutcome =
@@ -105,7 +115,7 @@ export function buildBuiltInVars(input: {
   readonly slug: string
   readonly filename: string
   readonly now: Date
-}): Readonly<Record<string, string>> {
+}): BuiltInVars {
   return {
     title: input.title,
     slug: input.slug,

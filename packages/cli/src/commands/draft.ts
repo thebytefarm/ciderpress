@@ -107,8 +107,10 @@ export default command({
       interactive: process.stdout.isTTY === true,
     })
 
+    // Built-in variables are resolved last so they always win over an
+    // arg/prompt collision (e.g. a stray `--var title=…`).
     const builtIns = buildBuiltInVars({ title, slug, filename, now: new Date() })
-    const variables: TemplateVariables = { ...argVars, ...filledVars, ...builtIns, title }
+    const variables: TemplateVariables = { ...argVars, ...filledVars, ...builtIns }
 
     const content = render(template, variables)
     const outDir = path.resolve(process.cwd(), ctx.args.out)
