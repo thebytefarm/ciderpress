@@ -112,7 +112,6 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
       title: '${name.charAt(0).toUpperCase()}${name.slice(1)}',
       path: '/${name}',
       include: '${name}/**/*.md',
-      recursive: true,
     }`
     )
     .join(',\n')
@@ -123,7 +122,7 @@ export function generateFixture(options: GenerateFixtureOptions): GeneratedFixtu
 
 export default defineConfig({
   title: 'Benchmark Fixture',
-  sections: [
+  pages: [
 ${sectionConfigs}
   ],
 })

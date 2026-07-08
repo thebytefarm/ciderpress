@@ -38,6 +38,55 @@ describe('validateConfig()', () => {
   })
 })
 
+describe('validateConfig() — top-level page placement', () => {
+  it('should reject a top-level leaf page with a nested path', () => {
+    const [error, config] = validateConfig({
+      pages: [{ title: 'Introduction', path: '/getting-started/introduction', content: '# Intro' }],
+    })
+    expect(config).toBeNull()
+    expect(error).toMatchObject({
+      type: 'invalid_section',
+      message: expect.stringContaining("nested path '/getting-started/introduction'"),
+    })
+  })
+
+  it('should accept a top-level leaf page with a single-segment path', () => {
+    const [error] = validateConfig({
+      pages: [{ title: 'Examples', path: '/examples', content: '# Examples' }],
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept a nested leaf page with a nested path', () => {
+    const [error] = validateConfig({
+      pages: [
+        {
+          title: 'Getting Started',
+          path: '/getting-started',
+          pages: [
+            { title: 'Introduction', path: '/getting-started/introduction', content: '# Intro' },
+          ],
+        },
+      ],
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should not flag a hidden top-level leaf with a nested path', () => {
+    const [error] = validateConfig({
+      pages: [
+        {
+          title: 'Changelog',
+          path: '/meta/changelog',
+          content: '# Changelog',
+          nav: { hidden: true },
+        },
+      ],
+    })
+    expect(error).toBeNull()
+  })
+})
+
 describe('defineConfig()', () => {
   it('should return the same config object passed in', () => {
     const config = defineConfig(validConfig)

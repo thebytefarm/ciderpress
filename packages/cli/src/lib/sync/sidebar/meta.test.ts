@@ -111,7 +111,11 @@ describe('buildRootMeta()', () => {
         link: '/getting-started',
         items: [{ title: 'Intro', link: '/getting-started/intro' }],
       },
-      { title: 'Packages', link: '/packages', items: [] },
+      {
+        title: 'Packages',
+        link: '/packages',
+        items: [{ title: 'CLI', link: '/packages/cli' }],
+      },
     ]
 
     const result = buildRootMeta(entries)
@@ -119,6 +123,28 @@ describe('buildRootMeta()', () => {
     expect(result).toStrictEqual([
       { type: 'dir', name: 'getting-started', label: 'Getting Started' },
       { type: 'dir', name: 'packages', label: 'Packages' },
+    ])
+  })
+
+  it('should render a top-level leaf page as a file, not a group', () => {
+    const entries: readonly ResolvedEntry[] = [
+      {
+        title: 'Introduction',
+        link: '/platform',
+        page: { outputPath: 'platform.md', frontmatter: {} },
+      },
+      {
+        title: 'Concepts',
+        link: '/concepts',
+        items: [{ title: 'Overview', link: '/concepts/overview' }],
+      },
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toStrictEqual([
+      { type: 'file', name: 'platform', label: 'Introduction' },
+      { type: 'dir', name: 'concepts', label: 'Concepts' },
     ])
   })
 
@@ -136,7 +162,11 @@ describe('buildRootMeta()', () => {
 
   it('should promote root section children to top-level meta items', () => {
     const entries: readonly ResolvedEntry[] = [
-      { title: 'Getting Started', link: '/getting-started', items: [] },
+      {
+        title: 'Getting Started',
+        link: '/getting-started',
+        items: [{ title: 'Intro', link: '/getting-started/intro' }],
+      },
       referenceRoot,
     ]
 

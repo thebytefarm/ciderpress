@@ -44,5 +44,23 @@ for (const example of EXAMPLES) {
       url.pathname.startsWith(example.mountBase),
       `${example.slug} click escaped to ${url.pathname}`
     ).toBe(true)
+
+    // Guard against the mount prefix being applied twice
+    // (`/examples/<slug>/examples/<slug>/…`). The theme scrapes Rspress's
+    // already-based nav hrefs; if they aren't un-based before re-routing
+    // through `<Link>`, react-router's basename doubles the prefix and the
+    // page 404s. `startsWith` alone can't catch it (a doubled path still
+    // starts with the mount), so assert the prefix appears exactly once.
+    const doubledMount = `${example.mountBase}${example.mountBase.slice(1)}`
+    expect(
+      url.pathname.includes(doubledMount),
+      `${example.slug} doubled mount prefix: ${url.pathname}`
+    ).toBe(false)
+
+    // And the destination must actually resolve, not land on the SPA 404.
+    const heading = (await page.locator('h1').first().textContent()) ?? ''
+    expect(heading.toUpperCase(), `${example.slug} nav landed on 404`).not.toContain(
+      'PAGE NOT FOUND'
+    )
   })
 }

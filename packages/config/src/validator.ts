@@ -94,6 +94,11 @@ function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
     return [pageErrors, null]
   }
 
+  const [placementErr] = validateTopLevelPlacement(config.pages)
+  if (placementErr) {
+    return [placementErr, null]
+  }
+
   const featureItems = readFeatureItems(config)
   const [featErr] = validateFeatures(featureItems)
   if (featErr) {
@@ -355,6 +360,77 @@ function validatePage(page: Page): ConfigResult<true> {
   }
 
   return [null, true]
+}
+
+/**
+ * Validate placement of direct top-level pages.
+ *
+ * A visible leaf page (no `pages`) placed directly in `config.pages` becomes a
+ * top-level sidebar entry, which resolves to a file at the content root. A
+ * nested `path` (e.g. `/guides/intro`) files the page a directory deep, so the
+ * root `_meta.json` entry points at a file that isn't there — a silent dead
+ * link. Reject it with an actionable message rather than shipping a broken
+ * sidebar. Only direct children of `config.pages` are checked; nested leaves
+ * are expected to carry deeper paths.
+ *
+ * @private
+ * @param pages - Top-level page entries from `config.pages`
+ * @returns First placement error encountered, or success
+ */
+function validateTopLevelPlacement(pages: readonly Page[]): ConfigResult<true> {
+  const offending = pages.find(isMisplacedTopLevelLeaf)
+  if (offending) {
+    const titleStr = stringifyTitle(offending.title)
+    const offendingPath = offending.path as string
+    return [
+      configError(
+        'invalid_section',
+        `Page "${titleStr}": a top-level page with the nested path '${offendingPath}' can't render as a top-level sidebar link. Use a single-segment path (e.g. '/${pathSegments(offendingPath).at(-1)}') or nest it under a section with 'pages'.`
+      ),
+      null,
+    ]
+  }
+  return [null, true]
+}
+
+/**
+ * Determine whether a top-level page is a visible leaf whose nested path would
+ * produce a dead top-level sidebar link.
+ *
+ * Sections (`pages`), OpenAPI mounts, and pages excluded from the main sidebar
+ * (`nav.hidden` / `nav.island`) never emit a root file item, so they are exempt.
+ *
+ * @private
+ * @param page - Top-level page entry
+ * @returns True when the page is a misplaced top-level leaf
+ */
+function isMisplacedTopLevelLeaf(page: Page): boolean {
+  if (page.pages || page.openapi) {
+    return false
+  }
+  const nav = page.nav
+  const excludedFromMainSidebar = match(nav)
+    .with(P.nonNullable, (n) => n.hidden === true || n.island === true)
+    .otherwise(() => false)
+  if (excludedFromMainSidebar) {
+    return false
+  }
+  const offendingPath = page.path
+  if (!offendingPath) {
+    return false
+  }
+  return pathSegments(offendingPath).length > 1
+}
+
+/**
+ * Split a URL path into its non-empty segments.
+ *
+ * @private
+ * @param path - URL path (e.g. `/guides/intro`)
+ * @returns Non-empty path segments (e.g. `['guides', 'intro']`)
+ */
+function pathSegments(path: string): readonly string[] {
+  return path.split('/').filter(Boolean)
 }
 
 /**
