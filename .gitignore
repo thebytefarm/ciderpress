@@ -45,6 +45,7 @@ Thumbs.db
 # Claude
 .claude/plans/
 .claude/skills/
+.claude/worktrees/
 
 # Agent artifacts
 .agents/
