@@ -1002,9 +1002,9 @@ Directory or directories holding custom document templates used by [`ciderpress 
 templates?: string | string[]
 ```
 
-| Field       | Type                 | Description                                                              |
-| ----------- | -------------------- | ----------------------------------------------------------------------- |
-| `templates` | `string \| string[]` | Directory (or directories) of custom `.md`/`.mdx` template files        |
+| Field       | Type                 | Description                                                      |
+| ----------- | -------------------- | ---------------------------------------------------------------- |
+| `templates` | `string \| string[]` | Directory (or directories) of custom `.md`/`.mdx` template files |
 
 ```ts
 templates: ['docs/.templates', 'shared/templates'],

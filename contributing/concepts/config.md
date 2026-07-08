@@ -36,16 +36,16 @@ export default defineConfig({
 })
 ```
 
-| Field         | Purpose                                           |
-| ------------- | ------------------------------------------------- |
-| `title`       | Site title, used in hero and metadata             |
-| `description` | Site description for SEO                          |
-| `tagline`     | Hero section subtitle                             |
-| `sections`    | Entry tree defining the information architecture  |
-| `apps`        | Workspace items for application docs              |
-| `packages`    | Workspace items for shared package docs           |
-| `workspaces`  | Custom workspace groups                           |
-| `nav`         | Top-level navigation (`'auto'` or explicit array) |
+| Field         | Purpose                                                              |
+| ------------- | -------------------------------------------------------------------- |
+| `title`       | Site title, used in hero and metadata                                |
+| `description` | Site description for SEO                                             |
+| `tagline`     | Hero section subtitle                                                |
+| `sections`    | Entry tree defining the information architecture                     |
+| `apps`        | Workspace items for application docs                                 |
+| `packages`    | Workspace items for shared package docs                              |
+| `workspaces`  | Custom workspace groups                                              |
+| `nav`         | Top-level navigation (`'auto'` or explicit array)                    |
 | `templates`   | Directory (or directories) of custom `.md`/`.mdx` document templates |
 
 ## Output Structure
