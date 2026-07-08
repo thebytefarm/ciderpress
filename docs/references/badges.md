@@ -9,7 +9,7 @@ status: new
 Badges are small labels — `ALPHA`, `WIP`, `Deprecated` — attached to a page. They render in **both** the sidebar (next to the page's nav item) and the breadcrumb (right of the trail). Attach one two ways:
 
 - **`badge`** — an ad-hoc label defined inline on the page.
-- **`status`** — a reference to a named, documented preset in the [status registry](#statuses).
+- **`status`** — a reference to a named, documented preset in the [status registry](#status).
 
 ```md
 ---
@@ -19,7 +19,7 @@ badge: v2            # ad-hoc badge, renders alongside
 ---
 ```
 
-> This is the page-level badge. It is distinct from the inline [`<Badge>`](/reference/built-ins/status-badge) component you drop into markdown content.
+> This is the page-level badge. It is distinct from the inline [`<Badge>`](/reference/built-ins/badge) component you drop into markdown content.
 
 ## `badge`
 
@@ -142,4 +142,4 @@ Within a single source, `status` and `badge` both render.
 
 - [Configuration](/reference/configuration) — the `badges` and `statuses` config keys
 - [Frontmatter Fields](/reference/frontmatter) — the `badge` and `status` page fields
-- [`<Badge>` component](/reference/built-ins/status-badge) — the inline badge for markdown content
+- [`<Badge>` component](/reference/built-ins/badge) — the inline badge for markdown content
