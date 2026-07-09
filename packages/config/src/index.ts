@@ -23,6 +23,7 @@ export type {
   BadgeInput,
   BadgeVariant,
   BadgeRule,
+  BadgesConfig,
   Status,
   NavItem,
   CardConfig,

@@ -203,6 +203,31 @@ export interface BadgeRule {
 }
 
 /**
+ * Top-level `badges` config — glob rules plus badge-display policy.
+ *
+ * Glob rules live under `rules`; the standalone `group` flag governs
+ * whether a collapsible group that is *also* a doc (a nav row that both
+ * toggles children and links to a page) shows its badge. Badges from
+ * frontmatter, `defaults`, and named statuses still apply without any
+ * `rules` entry — `rules` is only needed for route-glob matching.
+ */
+export interface BadgesConfig {
+  /**
+   * Glob-based badge rules — apply a badge (or named status) to every
+   * page whose route path matches, without touching each file. A page's
+   * own frontmatter or `defaults` badge/status overrides a matching rule.
+   */
+  readonly rules?: readonly BadgeRule[]
+  /**
+   * Show badges on collapsible-doc groups. Defaults to `false` — a group's
+   * badge is hidden on every surface (sidebar, breadcrumb, and section
+   * cards) to avoid crowding the sidebar collapse chevron. Set `true` to
+   * surface it everywhere at once, exactly like a normal page's badge.
+   */
+  readonly group?: boolean
+}
+
+/**
  * A named, documented status in the registry — the semantic layer over
  * {@link BadgeConfig}. Referenced by `id` from a page's `status`
  * frontmatter (or a {@link BadgeRule}); resolves to a badge chip whose
@@ -1249,13 +1274,6 @@ export interface SidebarConfig {
    * Promo card rendered at the bottom of the docs sidebar.
    */
   readonly promo?: SidebarPromo
-  /**
-   * Show badges on collapsible group items that are also docs (a nav row
-   * that both toggles children and links to a page). Defaults to `false` —
-   * the badge is hidden there to avoid colliding with the collapse chevron,
-   * and still shows on the page's breadcrumb. Set `true` to show it anyway.
-   */
-  readonly groupBadges?: boolean
 }
 
 /**
@@ -1738,12 +1756,12 @@ export interface CiderpressConfig {
    */
   readonly sidebar?: SidebarConfig
   /**
-   * Glob-based badge rules — apply a badge (or named status) to every
-   * page whose route path matches, without touching each file. Badges
-   * render in both the sidebar and the breadcrumb. A page's own
-   * frontmatter or `defaults` badge/status overrides a matching rule.
+   * Badge configuration — glob {@link BadgeRule}s under `rules`, plus the
+   * `group` flag that controls whether collapsible-doc groups show their
+   * badge. Badges render on the sidebar, breadcrumb, and section cards.
+   * A page's own frontmatter or `defaults` badge/status overrides a rule.
    */
-  readonly badges?: readonly BadgeRule[]
+  readonly badges?: BadgesConfig
   /**
    * Named status registry — the semantic layer over badges. Entries are
    * merged over the built-in {@link DEFAULT_STATUSES} by `id` (matching

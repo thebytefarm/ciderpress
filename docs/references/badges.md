@@ -107,14 +107,16 @@ defineConfig({
 
 ## Glob rules
 
-Apply a badge or status to many pages by route without touching each file. Rules live in the top-level `badges` config; each rule needs a `match` and at least one of `badge` or `status`.
+Apply a badge or status to many pages by route without touching each file. Rules live under `badges.rules`; each rule needs a `match` and at least one of `badge` or `status`.
 
 ```ts
 defineConfig({
-  badges: [
-    { match: '/api/experimental/**', status: 'alpha' },
-    { match: ['/v2/**', '/beta/**'], badge: { text: 'v2', variant: 'info' } },
-  ],
+  badges: {
+    rules: [
+      { match: '/api/experimental/**', status: 'alpha' },
+      { match: ['/v2/**', '/beta/**'], badge: { text: 'v2', variant: 'info' } },
+    ],
+  },
 })
 ```
 
@@ -137,7 +139,7 @@ Within a single source, `status` and `badge` both render.
 | Sidebar item   | Chip after the page label. Long labels truncate with an ellipsis.        |
 | Breadcrumb     | Chip right of the trail on the page.                                     |
 | Landing card   | Chip on the child's card on an auto-generated section landing page.      |
-| Collapsible group that is also a doc | No sidebar chip by default (it would collide with the collapse toggle) — the badge still shows on the breadcrumb and landing card. Set [`sidebar.groupBadges: true`](/reference/configuration#sidebar) to show it in the sidebar too. |
+| Collapsible group that is also a doc | No chip on **any** surface by default — the badge is hidden in the sidebar, breadcrumb, and landing card together to avoid crowding the collapse toggle. Set [`badges.group: true`](/reference/configuration#badges) to surface it everywhere at once, like a normal page. |
 
 ## References
 

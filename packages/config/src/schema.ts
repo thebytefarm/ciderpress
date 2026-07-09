@@ -31,6 +31,7 @@ import type {
   AnnouncementConfig,
   BadgeConfig,
   BadgeRule,
+  BadgesConfig,
   Status,
   BannerConfig,
   BannerFn,
@@ -136,6 +137,13 @@ const badgeRuleSchema = z
   .refine((rule) => rule.badge !== undefined || rule.status !== undefined, {
     message: 'A badge rule must declare at least one of `badge` or `status`.',
   })
+
+const badgesConfigSchema = z
+  .object({
+    rules: z.array(badgeRuleSchema).optional(),
+    group: z.boolean().optional(),
+  })
+  .strict()
 
 const statusSchema = z
   .object({
@@ -381,7 +389,6 @@ const sidebarConfigSchema = z
     top: z.array(buttonConfigSchema).optional(),
     bottom: z.array(buttonConfigSchema).optional(),
     promo: sidebarPromoSchema.optional(),
-    groupBadges: z.boolean().optional(),
   })
   .strict()
 
@@ -743,7 +750,7 @@ export const ciderpressConfigSchema = z
     socials: z.array(socialLinkSchema).optional(),
     topbar: topbarConfigSchema.optional(),
     sidebar: sidebarConfigSchema.optional(),
-    badges: z.array(badgeRuleSchema).optional(),
+    badges: badgesConfigSchema.optional(),
     statuses: z.array(statusSchema).optional(),
     footer: footerConfigSchema.optional(),
     editLink: z.union([z.literal(false), editLinkConfigSchema]).optional(),
@@ -781,6 +788,8 @@ const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
 const _guardBadgeConfig: z.ZodType<BadgeConfig> = badgeConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardBadgeRule: z.ZodType<BadgeRule> = badgeRuleSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardBadgesConfig: z.ZodType<BadgesConfig> = badgesConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardStatus: z.ZodType<Status> = statusSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

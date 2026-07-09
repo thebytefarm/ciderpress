@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import type { Page, CiderpressConfig } from '@ciderpress/config'
+import type { BadgeRule, Page, CiderpressConfig } from '@ciderpress/config'
 import { collectAllWorkspaceItems, resolveStatuses } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import { match, P } from 'massaman/match'
@@ -142,7 +142,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
   // tree so `_meta.json` generation can carry them as Rspress `tag`s, and
   // collect a route→badges map for page-level rendering (breadcrumbs).
   const badgeResult = await applyBadges(withLandings, {
-    rules: config.badges ?? [],
+    rules: resolveBadgeRules(config),
     registry: resolveStatuses(config.statuses),
     groupBadges: resolveGroupBadges(config),
   })
@@ -288,15 +288,29 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 }
 
 /**
- * Read the `sidebar.groupBadges` toggle (default `false`).
+ * Read the glob {@link BadgeRule}s from the `badges.rules` config.
  *
  * @private
  * @param config - Loaded ciderpress config
- * @returns True when collapsible-doc groups should show their sidebar badge
+ * @returns The badge rules, or an empty array when none are declared
+ */
+function resolveBadgeRules(config: CiderpressConfig): readonly BadgeRule[] {
+  return match(config.badges)
+    .with({ rules: P.nonNullable }, (badges) => badges.rules)
+    .otherwise(() => [])
+}
+
+/**
+ * Read the `badges.group` toggle (default `false`) — whether a
+ * collapsible-doc group surfaces its badge on any surface.
+ *
+ * @private
+ * @param config - Loaded ciderpress config
+ * @returns True when collapsible-doc groups should show their badge
  */
 function resolveGroupBadges(config: CiderpressConfig): boolean {
-  return match(config.sidebar)
-    .with(P.nonNullable, (sidebar) => sidebar.groupBadges ?? false)
+  return match(config.badges)
+    .with({ group: true }, () => true)
     .otherwise(() => false)
 }
 
