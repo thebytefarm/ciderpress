@@ -114,7 +114,7 @@ function validateSemantics(config: CiderpressConfig): ConfigResult<true> {
 }
 
 /**
- * Read the feature items from the new home.features.items position.
+ * Collect feature items across every `features` block in `home.blocks`.
  *
  * @private
  */
@@ -123,11 +123,20 @@ function readFeatureItems(config: CiderpressConfig): readonly Feature[] | undefi
   if (home === undefined) {
     return undefined
   }
-  const features = home.features
-  if (features === undefined) {
+  const blocks = home.blocks
+  if (blocks === undefined) {
     return undefined
   }
-  return features.items
+  const items = blocks.flatMap((block) => {
+    if (block.type !== 'features') {
+      return []
+    }
+    return block.items ?? []
+  })
+  if (items.length === 0) {
+    return undefined
+  }
+  return items
 }
 
 /**

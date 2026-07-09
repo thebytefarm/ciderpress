@@ -1,9 +1,7 @@
-import type { HomeFeaturesConfig } from '@ciderpress/config'
-import { useFrontmatter } from '@rspress/core/runtime'
+import type { TruncateConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
-import { useCiderpress } from '../../hooks/use-ciderpress'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
@@ -13,29 +11,27 @@ interface FrontmatterFeaturesHeading {
   readonly subtitle?: string
 }
 
+interface HomeFeatureProps {
+  readonly items?: readonly FeatureItem[]
+  readonly heading?: FrontmatterFeaturesHeading
+  readonly truncate?: TruncateConfig
+}
+
 const DEFAULT_HEADING_EYEBROW = 'Features'
 const DEFAULT_HEADING_TITLE = 'Built for the way you ship.'
 const DEFAULT_HEADING_SUBTITLE =
   "Everything you need, nothing you don't. Configured in TypeScript, validated at boot."
 
 /**
- * Custom HomeFeature override for ciderpress.
- * Uses useFrontmatter() hook to read features and renders with FeatureCard/FeatureGrid styling.
+ * Features grid block. Renders the supplied feature cards under a heading,
+ * or nothing when no cards are present.
  *
- * @returns React element with feature grid or null
+ * @param props - Resolved feature cards, optional heading, and truncation limits.
+ * @returns React element with the feature grid, or null.
  */
-export function HomeFeature(): React.ReactElement | null {
-  const { frontmatter } = useFrontmatter()
-  const { home } = useCiderpress()
-  const gridConfig = home && home.features
-
-  // Rspress types frontmatter as its own FrontMatterMeta shape which does not
-  // include ciderpress-specific `features`. The double cast is necessary because
-  // no shared Zod schema exists for frontmatter validation at runtime.
-  const fm = frontmatter as Record<string, unknown>
-  const features = fm.features as readonly FeatureItem[] | undefined
-  const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
-  // Frontmatter is unvalidated user content — a `featuresHeading.title: {}`
+export function HomeFeature(props: HomeFeatureProps): React.ReactElement | null {
+  const { items, heading, truncate } = props
+  // Frontmatter is unvalidated user content — a `heading.title: {}`
   // would otherwise render as `[object Object]` in the H2. Treat any
   // non-string value as missing and fall through to the framework default.
   const headingEyebrow = match(heading && heading.label)
@@ -48,19 +44,17 @@ export function HomeFeature(): React.ReactElement | null {
     .with(P.string, (s) => s)
     .otherwise(() => DEFAULT_HEADING_SUBTITLE)
 
-  return match(features)
+  return match(items)
     .with(
       P.when((f): f is readonly FeatureItem[] => Array.isArray(f) && f.length > 0),
-      (items) => (
+      (list) => (
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
             <div className="cp-feature-section-head__eyebrow">{headingEyebrow}</div>
             <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
             <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
           </div>
-          <div className="cp-feature-grid">
-            {items.map((f, i) => renderFeature(f, i, gridConfig))}
-          </div>
+          <div className="cp-feature-grid">{list.map((f, i) => renderFeature(f, i, truncate))}</div>
         </div>
       )
     )
@@ -74,16 +68,16 @@ export function HomeFeature(): React.ReactElement | null {
  * @private
  * @param feature - Feature item data
  * @param index - Array index for key generation
- * @param gridConfig - Optional grid config for truncation
+ * @param truncate - Optional line-clamp limits for card text
  * @returns Feature card element
  */
 function renderFeature(
   feature: FeatureItem,
   index: number,
-  gridConfig: HomeFeaturesConfig | undefined
+  truncate: TruncateConfig | undefined
 ): React.ReactElement {
-  const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
-  const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
+  const titleLines = truncate && truncate.title
+  const descLines = truncate && truncate.description
 
   return (
     <FeatureCard

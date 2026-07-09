@@ -2,7 +2,15 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { Feature, Page, SerializedIcon, Workspace, CiderpressConfig } from '@ciderpress/config'
+import type {
+  Feature,
+  HomeBlock,
+  HomeConfig,
+  Page,
+  SerializedIcon,
+  Workspace,
+  CiderpressConfig,
+} from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
@@ -92,16 +100,6 @@ export async function generateDefaultHomePage(
   const hero = match(home)
     .with(P.nonNullable, (h) => h.hero)
     .otherwise(() => undefined)
-  const featuresItems = match(home)
-    .with(P.nonNullable, (h) => h.features)
-    .otherwise(() => undefined)
-  const explicitFeatureItems = match(featuresItems)
-    .with(P.nonNullable, (f) => f.items)
-    .otherwise(() => undefined)
-  const features = await match(explicitFeatureItems)
-    .with(P.nonNullable, buildExplicitFeatures)
-    .otherwise(() => buildFeatures(config.pages, repoRoot))
-  const frontmatterFeatures = buildFrontmatterFeatures(features)
   const workspaceResult = buildWorkspaceData(config)
 
   // Landing-page extensions live on the typed `HomeConfig` now — no more
@@ -119,28 +117,6 @@ export async function generateDefaultHomePage(
   const heroDemo = match(hero)
     .with(P.nonNullable, (h) => h.demo)
     .otherwise(() => undefined)
-  const proof = match(home)
-    .with(P.nonNullable, (h) => h.proof)
-    .otherwise(() => undefined)
-  const cta = match(home)
-    .with(P.nonNullable, (h) => h.cta)
-    .otherwise(() => undefined)
-  const split = match(home)
-    .with(P.nonNullable, (h) => h.split)
-    .otherwise(() => undefined)
-  const showcaseConfig = match(home)
-    .with(P.nonNullable, (h) => h.showcase)
-    .otherwise(() => undefined)
-  const layout = match(home)
-    .with(P.nonNullable, (h) => h.layout)
-    .otherwise(() => undefined)
-  const featuresHeading = match(featuresItems)
-    .with(P.nonNullable, (f) => f.heading)
-    .otherwise(() => undefined)
-  const workspacesHeading = match(showcaseConfig)
-    .with(P.nonNullable, (s) => s.heading)
-    .otherwise(() => undefined)
-
   const brandBanner = match(config.brand)
     .with(P.nonNullable, (b) => b.banner)
     .otherwise(() => undefined)
@@ -167,46 +143,113 @@ export async function generateDefaultHomePage(
     },
   }
 
+  // Landing bands compile to an ordered `blocks` array. `heroDemo` still
+  // rides along on the hero config verbatim — the HomeLayout resolves its
+  // image/terminal variant at render time.
+  const blocks = await buildHomeBlocks({ home, pages: config.pages, repoRoot })
+
   const frontmatterData: Record<string, unknown> = {
     pageType: 'home',
     hero: heroConfig,
-    ...match(frontmatterFeatures.length > 0)
-      .with(true, () => ({ features: frontmatterFeatures }))
-      .otherwise(() => ({})),
-    ...match(featuresHeading)
-      .with(P.nonNullable, (h) => ({ featuresHeading: h }))
-      .otherwise(() => ({})),
-    ...match(workspacesHeading)
-      .with(P.nonNullable, (h) => ({ workspacesHeading: h }))
-      .otherwise(() => ({})),
-    ...match(proof)
-      .with(P.nonNullable, (t) => ({ trust: t }))
-      .otherwise(() => ({})),
-    ...match(cta)
-      .with(P.nonNullable, (c) => ({ cta: c }))
-      .otherwise(() => ({})),
-    // heroDemo flows through verbatim — `false` suppresses the slot,
-    // an object selects between image and structured terminal variants
-    // at render time. The HomeLayout handles both via discriminator.
     ...match(heroDemo)
       .with(P.nonNullable, (h) => ({ heroDemo: h }))
       .otherwise(() => ({})),
-    // split flows through verbatim — `false` suppresses the slot, an
-    // object overrides every framework-default copy. HomeLayout reads
-    // the object shape and renders it via HomeSplit.
-    ...match(split)
-      .with(P.nonNullable, (s) => ({ split: s }))
-      .otherwise(() => ({})),
-    // `home.layout` is plumbed into frontmatter as-is so the HomeLayout
-    // component can drive section render order from a single source.
-    ...match(layout)
-      .with(P.nonNullable, (l) => ({ layout: l }))
+    ...match(blocks.length > 0)
+      .with(true, () => ({ blocks }))
       .otherwise(() => ({})),
   }
 
   const content = stringifyFrontmatter('', frontmatterData)
 
   return { content, workspaces: workspaceResult.data }
+}
+
+/**
+ * Framework default home deck, synthesized when `home.blocks` is omitted:
+ * an auto-generated features grid (derived from the first pages) plus the
+ * workspace showcase. Mirrors the pre-blocks default landing surface.
+ *
+ * @private
+ */
+const DEFAULT_HOME_BLOCKS: readonly HomeBlock[] = [{ type: 'features' }, { type: 'showcase' }]
+
+/**
+ * Parameters for {@link buildHomeBlocks}.
+ *
+ * @private
+ */
+interface BuildHomeBlocksParams {
+  readonly home: HomeConfig | undefined
+  readonly pages: readonly Page[]
+  readonly repoRoot: string
+}
+
+/**
+ * Resolve `home.blocks` into serializable frontmatter blocks, falling back
+ * to the framework default deck when none are configured. Only `features`
+ * blocks need async resolution (card + icon serialization); every other
+ * block is plain data passed through verbatim.
+ *
+ * @private
+ * @param params - Home config, pages, and repo root
+ * @returns Ordered, frontmatter-ready block objects
+ */
+async function buildHomeBlocks(
+  params: BuildHomeBlocksParams
+): Promise<readonly Record<string, unknown>[]> {
+  const { home, pages, repoRoot } = params
+  const configured = match(home)
+    .with(P.nonNullable, (h) => h.blocks)
+    .otherwise(() => undefined)
+  const blockList = match(configured)
+    .with(P.nonNullable, (b) => b)
+    .otherwise(() => DEFAULT_HOME_BLOCKS)
+  return Promise.all(blockList.map((block) => resolveHomeBlock({ block, pages, repoRoot })))
+}
+
+/**
+ * Parameters for {@link resolveHomeBlock}.
+ *
+ * @private
+ */
+interface ResolveHomeBlockParams {
+  readonly block: HomeBlock
+  readonly pages: readonly Page[]
+  readonly repoRoot: string
+}
+
+/**
+ * Resolve a single home block into a serializable frontmatter object.
+ * `features` blocks resolve their cards (explicit `items` or auto-derived
+ * from pages) and serialize icons; all other block types are already
+ * plain data and pass through unchanged.
+ *
+ * @private
+ * @param params - The block plus pages/repo root for feature resolution
+ * @returns Frontmatter-ready block object
+ */
+async function resolveHomeBlock(params: ResolveHomeBlockParams): Promise<Record<string, unknown>> {
+  const { block, pages, repoRoot } = params
+  if (block.type !== 'features') {
+    return { ...block }
+  }
+  const features = await match(block.items)
+    .with(P.nonNullable, buildExplicitFeatures)
+    .otherwise(() => buildFeatures(pages, repoRoot))
+  const frontmatterFeatures = buildFrontmatterFeatures(features)
+  return {
+    type: 'features',
+    items: frontmatterFeatures,
+    ...match(block.heading)
+      .with(P.nonNullable, (h) => ({ heading: h }))
+      .otherwise(() => ({})),
+    ...match(block.columns)
+      .with(P.nonNullable, (c) => ({ columns: c }))
+      .otherwise(() => ({})),
+    ...match(block.truncate)
+      .with(P.nonNullable, (t) => ({ truncate: t }))
+      .otherwise(() => ({})),
+  }
 }
 
 /**

@@ -979,9 +979,11 @@ export interface HomeHeroDemoTerminal {
 export type HomeHeroDemoConfig = HomeHeroDemoImage | HomeHeroDemoTerminal
 
 /**
- * Visual paired with a {@link HomeSplitConfig} copy column.
+ * Code visual for a {@link HomeSplitConfig} — a snippet rendered with
+ * Rspress's native Shiki highlighter (the same pipeline as markdown code
+ * fences), so it themes identically to the rest of the site.
  */
-export interface HomeSplitVisual {
+export interface HomeSplitVisualCode {
   /**
    * Code snippet rendered as a syntax-highlighted preview.
    */
@@ -991,6 +993,37 @@ export interface HomeSplitVisual {
    */
   readonly language?: string
 }
+
+/**
+ * Image visual for a {@link HomeSplitConfig} — a screenshot or graphic
+ * rendered inside the split frame. Mirrors {@link HomeHeroDemoImage}.
+ */
+export interface HomeSplitVisualImage {
+  /**
+   * Image URL or path (base-prefixed at render time).
+   */
+  readonly src: string
+  /**
+   * Alt text for the image. Defaults to an empty string.
+   */
+  readonly alt?: string
+  /**
+   * Explicit width (px number or CSS length).
+   */
+  readonly width?: number | string
+  /**
+   * Explicit height (px number or CSS length).
+   */
+  readonly height?: number | string
+}
+
+/**
+ * Visual paired with a {@link HomeSplitConfig} copy column — either a
+ * highlighted code snippet ({@link HomeSplitVisualCode}) or an image
+ * ({@link HomeSplitVisualImage}). Discriminated structurally: code
+ * objects carry `code`, image objects carry `src`.
+ */
+export type HomeSplitVisual = HomeSplitVisualCode | HomeSplitVisualImage
 
 /**
  * "Show and tell" Split block — title + bullets + visual sample (was
@@ -1018,9 +1051,14 @@ export interface HomeSplitConfig {
    */
   readonly cta?: ButtonConfig
   /**
-   * Visual rendered in the right column.
+   * Visual rendered in the column opposite the copy.
    */
   readonly visual?: HomeSplitVisual
+  /**
+   * Flip the column order — visual on the left, copy on the right.
+   * Defaults to `false` (copy left, visual right).
+   */
+  readonly reverse?: boolean
 }
 
 /**
@@ -1043,71 +1081,75 @@ export interface HomeCtaConfig {
 }
 
 /**
- * Identifier for one of the built-in home-page sections (`trust` →
- * `proof`, `workspaces` → `showcase`).
+ * Discriminator tag identifying a {@link HomeBlock} variant.
  */
-export type HomeSectionId = 'hero' | 'proof' | 'features' | 'showcase' | 'split' | 'cta'
+export type HomeBlockType = 'proof' | 'features' | 'showcase' | 'split' | 'cta'
 
 /**
- * Default render order for `home.layout` when the field is omitted.
+ * "Used by / Trusted by" strip, as a home block.
  */
-export const DEFAULT_HOME_LAYOUT: readonly HomeSectionId[] = Object.freeze([
-  'hero',
-  'proof',
-  'features',
-  'showcase',
-  'split',
-  'cta',
-])
+export interface HomeProofBlock extends HomeProofConfig {
+  readonly type: 'proof'
+}
 
 /**
- * Home layout entry — bare section id, future-extensible object, or a
- * custom component (inline or path string).
+ * Features grid, as a home block.
  */
-export type HomeLayoutEntry =
-  | HomeSectionId
-  | { readonly sectionId: HomeSectionId }
-  | { readonly component: React.ComponentType<{ readonly paths: Paths }> }
-  | { readonly component: string }
+export interface HomeFeaturesBlock extends HomeFeaturesConfig {
+  readonly type: 'features'
+}
 
 /**
- * Home page configuration — hero, proof strip, features grid, showcase
- * grid, split block, and final CTA. Every block is optional; the
- * `layout` field controls render order.
+ * Generalized card grid (workspaces / arbitrary pages), as a home block.
+ */
+export interface HomeShowcaseBlock extends HomeShowcaseConfig {
+  readonly type: 'showcase'
+}
+
+/**
+ * "Show and tell" split section, as a home block. Repeatable — list as
+ * many as you like, in any position.
+ */
+export interface HomeSplitBlock extends HomeSplitConfig {
+  readonly type: 'split'
+}
+
+/**
+ * Final CTA band, as a home block.
+ */
+export interface HomeCtaBlock extends HomeCtaConfig {
+  readonly type: 'cta'
+}
+
+/**
+ * A single band on the home page below the hero. Discriminated on
+ * `type`; blocks render in array order and any variant may repeat.
+ */
+export type HomeBlock =
+  | HomeProofBlock
+  | HomeFeaturesBlock
+  | HomeShowcaseBlock
+  | HomeSplitBlock
+  | HomeCtaBlock
+
+/**
+ * Home page configuration — a special-cased `hero` header plus an
+ * ordered array of {@link HomeBlock} bands. Array order is render order;
+ * any block type may appear more than once (multiple splits, etc.).
  */
 export interface HomeConfig {
   /**
    * Hero block — label, tagline, actions, and optional demo. Optional —
    * the framework renders sensible defaults from the site title and
-   * `brand.banner` when omitted.
+   * `brand.banner` when omitted. Always rendered first, above `blocks`.
    */
   readonly hero?: HomeHeroConfig
   /**
-   * "Used by / Trusted by" strip rendered between the hero and the
-   * features grid.
+   * Ordered list of home-page bands rendered below the hero. Omit to get
+   * the framework default deck (auto-generated features grid + workspace
+   * showcase derived from the repo).
    */
-  readonly proof?: HomeProofConfig
-  /**
-   * Features grid block — cards + grid layout combined.
-   */
-  readonly features?: HomeFeaturesConfig
-  /**
-   * Generalized card grid (was `home.workspaces`).
-   */
-  readonly showcase?: HomeShowcaseConfig
-  /**
-   * "Show and tell" Split section.
-   */
-  readonly split?: false | HomeSplitConfig
-  /**
-   * Final CTA band rendered just above the footer.
-   */
-  readonly cta?: HomeCtaConfig
-  /**
-   * Render order for home-page sections. Accepts bare ids, objects
-   * carrying a `sectionId`, or custom React components (inline or path).
-   */
-  readonly layout?: readonly HomeLayoutEntry[]
+  readonly blocks?: readonly HomeBlock[]
 }
 
 /**

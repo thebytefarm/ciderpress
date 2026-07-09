@@ -47,6 +47,7 @@ import type {
   FooterColumn,
   FooterConfig,
   Frontmatter,
+  HomeBlock,
   HomeConfig,
   HomeCtaConfig,
   HomeFeaturesConfig,
@@ -55,13 +56,13 @@ import type {
   HomeHeroDemoImage,
   HomeHeroDemoLine,
   HomeHeroDemoTerminal,
-  HomeLayoutEntry,
   HomeProofConfig,
   HomeSectionHeading,
-  HomeSectionId,
   HomeShowcaseConfig,
   HomeSplitConfig,
   HomeSplitVisual,
+  HomeSplitVisualCode,
+  HomeSplitVisualImage,
   IconConfig,
   IconId,
   ImageSource,
@@ -73,7 +74,6 @@ import type {
   NavItem,
   OpenAPISpec,
   Page,
-  Paths,
   ReportLinkConfig,
   ResolvedPage,
   SidebarConfig,
@@ -103,7 +103,6 @@ const editLinkUrlFnSchema = z.custom<(page: ResolvedPage) => string>(isFunction)
 const editLinkOnResolveFnSchema = z.custom<(page: ResolvedPage) => void>(isFunction)
 const reportLinkUrlFnSchema = z.custom<(page: ResolvedPage) => string>(isFunction)
 const reportLinkOnResolveFnSchema = z.custom<(page: ResolvedPage) => void>(isFunction)
-const layoutComponentSchema = z.custom<ComponentType<{ readonly paths: Paths }>>(isFunction)
 const loaderComponentSchema = z.custom<ComponentType>(isFunction)
 
 const logoConfigSchema = z.union([z.string(), logoFnSchema])
@@ -491,12 +490,23 @@ const homeShowcaseConfigSchema = z
   })
   .strict()
 
-const homeSplitVisualSchema = z
+const homeSplitVisualCodeSchema = z
   .object({
     code: z.string().min(1, 'split.visual.code must be a non-empty string'),
     language: z.string().optional(),
   })
   .strict()
+
+const homeSplitVisualImageSchema = z
+  .object({
+    src: z.string().min(1, 'split.visual.src must be a non-empty string'),
+    alt: z.string().optional(),
+    width: z.union([z.number(), z.string()]).optional(),
+    height: z.union([z.number(), z.string()]).optional(),
+  })
+  .strict()
+
+const homeSplitVisualSchema = z.union([homeSplitVisualCodeSchema, homeSplitVisualImageSchema])
 
 const homeSplitConfigSchema = z
   .object({
@@ -506,45 +516,42 @@ const homeSplitConfigSchema = z
     bullets: z.array(z.string()).optional(),
     cta: buttonConfigSchema.optional(),
     visual: homeSplitVisualSchema.optional(),
+    reverse: z.boolean().optional(),
   })
   .strict()
 
-const homeSectionIdSchema = z.enum(['hero', 'proof', 'features', 'showcase', 'split', 'cta'])
+const homeProofBlockSchema = z
+  .object({ type: z.literal('proof'), ...homeProofConfigSchema.shape })
+  .strict()
 
-const homeLayoutEntrySchema = z.union([
-  homeSectionIdSchema,
-  z.object({ sectionId: homeSectionIdSchema }).strict(),
-  z.object({ component: layoutComponentSchema }).strict(),
-  z.object({ component: z.string() }).strict(),
+const homeFeaturesBlockSchema = z
+  .object({ type: z.literal('features'), ...homeFeaturesConfigSchema.shape })
+  .strict()
+
+const homeShowcaseBlockSchema = z
+  .object({ type: z.literal('showcase'), ...homeShowcaseConfigSchema.shape })
+  .strict()
+
+const homeSplitBlockSchema = z
+  .object({ type: z.literal('split'), ...homeSplitConfigSchema.shape })
+  .strict()
+
+const homeCtaBlockSchema = z
+  .object({ type: z.literal('cta'), ...homeCtaConfigSchema.shape })
+  .strict()
+
+const homeBlockSchema = z.discriminatedUnion('type', [
+  homeProofBlockSchema,
+  homeFeaturesBlockSchema,
+  homeShowcaseBlockSchema,
+  homeSplitBlockSchema,
+  homeCtaBlockSchema,
 ])
 
 const homeConfigSchema = z
   .object({
     hero: homeHeroConfigSchema.optional(),
-    proof: homeProofConfigSchema.optional(),
-    features: homeFeaturesConfigSchema.optional(),
-    showcase: homeShowcaseConfigSchema.optional(),
-    split: z.union([z.literal(false), homeSplitConfigSchema]).optional(),
-    cta: homeCtaConfigSchema.optional(),
-    layout: z
-      .array(homeLayoutEntrySchema)
-      .refine(
-        (entries) => {
-          const sectionIds = entries.flatMap((entry) => {
-            if (typeof entry === 'string') {
-              return [entry]
-            }
-            if (entry !== null && typeof entry === 'object' && 'sectionId' in entry) {
-              return [entry.sectionId]
-            }
-            return []
-          })
-          return new Set(sectionIds).size === sectionIds.length
-        },
-        { message: 'home.layout must not contain duplicate section ids' }
-      )
-      .meta({ uniqueItems: true })
-      .optional(),
+    blocks: z.array(homeBlockSchema).optional(),
   })
   .strict()
 
@@ -833,6 +840,10 @@ const _guardHomeSplitConfig: z.ZodType<HomeSplitConfig> = homeSplitConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeSplitVisual: z.ZodType<HomeSplitVisual> = homeSplitVisualSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeSplitVisualCode: z.ZodType<HomeSplitVisualCode> = homeSplitVisualCodeSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeSplitVisualImage: z.ZodType<HomeSplitVisualImage> = homeSplitVisualImageSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeCtaConfig: z.ZodType<HomeCtaConfig> = homeCtaConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeHeroDemoConfig: z.ZodType<HomeHeroDemoConfig> = homeHeroDemoConfigSchema
@@ -845,11 +856,9 @@ const _guardHomeHeroDemoLine: z.ZodType<HomeHeroDemoLine> = homeHeroDemoLineSche
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeSectionHeading: z.ZodType<HomeSectionHeading> = homeSectionHeadingSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeLayoutEntry: z.ZodType<HomeLayoutEntry> = homeLayoutEntrySchema
+const _guardHomeBlock: z.ZodType<HomeBlock> = homeBlockSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeConfig: z.ZodType<HomeConfig> = homeConfigSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSectionId: z.ZodType<HomeSectionId> = homeSectionIdSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardBrandConfig: z.ZodType<BrandConfig> = brandConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

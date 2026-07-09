@@ -17,8 +17,10 @@ export default defineConfig({
     hero: {
       tagline: 'Everything you need to build, ship, and scale.',
     },
-    features: { truncate: { description: 2 } },
-    showcase: { columns: 2, truncate: { title: 1, description: 2 } },
+    blocks: [
+      { type: 'features', truncate: { description: 2 } },
+      { type: 'showcase', columns: 2, truncate: { title: 1, description: 2 } },
+    ],
   },
   apps: [
     {
