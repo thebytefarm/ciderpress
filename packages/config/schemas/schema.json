@@ -1982,127 +1982,133 @@
             "cta"
           ],
           "additionalProperties": false
-        },
-        "groupBadges": {
-          "type": "boolean"
         }
       },
       "additionalProperties": false
     },
     "badges": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "match": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
-              }
-            ]
-          },
-          "badge": {
-            "anyOf": [
-              {
+      "type": "object",
+      "properties": {
+        "rules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "match": {
                 "anyOf": [
                   {
                     "type": "string"
                   },
                   {
-                    "type": "object",
-                    "properties": {
-                      "text": {
-                        "type": "string"
-                      },
-                      "variant": {
-                        "type": "string",
-                        "enum": [
-                          "info",
-                          "success",
-                          "warning",
-                          "danger",
-                          "neutral"
-                        ]
-                      },
-                      "color": {
-                        "type": "string"
-                      },
-                      "tooltip": {
-                        "type": "string"
-                      }
-                    },
-                    "required": [
-                      "text"
-                    ],
-                    "additionalProperties": false
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
                   }
                 ]
               },
-              {
-                "type": "array",
-                "items": {
-                  "anyOf": [
-                    {
-                      "type": "string"
-                    },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "text": {
-                          "type": "string"
-                        },
-                        "variant": {
-                          "type": "string",
-                          "enum": [
-                            "info",
-                            "success",
-                            "warning",
-                            "danger",
-                            "neutral"
-                          ]
-                        },
-                        "color": {
-                          "type": "string"
-                        },
-                        "tooltip": {
-                          "type": "string"
-                        }
+              "badge": {
+                "anyOf": [
+                  {
+                    "anyOf": [
+                      {
+                        "type": "string"
                       },
-                      "required": [
-                        "text"
-                      ],
-                      "additionalProperties": false
+                      {
+                        "type": "object",
+                        "properties": {
+                          "text": {
+                            "type": "string"
+                          },
+                          "variant": {
+                            "type": "string",
+                            "enum": [
+                              "info",
+                              "success",
+                              "warning",
+                              "danger",
+                              "neutral"
+                            ]
+                          },
+                          "color": {
+                            "type": "string"
+                          },
+                          "tooltip": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "text"
+                        ],
+                        "additionalProperties": false
+                      }
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "text": {
+                              "type": "string"
+                            },
+                            "variant": {
+                              "type": "string",
+                              "enum": [
+                                "info",
+                                "success",
+                                "warning",
+                                "danger",
+                                "neutral"
+                              ]
+                            },
+                            "color": {
+                              "type": "string"
+                            },
+                            "tooltip": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "text"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
                     }
-                  ]
-                }
-              }
-            ]
-          },
-          "status": {
-            "anyOf": [
-              {
-                "type": "string"
+                  }
+                ]
               },
-              {
-                "type": "array",
-                "items": {
-                  "type": "string"
-                }
+              "status": {
+                "anyOf": [
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                ]
               }
-            ]
+            },
+            "required": [
+              "match"
+            ],
+            "additionalProperties": false
           }
         },
-        "required": [
-          "match"
-        ],
-        "additionalProperties": false
-      }
+        "group": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
     },
     "statuses": {
       "type": "array",

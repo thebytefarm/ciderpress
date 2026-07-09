@@ -564,12 +564,11 @@ sidebar: {
 }
 ```
 
-| Field         | Type            | Description                                                                                                                          |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
-| `top`         | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`)                                                                     |
-| `bottom`      | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`)                                                                     |
-| `promo`       | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar                                                                                  |
-| `groupBadges` | `boolean`       | Show badges on collapsible group items that are also docs. Defaults to `false` (see [Badges](/reference/badges#where-badges-render)) |
+| Field    | Type            | Description                                                      |
+| -------- | --------------- | ---------------------------------------------------------------- |
+| `top`    | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`) |
+| `bottom` | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`) |
+| `promo`  | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar              |
 
 ### SidebarLink
 
@@ -604,13 +603,31 @@ interface SidebarPromo {
 
 ## `badges`
 
-Glob rules that apply a badge — or a named [status](#statuses) — to every page whose route path matches, without touching each file. Badges render in both the sidebar and the breadcrumb. A page's own frontmatter or `defaults` badge/status wins over a rule. See the [Badges](/reference/badges) reference for the full model.
+Badge configuration — glob `rules` that apply a badge (or a named [status](#statuses)) by route, plus the `group` flag for collapsible-doc groups. Badges render on the sidebar, breadcrumb, and section cards. A page's own frontmatter or `defaults` badge/status wins over a rule. See the [Badges](/reference/badges) reference for the full model.
 
 ```ts
-badges: [
-  { match: '/api/experimental/**', status: 'alpha' },
-  { match: ['/v2/**', '/beta/**'], badge: { text: 'v2', variant: 'info' } },
-]
+badges: {
+  rules: [
+    { match: '/api/experimental/**', status: 'alpha' },
+    { match: ['/v2/**', '/beta/**'], badge: { text: 'v2', variant: 'info' } },
+  ],
+  group: true,
+}
+```
+
+| Field   | Type          | Description                                                                                                         |
+| ------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `rules` | `BadgeRule[]` | Glob rules applied by route path (see [BadgeRule](#badgerule))                                                      |
+| `group` | `boolean`     | Show a collapsible-doc group's badge on every surface. Defaults to `false` (hidden everywhere to spare the chevron) |
+
+### BadgeRule
+
+```ts
+interface BadgeRule {
+  match: string | string[]
+  badge?: string | BadgeConfig | array
+  status?: string | string[]
+}
 ```
 
 | Field    | Type                             | Description                                    |

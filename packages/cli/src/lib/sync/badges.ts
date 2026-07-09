@@ -13,8 +13,11 @@
  * yields a badge wins outright (override, not merge).
  *
  * A collapsible group entry that is *also* a doc (has children and a link)
- * gets no sidebar `tag` — the badge would collide with the collapse
- * chevron. Its badge still surfaces on the page via the route→badges map.
+ * shows no badge by default — it would crowd the collapse chevron — and the
+ * suppression is uniform: the sidebar `tag`, the route→badges map (which
+ * feeds the breadcrumb), and section cards are all withheld together so a
+ * group never badges in one place but not another. Enable `groupBadges` to
+ * surface them everywhere at once.
  *
  * @see https://rspress.dev/guide/basic/auto-nav-sidebar — sidebar `tag`
  */
@@ -40,9 +43,10 @@ export interface BadgeContext {
    */
   readonly registry: readonly Status[]
   /**
-   * Show sidebar badges on collapsible group items that are also docs
-   * (`sidebar.groupBadges`). Defaults to `false` — suppressed to avoid
-   * colliding with the collapse chevron.
+   * Show badges on collapsible group items that are also docs
+   * (`sidebar.groupBadges`) across every surface — the sidebar, the
+   * breadcrumb, and section cards. Defaults to `false` — suppressed
+   * everywhere to avoid crowding the sidebar collapse chevron.
    */
   readonly groupBadges: boolean
 }
@@ -57,8 +61,9 @@ export interface BadgeResult {
    */
   readonly tree: readonly ResolvedEntry[]
   /**
-   * Map of route path → resolved badges, covering every badged entry
-   * (including collapsible-doc groups whose sidebar tag is suppressed).
+   * Map of route path → resolved badges, covering every entry whose badges
+   * are surfaced. Collapsible-doc groups appear only when `groupBadges` is
+   * enabled — otherwise their badges are withheld from every surface.
    */
   readonly badgeMap: Record<string, readonly BadgeConfig[]>
 }
@@ -97,14 +102,14 @@ async function applyToEntry(
   readonly tree: ResolvedEntry
   readonly badgeMap: Record<string, readonly BadgeConfig[]>
 }> {
-  const badges = await resolveEntryBadges(entry, ctx)
-  const badgeTag = encodeBadges(badges)
+  const resolved = await resolveEntryBadges(entry, ctx)
+  const badges = surfaceBadges(entry, resolved, ctx.groupBadges)
   const children = await resolveChildren(entry.items, ctx)
   const selfMap = mapField(entry.link, badges)
   return {
     tree: {
       ...entry,
-      ...tagField(sidebarTag(entry, badgeTag, ctx.groupBadges)),
+      ...tagField(encodeBadges(badges)),
       ...itemsField(children.tree),
     },
     badgeMap: { ...selfMap, ...children.badgeMap },
@@ -112,25 +117,28 @@ async function applyToEntry(
 }
 
 /**
- * Decide the sidebar `tag` for an entry: suppressed (undefined) when the
- * entry is a collapsible group that also links to a doc, otherwise the
- * encoded tag.
+ * Withhold a collapsible-doc group's badges unless `groupBadges` is on.
+ *
+ * Returning an empty list here suppresses the badge on every surface at
+ * once: `encodeBadges([])` yields no sidebar `tag`, and {@link mapField}
+ * omits the route from the badge map so the breadcrumb and section cards
+ * stay bare too. Any non-group entry keeps its badges unchanged.
  *
  * @private
  * @param entry - Entry being stamped
- * @param badgeTag - Encoded tag, or undefined when the entry has no badge
- * @param groupBadges - When true, do not suppress collapsible-doc badges
- * @returns The tag to emit, or undefined to suppress it
+ * @param badges - Resolved badges for the entry
+ * @param groupBadges - When true, keep badges on collapsible-doc groups
+ * @returns The badges to surface (empty when suppressed)
  */
-function sidebarTag(
+function surfaceBadges(
   entry: ResolvedEntry,
-  badgeTag: string | undefined,
+  badges: readonly BadgeConfig[],
   groupBadges: boolean
-): string | undefined {
+): readonly BadgeConfig[] {
   if (!groupBadges && isCollapsibleDoc(entry)) {
-    return undefined
+    return []
   }
-  return badgeTag
+  return badges
 }
 
 /**
