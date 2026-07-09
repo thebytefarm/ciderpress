@@ -1,5 +1,12 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.8
+
+### Patch Changes
+
+- Updated dependencies [cebd0d2]
+  - @ciderpress/config@1.0.0-rc.7
+
 ## 1.0.0-rc.7
 
 ### Minor Changes

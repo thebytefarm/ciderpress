@@ -1,6 +1,6 @@
 {
   "name": "@ciderpress/config",
-  "version": "1.0.0-rc.6",
+  "version": "1.0.0-rc.7",
   "description": "Configuration loading and validation for ciderpress",
   "keywords": [
     "ciderpress",
