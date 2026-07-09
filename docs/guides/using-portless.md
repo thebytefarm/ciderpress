@@ -31,9 +31,7 @@ import { defineConfig } from 'ciderpress'
 
 export default defineConfig({
   title: 'Acme Docs',
-  pages: [
-    /* ... */
-  ],
+  pages: [/* ... */],
   devServer: {
     url: 'https://acme.localhost', // what the ready message + browser auto-open use
     port: 7174, // stable port the alias points at

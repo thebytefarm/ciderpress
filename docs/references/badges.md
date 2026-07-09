@@ -14,8 +14,8 @@ Badges are small labels — `ALPHA`, `WIP`, `Deprecated` — attached to a page.
 ```md
 ---
 title: Streaming API
-status: alpha        # named status → Alpha chip + its description tooltip
-badge: v2            # ad-hoc badge, renders alongside
+status: alpha # named status → Alpha chip + its description tooltip
+badge: v2 # ad-hoc badge, renders alongside
 ---
 ```
 
@@ -27,7 +27,7 @@ An ad-hoc badge. Accepts a string shorthand, a full object, or an array of eithe
 
 ```md
 ---
-badge: ALPHA                                   # shorthand → neutral chip
+badge: ALPHA # shorthand → neutral chip
 ---
 ```
 
@@ -39,12 +39,12 @@ badge:
 ---
 ```
 
-| Field     | Type           | Default     | Description                                              |
-| --------- | -------------- | ----------- | -------------------------------------------------------- |
-| `text`    | `string`       | —           | Chip label                                               |
-| `variant` | `BadgeVariant` | `'neutral'` | Theme-aware color; ignored when `color` is set           |
-| `color`   | `string`       | —           | Raw color (hex/rgb/hsl) — overrides `variant`            |
-| `tooltip` | `string`       | `text`      | Hover tooltip text                                       |
+| Field     | Type           | Default     | Description                                    |
+| --------- | -------------- | ----------- | ---------------------------------------------- |
+| `text`    | `string`       | —           | Chip label                                     |
+| `variant` | `BadgeVariant` | `'neutral'` | Theme-aware color; ignored when `color` is set |
+| `color`   | `string`       | —           | Raw color (hex/rgb/hsl) — overrides `variant`  |
+| `tooltip` | `string`       | `text`      | Hover tooltip text                             |
 
 `BadgeVariant` is one of `info`, `success`, `warning`, `danger`, `neutral`.
 
@@ -70,17 +70,17 @@ The status's `title` becomes the chip text, its `color`/`variant` the color, and
 
 Shipped by default, with theme-aware variants:
 
-| id             | Label        | Variant   | Meaning (tooltip)                                             |
-| -------------- | ------------ | --------- | ------------------------------------------------------------ |
-| `alpha`        | Alpha        | `warning` | Early and unstable — APIs may change or break without notice. |
+| id             | Label        | Variant   | Meaning (tooltip)                                               |
+| -------------- | ------------ | --------- | --------------------------------------------------------------- |
+| `alpha`        | Alpha        | `warning` | Early and unstable — APIs may change or break without notice.   |
 | `beta`         | Beta         | `info`    | Feature-complete but still stabilizing; minor changes possible. |
-| `wip`          | WIP          | `warning` | Work in progress — incomplete and subject to change.         |
-| `experimental` | Experimental | `warning` | Experimental — may change or be removed at any time.         |
-| `new`          | New          | `success` | Recently added.                                              |
-| `stable`       | Stable       | `success` | Stable and safe for production use.                          |
-| `deprecated`   | Deprecated   | `danger`  | Deprecated — scheduled for removal; migrate away.            |
-| `internal`     | Internal     | `neutral` | Internal — not part of the public API.                       |
-| `planned`      | Planned      | `neutral` | Planned — not yet available.                                 |
+| `wip`          | WIP          | `warning` | Work in progress — incomplete and subject to change.            |
+| `experimental` | Experimental | `warning` | Experimental — may change or be removed at any time.            |
+| `new`          | New          | `success` | Recently added.                                                 |
+| `stable`       | Stable       | `success` | Stable and safe for production use.                             |
+| `deprecated`   | Deprecated   | `danger`  | Deprecated — scheduled for removal; migrate away.               |
+| `internal`     | Internal     | `neutral` | Internal — not part of the public API.                          |
+| `planned`      | Planned      | `neutral` | Planned — not yet available.                                    |
 
 ### Custom statuses
 
@@ -90,9 +90,19 @@ Define or override statuses in the top-level `statuses` config. Entries merge ov
 defineConfig({
   statuses: [
     // override a built-in
-    { id: 'alpha', title: 'Alpha', description: 'Early access — expect changes.', variant: 'warning' },
+    {
+      id: 'alpha',
+      title: 'Alpha',
+      description: 'Early access — expect changes.',
+      variant: 'warning',
+    },
     // add your own (raw color)
-    { id: 'design-partner', title: 'Design Partner', description: 'Available to design partners only.', color: '#7c3aed' },
+    {
+      id: 'design-partner',
+      title: 'Design Partner',
+      description: 'Available to design partners only.',
+      color: '#7c3aed',
+    },
   ],
 })
 ```
@@ -134,11 +144,11 @@ Within a single source, `status` and `badge` both render.
 
 ## Where badges render
 
-| Surface        | Behavior                                                                 |
-| -------------- | ------------------------------------------------------------------------ |
-| Sidebar item   | Chip after the page label. Long labels truncate with an ellipsis.        |
-| Breadcrumb     | Chip right of the trail on the page.                                     |
-| Landing card   | Chip on the child's card on an auto-generated section landing page.      |
+| Surface                              | Behavior                                                                                                                                                                                                                                                                   |
+| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sidebar item                         | Chip after the page label. Long labels truncate with an ellipsis.                                                                                                                                                                                                          |
+| Breadcrumb                           | Chip right of the trail on the page.                                                                                                                                                                                                                                       |
+| Landing card                         | Chip on the child's card on an auto-generated section landing page.                                                                                                                                                                                                        |
 | Collapsible group that is also a doc | No chip on **any** surface by default — the badge is hidden in the sidebar, breadcrumb, and landing card together to avoid crowding the collapse toggle. Set [`badges.group: true`](/reference/configuration#badges) to surface it everywhere at once, like a normal page. |
 
 ## References

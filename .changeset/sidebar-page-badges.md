@@ -13,8 +13,8 @@ Badges are labels like `ALPHA` or `WIP` that render in **both** the sidebar and 
 ```md
 ---
 title: Streaming API
-status: alpha        # named status → Alpha chip + its description tooltip
-badge: v2            # ad-hoc badge, coexists
+status: alpha # named status → Alpha chip + its description tooltip
+badge: v2 # ad-hoc badge, coexists
 ---
 ```
 
@@ -23,7 +23,9 @@ defineConfig({
   // route-based rules (global — badges show in sidebar + breadcrumb)
   badges: [{ match: '/api/experimental/**', status: 'alpha' }],
   // override or extend the built-in status registry
-  statuses: [{ id: 'alpha', title: 'Alpha', description: 'Early and unstable…', variant: 'warning' }],
+  statuses: [
+    { id: 'alpha', title: 'Alpha', description: 'Early and unstable…', variant: 'warning' },
+  ],
 })
 ```
 

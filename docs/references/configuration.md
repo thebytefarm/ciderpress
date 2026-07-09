@@ -38,9 +38,7 @@ defineConfig({
   description: 'Documentation for the Acme platform',
   base: '/',
   version: 'v1.0',
-  pages: [
-    /* ... */
-  ],
+  pages: [/* ... */],
 })
 ```
 
@@ -566,11 +564,11 @@ sidebar: {
 }
 ```
 
-| Field         | Type            | Description                                                                                             |
-| ------------- | --------------- | ------------------------------------------------------------------------------------------------------ |
-| `top`         | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`)                                        |
-| `bottom`      | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`)                                        |
-| `promo`       | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar                                                     |
+| Field    | Type            | Description                                                      |
+| -------- | --------------- | ---------------------------------------------------------------- |
+| `top`    | `SidebarLink[]` | Links rendered above the sidebar nav tree (renamed from `above`) |
+| `bottom` | `SidebarLink[]` | Links rendered below the sidebar nav tree (renamed from `below`) |
+| `promo`  | `SidebarPromo`  | Promo card pinned to the bottom of the docs sidebar              |
 
 ### SidebarLink
 
@@ -617,17 +615,17 @@ badges: {
 }
 ```
 
-| Field   | Type          | Description                                                                                                        |
-| ------- | ------------- | ----------------------------------------------------------------------------------------------------------------- |
-| `rules` | `BadgeRule[]` | Glob rules applied by route path (see [BadgeRule](#badgerule))                                                     |
+| Field   | Type          | Description                                                                                                         |
+| ------- | ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `rules` | `BadgeRule[]` | Glob rules applied by route path (see [BadgeRule](#badgerule))                                                      |
 | `group` | `boolean`     | Show a collapsible-doc group's badge on every surface. Defaults to `false` (hidden everywhere to spare the chevron) |
 
 ### BadgeRule
 
 ```ts
 interface BadgeRule {
-  match:   string | string[]
-  badge?:  string | BadgeConfig | array
+  match: string | string[]
+  badge?: string | BadgeConfig | array
   status?: string | string[]
 }
 ```
@@ -646,8 +644,18 @@ The named status registry — the semantic layer over badges. A status is a reus
 
 ```ts
 statuses: [
-  { id: 'alpha', title: 'Alpha', description: 'Early and unstable — expect changes.', variant: 'warning' },
-  { id: 'design-partner', title: 'Design Partner', description: 'Available to design partners only.', color: '#7c3aed' },
+  {
+    id: 'alpha',
+    title: 'Alpha',
+    description: 'Early and unstable — expect changes.',
+    variant: 'warning',
+  },
+  {
+    id: 'design-partner',
+    title: 'Design Partner',
+    description: 'Available to design partners only.',
+    color: '#7c3aed',
+  },
 ]
 ```
 
@@ -1204,11 +1212,7 @@ Universal image source — string path or a fully described image object. Used b
 
 ```ts
 type SortStrategy =
-  | 'default'
-  | 'alpha'
-  | 'filename'
-  | 'none'
-  | ((a: ResolvedPage, b: ResolvedPage) => number)
+  'default' | 'alpha' | 'filename' | 'none' | ((a: ResolvedPage, b: ResolvedPage) => number)
 ```
 
 Used by `Page.discover.sort` and `Workspace.discover.sort`.

@@ -1,5 +1,94 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.7
+
+### Minor Changes
+
+- 96779df: Group the interactive `draft` template picker.
+
+  Templates can now belong to a group, shown in the `draft` picker as a `Group/Name` label (e.g. `guides/UI`). A group comes from either a sub-directory under the configured templates dir (`.templates/guides/ui.md` → `guides`) or an explicit `group` frontmatter field, which wins over the directory. Templates at the templates root and all built-ins stay ungrouped and render flat.
+
+  - **`@ciderpress/templates`** — `Template` gains an optional `group`; `buildTemplate` accepts a directory-derived `group` and reads a `group` frontmatter field (frontmatter overrides), with a new `invalid_group` validation error.
+  - **`@ciderpress/cli`** — template discovery now recurses into sub-directories, tagging each template with its sub-path group; `draft` with no `type` shows the single grouped picker.
+
+- 0d6b434: Add page badges and a named status registry.
+
+  Badges are labels like `ALPHA` or `WIP` that render in **both** the sidebar and the breadcrumb. Declare one ad-hoc in a page's frontmatter (`badge`), reference a named status (`status`), inherit across a section via `defaults`, or apply by route with top-level `badges` glob rules. Frontmatter and `defaults` win over glob rules.
+
+  **Statuses** are the semantic layer over badges: a named, documented preset (`title` + `description` + color) you define once and reference by `id`. Ciderpress ships built-in defaults (`alpha`, `beta`, `wip`, `experimental`, `new`, `stable`, `deprecated`, `internal`, `planned`); your `statuses` entries merge over them by `id`. A status's `description` becomes the chip's hover tooltip.
+
+  ```md
+  ---
+  title: Streaming API
+  status: alpha # named status → Alpha chip + its description tooltip
+  badge: v2 # ad-hoc badge, coexists
+  ---
+  ```
+
+  ```ts
+  defineConfig({
+    // route-based rules (global — badges show in sidebar + breadcrumb)
+    badges: [{ match: '/api/experimental/**', status: 'alpha' }],
+    // override or extend the built-in status registry
+    statuses: [
+      {
+        id: 'alpha',
+        title: 'Alpha',
+        description: 'Early and unstable…',
+        variant: 'warning',
+      },
+    ],
+  })
+  ```
+
+  Badges also render on the child cards of auto-generated section landing pages. A collapsible group that is also a doc hides its sidebar badge by default (to avoid the collapse chevron) — set `sidebar.groupBadges: true` to show it there too.
+
+  Long titles truncate with an ellipsis and reveal the full text on hover — in the sidebar, the breadcrumb, and the "On this page" outline.
+
+  - **`@ciderpress/config`** — `Badge` / `BadgeConfig` / `BadgeVariant` / `BadgeInput` / `BadgeRule` / `Status` types; `Frontmatter.badge` + `Frontmatter.status`; top-level `badges` (glob rules) and `statuses` (registry); a shared badge wire-format (`encodeBadges` / `decodeBadges` / `normalizeBadgeInput`) and status resolver (`DEFAULT_STATUSES` / `resolveStatuses` / `resolveStatusBadges` / `statusToBadge`).
+  - **`@ciderpress/cli`** — sync resolves badges + statuses (file frontmatter → `defaults` → glob, first source wins) and emits them as Rspress sidebar `tag`s plus a route→badges map (`.generated/badges.json`). A collapsible group that is also a doc gets no sidebar tag (its badge shows on the page instead).
+  - **`@ciderpress/ui`** — a `Tag` override renders badge chips (variant color, custom-color tint, hover tooltip), delegating other tags to Rspress; badges also render beside the breadcrumb via `themeConfig.pageBadges`; sidebar, breadcrumb, and outline entries get single-line ellipsis with a `title` tooltip on overflow.
+
+- 90f05b5: Add template fill variables and a `{{ }}` marker convention.
+
+  Templates can now declare fillable variables in frontmatter, `draft` resolves them from arguments or prompts, and any unfilled marker passes through as a raw `{{ }}` marker for a human or agent to complete. The validator no longer rejects non-`{{title}}` markers (fixes the case where registered templates using the convention broke `build`/`check`), and a new lint fails when a published doc still contains one.
+
+  - **`@ciderpress/templates`** — `Template` gains an optional `vars: TemplateVar[]` (each `{ id, title?, description? }`); `buildTemplate()` validates `vars` and no longer emits `unknown_placeholder` (replaced by `invalid_vars`); `render()` now tolerates interior whitespace (`{{ title }}` === `{{title}}`) and leaves unmatched markers untouched; new `findMarkers()` export lists remaining markers.
+  - **`@ciderpress/cli`** — `ciderpress draft` gains a repeatable `--var id=value`, always substitutes the built-in `title`/`slug`/`date`/`filename` variables, prompts for declared vars on an interactive terminal (skipping leaves the raw marker), and prints a checklist of unfilled markers. `ciderpress check` and `ciderpress build --check` now fail on unfilled `{{ }}` markers in synced docs (fenced/inline code excluded).
+
+### Patch Changes
+
+- 6edf324: Upgrade dependencies to latest across the workspace, and fix Mermaid rendering on Mermaid v11.
+
+  - Catalog: `@rspress/core` ^2.0.16, `@typescript/native-preview` 7.0.0-dev.20260707.2, `type-fest` ^5.8.0, `vitest` ^4.1.10
+  - UI: `mermaid` ^11.16.0 (was v10), iconify icon sets
+  - CLI: `@clack/prompts` ^1.7.0
+  - Config: `tsx` ^4.23.0, `@types/node` ^26.1.0
+  - Tooling: `oxlint` ^1.73.0, `oxfmt` ^0.58.0, `turbo` ^2.10.4
+
+  `@rslib/core` is held at `0.23.1`: 0.23.2 regressed the ESM build (emitted `.js` instead of `.mjs` and dropped the bundled type declarations).
+
+  Mermaid is now on **v11** — the previous v10 pin was based on a misdiagnosis. `mermaid.render()` resolves correctly on v11; the blank-diagram symptom was a defect in `MermaidRenderer.tsx`: `config` defaulted to a fresh `{}` each render, re-firing the render effect in a loop that repeatedly rendered into the same element id and clobbered the injected SVG. Fixed by keying the render callback on a serialized config value and using a unique element id per render call. Diagrams now paint on first load without interaction and survive theme toggles.
+
+- 8313290: Fix top-level (depth-0) leaf pages rendering as collapsible sidebar groups with a dead chevron.
+
+  A `pages[]` entry that is a leaf (`include`/`content`, no `pages` children) placed at the top level was written to the root `_meta.json` as a `dir` item regardless of whether it had children, so Rspress rendered it as an empty expandable group. The root meta now gates the `dir`/`file` distinction on whether the entry has children — matching the treatment already applied to nested and root-promoted entries — so a depth-0 leaf renders as a plain link.
+
+- Updated dependencies [6edf324]
+- Updated dependencies [96779df]
+- Updated dependencies [395da42]
+- Updated dependencies [8313290]
+- Updated dependencies [c66ef61]
+- Updated dependencies [8313290]
+- Updated dependencies [4ae912b]
+- Updated dependencies [0d6b434]
+- Updated dependencies [90f05b5]
+- Updated dependencies [51d6979]
+  - @ciderpress/config@1.0.0-rc.6
+  - @ciderpress/ui@1.0.0-rc.7
+  - @ciderpress/theme@1.0.0-rc.4
+  - @ciderpress/templates@1.0.0-rc.5
+
 ## 1.0.0-rc.6
 
 ### Minor Changes
@@ -484,7 +573,7 @@ example:custom:serve`.
 
   **Fixes**
 
-  - `safe-url.ts` regex is now stored with ` - ` escape
+  - `safe-url.ts` regex is now stored with `�- ` escape
     sequences instead of raw control bytes. Git no longer marks the file as
     binary; editors render it correctly.
   - Deleted orphaned `packages/ui/src/head/js/color-mode-{dark,light}.js`.
@@ -904,9 +993,7 @@ example:custom:serve`.
   workspaces: [
     {
       name: 'Integrations',
-      items: [
-        /* ... */
-      ],
+      items: [/* ... */],
     },
   ]
 
@@ -914,9 +1001,7 @@ example:custom:serve`.
   workspaces: [
     {
       title: 'Integrations',
-      items: [
-        /* ... */
-      ],
+      items: [/* ... */],
     },
   ]
   ```
