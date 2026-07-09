@@ -807,29 +807,53 @@ feedback: { question: 'Did this help?' },
 
 ## `home`
 
-Home page layout — hero, proof strip, features grid, showcase grid, split section, final CTA, and the render-order layout list.
+Home page composition — a special-cased `hero` header plus an ordered array of `blocks`. Array order **is** render order, and any block type may appear more than once (multiple splits, etc.). Omit `blocks` to get the framework default deck: an auto-generated features grid plus a workspace showcase derived from the repo.
 
 ```ts
 home: {
-  hero:       HomeHeroConfig,
-  proof?:     HomeProofConfig,
-  features?:  HomeFeaturesConfig,
-  showcase?:  HomeShowcaseConfig,
-  split?:     false | HomeSplitConfig,
-  cta?:       HomeCtaConfig,
-  layout?:    HomeLayoutEntry[],
+  hero?:   HomeHeroConfig,
+  blocks?: HomeBlock[],
 }
 ```
 
-| Field      | Type                       | Description                                                                                    |
-| ---------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
-| `hero`     | `HomeHeroConfig`           | Headline, tagline, actions, and the optional demo visual                                       |
-| `proof`    | `HomeProofConfig`          | "Used by …" strip (renamed from `trust`)                                                       |
-| `features` | `HomeFeaturesConfig`       | Feature cards grid                                                                             |
-| `showcase` | `HomeShowcaseConfig`       | Generalized card grid — defaults to apps + packages + workspaces, accepts arbitrary page paths |
-| `split`    | `false \| HomeSplitConfig` | Split section. `false` disables                                                                |
-| `cta`      | `HomeCtaConfig`            | Final CTA band                                                                                 |
-| `layout`   | `HomeLayoutEntry[]`        | Render order. Accepts section id strings, objects, or React components                         |
+| Field    | Type             | Description                                                                     |
+| -------- | ---------------- | ------------------------------------------------------------------------------- |
+| `hero`   | `HomeHeroConfig` | Headline, tagline, actions, and the optional demo visual. Always rendered first |
+| `blocks` | `HomeBlock[]`    | Ordered landing bands below the hero. Omit for the auto-generated default deck  |
+
+### HomeBlock
+
+A discriminated union on `type`. Each variant carries the fields of its section config plus the `type` tag:
+
+```ts
+type HomeBlock =
+  | ({ type: 'proof' } & HomeProofConfig)
+  | ({ type: 'features' } & HomeFeaturesConfig)
+  | ({ type: 'showcase' } & HomeShowcaseConfig)
+  | ({ type: 'split' } & HomeSplitConfig)
+  | ({ type: 'cta' } & HomeCtaConfig)
+```
+
+| `type`       | Config shape         | Description                                                                   |
+| ------------ | -------------------- | ----------------------------------------------------------------------------- |
+| `'proof'`    | `HomeProofConfig`    | "Used by …" strip                                                             |
+| `'features'` | `HomeFeaturesConfig` | Feature cards grid                                                            |
+| `'showcase'` | `HomeShowcaseConfig` | Card grid — defaults to apps + packages + workspaces, accepts arbitrary paths |
+| `'split'`    | `HomeSplitConfig`    | Two-column show-and-tell band. Repeatable                                     |
+| `'cta'`      | `HomeCtaConfig`      | Call-to-action band                                                           |
+
+```ts
+home: {
+  hero: { tagline: 'Ship faster.' },
+  blocks: [
+    { type: 'proof', lead: 'used by', names: ['acme', 'globex'] },
+    { type: 'features', items: [/* ... */] },
+    { type: 'split', title: 'One config', visual: { code: '// ...', language: 'ts' } },
+    { type: 'split', title: 'See it live', reverse: true, visual: { src: '/demo.png' } },
+    { type: 'cta', title: 'Ready to ship?' },
+  ],
+}
+```
 
 ### HomeHeroConfig
 
@@ -958,6 +982,7 @@ interface HomeSplitConfig {
   bullets?: string[]
   cta?: ButtonConfig
   visual?: HomeSplitVisual
+  reverse?: boolean
 }
 ```
 
@@ -968,21 +993,39 @@ interface HomeSplitConfig {
 | `body`    | `string`          | no       | Body copy rendered under the title                            |
 | `bullets` | `string[]`        | no       | Checkmark list rendered under the body                        |
 | `cta`     | `ButtonConfig`    | no       | CTA button rendered at the bottom of the copy column          |
-| `visual`  | `HomeSplitVisual` | no       | Visual rendered in the opposite column                        |
+| `visual`  | `HomeSplitVisual` | no       | Visual rendered in the column opposite the copy               |
+| `reverse` | `boolean`         | no       | Flip the columns — visual left, copy right (default `false`)  |
 
 #### HomeSplitVisual
 
+A structural union: pass a `code` object for a syntax-highlighted snippet, or a `src` object for an image. Code is rendered through Rspress's native Shiki highlighter — the same pipeline as markdown code fences.
+
 ```ts
-interface HomeSplitVisual {
+type HomeSplitVisual = HomeSplitVisualCode | HomeSplitVisualImage
+
+interface HomeSplitVisualCode {
   code: string
   language?: string
 }
+
+interface HomeSplitVisualImage {
+  src: string
+  alt?: string
+  width?: number | string
+  height?: number | string
+}
 ```
 
-| Field      | Type     | Required | Description                                                  |
-| ---------- | -------- | -------- | ------------------------------------------------------------ |
-| `code`     | `string` | yes      | Code snippet rendered as a syntax-highlighted preview        |
-| `language` | `string` | no       | Language identifier for syntax highlighting (default `'ts'`) |
+| Field      | Type               | Required | Description                                                  |
+| ---------- | ------------------ | -------- | ------------------------------------------------------------ |
+| `code`     | `string`           | yes\*    | Code snippet, highlighted via Rspress's native Shiki         |
+| `language` | `string`           | no       | Language identifier for syntax highlighting (default `'ts'`) |
+| `src`      | `string`           | yes\*    | Image URL or path (base-prefixed at render time)             |
+| `alt`      | `string`           | no       | Alt text for the image                                       |
+| `width`    | `number \| string` | no       | Explicit image width                                         |
+| `height`   | `number \| string` | no       | Explicit image height                                        |
+
+\* Provide **either** `code` (code variant) **or** `src` (image variant), not both.
 
 ### HomeCtaConfig
 
@@ -999,23 +1042,6 @@ interface HomeCtaConfig {
 | `title`    | `string`         | CTA headline                    |
 | `subtitle` | `string`         | Supporting text                 |
 | `actions`  | `ButtonConfig[]` | CTA buttons (typically up to 2) |
-
-### HomeLayoutEntry
-
-```ts
-type HomeLayoutEntry =
-  | HomeSectionId
-  | { sectionId: HomeSectionId }
-  | { component: ComponentType<{ paths: Paths }> }
-  | { component: string }
-```
-
-| Form                           | Description                                                                     |
-| ------------------------------ | ------------------------------------------------------------------------------- |
-| `HomeSectionId` (string)       | Shorthand — render the built-in section                                         |
-| `{ sectionId }`                | Object form; reserved space for future per-entry options (`hidden`, `props`, …) |
-| `{ component: ComponentType }` | Inline JSX (TSX configs)                                                        |
-| `{ component: string }`        | Path to a component file (TS / JSON configs)                                    |
 
 ### Shared home types
 
@@ -1035,26 +1061,6 @@ interface HomeSectionHeading {
 ```
 
 `TruncateConfig` values are maximum visible lines before CSS `line-clamp` clips with an ellipsis. `HomeSectionHeading.label` is the small uppercase kicker rendered above the title.
-
-### HomeSectionId
-
-```ts
-type HomeSectionId = 'hero' | 'proof' | 'features' | 'showcase' | 'split' | 'cta'
-```
-
-Renamed from the old `'hero' | 'trust' | 'features' | 'split' | 'workspaces' | 'cta'`.
-
-```ts
-home: {
-  layout: [
-    'hero',
-    'proof',
-    { component: () => <CustomTimeline /> },
-    'features',
-    'cta',
-  ],
-}
-```
 
 ## `discover`
 

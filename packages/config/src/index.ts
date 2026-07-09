@@ -1,4 +1,4 @@
-export { DEFAULT_HOME_LAYOUT, SOCIAL_LINK_ICONS } from './types.ts'
+export { SOCIAL_LINK_ICONS } from './types.ts'
 
 export type {
   CiderpressConfig,
@@ -61,10 +61,17 @@ export type {
   HomeShowcaseConfig,
   HomeSplitConfig,
   HomeSplitVisual,
+  HomeSplitVisualCode,
+  HomeSplitVisualImage,
   HomeCtaConfig,
   HomeSectionHeading,
-  HomeSectionId,
-  HomeLayoutEntry,
+  HomeBlock,
+  HomeBlockType,
+  HomeProofBlock,
+  HomeFeaturesBlock,
+  HomeShowcaseBlock,
+  HomeSplitBlock,
+  HomeCtaBlock,
   TruncateConfig,
   AnnouncementConfig,
   SocialLinkIcon,

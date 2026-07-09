@@ -57,61 +57,97 @@ export default defineConfig({
         { variant: 'secondary', text: 'Quick Start', href: '/getting-started/quick-start' },
       ],
     },
-    proof: {
-      lead: 'used by',
-      names: ['maltty', 'viteval', 'massaman', 'marxml'],
-    },
-    features: {
-      truncate: { description: 2 },
-      items: [
-        {
-          title: 'Zero Effort',
-          description:
-            'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
-          icon: 'pixelarticons:speed-fast',
+    // Ordered landing bands. Array order is render order; any block type
+    // may repeat (e.g. multiple `split`s).
+    blocks: [
+      {
+        type: 'proof',
+        lead: 'used by',
+        names: ['maltty', 'viteval', 'massaman', 'marxml'],
+      },
+      {
+        type: 'features',
+        truncate: { description: 2 },
+        items: [
+          {
+            title: 'Zero Effort',
+            description:
+              'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
+            icon: 'pixelarticons:speed-fast',
+          },
+          {
+            title: 'Your Structure',
+            description:
+              'Config maps to how you already organize markdown. The tool fits your docs.',
+            icon: 'pixelarticons:layout',
+          },
+          {
+            title: 'AI-Friendly',
+            description:
+              'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
+            icon: 'pixelarticons:robot',
+          },
+          {
+            title: 'Monorepo Native',
+            description:
+              'First-class workspace support with sidebar islands and auto-generated landing pages.',
+            icon: 'pixelarticons:git-merge',
+          },
+          {
+            title: 'VSCode Extension',
+            description: 'Preview your docs site directly inside VS Code as you write.',
+            icon: 'simple-icons:visualstudiocode',
+          },
+          {
+            title: 'OpenAPI Support',
+            description:
+              'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
+            icon: 'simple-icons:openapiinitiative',
+          },
+        ],
+      },
+      { type: 'showcase' },
+      {
+        type: 'split',
+        label: 'Configuration',
+        title: 'One file. Validated. Type-safe.',
+        body: 'Define your docs site in ciderpress.config.ts. Zod validates at boot — no surprises in prod.',
+        bullets: [
+          'Type-safe config with full IntelliSense',
+          'Hot-reloads on every save',
+          'Composable presets for OpenAPI, blog, changelog',
+          'First-class i18n out of the box',
+        ],
+        cta: { variant: 'primary', text: 'Read the docs', href: '/getting-started/quick-start' },
+        visual: {
+          language: 'ts',
+          code: [
+            "import { defineConfig } from 'ciderpress'",
+            '',
+            'export default defineConfig({',
+            "  title: 'Acme Docs',",
+            '  pages: [',
+            "    { title: 'Guides', include: 'docs/guides/*.md' },",
+            '  ],',
+            "  theme: { themes: ['mulled'] },",
+            '})',
+          ].join('\n'),
         },
-        {
-          title: 'Your Structure',
-          description: 'Config maps to how you already organize markdown. The tool fits your docs.',
-          icon: 'pixelarticons:layout',
-        },
-        {
-          title: 'AI-Friendly',
-          description:
-            'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
-          icon: 'pixelarticons:robot',
-        },
-        {
-          title: 'Monorepo Native',
-          description:
-            'First-class workspace support with sidebar islands and auto-generated landing pages.',
-          icon: 'pixelarticons:git-merge',
-        },
-        {
-          title: 'VSCode Extension',
-          description: 'Preview your docs site directly inside VS Code as you write.',
-          icon: 'simple-icons:visualstudiocode',
-        },
-        {
-          title: 'OpenAPI Support',
-          description:
-            'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
-          icon: 'simple-icons:openapiinitiative',
-        },
-      ],
-    },
-    cta: {
-      title: 'Ship the docs your team deserves.',
-      subtitle: 'One CLI. Three minutes. Production-ready.',
-      actions: [
-        { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
-        {
-          variant: 'secondary',
-          text: 'Star on GitHub →',
-          href: 'https://github.com/thebytefarm/ciderpress',
-        },
-      ],
-    },
+      },
+      {
+        type: 'cta',
+        title: 'Ship the docs your team deserves.',
+        subtitle: 'One CLI. Three minutes. Production-ready.',
+        actions: [
+          { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
+          {
+            variant: 'secondary',
+            text: 'Star on GitHub →',
+            href: 'https://github.com/thebytefarm/ciderpress',
+          },
+        ],
+      },
+    ],
   },
   packages: [
     {

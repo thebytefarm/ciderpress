@@ -1,5 +1,4 @@
-import type { HomeShowcaseConfig } from '@ciderpress/config'
-import { useFrontmatter } from '@rspress/core/runtime'
+import type { TruncateConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
@@ -14,23 +13,28 @@ interface FrontmatterWorkspacesHeading {
   readonly subtitle?: string
 }
 
+interface HomeWorkspacesProps {
+  readonly heading?: FrontmatterWorkspacesHeading
+  readonly columns?: 1 | 2 | 3 | 4
+  readonly truncate?: TruncateConfig
+}
+
+const DEFAULT_COLUMNS: 1 | 2 | 3 | 4 = 2
+
 /**
- * Smart orchestrator that reads workspace data from themeConfig
- * and renders workspace groups with the correct card component per type.
+ * Showcase grid block. Reads workspace card data from the theme config
+ * (serialized from the repo at build time) and renders it in grouped
+ * grids. Grid layout — heading, columns, truncation — comes from props.
  *
- * Optionally renders a top-level heading above the workspace groups
- * when `home.showcase.heading` is configured. The sync engine writes
- * it into frontmatter as `workspacesHeading`.
- *
- * @returns React element with workspace groups or null
+ * @param props - Optional heading, column count, and truncation limits.
+ * @returns React element with workspace groups, or null.
  */
-export function HomeWorkspaces(): React.ReactElement | null {
-  const { workspaces, home } = useCiderpress()
-  const gridConfig = home && home.showcase
-  const { frontmatter } = useFrontmatter()
-  const heading = (frontmatter as Record<string, unknown>).workspacesHeading as
-    | FrontmatterWorkspacesHeading
-    | undefined
+export function HomeWorkspaces(props: HomeWorkspacesProps): React.ReactElement | null {
+  const { workspaces } = useCiderpress()
+  const { heading, columns, truncate } = props
+  const resolvedColumns = match(columns)
+    .with(P.nonNullable, (c) => c)
+    .otherwise(() => DEFAULT_COLUMNS)
 
   return match(workspaces)
     .with(
@@ -59,7 +63,7 @@ export function HomeWorkspaces(): React.ReactElement | null {
                   ))}
               </div>
             ))}
-          {groups.map((group) => renderGroup(group, gridConfig))}
+          {groups.map((group) => renderGroup(group, resolvedColumns, truncate))}
         </div>
       )
     )
@@ -71,22 +75,24 @@ export function HomeWorkspaces(): React.ReactElement | null {
  *
  * @private
  * @param group - Workspace group data with heading, description, and cards
- * @param gridConfig - Optional grid layout config for columns and truncation
+ * @param columns - Column count for the grid
+ * @param truncate - Optional line-clamp limits for card text
  * @returns Workspace grid element
  */
 function renderGroup(
   group: WorkspaceGroupData,
-  gridConfig: HomeShowcaseConfig | undefined
+  columns: 1 | 2 | 3 | 4,
+  truncate: TruncateConfig | undefined
 ): React.ReactElement {
-  const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
-  const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
+  const titleLines = truncate && truncate.title
+  const descLines = truncate && truncate.description
 
   return (
     <WorkspaceGrid
       key={group.heading}
       heading={group.heading}
       description={group.description}
-      columns={gridConfig && gridConfig.columns}
+      columns={columns}
     >
       {group.cards.map((card, i) => (
         <WorkspaceCard

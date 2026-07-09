@@ -43,9 +43,14 @@ export interface SplitProps {
    */
   readonly action?: SplitAction
   /**
-   * Right-side content — typically a code preview or screenshot.
+   * Visual content — typically a code preview or screenshot.
    */
   readonly visual: React.ReactNode
+  /**
+   * Flip the column order — visual first, copy second. Defaults to
+   * `false` (copy first, visual second).
+   */
+  readonly reverse?: boolean
 }
 
 /**
@@ -56,12 +61,15 @@ export interface SplitProps {
  * @returns React element.
  */
 export function HomeSplit(props: SplitProps): React.ReactElement {
-  const { eyebrow, title, body, bullets, action, visual } = props
+  const { eyebrow, title, body, bullets, action, visual, reverse } = props
   const list = bullets ?? []
+  const innerClass = match(reverse ?? false)
+    .with(true, () => 'cp-split__inner cp-split__inner--reverse')
+    .otherwise(() => 'cp-split__inner')
 
   return (
     <section className="cp-split">
-      <div className="cp-split__inner">
+      <div className={innerClass}>
         <div className="cp-split__copy">
           {match(eyebrow)
             .with(undefined, () => null)

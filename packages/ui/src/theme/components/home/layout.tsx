@@ -1,17 +1,17 @@
 import type {
   ButtonConfig,
   HomeHeroDemoConfig,
-  HomeSectionId,
-  HomeSplitConfig,
+  HomeSplitVisual,
+  TruncateConfig,
 } from '@ciderpress/config'
-import { DEFAULT_HOME_LAYOUT } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
-import { match, P } from 'massaman/match'
+import { match } from 'massaman/match'
 import React from 'react'
 
 import { SiteFooter } from '../footer/site-footer'
 import { CTA } from './cta'
 import { HomeFeature } from './feature'
+import type { FeatureItem } from './feature-card'
 import { Hero } from './hero'
 import type { HeroAction } from './hero'
 import { HeroDemo } from './hero-demo'
@@ -25,8 +25,6 @@ import { HomeWorkspaces } from './workspaces'
 interface HomeLayoutProps {
   readonly beforeHero?: React.ReactNode
   readonly afterHero?: React.ReactNode
-  readonly beforeFeatures?: React.ReactNode
-  readonly afterFeatures?: React.ReactNode
 }
 
 interface FrontmatterHero {
@@ -37,26 +35,66 @@ interface FrontmatterHero {
   readonly label?: string
 }
 
-interface FrontmatterProof {
+interface FrontmatterHeading {
+  readonly label?: string
+  readonly title?: string
+  readonly subtitle?: string
+}
+
+interface FrontmatterProofBlock {
+  readonly type: 'proof'
   readonly lead?: string
   readonly names?: readonly string[]
 }
 
-interface FrontmatterCTA {
+interface FrontmatterFeaturesBlock {
+  readonly type: 'features'
+  readonly items?: readonly FeatureItem[]
+  readonly heading?: FrontmatterHeading
+  readonly truncate?: TruncateConfig
+}
+
+interface FrontmatterShowcaseBlock {
+  readonly type: 'showcase'
+  readonly heading?: FrontmatterHeading
+  readonly columns?: 1 | 2 | 3 | 4
+  readonly truncate?: TruncateConfig
+}
+
+interface FrontmatterSplitBlock {
+  readonly type: 'split'
+  readonly label?: string
+  readonly title: string
+  readonly body?: string
+  readonly bullets?: readonly string[]
+  readonly cta?: ButtonConfig
+  readonly visual?: HomeSplitVisual
+  readonly reverse?: boolean
+}
+
+interface FrontmatterCtaBlock {
+  readonly type: 'cta'
   readonly title?: string
   readonly subtitle?: string
   readonly actions?: readonly ButtonConfig[]
 }
 
+type FrontmatterBlock =
+  | FrontmatterProofBlock
+  | FrontmatterFeaturesBlock
+  | FrontmatterShowcaseBlock
+  | FrontmatterSplitBlock
+  | FrontmatterCtaBlock
+
 /**
  * Custom HomeLayout for ciderpress.
  *
- * Renders the approved mockup landing surface inside a continuous PageRail:
- * Hero → TrustStrip → Features → Workspaces → CTA → SiteFooter. Sections
- * render only when their data is present in frontmatter, so consumers opt
- * in to each band individually.
+ * Renders the hero header followed by an ordered `blocks` array (proof,
+ * features, showcase, split, cta) inside a continuous PageRail. Block
+ * order is the array order and any block type may repeat — the whole deck
+ * is driven by `home.blocks`, compiled into frontmatter by the sync engine.
  *
- * @param props - Slot props (kept for API compatibility with Rspress's HomeLayout).
+ * @param props - Hero slot props (kept for API compatibility with Rspress's HomeLayout).
  * @returns React element with the home page.
  */
 export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
@@ -76,14 +114,12 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const fm = frontmatter as Record<string, unknown>
 
   const hero = fm.hero as FrontmatterHero | undefined
-  const proof = fm.proof as FrontmatterProof | undefined
-  const cta = fm.cta as FrontmatterCTA | undefined
-  // heroDemo / split frontmatter:
+  // heroDemo frontmatter:
   //   undefined → render the framework default
   //   false     → suppress entirely
   //   object    → render the user-supplied custom variant
   const heroDemoFm = fm.heroDemo as false | HomeHeroDemoConfig | undefined
-  const splitFm = fm.split as false | HomeSplitConfig | undefined
+  const blocks = (fm.blocks as readonly FrontmatterBlock[] | undefined) ?? []
 
   const heroDemoEl = match(heroDemoFm)
     .with(false, () => null)
@@ -102,95 +138,13 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
       />
     ))
 
-  const proofSection = match(proof)
-    .with(undefined, () => null)
-    .otherwise((t) => {
-      const names = t.names ?? []
-      return match(names.length === 0)
-        .with(true, () => null)
-        .otherwise(() => <TrustStrip lead={t.lead} names={names} />)
-    })
-
-  const ctaSection = match(cta)
-    .with(undefined, () => null)
-    .otherwise((c) =>
-      match(c.title === undefined)
-        .with(true, () => null)
-        .otherwise(() => (
-          <CTA
-            title={c.title ?? ''}
-            subtitle={c.subtitle}
-            actions={mapButtonsToHeroActions(c.actions)}
-          />
-        ))
-    )
-
-  const splitSection = match(splitFm)
-    .with(false, () => null)
-    .with(undefined, () => (
-      <HomeSplit
-        eyebrow="Configuration"
-        title="One file. Validated. Type-safe."
-        body="Define your docs site in ciderpress.config.ts. Zod validates at boot — no surprises in prod."
-        bullets={[
-          'Type-safe config with full IntelliSense',
-          'Hot-reloads on every save',
-          'Composable presets for OpenAPI, blog, changelog',
-          'First-class i18n out of the box',
-        ]}
-        action={{ theme: 'brand', text: 'Read the docs', link: '/getting-started/quick-start' }}
-        visual={<ConfigPreview />}
-      />
-    ))
-    .with(P.nonNullable, (s) => (
-      <HomeSplit
-        eyebrow={s.label}
-        title={s.title}
-        body={s.body}
-        bullets={s.bullets ?? []}
-        action={match(s.cta)
-          .with(undefined, () => undefined)
-          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.href }))}
-        visual={match(s.visual)
-          .with(undefined, () => null)
-          .otherwise((v) => (
-            <CustomSplitVisual code={v.code} language={v.language} />
-          ))}
-      />
-    ))
-    .exhaustive()
-
-  // Section render order. `home.layout` (when provided) controls both
-  // order and visibility — sections omitted from the array are not
-  // rendered. The framework default (`DEFAULT_HOME_LAYOUT`) preserves
-  // the historical fixed order. Unknown ids are ignored at render time
-  // (the schema rejects them at config-load anyway).
-  const layout = (fm.layout as readonly HomeSectionId[] | undefined) ?? DEFAULT_HOME_LAYOUT
-  const sectionsById: Readonly<Record<HomeSectionId, React.ReactNode>> = {
-    hero: (
-      <>
-        {props.beforeHero}
-        {heroSection}
-        {props.afterHero}
-      </>
-    ),
-    proof: proofSection,
-    features: (
-      <>
-        {props.beforeFeatures}
-        <HomeFeature />
-        {props.afterFeatures}
-      </>
-    ),
-    split: splitSection,
-    showcase: <HomeWorkspaces />,
-    cta: ctaSection,
-  }
-
   return (
     <PageRail>
-      {layout.map((id) => (
-        <React.Fragment key={id}>{sectionsById[id]}</React.Fragment>
+      {props.beforeHero}
+      {heroSection}
+      {props.afterHero}
+      {blocks.map((block, index) => (
+        <React.Fragment key={`${block.type}-${index}`}>{renderBlock(block)}</React.Fragment>
       ))}
       <SiteFooter />
     </PageRail>
@@ -198,36 +152,55 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
 }
 
 /**
- * ConfigPreview — minimal `defineConfig` code preview shown inside the
- * Split section. Imports come exclusively from `ciderpress` so the
- * sample resolves against the published package set.
+ * Render a single home block by its discriminated `type`.
  *
- * @returns React element.
+ * @private
+ * @param block - Frontmatter block compiled from `home.blocks`.
+ * @returns The block's React element, or null when it has no renderable data.
  */
-function ConfigPreview(): React.ReactElement {
-  return (
-    <pre>
-      <span className="tok-kw">import</span> {'{ defineConfig }'}{' '}
-      <span className="tok-kw">from</span> <span className="tok-str">'ciderpress'</span>
-      {'\n\n'}
-      <span className="tok-kw">export default</span> <span className="tok-fn">defineConfig</span>
-      {'({\n'}
-      {'  title: '}
-      <span className="tok-str">'Acme Docs'</span>
-      {',\n'}
-      {'  pages: [\n'}
-      {'    { title: '}
-      <span className="tok-str">'Guides'</span>
-      {', include: '}
-      <span className="tok-str">'docs/guides/*.md'</span>
-      {' },\n'}
-      {'  ],\n'}
-      {'  theme: { themes: ['}
-      <span className="tok-str">'mulled'</span>
-      {'] },\n'}
-      {'})'}
-    </pre>
-  )
+function renderBlock(block: FrontmatterBlock): React.ReactNode {
+  return match(block)
+    .with({ type: 'proof' }, (b) => {
+      const names = b.names ?? []
+      return match(names.length === 0)
+        .with(true, () => null)
+        .otherwise(() => <TrustStrip lead={b.lead} names={names} />)
+    })
+    .with({ type: 'features' }, (b) => (
+      <HomeFeature items={b.items} heading={b.heading} truncate={b.truncate} />
+    ))
+    .with({ type: 'showcase' }, (b) => (
+      <HomeWorkspaces heading={b.heading} columns={b.columns} truncate={b.truncate} />
+    ))
+    .with({ type: 'split' }, (b) => (
+      <HomeSplit
+        eyebrow={b.label}
+        title={b.title}
+        body={b.body}
+        bullets={b.bullets ?? []}
+        action={match(b.cta)
+          .with(undefined, () => undefined)
+          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.href }))}
+        reverse={b.reverse}
+        visual={match(b.visual)
+          .with(undefined, () => null)
+          .otherwise((v) => (
+            <CustomSplitVisual visual={v} />
+          ))}
+      />
+    ))
+    .with({ type: 'cta' }, (b) =>
+      match(b.title === undefined)
+        .with(true, () => null)
+        .otherwise(() => (
+          <CTA
+            title={b.title ?? ''}
+            subtitle={b.subtitle}
+            actions={mapButtonsToHeroActions(b.actions)}
+          />
+        ))
+    )
+    .exhaustive()
 }
 
 /**
@@ -264,9 +237,9 @@ function renderTitle(raw: string): React.ReactNode {
 }
 
 /**
- * Map the unified `ButtonConfig[]` shape (used by the new `home.hero`
- * / `home.cta` configs) into the legacy `HeroAction[]` shape still
- * consumed by `<Hero />` and `<CTA />`. `'primary'` → `'brand'`,
+ * Map the unified `ButtonConfig[]` shape (used by the `home.hero`
+ * / cta configs) into the legacy `HeroAction[]` shape still consumed by
+ * `<Hero />` and `<CTA />`. `'primary'` → `'brand'`,
  * `'secondary' | 'ghost'` → `'alt'`, `undefined` → `undefined`.
  *
  * @private
@@ -287,8 +260,8 @@ function mapButtonsToHeroActions(
 }
 
 /**
- * Project the new `'primary' | 'secondary' | 'ghost'` variant token
- * back into the legacy `'brand' | 'alt'` token that `<Hero />` accepts.
+ * Project the `'primary' | 'secondary' | 'ghost'` variant token back into
+ * the legacy `'brand' | 'alt'` token that `<Hero />` accepts.
  *
  * @private
  * @param variant - Optional variant from the unified button config

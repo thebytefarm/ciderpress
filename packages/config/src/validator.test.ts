@@ -168,58 +168,82 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
-  it('should accept home.split as a custom config with code visual', () => {
+  it('should accept a split block with a code visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
-        split: {
-          label: 'Configuration',
-          title: 'One config',
-          bullets: ['typed', 'validated'],
-          visual: { code: 'export default {}', language: 'ts' },
-        },
+        blocks: [
+          {
+            type: 'split',
+            label: 'Configuration',
+            title: 'One config',
+            bullets: ['typed', 'validated'],
+            visual: { code: 'export default {}', language: 'ts' },
+          },
+        ],
       },
     })
     expect(error).toBeNull()
   })
 
-  it('should accept home.layout as a section render-order array', () => {
+  it('should accept a split block with an image visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
-      home: { layout: ['hero', 'cta', 'features', 'showcase'] },
+      home: {
+        blocks: [{ type: 'split', title: 'Screenshot', visual: { src: '/shot.png', alt: 'UI' } }],
+      },
     })
     expect(error).toBeNull()
   })
 
-  it('should reject home.layout with duplicate section ids', () => {
-    const [error] = validateConfig({
-      ...whiteLabelConfig,
-      home: { layout: ['hero', 'features', 'hero'] },
-    })
-    expect(error).toMatchObject({ type: 'validation_failed' })
-  })
-
-  it('should reject home.layout with unknown section ids', () => {
-    const [error] = validateConfig({
-      ...whiteLabelConfig,
-      home: { layout: ['hero', 'unknown-section'] },
-    })
-    expect(error).toMatchObject({ type: 'validation_failed' })
-  })
-
-  it('should accept home.features.heading.label + showcase heading', () => {
+  it('should accept multiple split blocks in home.blocks', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
-        features: {
-          items: [{ title: 'F', description: 'D' }],
-          columns: 3,
-          heading: { label: 'Features', title: 'What you get' },
-        },
-        showcase: {
-          columns: 2,
-          heading: { title: 'Everything in the monorepo' },
-        },
+        blocks: [
+          { type: 'split', title: 'One', visual: { code: 'a', language: 'ts' } },
+          { type: 'split', title: 'Two', reverse: true, visual: { src: '/b.png' } },
+        ],
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject a home block with an unknown type', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'unknown-block' }] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject a split block that has both code and image visuals', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'split', title: 'Bad', visual: { code: 'a', src: '/b.png' } }],
+      },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should accept features + showcase blocks with headings', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [
+          {
+            type: 'features',
+            items: [{ title: 'F', description: 'D' }],
+            columns: 3,
+            heading: { label: 'Features', title: 'What you get' },
+          },
+          {
+            type: 'showcase',
+            columns: 2,
+            heading: { title: 'Everything in the monorepo' },
+          },
+        ],
       },
     })
     expect(error).toBeNull()

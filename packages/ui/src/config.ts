@@ -9,7 +9,6 @@ import type {
   ButtonConfig,
   CiderpressConfig,
   HomeConfig,
-  HomeShowcaseConfig,
   ImageSource,
   LoaderConfig,
   Paths,
@@ -979,25 +978,19 @@ function buildSiteBlock(params: {
 }
 
 /**
- * Resolve home page layout config with defaults.
- * Showcase defaults to 2 columns.
+ * Resolve home page config, defaulting to an empty hero when omitted.
+ * Per-block layout defaults (e.g. showcase columns) are applied at render
+ * time by the individual block components.
  *
  * @private
  * @param home - Raw home config from the user
- * @returns Resolved home config with showcase defaults applied
+ * @returns Resolved home config
  */
 function resolveHomeConfig(home: HomeConfig | undefined): HomeConfig {
-  const fallbackShowcase: HomeShowcaseConfig = { columns: 2 }
   if (home === undefined) {
-    return { hero: {}, showcase: fallbackShowcase }
+    return { hero: {} }
   }
-  return {
-    ...home,
-    showcase: {
-      columns: 2,
-      ...home.showcase,
-    },
-  }
+  return home
 }
 
 /**

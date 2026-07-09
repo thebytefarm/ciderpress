@@ -1,26 +1,43 @@
+import type { HomeSplitVisual, HomeSplitVisualImage } from '@ciderpress/config'
+import { CodeBlockRuntime } from '@rspress/core/theme'
+import { match } from 'massaman/match'
 import type React from 'react'
 
+import { withMountBase } from '../../lib/with-mount-base.ts'
+
 interface CustomSplitVisualProps {
-  readonly code: string
-  readonly language?: string
+  readonly visual: HomeSplitVisual
 }
 
 /**
- * Custom Split visual — renders a user-supplied code snippet inside the
- * same `<pre>` shell as the default `ConfigPreview`. Language hint is
- * surfaced as a `data-language` attribute so themes can hook into it
- * for syntax-highlighter overlays. No client-side highlighting is
- * performed in the framework (keeps the bundle slim); the rendered
- * `<pre>` matches the default surface so themes that style the
- * default block also style the custom one.
+ * Custom Split visual — renders the user-supplied {@link HomeSplitVisual}
+ * in the Split section's opposite column. Two structural variants:
  *
- * @param props - Code snippet + optional language hint
- * @returns Pre-formatted code block
+ * - **Code** (`{ code, language? }`) — rendered through Rspress's native
+ *   `CodeBlockRuntime`, the same Shiki pipeline that highlights markdown
+ *   code fences, so it themes identically to the rest of the site.
+ * - **Image** (`{ src, alt?, width?, height? }`) — a screenshot or graphic,
+ *   base-prefixed via {@link withMountBase} to survive a mounted `base`.
+ *
+ * The discriminator is structural: code objects carry `code`, image
+ * objects carry `src`.
+ *
+ * @param props - Validated split visual config
+ * @returns Highlighted code block or image element
  */
 export function CustomSplitVisual(props: CustomSplitVisualProps): React.ReactElement {
-  return (
-    <pre data-language={props.language ?? 'ts'} className="cp-split__code">
-      {props.code}
-    </pre>
-  )
+  return match(props.visual)
+    .when(
+      (v): v is HomeSplitVisualImage => 'src' in v,
+      (v) => (
+        <img
+          src={withMountBase(v.src)}
+          alt={v.alt ?? ''}
+          width={v.width}
+          height={v.height}
+          className="cp-split__img"
+        />
+      )
+    )
+    .otherwise((v) => <CodeBlockRuntime lang={v.language ?? 'ts'} code={v.code} />)
 }

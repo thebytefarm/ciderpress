@@ -24,6 +24,16 @@
   }
 }
 
+/* Reverse layout — visual first, copy second. Order-based so it flips in
+   both the two-column grid and the single-column mobile stack. */
+.cp-split__inner--reverse .cp-split__copy {
+  order: 2;
+}
+
+.cp-split__inner--reverse .cp-split__visual {
+  order: 1;
+}
+
 .cp-split__copy {
   min-width: 0;
 }
@@ -115,7 +125,7 @@
   border-color: var(--cp-c-brand-2);
 }
 
-/* Code visual styling — works for any pre/code or window child */
+/* Visual frame — wraps a native code block, an image, or a window child */
 .cp-split__visual {
   border: 1px solid var(--cp-c-border);
   border-radius: var(--cp-radius-lg);
@@ -123,26 +133,20 @@
   background: var(--cp-code-block-bg);
 }
 
-.cp-split__visual pre {
+/* Native Rspress code block (Shiki) fills the frame — strip its own
+   margin and rounded corners so the frame owns the chrome. */
+.cp-split__visual .rp-codeblock {
   margin: 0;
-  padding: var(--cp-s-18) var(--cp-s-20);
-  font-family: var(--cp-font-family-mono);
-  font-size: var(--cp-fs-code);
-  line-height: var(--cp-lh-code);
-  white-space: pre;
-  overflow-x: auto;
-  color: var(--cp-c-text-1);
+  border-radius: 0;
 }
 
-.cp-split__visual .tok-kw {
-  color: var(--cp-c-syntax-kw);
+.cp-split__visual .rp-codeblock pre {
+  overflow-x: auto;
 }
-.cp-split__visual .tok-str {
-  color: var(--cp-c-syntax-str);
-}
-.cp-split__visual .tok-fn {
-  color: var(--cp-c-syntax-fn);
-}
-.cp-split__visual .tok-cmt {
-  color: var(--cp-c-text-3);
+
+/* Image visual fills the frame width, preserving aspect ratio. */
+.cp-split__img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
