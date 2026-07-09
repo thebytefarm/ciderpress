@@ -203,6 +203,7 @@ interface Page {
     recursive?: boolean
     ignore?: string[]
     indexFile?: string
+    descriptionFallback?: 'firstParagraph' | 'none'
   }
 
   // ---- Per-page integration ----
@@ -265,7 +266,7 @@ interface CardConfig {
 | `tags`        | `string[]`                     | Tag chips rendered below the description                                                    |
 | `badge`       | `{ src: string; alt: string }` | Logo badge rendered in the card's top-right corner                                          |
 
-Card content resolves from this priority order (highest first): `card.description` → source file frontmatter `description` → `Page.description`.
+Card content resolves from this priority order (highest first): `card.description` → `Page.description` → the group's overview/root page (`overview.md`, `index.md`, `readme.md`, …) frontmatter `description` → that overview's first paragraph. This means a nested group card is populated automatically from its overview page — no need to restate the description in config. Set `discover.descriptionFallback: 'none'` to require an explicit frontmatter `description` and skip the first-paragraph inference.
 
 #### `defaults` — default page metadata
 
@@ -292,6 +293,7 @@ Only applies when `include` is a glob. Renamed from the flat `Section.{sort,recu
 | `discover.recursive` | `boolean`      | `true`       | Recurse into subdirectories                                                                                |
 | `discover.ignore`    | `string[]`     | —            | Glob patterns ignored during discovery (renamed from `exclude` — gitignore vocab)                          |
 | `discover.indexFile` | `string`       | `'overview'` | Filename treated as the page's own content instead of generating a landing page (renamed from `entryFile`) |
+| `discover.descriptionFallback` | `'firstParagraph' \| 'none'` | `'firstParagraph'` | How to source a group's card/landing description when its overview file has no frontmatter `description`. `'none'` requires an explicit `description`. Overrides the top-level `discover.descriptionFallback` |
 
 #### `openapi`
 
@@ -369,6 +371,7 @@ interface Workspace {
     recursive?: boolean
     ignore?: string[]
     indexFile?: string
+    descriptionFallback?: 'firstParagraph' | 'none'
   }
   openapi?: OpenAPISpec
 }
@@ -1058,17 +1061,19 @@ home: {
 
 ## `discover`
 
-Top-level cross-cutting discovery options. Only field is `ignore` — global glob patterns excluded from every page's auto-discovery.
+Top-level cross-cutting discovery options.
 
 ```ts
 discover?: {
   ignore?: string[],
+  descriptionFallback?: 'firstParagraph' | 'none',
 }
 ```
 
-| Field             | Type       | Description                                                          |
-| ----------------- | ---------- | -------------------------------------------------------------------- |
-| `discover.ignore` | `string[]` | Glob patterns excluded from every page's discovery (gitignore vocab) |
+| Field                          | Type                         | Description                                                                                                                                       |
+| ------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `discover.ignore`              | `string[]`                   | Glob patterns excluded from every page's discovery (gitignore vocab)                                                                              |
+| `discover.descriptionFallback` | `'firstParagraph' \| 'none'` | Default strategy for sourcing a group's card/landing description when its overview file has no frontmatter `description`. Default `'firstParagraph'` |
 
 ```ts
 discover: {

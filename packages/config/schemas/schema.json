@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.5/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.6/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -707,6 +707,13 @@
               },
               "indexFile": {
                 "type": "string"
+              },
+              "descriptionFallback": {
+                "type": "string",
+                "enum": [
+                  "firstParagraph",
+                  "none"
+                ]
               }
             },
             "additionalProperties": false
@@ -1084,6 +1091,13 @@
               },
               "indexFile": {
                 "type": "string"
+              },
+              "descriptionFallback": {
+                "type": "string",
+                "enum": [
+                  "firstParagraph",
+                  "none"
+                ]
               }
             },
             "additionalProperties": false
@@ -1511,6 +1525,13 @@
                     },
                     "indexFile": {
                       "type": "string"
+                    },
+                    "descriptionFallback": {
+                      "type": "string",
+                      "enum": [
+                        "firstParagraph",
+                        "none"
+                      ]
                     }
                   },
                   "additionalProperties": false
@@ -3027,6 +3048,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "descriptionFallback": {
+          "type": "string",
+          "enum": [
+            "firstParagraph",
+            "none"
+          ]
         }
       },
       "additionalProperties": false
@@ -3485,6 +3513,13 @@
             },
             "indexFile": {
               "type": "string"
+            },
+            "descriptionFallback": {
+              "type": "string",
+              "enum": [
+                "firstParagraph",
+                "none"
+              ]
             }
           },
           "additionalProperties": false

@@ -1,11 +1,9 @@
-import fs from 'node:fs/promises'
-
 import { resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { IconColor, SerializedIcon } from '@ciderpress/config'
+import type { DescriptionFallback, IconColor, SerializedIcon } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import { isNotNil, isString } from 'massaman/predicate'
 
-import { parse as parseFrontmatter } from '../frontmatter.ts'
+import { extractFileDescription } from '../resolve/description.ts'
 import type { ResolvedEntry } from '../types.ts'
 
 /**
@@ -58,13 +56,16 @@ export interface WorkspaceCardData {
  * @param description - Optional section description
  * @param children - Resolved child entries
  * @param iconColor - Color theme for section card icons
+ * @param fallback - Strategy for sourcing a card description from prose
+ *   when a child's file has no frontmatter `description`
  * @returns MDX string with React component imports and JSX elements
  */
 export async function generateLandingContent(
   sectionText: string,
   description: string | undefined,
   children: readonly ResolvedEntry[],
-  iconColor: IconColor
+  iconColor: IconColor,
+  fallback: DescriptionFallback
 ): Promise<string> {
   const visible = children.filter((c) => !c.hidden && c.link)
   const useWorkspace = visible.some((c) => c.card)
@@ -78,12 +79,14 @@ export async function generateLandingContent(
     "'@ciderpress/ui/theme'\n\n"
 
   if (useWorkspace) {
-    const cards = await Promise.all(visible.map((child) => buildWorkspaceCard(child)))
+    const cards = await Promise.all(visible.map((child) => buildWorkspaceCard(child, fallback)))
     const grid = cards.join('\n')
     return `${imports}# ${sectionText}\n${descLine}\n<WorkspaceGrid>\n${grid}\n</WorkspaceGrid>\n`
   }
 
-  const cards = await Promise.all(visible.map((child) => buildSectionCard(child, iconColor)))
+  const cards = await Promise.all(
+    visible.map((child) => buildSectionCard(child, iconColor, fallback))
+  )
   const grid = cards.join('\n')
   return `${imports}# ${sectionText}\n${descLine}\n<SectionGrid>\n${grid}\n</SectionGrid>\n`
 }
@@ -121,11 +124,15 @@ export function buildWorkspaceCardJsx(data: WorkspaceCardData): string {
  *
  * @private
  * @param entry - Resolved entry with card metadata
+ * @param fallback - Strategy for sourcing a description from prose
  * @returns JSX string for a WorkspaceCard component
  */
-async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
+async function buildWorkspaceCard(
+  entry: ResolvedEntry,
+  fallback: DescriptionFallback
+): Promise<string> {
   const card = entry.card ?? {}
-  const description = card.description ?? (await resolveDescription(entry))
+  const description = card.description ?? (await resolveDescription(entry, fallback))
   const resolved = resolveOptionalIcon(card.icon)
 
   return buildWorkspaceCardJsx({
@@ -146,9 +153,14 @@ async function buildWorkspaceCard(entry: ResolvedEntry): Promise<string> {
  * @private
  * @param entry - Resolved entry to render as a card
  * @param iconColor - Color theme for the icon
+ * @param fallback - Strategy for sourcing a description from prose
  * @returns JSX string for a single SectionCard component
  */
-async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Promise<string> {
+async function buildSectionCard(
+  entry: ResolvedEntry,
+  iconColor: IconColor,
+  fallback: DescriptionFallback
+): Promise<string> {
   const hasChildren = entry.items && entry.items.length > 0
   const iconId = match(hasChildren)
     .with(true, () => 'pixelarticons:folder')
@@ -156,7 +168,8 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
   const icon: SerializedIcon = match(iconColor)
     .with('purple', () => iconId as SerializedIcon)
     .otherwise(() => ({ id: iconId, color: iconColor }) as SerializedIcon)
-  const description = await resolveDescription(entry)
+  const card = entry.card ?? {}
+  const description = card.description ?? (await resolveDescription(entry, fallback))
 
   const baseProps = [
     `href="${entry.link}"`,
@@ -173,55 +186,34 @@ async function buildSectionCard(entry: ResolvedEntry, iconColor: IconColor): Pro
 
 /**
  * Resolve a description for a card.
- * Priority: card.description > source file frontmatter > first paragraph > page frontmatter.
+ * Priority: source file frontmatter/prose > resolved config/group description.
+ *
+ * Card-level `card.description` overrides are applied by the callers
+ * ({@link buildWorkspaceCard} / {@link buildSectionCard}) before this runs.
  *
  * @private
  * @param entry - Resolved entry to extract description from
+ * @param fallback - Strategy for sourcing a description from prose
  * @returns Description string, or undefined if none found
  */
-async function resolveDescription(entry: ResolvedEntry): Promise<string | undefined> {
-  if (isNotNil(entry.page) && entry.page.source) {
-    try {
-      const desc = await extractDescription(entry.page.source)
-      if (desc) {
-        return desc
-      }
-    } catch {
-      // ignore
+async function resolveDescription(
+  entry: ResolvedEntry,
+  fallback: DescriptionFallback
+): Promise<string | undefined> {
+  if (isNotNil(entry.page) && isNotNil(entry.page.source)) {
+    const desc = await extractFileDescription(entry.page.source, fallback)
+    if (isNotNil(desc)) {
+      return desc
     }
   }
 
-  // Config-level description as fallback (no file, or file has no description)
-  if (entry.description) {
+  // Resolved config/group description as fallback (virtual page, or file
+  // with no description). Populated by the resolve layer for group entries.
+  if (isNotNil(entry.description)) {
     return entry.description
   }
 
   return undefined
-}
-
-/**
- * Extract a short description from a markdown file.
- * Checks frontmatter `description` first, then first paragraph after heading.
- *
- * @private
- * @param sourcePath - Absolute path to the markdown file
- * @returns Description string, or undefined if none found
- */
-async function extractDescription(sourcePath: string): Promise<string | undefined> {
-  const raw = await fs.readFile(sourcePath, 'utf8')
-  const { data, content } = parseFrontmatter(raw)
-
-  if (data.description) {
-    return String(data.description)
-  }
-
-  const lines = content.split('\n')
-  const headingIdx = lines.findIndex((l) => l.startsWith('#'))
-  const para: readonly string[] = resolveParagraph(lines, headingIdx)
-
-  if (para.length > 0) {
-    return para.join(' ')
-  }
 }
 
 /**
@@ -242,47 +234,6 @@ function escapeJsxProp(str: string): string {
     .replaceAll('"', '&quot;')
     .replaceAll('{', '&#123;')
     .replaceAll('}', '&#125;')
-}
-
-/**
- * Extract the first non-empty paragraph after a heading from markdown lines.
- *
- * @private
- * @param lines - Array of markdown lines
- * @param headingIdx - Index of the heading line (-1 if none found)
- * @returns Array of trimmed paragraph lines
- */
-function resolveParagraph(lines: readonly string[], headingIdx: number): readonly string[] {
-  if (headingIdx === -1) {
-    return []
-  }
-
-  return lines
-    .slice(headingIdx + 1)
-    .reduce<{ readonly done: boolean; readonly result: readonly string[] }>(
-      (acc, line) => {
-        if (acc.done) {
-          return acc
-        }
-        if (line.startsWith('#')) {
-          return { done: true, result: acc.result }
-        }
-
-        const trimmed = line.trim()
-        if (trimmed === '' && acc.result.length > 0) {
-          return { done: true, result: acc.result }
-        }
-        if (trimmed === '') {
-          return acc
-        }
-        if (trimmed.startsWith('<') || trimmed.startsWith('---')) {
-          return acc
-        }
-
-        return { done: false, result: [...acc.result, trimmed] }
-      },
-      { done: false, result: [] }
-    ).result
 }
 
 /**

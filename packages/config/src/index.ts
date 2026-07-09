@@ -32,6 +32,7 @@ export type {
   WorkspaceGroup,
   TitleConfig,
   SortStrategy,
+  DescriptionFallback,
   ButtonConfig,
   BrandConfig,
   BannerConfig,

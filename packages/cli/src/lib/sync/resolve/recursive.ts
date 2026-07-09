@@ -1,7 +1,7 @@
 import path from 'node:path'
 
 import { normalizeInclude } from '@ciderpress/config'
-import type { Page, Frontmatter, SortStrategy } from '@ciderpress/config'
+import type { DescriptionFallback, Page, Frontmatter, SortStrategy } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
@@ -9,6 +9,7 @@ import { isNotNil } from 'massaman/predicate'
 
 import { excludeGlobbedAgentFiles } from '../agent-files.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
+import { resolveGroupDescription } from './description.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { sortEntries } from './sort.ts'
 import { deriveText, kebabToTitle, resolveSectionTitle } from './text.ts'
@@ -48,6 +49,7 @@ export async function resolveRecursiveGlob(
     .with(P.nonNullable, (n) => n.collapsible)
     .otherwise(() => undefined)
   const entryFile = indexFile ?? 'overview'
+  const descriptionFallback = resolveDescriptionFallback(ctx, section)
 
   const patterns = normalizeInclude(section.include)
   if (patterns.length === 0) {
@@ -102,10 +104,34 @@ export async function resolveRecursiveGlob(
     sort,
     collapsible,
     entryFile,
+    descriptionFallback,
     ctx,
     frontmatter,
     depth,
   })
+}
+
+/**
+ * Resolve the effective description fallback for a recursive section — a
+ * per-section `discover.descriptionFallback` wins over the global one,
+ * which defaults to `'firstParagraph'`.
+ *
+ * @private
+ * @param ctx - Sync context (provides global config)
+ * @param section - Page config node
+ * @returns The description fallback strategy to apply
+ */
+function resolveDescriptionFallback(ctx: SyncContext, section: Page): DescriptionFallback {
+  const sectionFallback = match(section.discover)
+    .with(P.nonNullable, (d) => d.descriptionFallback)
+    .otherwise(() => undefined)
+  if (isNotNil(sectionFallback)) {
+    return sectionFallback
+  }
+  const globalFallback = match(ctx.config.discover)
+    .with(P.nonNullable, (d) => d.descriptionFallback)
+    .otherwise(() => undefined)
+  return globalFallback ?? 'firstParagraph'
 }
 
 /**
@@ -186,6 +212,7 @@ interface BuildEntryTreeParams {
   readonly sort: SortStrategy | undefined
   readonly collapsible: boolean | undefined
   readonly entryFile: string
+  readonly descriptionFallback: DescriptionFallback
   readonly ctx: SyncContext
   readonly frontmatter: Frontmatter
   readonly depth: number
@@ -210,6 +237,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
     sort,
     collapsible,
     entryFile,
+    descriptionFallback,
     ctx,
     frontmatter,
     depth,
@@ -270,6 +298,7 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
         sort,
         collapsible,
         entryFile,
+        descriptionFallback,
         ctx,
         frontmatter,
         depth: depth + 1,
@@ -283,8 +312,21 @@ async function buildEntryTree(params: BuildEntryTreeParams): Promise<ResolvedEnt
 
       const sectionLink = resolveSectionLink(entryFilePath, subPrefix, entryFile)
 
+      // Source a description from the subdir's overview page (or an
+      // entry-slug child) so its card on a parent landing isn't blank.
+      const sectionSource = match(sectionPage)
+        .with(P.nonNullable, (p) => p.source)
+        .otherwise(() => undefined)
+      const description = await resolveGroupDescription({
+        sourcePath: sectionSource,
+        children: sorted,
+        indexFile: entryFile,
+        fallback: descriptionFallback,
+      })
+
       return {
         title: sectionTitle,
+        description,
         link: sectionLink,
         collapsible: effectiveCollapsible,
         items: sorted,

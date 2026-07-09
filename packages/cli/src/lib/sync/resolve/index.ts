@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 import { hasAnyGlobInclude, isSingleFileInclude, normalizeInclude } from '@ciderpress/config'
-import type { Page, Frontmatter } from '@ciderpress/config'
+import type { DescriptionFallback, Page, Frontmatter } from '@ciderpress/config'
 import { log } from '@clack/prompts'
 import fg from 'fast-glob'
 import { match, P } from 'massaman/match'
@@ -12,6 +12,7 @@ import { excludeGlobbedAgentFiles } from '../agent-files.ts'
 import { syncError, collectResults } from '../errors.ts'
 import type { SyncError, SyncOutcome } from '../errors.ts'
 import type { ResolvedEntry, SyncContext } from '../types.ts'
+import { resolveGroupDescription } from './description.ts'
 import { extractBaseDir, linkToOutputPath, sourceExt } from './path.ts'
 import { resolveRecursiveGlob } from './recursive.ts'
 import { sortEntries } from './sort.ts'
@@ -248,11 +249,26 @@ async function resolveNestedSection(
   const link = section.path ?? derivedLink
   const autoLink = !section.path && link !== undefined
 
+  // Source a group description from config, its overview page, an
+  // entry-slug overview child, or a probed overview file — so nested
+  // group cards and this group's landing intro aren't left blank.
+  const sectionSource = match(sectionPage)
+    .with(P.nonNullable, (p) => p.source)
+    .otherwise(() => undefined)
+  const description = await resolveGroupDescription({
+    explicit: section.description,
+    sourcePath: sectionSource,
+    children: sorted,
+    probeDir: resolveProbeDir(ctx, section),
+    indexFile: resolveIndexFile(section),
+    fallback: resolveDescriptionFallback(ctx, section),
+  })
+
   return [
     null,
     {
       title: resolveSectionTitle(section),
-      description: section.description,
+      description,
       link,
       collapsible,
       hidden,
@@ -265,6 +281,64 @@ async function resolveNestedSection(
       page: sectionPage,
     },
   ]
+}
+
+/**
+ * Resolve the effective description fallback for a section — a per-section
+ * `discover.descriptionFallback` wins over the global `discover.descriptionFallback`,
+ * which defaults to `'firstParagraph'`.
+ *
+ * @private
+ * @param ctx - Sync context (provides global config)
+ * @param section - Page config node
+ * @returns The description fallback strategy to apply for this section
+ */
+function resolveDescriptionFallback(ctx: SyncContext, section: Page): DescriptionFallback {
+  const sectionFallback = match(section.discover)
+    .with(P.nonNullable, (d) => d.descriptionFallback)
+    .otherwise(() => undefined)
+  if (isNotNil(sectionFallback)) {
+    return sectionFallback
+  }
+  const globalFallback = match(ctx.config.discover)
+    .with(P.nonNullable, (d) => d.descriptionFallback)
+    .otherwise(() => undefined)
+  return globalFallback ?? 'firstParagraph'
+}
+
+/**
+ * Resolve the configured `discover.indexFile` for a section, if any.
+ *
+ * @private
+ * @param section - Page config node
+ * @returns The index filename stem, or undefined
+ */
+function resolveIndexFile(section: Page): string | undefined {
+  return match(section.discover)
+    .with(P.nonNullable, (d) => d.indexFile)
+    .otherwise(() => undefined)
+}
+
+/**
+ * Resolve the absolute directory to probe for an overview file when a
+ * group has a glob `include` — the static base of its first glob pattern.
+ * Returns undefined for non-glob sections (single-file includes already
+ * expose their source page).
+ *
+ * @private
+ * @param ctx - Sync context (provides repo root)
+ * @param section - Page config node
+ * @returns Absolute probe directory, or undefined
+ */
+function resolveProbeDir(ctx: SyncContext, section: Page): string | undefined {
+  if (!hasAnyGlobInclude(section.include)) {
+    return undefined
+  }
+  const patterns = normalizeInclude(section.include)
+  if (patterns.length === 0) {
+    return undefined
+  }
+  return path.resolve(ctx.repoRoot, extractBaseDir(patterns[0]))
 }
 
 /**

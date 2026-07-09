@@ -407,6 +407,17 @@ export type SortStrategy =
   | ((a: ResolvedPage, b: ResolvedPage) => number)
 
 /**
+ * Strategy for sourcing a group's card/landing description when its
+ * overview file has no frontmatter `description`.
+ *
+ * - `'firstParagraph'` (default) — fall back to the first prose paragraph
+ *   after the heading.
+ * - `'none'` — require an explicit frontmatter `description`; never infer
+ *   one from body prose.
+ */
+export type DescriptionFallback = 'firstParagraph' | 'none'
+
+/**
  * Card appearance overrides — controls how a `Page` or workspace renders
  * as a card on a parent's auto-generated landing.
  */
@@ -567,6 +578,13 @@ export interface Page {
      * landing page (was `entryFile`).
      */
     readonly indexFile?: string
+    /**
+     * How to source this group's card/landing description when its
+     * overview file has no frontmatter `description`. Overrides the
+     * top-level `discover.descriptionFallback`. Defaults to
+     * `'firstParagraph'`.
+     */
+    readonly descriptionFallback?: DescriptionFallback
   }
   /**
    * Per-page OpenAPI integration — generates API operation pages under
@@ -650,6 +668,13 @@ export interface Workspace {
      * instead of generating an auto-landing.
      */
     readonly indexFile?: string
+    /**
+     * How to source this workspace's card/landing description when its
+     * overview file has no frontmatter `description`. Overrides the
+     * top-level `discover.descriptionFallback`. Defaults to
+     * `'firstParagraph'`.
+     */
+    readonly descriptionFallback?: DescriptionFallback
   }
   /**
    * Per-workspace OpenAPI integration.
@@ -1643,6 +1668,13 @@ export interface DiscoverConfig {
    * Global glob patterns excluded from every page's auto-discovery.
    */
   readonly ignore?: readonly string[]
+  /**
+   * Default strategy for sourcing a group's card/landing description when
+   * its overview file has no frontmatter `description`. A per-page
+   * `discover.descriptionFallback` overrides this. Defaults to
+   * `'firstParagraph'`.
+   */
+  readonly descriptionFallback?: DescriptionFallback
 }
 
 /**

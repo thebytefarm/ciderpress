@@ -1,7 +1,6 @@
 import { ICON_COLORS, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
-import type { IconColor, Page, Workspace } from '@ciderpress/config'
+import type { DescriptionFallback, IconColor, Workspace } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
-import { isNil, isNotNil } from 'massaman/predicate'
 
 import { linkToOutputPath } from '../resolve/path.ts'
 import type { ResolvedEntry } from '../types.ts'
@@ -19,19 +18,19 @@ import { buildWorkspaceCardJsx, generateLandingContent } from './landing.ts'
  * deterministic without a mutable counter.
  *
  * @param entries - Resolved entry tree to walk
- * @param configSections - Original config pages for metadata lookup
  * @param workspaces - Workspace items for generating workspace landing pages
+ * @param fallback - Strategy for sourcing child card descriptions from prose
  * @returns New resolved entry tree with landing pages injected
  */
 export function injectLandingPages(
   entries: readonly ResolvedEntry[],
-  configSections: readonly Page[],
-  workspaces: readonly Workspace[]
+  workspaces: readonly Workspace[],
+  fallback: DescriptionFallback
 ): readonly ResolvedEntry[] {
   const { entries: result } = injectMany({
     entries,
-    configSections,
     workspaces,
+    fallback,
     colorIndex: 0,
   })
   return result
@@ -46,8 +45,8 @@ export function injectLandingPages(
  */
 interface InjectFrame {
   readonly entries: readonly ResolvedEntry[]
-  readonly configSections: readonly Page[]
   readonly workspaces: readonly Workspace[]
+  readonly fallback: DescriptionFallback
   readonly colorIndex: number
 }
 
@@ -76,8 +75,8 @@ function injectMany(frame: InjectFrame): InjectResult {
     (acc, entry) => {
       const { entry: rebuilt, nextColorIndex } = injectOne({
         entry,
-        configSections: frame.configSections,
         workspaces: frame.workspaces,
+        fallback: frame.fallback,
         colorIndex: acc.nextColorIndex,
       })
       return {
@@ -96,8 +95,8 @@ function injectMany(frame: InjectFrame): InjectResult {
  */
 interface InjectOneFrame {
   readonly entry: ResolvedEntry
-  readonly configSections: readonly Page[]
   readonly workspaces: readonly Workspace[]
+  readonly fallback: DescriptionFallback
   readonly colorIndex: number
 }
 
@@ -122,13 +121,13 @@ interface InjectOneResult {
  * @returns Rebuilt entry and next color index
  */
 function injectOne(frame: InjectOneFrame): InjectOneResult {
-  const { entry, configSections, workspaces, colorIndex } = frame
+  const { entry, workspaces, fallback, colorIndex } = frame
 
   // Recurse into children first so the rebuilt subtree is available when
   // we decide whether to inject a landing page for this entry.
   const childResult = match(entry.items)
     .with(P.nonNullable, (items) =>
-      injectMany({ entries: items, configSections, workspaces, colorIndex })
+      injectMany({ entries: items, workspaces, fallback, colorIndex })
     )
     .otherwise(() => ({
       entries: undefined as readonly ResolvedEntry[] | undefined,
@@ -145,8 +144,9 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
   }
 
   const link = entry.link as string
-  const configSection = findConfigSection(configSections, link)
-  const description: string | undefined = resolveDescription(configSection)
+  // Group description is resolved once in the resolve layer (config >
+  // overview page > entry-slug child); reuse it for the landing intro.
+  const description = baseEntry.description
   const rebuiltItems = childResult.entries
   const hasSelfLinkedChild = checkHasSelfLinkedChild(rebuiltItems, link)
 
@@ -154,7 +154,7 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
     const color: IconColor = ICON_COLORS[childResult.nextColorIndex % ICON_COLORS.length]
     const children = rebuiltItems
     const page: ResolvedEntry['page'] = {
-      content: () => generateLandingContent(entry.title, description, children, color),
+      content: () => generateLandingContent(entry.title, description, children, color, fallback),
       outputPath: linkToOutputPath(link).replace(/\.md$/, '.mdx'),
       frontmatter: {},
     }
@@ -235,45 +235,6 @@ function generateWorkspaceLandingPage(
     .otherwise(() => '')
 
   return `${imports}# ${heading}\n${descLine}\n<WorkspaceGrid>\n${cards.join('\n')}\n</WorkspaceGrid>\n`
-}
-
-/**
- * Look up the original config Page by link for extracting metadata.
- *
- * @private
- * @param sections - Config pages to search
- * @param link - Link path to match
- * @returns Matching page, or undefined
- */
-function findConfigSection(sections: readonly Page[], link: string): Page | undefined {
-  const direct = sections.find((section) => section.path === link)
-  if (direct) {
-    return direct
-  }
-  const nested = sections
-    .filter((section) => isNotNil(section.pages))
-    .map((section) => findConfigSection(section.pages as readonly Page[], link))
-    .find((result) => isNotNil(result))
-  return nested
-}
-
-/**
- * Extract description from a config page.
- *
- * @private
- * @param configSection - Optional config page
- * @returns Description string, or undefined
- */
-function resolveDescription(configSection: Page | undefined): string | undefined {
-  if (isNil(configSection)) {
-    return undefined
-  }
-
-  if (configSection.description) {
-    return configSection.description
-  }
-
-  return undefined
 }
 
 /**

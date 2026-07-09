@@ -39,6 +39,7 @@ import type {
   ButtonConfig,
   CardConfig,
   CopyrightConfig,
+  DescriptionFallback,
   DevServerConfig,
   DiscoverConfig,
   EditLinkConfig,
@@ -232,6 +233,8 @@ const imageSourceSchema = z.union([
 
 const sortStrategySchema = z.union([z.enum(['default', 'alpha', 'filename', 'none']), sortFnSchema])
 
+const descriptionFallbackSchema = z.enum(['firstParagraph', 'none'])
+
 const LOADER_TIMING_MESSAGE =
   'loader.maxDisplayMs must be at least minDisplayMs + 200ms (fade transition)'
 
@@ -320,6 +323,7 @@ const pageSchema: z.ZodType<Page> = z.lazy(() =>
           recursive: z.boolean().optional(),
           ignore: z.array(z.string()).optional(),
           indexFile: z.string().optional(),
+          descriptionFallback: descriptionFallbackSchema.optional(),
         })
         .strict()
         .optional(),
@@ -345,6 +349,7 @@ const workspaceSchema = z
         recursive: z.boolean().optional(),
         ignore: z.array(z.string()).optional(),
         indexFile: z.string().optional(),
+        descriptionFallback: descriptionFallbackSchema.optional(),
       })
       .strict()
       .optional(),
@@ -629,6 +634,7 @@ const feedbackConfigSchema = z
 const discoverConfigSchema = z
   .object({
     ignore: z.array(z.string()).optional(),
+    descriptionFallback: descriptionFallbackSchema.optional(),
   })
   .strict()
 
@@ -820,6 +826,8 @@ const _guardIconConfig: z.ZodType<IconConfig> = iconConfigSchema
 const _guardTitleConfig: z.ZodType<TitleConfig> = titleConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardSortStrategy: z.ZodType<SortStrategy> = sortStrategySchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardDescriptionFallback: z.ZodType<DescriptionFallback> = descriptionFallbackSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeHeroConfig: z.ZodType<HomeHeroConfig> = homeHeroConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

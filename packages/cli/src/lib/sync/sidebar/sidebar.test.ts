@@ -29,7 +29,7 @@ describe('injectLandingPages()', () => {
       items: [child],
     }
 
-    const [result] = injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], 'firstParagraph')
 
     expect(result.page).toBeDefined()
     expect(result.page!.outputPath).toMatch(/\.mdx$/)
@@ -50,7 +50,7 @@ describe('injectLandingPages()', () => {
       items: [child],
     }
 
-    const [result] = injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], 'firstParagraph')
 
     expect(result.page).toBe(existingPage)
   })
@@ -72,7 +72,7 @@ describe('injectLandingPages()', () => {
       items: [nested],
     }
 
-    const [result] = injectLandingPages([section], [], [])
+    const [result] = injectLandingPages([section], [], 'firstParagraph')
 
     const [rebuiltNested] = result.items!
     expect(rebuiltNested.page).toBeDefined()

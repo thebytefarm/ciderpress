@@ -136,7 +136,14 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
 
   // Returns a new tree (immutable) rather than mutating `enriched`.
   const workspaces = collectAllWorkspaceItems(config)
-  const withLandings = injectLandingPages(enriched, rootPages, workspaces)
+  const descriptionFallback = match(config.discover)
+    .with(P.nonNullable, (d) => d.descriptionFallback)
+    .otherwise(() => undefined)
+  const withLandings = injectLandingPages(
+    enriched,
+    workspaces,
+    descriptionFallback ?? 'firstParagraph'
+  )
 
   // Stamp badges (frontmatter/defaults/glob + named statuses) onto the
   // tree so `_meta.json` generation can carry them as Rspress `tag`s, and
