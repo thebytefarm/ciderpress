@@ -26,6 +26,7 @@
     "fix-openapi-copy-markdown",
     "full-customization",
     "glob-ignore-agent-files",
+    "group-badges-consistency",
     "icon-collection-chunking",
     "pixel-social-icons",
     "reject-nested-path-top-level-leaf",
