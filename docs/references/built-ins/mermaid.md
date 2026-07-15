@@ -209,6 +209,44 @@ pie title Tech Stack
   "Other" : 10
 ```
 
+## ELK layout
+
+Flowcharts and state diagrams can opt into the [ELK](https://eclipse.dev/elk/) layout engine for tidier routing of large or dense graphs. Set `layout: elk` in the diagram's init directive — no configuration or extra imports needed.
+
+**Code**
+
+````md
+```mermaid
+---
+config:
+  layout: elk
+---
+graph TB
+  A[Ingest] --> B[Parse]
+  A --> C[Validate]
+  B --> D[Render]
+  C --> D
+  D --> E[Publish]
+```
+````
+
+**Output**
+
+```mermaid
+---
+config:
+  layout: elk
+---
+graph TB
+  A[Ingest] --> B[Parse]
+  A --> C[Validate]
+  B --> D[Render]
+  C --> D
+  D --> E[Publish]
+```
+
+The ELK engine loads lazily in the browser only when a diagram requests it, so it adds nothing to your build output or to diagrams that use the default layout.
+
 ## All supported types
 
 | Type                | Directive              |
