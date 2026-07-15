@@ -15,11 +15,34 @@
 
 // oxlint-disable no-ternary
 
+import elkLayouts from '@mermaid-js/layout-elk'
 import mermaid from 'mermaid'
 import type { MermaidConfig } from 'mermaid'
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 
 import './mermaid.css'
+
+// ELK layout support. Diagrams that opt in with `layout: elk` (via frontmatter or
+// `%%{init: {'layout': 'elk'}}%%`) need the ELK loaders registered before render,
+// or mermaid.render() throws and the diagram silently blanks. `elkLayouts` is an
+// array of lazy loaders (`() => import(...)`), so elkjs — and its web worker —
+// only load client-side when a diagram actually uses ELK, never at build/SSR time.
+// Registration itself is a cheap, edge-safe registry push. We guard on a module
+// flag so React re-mounts / StrictMode double-invokes register exactly once.
+const elkState = { registered: false }
+
+/**
+ * Register the ELK layout loaders with mermaid, exactly once per module load.
+ *
+ * @private
+ */
+function ensureElkRegistered(): void {
+  if (elkState.registered) {
+    return
+  }
+  elkState.registered = true
+  mermaid.registerLayoutLoaders(elkLayouts)
+}
 
 interface MermaidRendererProps {
   readonly code: string
@@ -243,6 +266,8 @@ function MermaidRenderer(props: MermaidRendererProps): React.ReactElement | null
   const isPreview = tab === 'preview'
 
   const renderMermaid = useCallback(async () => {
+    ensureElkRegistered()
+
     const hasDarkClass = document.documentElement.classList.contains('dark')
 
     const mermaidConfig: MermaidConfig = {
