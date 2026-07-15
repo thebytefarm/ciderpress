@@ -1,0 +1,21 @@
+/**
+ * Content list marker spacing.
+ *
+ * Cascade layer: `ciderpress.overrides` (see styles/layers.css).
+ *
+ * Rspress seats `.rp-doc` list markers `outside` with zero `li` padding, so a
+ * decimal marker butts directly against its text. A bullet is small enough to
+ * look fine, but `1.`–`99.` get no gap — which is why ordered lists read as
+ * mis-padded next to unordered ones even though the list box padding is equal.
+ *
+ * Put the marker-to-text gap on the `li` (Rspress sets no `li` padding, so this
+ * layered rule applies cleanly) and give ordered lists a consistent per-item
+ * rhythm. Applied to `ol` and `ul` together so the two stay aligned.
+ */
+
+@layer ciderpress.overrides {
+  .rp-doc :where(ul, ol) > li {
+    padding-inline-start: 0.4em;
+    margin-block: 0.35rem;
+  }
+}
