@@ -1,5 +1,13 @@
 # ciderpress
 
+## 1.0.0-rc.9
+
+### Patch Changes
+
+- Updated dependencies [0ce7419]
+  - @ciderpress/ui@1.0.0-rc.9
+  - @ciderpress/cli@1.0.0-rc.9
+
 ## 1.0.0-rc.8
 
 ### Patch Changes

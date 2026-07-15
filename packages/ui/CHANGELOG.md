@@ -1,5 +1,11 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.9
+
+### Minor Changes
+
+- 0ce7419: Register the ELK layout loaders for Mermaid. Diagrams that opt in with `layout: elk` now render instead of silently blanking. The ELK engine (and its worker) loads lazily in the browser only when a diagram requests it, so build output and edge/Cloudflare builds are unaffected.
+
 ## 1.0.0-rc.8
 
 ### Patch Changes
