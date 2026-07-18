@@ -1,5 +1,12 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.10
+
+### Patch Changes
+
+- Updated dependencies [5fb37b1]
+  - @ciderpress/ui@1.0.0-rc.10
+
 ## 1.0.0-rc.9
 
 ### Patch Changes
