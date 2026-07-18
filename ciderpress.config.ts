@@ -410,6 +410,12 @@ export default defineConfig({
           include: 'docs/references/frontmatter.md',
         },
         {
+          title: 'Markdown Syntax',
+          description: 'Every core CommonMark and GFM element ciderpress renders, shown live.',
+          path: '/reference/markdown',
+          include: 'docs/references/markdown.mdx',
+        },
+        {
           title: 'Badges & Statuses',
           description: 'Label pages with badges and a named status registry.',
           path: '/reference/badges',

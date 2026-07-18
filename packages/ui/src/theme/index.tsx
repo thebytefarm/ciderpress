@@ -38,6 +38,8 @@ import './styles/themes/arcade.css'
 // (border trace, neon pulse, CRT scanlines, etc.) scoped to [data-cp-theme='arcade']
 import './styles/themes/arcade-fx.css'
 import './styles/overrides/details.css'
+import './styles/overrides/lists.css'
+import './styles/overrides/footnotes.css'
 import './styles/overrides/scrollbar.css'
 import './styles/overrides/rail.css'
 import './styles/overrides/sidebar.css'
