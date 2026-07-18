@@ -1,21 +1,83 @@
 /**
- * Content list marker spacing.
+ * Content list markers — fixed-width marker gutter.
  *
- * Cascade layer: `ciderpress.overrides` (see styles/layers.css).
+ * Rspress renders list markers `outside`, which right-aligns them to the text
+ * edge: a wide decimal marker (`10.`, `99.`) hangs further left than a bullet,
+ * so the marker column differs between `ol` and `ul` and numbers drift into the
+ * body-text margin. Text lines up, but the markers do not.
  *
- * Rspress seats `.rp-doc` list markers `outside` with zero `li` padding, so a
- * decimal marker butts directly against its text. A bullet is small enough to
- * look fine, but `1.`–`99.` get no gap — which is why ordered lists read as
- * mis-padded next to unordered ones even though the list box padding is equal.
+ * Replace the native markers with a fixed-width gutter shared by `ol` and `ul`,
+ * sized for two digits (`99.`). Every marker occupies the same column, decimal
+ * points align, and list text starts at the same offset regardless of marker
+ * width. `ol` numbering comes from the automatic `list-item` counter (still
+ * incremented under `list-style: none`), so nested lists and `start` offsets
+ * keep working. The marker is absolutely positioned in the `li` inline padding
+ * so it aligns to the first line whether the item holds inline text (tight
+ * lists) or a block `<p>` (loose lists, e.g. footnote definitions); wrapped and
+ * following lines hang under the text.
  *
- * Put the marker-to-text gap on the `li` (Rspress sets no `li` padding, so this
- * layered rule applies cleanly) and give ordered lists a consistent per-item
- * rhythm. Applied to `ol` and `ul` together so the two stay aligned.
+ * Deliberately UNLAYERED: Rspress sets base list padding with an unlayered,
+ * low-specificity `.rp-doc :not(:where(...)):where(ol|ul)` rule (specificity
+ * 0,1,0). Layer-scoped rules always lose to unlayered ones regardless of
+ * specificity, so these match Rspress's approach — unlayered, class-scoped under
+ * `.rp-doc` (specificity 0,2,0+ > 0,1,0).
+ *
+ * Task lists (GFM `- [ ]`) are excluded — they render a checkbox instead of a
+ * marker; see the dedicated rules below.
  */
 
-@layer ciderpress.overrides {
-  .rp-doc :where(ul, ol) > li {
-    padding-inline-start: 0.4em;
-    margin-block: 0.35rem;
-  }
+.rp-doc :where(ol, ul):not(.contains-task-list) {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.rp-doc :where(ol, ul):not(.contains-task-list) > li {
+  position: relative;
+  padding-inline-start: 2.1em;
+  margin-block: 0.35rem;
+}
+
+.rp-doc :where(ol, ul):not(.contains-task-list) > li::before {
+  position: absolute;
+  inset-inline-start: 0;
+  width: 1.6em;
+  text-align: end;
+}
+
+.rp-doc ol:not(.contains-task-list) > li::before {
+  content: counter(list-item) '.';
+}
+
+.rp-doc ul:not(.contains-task-list) > li::before {
+  content: '•';
+  box-sizing: border-box;
+  padding-inline-end: 0.22em;
+}
+
+/*
+ * Task-list normalization — deliberately UNLAYERED (same specificity reasoning
+ * as above). GFM leaves a `disc` bullet on `- [ ]` items next to the checkbox;
+ * hide it, then seat the item in the SAME marker gutter as ordered/unordered
+ * lists so task text lines up with every other list. The checkbox is absolutely
+ * positioned in the gutter (right edge at the marker column, centered on the
+ * first line), so text starts at the shared 2.5em offset regardless of the
+ * checkbox's intrinsic size.
+ */
+.rp-doc .contains-task-list {
+  list-style: none;
+  padding-inline-start: 0;
+}
+
+.rp-doc .task-list-item {
+  position: relative;
+  list-style: none;
+  padding-inline-start: 2.1em;
+  margin-block: 0.35rem;
+}
+
+.rp-doc .task-list-item > input[type='checkbox'] {
+  position: absolute;
+  inset-inline-start: 0.8em;
+  inset-block-start: 0.45em;
+  margin: 0;
 }

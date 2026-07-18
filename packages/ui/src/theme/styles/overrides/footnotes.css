@@ -1,0 +1,54 @@
+/**
+ * GFM footnote section styling — deliberately UNLAYERED.
+ *
+ * `remark-gfm` appends a `<section class="footnotes">` with an `<ol>` of
+ * definitions and a `#footnote-label` heading. Rspress tags that heading
+ * `sr-only` (visually hidden, kept for a11y + the on-this-page nav), but the
+ * theme never defined `.sr-only`, so it rendered as a full 1.75rem section
+ * heading and the definitions sat at body size with no separation from the
+ * content above — nothing like how GitHub and most renderers present footnotes.
+ *
+ * These rules are NOT in `ciderpress.overrides`: Rspress sizes headings with an
+ * unlayered, low-specificity `.rp-doc :not(:where(...)):where(h2)` rule
+ * (specificity 0,1,0), and layer-scoped rules always lose to unlayered ones
+ * regardless of specificity. Match Rspress's approach — unlayered, class-scoped
+ * under `.rp-doc` (specificity 0,2,0+ > 0,1,0) — so the label restyle actually
+ * wins. Restores the expected treatment: a top-border separator, a small muted
+ * label, and compact muted definition text set apart from the body.
+ */
+
+.rp-doc .footnotes {
+  margin-block-start: 2.5rem;
+  padding-block-start: 1.25rem;
+  border-block-start: 1px solid var(--cp-c-border);
+  font-size: 0.85em;
+  color: var(--cp-c-text-2);
+}
+
+.rp-doc .footnotes > h2 {
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--cp-c-text-3);
+}
+
+.rp-doc .footnotes ol {
+  margin: 0;
+}
+
+.rp-doc .footnotes li {
+  margin-block: 0.35rem;
+}
+
+.rp-doc .footnotes li p {
+  margin: 0.25rem 0;
+}
+
+.rp-doc .data-footnote-backref {
+  margin-inline-start: 0.35em;
+  text-decoration: none;
+}

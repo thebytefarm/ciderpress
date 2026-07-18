@@ -1,0 +1,141 @@
+---
+title: Markdown Syntax
+description: Every core CommonMark and GFM element ciderpress renders, shown live.
+---
+
+# Markdown Syntax
+
+ciderpress renders standard **CommonMark** plus **GitHub Flavored Markdown** (GFM) extensions out of the box. This page shows every core element rendered live — use it as an authoring reference and as a visual check for theme typography.
+
+For extended components (cards, tabs, diagrams, math), see [Built-ins](/reference/built-ins). For inline superscript and subscript, see [Superscript & Subscript](/reference/built-ins/superscript-subscript).
+
+## Headings
+
+# Heading 1
+
+## Heading 2
+
+### Heading 3
+
+#### Heading 4
+
+##### Heading 5
+
+###### Heading 6
+
+## Paragraphs & inline text
+
+A paragraph is one or more lines of text separated by a blank line. Inline emphasis composes freely: **bold**, _italic_, **_bold italic_**, ~~strikethrough~~, and `inline code`.
+
+Escape markdown characters with a backslash: \*not italic\* and \`not code\`.
+
+End a line with a backslash to force a hard line break —\
+this line follows the break within the same paragraph.
+
+## Links
+
+- Inline: [ciderpress docs](/getting-started/introduction)
+- With title: [hover me](/reference/configuration 'Configuration reference')
+- Bare URL: [https://rspress.dev](https://rspress.dev)
+- Reference-style: [the frontmatter reference][fm]
+
+[fm]: /reference/frontmatter
+
+## Lists
+
+### Unordered
+
+- First item
+- Second item
+- Third item with a longer line that wraps onto a second visual line to show how the hanging indent aligns under the text rather than the marker
+
+### Ordered
+
+1. First step
+2. Second step
+3. Third step with a longer line that wraps onto a second visual line so the marker-to-text gap and hanging indent stay consistent with unordered lists
+
+### Nested & mixed
+
+1. Top-level ordered item
+   - Nested unordered child
+   - Another child
+     1. Deeply nested ordered item
+     2. Sibling
+2. Back to the top level
+   1. Nested ordered child
+   2. Sibling child
+
+### Task lists
+
+- [x] Completed task
+- [x] Another done item
+- [ ] Outstanding task
+- [ ] Blocked task
+
+```md
+- [x] Completed task
+- [ ] Outstanding task
+```
+
+## Blockquotes
+
+> A single-line blockquote.
+
+> A multi-line blockquote.
+>
+> It can span paragraphs and contain **inline formatting** and [links](/reference/configuration).
+>
+> > Nested blockquotes are supported too.
+
+## Code
+
+Inline `const answer = 42` sits within a sentence.
+
+Fenced blocks carry a language for syntax highlighting:
+
+```ts
+type Result<T, E> = readonly [T, undefined] | readonly [undefined, E]
+
+function ok<T>(value: T): Result<T, never> {
+  return [value, undefined]
+}
+```
+
+```bash
+pnpm docs:dev --headless
+```
+
+## Tables
+
+| Element       | Syntax         | GFM only |
+| ------------- | -------------- | -------- |
+| Bold          | `**text**`     | No       |
+| Strikethrough | `~~text~~`     | Yes      |
+| Task list     | `- [ ] item`   | Yes      |
+| Table         | `\| a \| b \|` | Yes      |
+
+Columns support alignment:
+
+| Left | Center | Right |
+| :--- | :----: | ----: |
+| a    |   b    |     c |
+| foo  |  bar   |   baz |
+
+## Horizontal rule
+
+Content above the divider.
+
+---
+
+Content below the divider.
+
+## Images
+
+![ciderpress logo](/logo.svg)
+
+GFM footnotes render as linked references[^1] and collect in an auto-generated section at the foot of the page[^2].
+
+[^1]: The first footnote definition.
+
+[^2]: The second, with **inline formatting**.
