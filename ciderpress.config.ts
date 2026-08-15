@@ -181,12 +181,13 @@ export default defineConfig({
             icon: { id: 'pixelarticons:paint-bucket', color: 'purple' },
             title: 'Six themes, zero wiring',
             body: 'Swap the whole palette with one key. Light and dark are generated together, so contrast holds either way.',
+            cta: { variant: 'secondary', text: 'Browse themes', href: '/concepts/themes' },
             visual: {
               type: 'code',
               language: 'ts',
               code: `theme: {
   themes: ['mulled', 'orchard', 'press'],
-  default: 'mulled',
+  defaultVariant: 'dark',
 }`,
             },
           },

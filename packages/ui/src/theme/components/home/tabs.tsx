@@ -12,6 +12,11 @@ import { HomeVisualView } from './home-visual'
 
 import './tabs.css'
 
+/**
+ * CTA rendered at the bottom of a tab panel's copy. Mirrors
+ * `SplitAction` — the `ButtonConfig` from config is mapped into this
+ * shape by the home layout.
+ */
 export interface TabsAction {
   /**
    * Visible label.
@@ -27,6 +32,11 @@ export interface TabsAction {
   readonly theme?: 'brand' | 'alt'
 }
 
+/**
+ * One tab in the strip plus the copy and visual its panel shows while
+ * selected. Frontmatter-shaped: icons arrive pre-serialized from the
+ * sync engine.
+ */
 export interface HomeTabEntry {
   /**
    * Tab label rendered in the strip.
@@ -58,6 +68,10 @@ export interface HomeTabEntry {
   readonly visual?: HomeVisual
 }
 
+/**
+ * Props for {@link HomeTabs} — the section heading trio, the tab
+ * entries, and how the strip is laid out against the panel.
+ */
 export interface HomeTabsProps {
   /**
    * Eyebrow label rendered above the section title.

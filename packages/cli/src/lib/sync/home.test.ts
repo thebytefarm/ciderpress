@@ -141,6 +141,30 @@ describe('generateDefaultHomePage()', () => {
     ])
   })
 
+  it('should resolve a showcase source path nested under a workspace', async () => {
+    const blocks = await blocksFor({
+      apps: [
+        {
+          title: 'API',
+          path: '/apps/api',
+          description: 'REST API',
+          pages: [
+            {
+              title: 'Webhooks',
+              path: '/apps/api/webhooks',
+              card: { description: 'Signed events' },
+            },
+          ],
+        },
+      ],
+      home: { blocks: [{ type: 'showcase', source: ['/apps/api/webhooks'] }] },
+    })
+    const [first] = blocks
+    expect(firstBlockValue(first, 'cards')).toMatchObject([
+      { title: 'Webhooks', href: '/apps/api/webhooks', description: 'Signed events' },
+    ])
+  })
+
   it('should skip an unresolvable showcase source path with a warning', async () => {
     const result = await generateDefaultHomePage(
       config({ home: { blocks: [{ type: 'showcase', source: ['/nope'] }] } }),

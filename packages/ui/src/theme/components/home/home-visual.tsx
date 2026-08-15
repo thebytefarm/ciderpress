@@ -129,6 +129,15 @@ interface VisualTerminalProps {
  */
 function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
   const { windowTitle, command, lines } = props.config
+  // `lines` is required by the type but frontmatter is unvalidated on
+  // hand-authored home pages — a missing key would otherwise throw here
+  // and blank the whole page.
+  const output = match(lines)
+    .with(
+      P.when((l): l is readonly HomeVisualLine[] => Array.isArray(l)),
+      (l) => l
+    )
+    .otherwise(() => [])
   return (
     <div className="cp-hero-demo">
       <div className="cp-hero-demo__bar">
@@ -145,7 +154,7 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
         <span className="cp-hero-demo__prompt">$ </span>
         {command}
         {'\n\n'}
-        {lines.map((line, i) => (
+        {output.map((line, i) => (
           <TerminalLine key={`${line.kind}-${i}`} line={line} />
         ))}
       </pre>

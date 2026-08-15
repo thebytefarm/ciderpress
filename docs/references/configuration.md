@@ -1252,7 +1252,7 @@ interface ButtonConfig {
 }
 ```
 
-Unified button vocabulary. Replaces the three old button shapes (`HeroAction.theme`, `SidebarLink.style`, and the third unnamed variant). Used by `home.hero.actions`, `home.cta.actions`, `topbar.cta`, `sidebar.top` / `sidebar.bottom` / `sidebar.promo.cta`.
+Unified button vocabulary. Replaces the three old button shapes (`HeroAction.theme`, `SidebarLink.style`, and the third unnamed variant). Used by `home.hero.actions`, the `actions` / `cta` fields on `home.blocks[]`, `topbar.cta`, `sidebar.top` / `sidebar.bottom` / `sidebar.promo.cta`.
 
 | Field     | Type                                  | Description                                        |
 | --------- | ------------------------------------- | -------------------------------------------------- |

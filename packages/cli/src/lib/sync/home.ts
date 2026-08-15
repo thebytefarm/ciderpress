@@ -354,7 +354,7 @@ async function resolveShowcaseBlock(
       if (workspace) {
         return { card: buildWorkspaceCard(workspace), warning: null }
       }
-      const page = findPageByPath(pages, targetPath)
+      const page = findPageByPath([...pages, ...workspacePages(workspaces)], targetPath)
       if (page === undefined) {
         return {
           card: null,
@@ -392,6 +392,19 @@ function buildWorkspaceCard(workspace: Workspace): HomeWorkspaceCardData {
     tags: resolveTagLabels(workspace.tags),
     badge: workspace.badge,
   }
+}
+
+/**
+ * Collect the child pages declared on workspace items. A showcase
+ * `source` may point at a page nested under a workspace (e.g.
+ * `/apps/api/guides`), which never appears in the top-level page tree.
+ *
+ * @private
+ * @param workspaces - All workspace items (apps, packages, groups)
+ * @returns Every explicitly declared workspace child page
+ */
+function workspacePages(workspaces: readonly Workspace[]): readonly Page[] {
+  return workspaces.flatMap((workspace) => workspace.pages ?? [])
 }
 
 /**

@@ -74,9 +74,25 @@ interface FrontmatterSplitBlock {
   readonly reverse?: boolean
 }
 
+/**
+ * Tab entry as it arrives from frontmatter — the CTA is still a
+ * `ButtonConfig`, not the component's `link`/`theme` shape.
+ *
+ * @private
+ */
+interface FrontmatterTabItem {
+  readonly label: string
+  readonly icon?: HomeTabEntry['icon']
+  readonly title?: string
+  readonly body?: string
+  readonly bullets?: readonly string[]
+  readonly cta?: ButtonConfig
+  readonly visual?: HomeVisual
+}
+
 interface FrontmatterTabsBlock extends FrontmatterHeading {
   readonly type: 'tabs'
-  readonly items?: readonly HomeTabEntry[]
+  readonly items?: readonly FrontmatterTabItem[]
   readonly orientation?: 'vertical' | 'horizontal'
   readonly reverse?: boolean
 }
@@ -196,9 +212,7 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         title={b.title}
         body={b.body}
         bullets={b.bullets ?? []}
-        action={match(b.cta)
-          .with(undefined, () => undefined)
-          .otherwise((c) => ({ theme: 'brand' as const, text: c.text, link: c.href }))}
+        action={mapButtonToAction(b.cta)}
         reverse={b.reverse}
         visual={match(b.visual)
           .with(undefined, () => null)
@@ -212,7 +226,7 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         eyebrow={b.label}
         title={b.title}
         body={b.body}
-        items={b.items ?? []}
+        items={mapTabItems(b.items)}
         orientation={b.orientation}
         reverse={b.reverse}
       />
@@ -230,6 +244,42 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         ))
     )
     .exhaustive()
+}
+
+/**
+ * Map a single `ButtonConfig` into the `link`/`theme` action shape the
+ * split and tab components take, preserving the configured variant.
+ *
+ * @private
+ * @param button - Optional button config from frontmatter
+ * @returns Action object, or undefined when no button is configured
+ */
+function mapButtonToAction(
+  button: ButtonConfig | undefined
+): { readonly text: string; readonly link: string; readonly theme?: 'brand' | 'alt' } | undefined {
+  return match(button)
+    .with(undefined, () => undefined)
+    .otherwise((b) => ({
+      text: b.text,
+      link: b.href,
+      theme: mapButtonVariantToHeroTheme(b.variant),
+    }))
+}
+
+/**
+ * Convert frontmatter tab entries into the component's entry shape. Only
+ * the CTA needs work — its `ButtonConfig` becomes a `link`/`theme`
+ * action; every other field passes through.
+ *
+ * @private
+ * @param items - Tab entries from frontmatter, possibly absent or malformed
+ * @returns Component-ready tab entries
+ */
+function mapTabItems(items: readonly FrontmatterTabItem[] | undefined): readonly HomeTabEntry[] {
+  if (!Array.isArray(items)) {
+    return []
+  }
+  return items.map((item) => ({ ...item, cta: mapButtonToAction(item.cta) }))
 }
 
 /**
