@@ -5,9 +5,11 @@
 '@ciderpress/ui': minor
 ---
 
-**Breaking:** reshape `home` into a hero + ordered `blocks[]` array, and give the split section a real visual union.
+**Breaking:** reshape `home` into a hero + ordered `blocks[]` array, unify every page visual into one `HomeVisual` union, and add a selectable `tabs` block.
 
-The named singleton section keys (`home.proof`, `home.features`, `home.showcase`, `home.split`, `home.cta`) and the `home.layout` render-order array are gone. `home` is now just a special-cased `hero` plus a `blocks` array. Array order is render order, and **any block type may repeat** — so you can have multiple splits.
+### `home` is now hero + blocks
+
+The named singleton section keys (`home.proof`, `home.features`, `home.showcase`, `home.split`, `home.cta`) and the `home.layout` render-order array are gone. `home` is a special-cased `hero` plus a `blocks` array. Array order is render order, and **any block type may repeat** — multiple splits, multiple tab bands, whatever the page needs.
 
 ```ts
 home: {
@@ -15,17 +17,55 @@ home: {
   blocks: [
     { type: 'proof', lead: 'used by', names: ['acme'] },
     { type: 'features', items: [/* ... */] },
-    { type: 'split', title: 'One config', visual: { code: '// ...', language: 'ts' } },
-    { type: 'split', title: 'See it live', reverse: true, visual: { src: '/demo.png' } },
+    { type: 'split', title: 'One config', visual: { type: 'code', code: '// ...', language: 'ts' } },
+    { type: 'split', title: 'See it live', reverse: true, visual: { type: 'image', src: '/demo.png' } },
     { type: 'cta', title: 'Ready to ship?' },
   ],
 }
 ```
 
-Split visual changes:
+Each block carries a flat `label` / `title` / `body` heading trio instead of a nested `heading` object. Omitting `home.blocks` still yields the framework default deck (auto features grid + workspace showcase); `blocks: []` renders nothing below the hero.
 
-- **Code now highlights.** Split code is rendered through Rspress's native Shiki `CodeBlockRuntime` — the same pipeline as markdown code fences — instead of a bare unstyled `<pre>`.
-- **New image variant.** `visual` is a discriminated union: `{ code, language? }` for a highlighted snippet or `{ src, alt?, width?, height? }` for a screenshot/graphic.
-- **New `reverse` flag** on split blocks flips the columns (visual left, copy right).
+### One visual union
 
-Removed exports: `HomeSectionId`, `HomeLayoutEntry`, `DEFAULT_HOME_LAYOUT`. Added: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeCtaBlock`, `HomeSplitVisualCode`, `HomeSplitVisualImage`. Omitting `home.blocks` still yields the framework default deck (auto features grid + workspace showcase).
+`hero.demo` and `split.visual` now take the same `HomeVisual` — a union discriminated on a **required** `type` field:
+
+- `{ type: 'code', code, language? }` — rendered through Rspress's native Shiki `CodeBlockRuntime`, the same pipeline as markdown code fences, instead of a bare unstyled `<pre>`
+- `{ type: 'image', src, alt?, width?, height? }` — screenshot or graphic
+- `{ type: 'terminal', command, lines, windowTitle? }` — the framework terminal chrome with your own output
+
+Split bands also gain `reverse`, which flips the columns (visual left, copy right).
+
+### New `tabs` block
+
+A strip of selectable tabs driving one panel — click a tab, the panel's copy and visual swap. `orientation: 'vertical'` (default) puts the strip beside the panel; `'horizontal'` runs it above. Built on react-aria-components, so arrow-key navigation and tab/tabpanel ARIA wiring are handled.
+
+```ts
+{
+  type: 'tabs',
+  label: 'Capabilities',
+  title: 'Pick a thread, follow it through.',
+  orientation: 'vertical',
+  items: [
+    {
+      label: 'Sync engine',
+      icon: 'pixelarticons:reload',
+      title: 'Your markdown, left where it is',
+      body: 'Ciderpress reads your repo in place.',
+      bullets: ['Glob discovery', 'Watch mode on every save'],
+      visual: { type: 'terminal', command: 'ciderpress dev', lines: [{ kind: 'ok', text: 'synced 128 pages' }] },
+    },
+    { label: 'OpenAPI', visual: { type: 'code', code: "openapi: { spec: 'openapi.yaml' }" } },
+  ],
+}
+```
+
+### API changes
+
+Removed from `@ciderpress/config`: `HomeSectionId`, `HomeLayoutEntry`, `DEFAULT_HOME_LAYOUT`, `HomeSectionHeading`, `HomeProofConfig`, `HomeFeaturesConfig`, `HomeShowcaseConfig`, `HomeSplitConfig`, `HomeCtaConfig`, `HomeSplitVisual`, `HomeHeroDemoConfig`, `HomeHeroDemoImage`, `HomeHeroDemoTerminal`, `HomeHeroDemoLine`.
+
+Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`, `DEFAULT_HOME_BLOCKS`.
+
+Added to `@ciderpress/ui`: `HomeTabs`, `HomeTabsProps`, `HomeTabEntry`, `TabsAction`. `CTA` gains an `eyebrow` prop, and `HomeSplit`'s `visual` prop is now optional — a copy-only split renders full width instead of painting an empty frame.
+
+Hand-authored `index.md` files with `pageType: home` must migrate too: the layout reads `blocks` from frontmatter and no longer honours the old `features` / `featuresHeading` / `proof` / `split` / `cta` keys.

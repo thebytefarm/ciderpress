@@ -168,6 +168,18 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     .with(true, () => Promise.resolve(null))
     .otherwise(() => generateDefaultHomePage(config, repoRoot))
 
+  // Home block warnings are non-fatal (an unresolvable `showcase.source`
+  // path, etc.) — surface them so a silently missing card is visible.
+  const homeWarnings = match(homeResult)
+    .with(P.nonNullable, (result) => result.warnings)
+    .otherwise(() => [])
+  if (!quiet && homeWarnings.length > 0) {
+    // oxlint-disable-next-line unicorn/no-array-for-each -- side-effect log per warning
+    homeWarnings.forEach((warning) => {
+      log.warn(warning)
+    })
+  }
+
   const pages: PageData[] = match(homeResult)
     .with(P.nonNullable, (result) => [
       ...sectionPages,

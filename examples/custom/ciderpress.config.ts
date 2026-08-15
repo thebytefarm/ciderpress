@@ -89,7 +89,7 @@ export default defineConfig({
       // Dashboard-style hero demo — image variant. Renders the
       // dashboard.svg preview inside the framework's framed hero slot
       // (rounded corners + brand-soft glow preserved).
-      demo: { src: '/dashboard.svg', alt: 'Acme Corp control plane' },
+      demo: { type: 'image', src: '/dashboard.svg', alt: 'Acme Corp control plane' },
     },
     // Custom band order — push the CTA up under the hero so the primary
     // conversion sits before any further reading. No proof strip (we
@@ -98,7 +98,7 @@ export default defineConfig({
       {
         type: 'cta',
         title: 'Ready to ship?',
-        subtitle: 'Install the CLI and have a service deployed in under fifteen minutes.',
+        body: 'Install the CLI and have a service deployed in under fifteen minutes.',
         actions: [
           { variant: 'primary', text: 'Quickstart', href: '/getting-started/quickstart' },
           { variant: 'secondary', text: 'API reference', href: '/api/overview' },
@@ -107,12 +107,9 @@ export default defineConfig({
       {
         type: 'features',
         columns: 3,
-        heading: {
-          label: 'What you get',
-          title: 'Built for the engineers who ship.',
-          subtitle:
-            'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
-        },
+        label: 'What you get',
+        title: 'Built for the engineers who ship.',
+        body: 'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
         items: [
           {
             title: 'Typed SDK',
@@ -157,11 +154,9 @@ export default defineConfig({
       {
         type: 'showcase',
         columns: 2,
-        heading: {
-          label: 'Apps & Packages',
-          title: 'Everything in the monorepo.',
-          subtitle: 'Browse the dashboard app, the edge runtime, and the official SDK.',
-        },
+        label: 'Apps & Packages',
+        title: 'Everything in the monorepo.',
+        body: 'Browse the dashboard app, the edge runtime, and the official SDK.',
       },
       // Custom Split section. Replaces the framework's "Acme Docs"
       // example with Acme's actual SDK config preview.
@@ -182,20 +177,97 @@ export default defineConfig({
           href: '/getting-started/configuration',
         },
         visual: {
+          type: 'code',
           language: 'ts',
-          code: [
-            "import { defineConfig } from '@acme/sdk'",
-            '',
-            'export default defineConfig({',
-            "  name: 'billing',",
-            "  regions: ['us-east', 'eu-west'],",
-            '  database: { pool: { min: 2, max: 16 } },',
-            '  flags: {',
-            "    invoice_v2: { default: false, owner: 'platform@acme.co' },",
-            '  },',
-            '})',
-          ].join('\n'),
+          code: `import { defineConfig } from '@acme/sdk'
+
+export default defineConfig({
+  name: 'billing',
+  regions: ['us-east', 'eu-west'],
+  database: { pool: { min: 2, max: 16 } },
+  flags: {
+    invoice_v2: { default: false, owner: 'platform@acme.co' },
+  },
+})`,
         },
+      },
+      // Second split, reversed — visual on the left at desktop. Shows the
+      // terminal visual variant sharing the split frame.
+      {
+        type: 'split',
+        label: 'One command',
+        title: 'Deploy from anywhere.',
+        body: 'The CLI ships your handlers to every region in a single pass, with health gates between waves.',
+        bullets: ['Regional canaries by default', 'Instant rollback to any prior build'],
+        reverse: true,
+        visual: {
+          type: 'terminal',
+          windowTitle: '~/acme/billing — acme deploy',
+          command: 'acme deploy --env production',
+          lines: [
+            { kind: 'info', text: 'building 3 handlers' },
+            { kind: 'ok', text: 'us-east  healthy (12 isolates)' },
+            { kind: 'ok', text: 'eu-west  healthy (8 isolates)' },
+            { kind: 'cmt', text: 'rollback available: acme rollback billing@41' },
+          ],
+        },
+      },
+      // Horizontal tab band — strip above the panel, one visual per tab.
+      {
+        type: 'tabs',
+        orientation: 'horizontal',
+        label: 'Workflows',
+        title: 'Four surfaces, one platform.',
+        items: [
+          {
+            label: 'Handlers',
+            icon: 'pixelarticons:script-text',
+            title: 'Write a handler, ship a route',
+            body: 'Every exported handler becomes an edge route with a typed client method.',
+            bullets: ['Typed request + response', 'Zero routing config'],
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `export const charge = handler({
+  input: z.object({ amount: z.number() }),
+  async run({ input, ctx }) {
+    return ctx.billing.charge(input.amount)
+  },
+})`,
+            },
+          },
+          {
+            label: 'Webhooks',
+            icon: 'pixelarticons:notification',
+            title: 'Signed events with a real DLQ',
+            body: 'Deliveries retry for 24 hours, then land in a queue you can replay.',
+            visual: {
+              type: 'terminal',
+              windowTitle: 'acme webhooks',
+              command: 'acme webhooks replay --dlq billing',
+              lines: [
+                { kind: 'info', text: '14 events queued' },
+                { kind: 'ok', text: '14 delivered · 0 failed' },
+              ],
+            },
+          },
+          {
+            label: 'Observability',
+            icon: 'pixelarticons:chart',
+            title: 'Traces without an agent',
+            body: 'OpenTelemetry spans are emitted for every handler, query, and outbound call.',
+            cta: { variant: 'secondary', text: 'Read the guide', href: '/guides/observability' },
+          },
+        ],
+      },
+      // Showcase pointed at an explicit path list — one ungrouped grid
+      // instead of the default apps/packages grouping.
+      {
+        type: 'showcase',
+        columns: 3,
+        label: 'Start here',
+        title: 'The three pieces you touch first.',
+        source: ['/apps/dashboard', '/apps/edge', '/packages/sdk'],
       },
     ],
   },

@@ -1,4 +1,4 @@
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
@@ -43,9 +43,11 @@ export interface SplitProps {
    */
   readonly action?: SplitAction
   /**
-   * Visual content — typically a code preview or screenshot.
+   * Visual content — typically a code preview or screenshot. Omit (or
+   * pass `null`) for a copy-only band; the visual column collapses
+   * instead of painting an empty frame.
    */
-  readonly visual: React.ReactNode
+  readonly visual?: React.ReactNode
   /**
    * Flip the column order — visual first, copy second. Defaults to
    * `false` (copy first, visual second).
@@ -63,9 +65,14 @@ export interface SplitProps {
 export function HomeSplit(props: SplitProps): React.ReactElement {
   const { eyebrow, title, body, bullets, action, visual, reverse } = props
   const list = bullets ?? []
-  const innerClass = match(reverse ?? false)
-    .with(true, () => 'cp-split__inner cp-split__inner--reverse')
+  // Without a visual the band is a single column — the two-column grid
+  // would otherwise leave half the row empty.
+  const layoutClass = match(visual)
+    .with(P.nullish, () => 'cp-split__inner cp-split__inner--full')
     .otherwise(() => 'cp-split__inner')
+  const innerClass = match(reverse ?? false)
+    .with(true, () => `${layoutClass} cp-split__inner--reverse`)
+    .otherwise(() => layoutClass)
 
   return (
     <section className="cp-split">
@@ -108,7 +115,11 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
               )
             })}
         </div>
-        <div className="cp-split__visual">{visual}</div>
+        {match(visual)
+          .with(P.nullish, () => null)
+          .otherwise((v) => (
+            <div className="cp-split__visual">{v}</div>
+          ))}
       </div>
     </section>
   )

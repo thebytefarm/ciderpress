@@ -807,7 +807,7 @@ feedback: { question: 'Did this help?' },
 
 ## `home`
 
-Home page composition — a special-cased `hero` header plus an ordered array of `blocks`. Array order **is** render order, and any block type may appear more than once (multiple splits, etc.). Omit `blocks` to get the framework default deck: an auto-generated features grid plus a workspace showcase derived from the repo.
+Home page composition — a special-cased `hero` header plus an ordered array of `blocks`. Array order **is** render order, and any block type may appear more than once (multiple splits, multiple tab bands, etc.). Omit `blocks` to get the framework default deck: an auto-generated features grid plus a workspace showcase derived from the repo.
 
 ```ts
 home: {
@@ -821,26 +821,28 @@ home: {
 | `hero`   | `HomeHeroConfig` | Headline, tagline, actions, and the optional demo visual. Always rendered first |
 | `blocks` | `HomeBlock[]`    | Ordered landing bands below the hero. Omit for the auto-generated default deck  |
 
-### HomeBlock
-
-A discriminated union on `type`. Each variant carries the fields of its section config plus the `type` tag:
+`blocks: []` renders nothing below the hero. `DEFAULT_HOME_BLOCKS` is exported so the default deck can be extended rather than retyped:
 
 ```ts
-type HomeBlock =
-  | ({ type: 'proof' } & HomeProofConfig)
-  | ({ type: 'features' } & HomeFeaturesConfig)
-  | ({ type: 'showcase' } & HomeShowcaseConfig)
-  | ({ type: 'split' } & HomeSplitConfig)
-  | ({ type: 'cta' } & HomeCtaConfig)
+import { DEFAULT_HOME_BLOCKS } from 'ciderpress'
+
+home: {
+  blocks: [...DEFAULT_HOME_BLOCKS, { type: 'cta', title: 'Ready?' }],
+}
 ```
 
-| `type`       | Config shape         | Description                                                                   |
-| ------------ | -------------------- | ----------------------------------------------------------------------------- |
-| `'proof'`    | `HomeProofConfig`    | "Used by …" strip                                                             |
-| `'features'` | `HomeFeaturesConfig` | Feature cards grid                                                            |
-| `'showcase'` | `HomeShowcaseConfig` | Card grid — defaults to apps + packages + workspaces, accepts arbitrary paths |
-| `'split'`    | `HomeSplitConfig`    | Two-column show-and-tell band. Repeatable                                     |
-| `'cta'`      | `HomeCtaConfig`      | Call-to-action band                                                           |
+### HomeBlock
+
+A discriminated union on `type`. Every variant carries its own flat fields — there are no nested section configs.
+
+| `type`       | Shape               | Description                                                                   |
+| ------------ | ------------------- | ----------------------------------------------------------------------------- |
+| `'proof'`    | `HomeProofBlock`    | "Used by …" strip                                                             |
+| `'features'` | `HomeFeaturesBlock` | Feature card grid                                                             |
+| `'showcase'` | `HomeShowcaseBlock` | Card grid — defaults to apps + packages + workspaces, accepts arbitrary paths |
+| `'split'`    | `HomeSplitBlock`    | Two-column show-and-tell band. Repeatable                                     |
+| `'tabs'`     | `HomeTabsBlock`     | Selectable tab strip driving one panel. Repeatable                            |
+| `'cta'`      | `HomeCtaBlock`      | Call-to-action band                                                           |
 
 ```ts
 home: {
@@ -848,12 +850,15 @@ home: {
   blocks: [
     { type: 'proof', lead: 'used by', names: ['acme', 'globex'] },
     { type: 'features', items: [/* ... */] },
-    { type: 'split', title: 'One config', visual: { code: '// ...', language: 'ts' } },
-    { type: 'split', title: 'See it live', reverse: true, visual: { src: '/demo.png' } },
+    { type: 'split', title: 'One config', visual: { type: 'code', code: '// ...' } },
+    { type: 'split', title: 'See it live', reverse: true, visual: { type: 'image', src: '/demo.png' } },
+    { type: 'tabs', items: [{ label: 'Sync', visual: { type: 'code', code: '// ...' } }] },
     { type: 'cta', title: 'Ready to ship?' },
   ],
 }
 ```
+
+Every copy-bearing block shares the same flat heading trio — `label` (small uppercase kicker), `title`, and `body`.
 
 ### HomeHeroConfig
 
@@ -862,73 +867,90 @@ interface HomeHeroConfig {
   label?: string
   tagline?: string
   actions?: ButtonConfig[]
-  demo?: false | HomeHeroDemoConfig
+  demo?: false | HomeVisual
 }
 ```
 
-| Field     | Type                          | Description                                          |
-| --------- | ----------------------------- | ---------------------------------------------------- |
-| `label`   | `string`                      | Small label above the title (renamed from `eyebrow`) |
-| `tagline` | `string`                      | Marketing line under the title                       |
-| `actions` | `ButtonConfig[]`              | CTA buttons (typically up to 2)                      |
-| `demo`    | `false \| HomeHeroDemoConfig` | Visual next to the hero copy. `false` hides it       |
+| Field     | Type                  | Description                                          |
+| --------- | --------------------- | ---------------------------------------------------- |
+| `label`   | `string`              | Small label above the title (renamed from `eyebrow`) |
+| `tagline` | `string`              | Marketing line under the title                       |
+| `actions` | `ButtonConfig[]`      | CTA buttons (typically up to 2)                      |
+| `demo`    | `false \| HomeVisual` | Visual next to the hero copy. `false` hides it       |
 
-#### HomeHeroDemoConfig
+Omit `demo` entirely to keep the framework's built-in terminal animation.
 
-A discriminated union covering both demo forms:
+### HomeVisual
+
+One union backs every visual on the page — `hero.demo`, `split.visual`, and each tab's `visual`. It is discriminated on `type`, which is **required** on all three variants.
 
 ```ts
-type HomeHeroDemoConfig = HomeHeroDemoImage | HomeHeroDemoTerminal
+type HomeVisual = HomeVisualCode | HomeVisualImage | HomeVisualTerminal
 
-interface HomeHeroDemoImage {
+interface HomeVisualCode {
+  type: 'code'
+  code: string
+  language?: string
+}
+
+interface HomeVisualImage {
+  type: 'image'
   src: string
   alt?: string
   width?: number | string
   height?: number | string
 }
 
-interface HomeHeroDemoTerminal {
+interface HomeVisualTerminal {
+  type: 'terminal'
   command: string
   lines: { kind: 'ok' | 'info' | 'cmt' | 'err'; text: string }[]
   windowTitle?: string
 }
 ```
 
-The image form paints an `<img>` into the demo container; the terminal form keeps the framework's terminal chrome and renders the supplied command + output lines.
+| Variant      | Renders                                                                                       |
+| ------------ | --------------------------------------------------------------------------------------------- |
+| `'code'`     | Syntax-highlighted snippet through Rspress's native Shiki pipeline (`language` defaults `ts`) |
+| `'image'`    | Screenshot or graphic, base-prefixed at render time                                           |
+| `'terminal'` | The framework's terminal chrome painted with your command and output lines                    |
 
-### HomeProofConfig
+Terminal `lines[].kind` picks the prefix glyph: `ok` → `✓`, `info` → `▸`, `cmt` → `↻`, `err` → `✗`.
+
+### HomeProofBlock
 
 ```ts
-interface HomeProofConfig {
-  lead?: string
-  names?: string[]
+{
+  type: 'proof',
+  lead?: string,
+  names?: string[],
 }
 ```
 
 | Field   | Type       | Description                                           |
 | ------- | ---------- | ----------------------------------------------------- |
 | `lead`  | `string`   | Lead phrase (e.g. `"used by"`, `"powering teams at"`) |
-| `names` | `string[]` | List of names (renders nothing when empty)            |
+| `names` | `string[]` | List of names — the band is skipped when empty        |
 
-Renamed from `home.trust` / `HomeTrustConfig` — plain English over design jargon.
-
-### HomeFeaturesConfig
+### HomeFeaturesBlock
 
 ```ts
-interface HomeFeaturesConfig {
-  items?: Feature[]
-  columns?: 1 | 2 | 3 | 4
-  truncate?: TruncateConfig
-  heading?: HomeSectionHeading
+{
+  type: 'features',
+  label?: string,
+  title?: string,
+  body?: string,
+  items?: Feature[],
+  columns?: 1 | 2 | 3 | 4,
+  truncate?: TruncateConfig,
 }
 ```
 
-| Field      | Type                 | Description                                                                                                                             |
-| ---------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `items`    | `Feature[]`          | Feature cards (replaces the old top-level `features` array). Optional — omit to customise grid layout / heading without supplying cards |
-| `columns`  | `1 \| 2 \| 3 \| 4`   | Grid column count                                                                                                                       |
-| `truncate` | `TruncateConfig`     | Max visible lines before clipping with ellipsis                                                                                         |
-| `heading`  | `HomeSectionHeading` | Optional section heading (label + title) above the grid                                                                                 |
+| Field      | Type               | Description                                                                     |
+| ---------- | ------------------ | ------------------------------------------------------------------------------- |
+| `items`    | `Feature[]`        | Feature cards. Omit to auto-derive from the first three top-level pages         |
+| `columns`  | `1 \| 2 \| 3 \| 4` | Grid column count (default `3`). Narrow breakpoints collapse to a single column |
+| `truncate` | `TruncateConfig`   | Max visible lines before clipping with an ellipsis                              |
 
 Each `Feature`:
 
@@ -941,126 +963,168 @@ interface Feature {
 }
 ```
 
-### HomeShowcaseConfig
+### HomeShowcaseBlock
 
-Generalized card grid — the second home block. Replaces `home.workspaces`. Default source is the combined apps + packages + workspaces list; you can also point it at an arbitrary list of page paths.
+Generalized card grid. The default source is the combined apps + packages + workspaces list; point it at page paths for an arbitrary card set.
 
 ```ts
-interface HomeShowcaseConfig {
-  columns?: 1 | 2 | 3 | 4
-  truncate?: TruncateConfig
-  heading?: HomeSectionHeading
-  source?: 'workspaces' | string[]
+{
+  type: 'showcase',
+  label?: string,
+  title?: string,
+  body?: string,
+  source?: 'workspaces' | string[],
+  columns?: 1 | 2 | 3 | 4,
+  truncate?: TruncateConfig,
 }
 ```
 
 | Field      | Type                       | Description                                                                                    |
 | ---------- | -------------------------- | ---------------------------------------------------------------------------------------------- |
-| `columns`  | `1 \| 2 \| 3 \| 4`         | Grid column count                                                                              |
-| `truncate` | `TruncateConfig`           | Line clamps for the card title/description                                                     |
-| `heading`  | `HomeSectionHeading`       | Optional heading above the grid                                                                |
 | `source`   | `'workspaces' \| string[]` | Omit / `'workspaces'` → apps + packages + workspaces. Array of page paths → arbitrary card set |
+| `columns`  | `1 \| 2 \| 3 \| 4`         | Grid column count (default `2`)                                                                |
+| `truncate` | `TruncateConfig`           | Line clamps for the card title/description                                                     |
 
 ```ts
-home: {
-  showcase: {
-    columns: 3,
-    source:  ['/products/cli', '/products/api', '/products/web'],
-  },
+{ type: 'showcase', columns: 3, source: ['/products/cli', '/products/api', '/products/web'] }
+```
+
+A `source` path that matches no page or workspace is skipped with a sync warning; if none of them resolve, the band renders nothing rather than falling back to the workspace deck.
+
+### HomeSplitBlock
+
+Two-column show-and-tell band — copy on one side, a `HomeVisual` on the other. Repeatable in any position.
+
+```ts
+{
+  type: 'split',
+  title: string,
+  label?: string,
+  body?: string,
+  bullets?: string[],
+  cta?: ButtonConfig,
+  visual?: HomeVisual,
+  reverse?: boolean,
 }
 ```
 
-### HomeSplitConfig
+| Field     | Type           | Required | Description                                                  |
+| --------- | -------------- | -------- | ------------------------------------------------------------ |
+| `title`   | `string`       | yes      | Section title                                                |
+| `label`   | `string`       | no       | Small label rendered above the title                         |
+| `body`    | `string`       | no       | Body copy rendered under the title                           |
+| `bullets` | `string[]`     | no       | Checkmark list rendered under the body                       |
+| `cta`     | `ButtonConfig` | no       | CTA button rendered at the bottom of the copy column         |
+| `visual`  | `HomeVisual`   | no       | Visual opposite the copy. Omit for a full-width copy band    |
+| `reverse` | `boolean`      | no       | Flip the columns — visual left, copy right (default `false`) |
 
-A two-column split section (code/visual on one side, copy on the other). Pass `false` at the parent (`home.split: false`) to omit the section entirely.
+The narrow single-column stack always leads with the copy, so a reversed band never pushes its visual above the headline.
+
+### HomeTabsBlock
+
+A strip of selectable tabs driving one panel. Clicking a tab swaps the panel's copy and visual; the first tab is selected on load. Keyboard navigation (arrow keys, Home/End) and the tab/tabpanel ARIA wiring are built in.
 
 ```ts
-interface HomeSplitConfig {
-  title: string
-  label?: string
+{
+  type: 'tabs',
+  items: HomeTabItem[],
+  label?: string,
+  title?: string,
+  body?: string,
+  orientation?: 'vertical' | 'horizontal',
+  reverse?: boolean,
+}
+```
+
+| Field         | Type                         | Required | Description                                                                 |
+| ------------- | ---------------------------- | -------- | --------------------------------------------------------------------------- |
+| `items`       | `HomeTabItem[]`              | yes      | Tabs in strip order. The band is skipped when empty                         |
+| `orientation` | `'vertical' \| 'horizontal'` | no       | `vertical` (default) puts the strip beside the panel; `horizontal` above it |
+| `reverse`     | `boolean`                    | no       | Vertical only — panel left, strip right (default `false`)                   |
+
+Each `HomeTabItem`:
+
+```ts
+interface HomeTabItem {
+  label: string
+  icon?: IconConfig
+  title?: string
   body?: string
   bullets?: string[]
   cta?: ButtonConfig
-  visual?: HomeSplitVisual
-  reverse?: boolean
+  visual?: HomeVisual
 }
 ```
 
-| Field     | Type              | Required | Description                                                   |
-| --------- | ----------------- | -------- | ------------------------------------------------------------- |
-| `title`   | `string`          | yes      | Section title                                                 |
-| `label`   | `string`          | no       | Small label rendered above the title (renamed from `eyebrow`) |
-| `body`    | `string`          | no       | Body copy rendered under the title                            |
-| `bullets` | `string[]`        | no       | Checkmark list rendered under the body                        |
-| `cta`     | `ButtonConfig`    | no       | CTA button rendered at the bottom of the copy column          |
-| `visual`  | `HomeSplitVisual` | no       | Visual rendered in the column opposite the copy               |
-| `reverse` | `boolean`         | no       | Flip the columns — visual left, copy right (default `false`)  |
-
-#### HomeSplitVisual
-
-A structural union: pass a `code` object for a syntax-highlighted snippet, or a `src` object for an image. Code is rendered through Rspress's native Shiki highlighter — the same pipeline as markdown code fences.
+| Field     | Type           | Required | Description                                |
+| --------- | -------------- | -------- | ------------------------------------------ |
+| `label`   | `string`       | yes      | Tab text in the strip                      |
+| `icon`    | `IconConfig`   | no       | Icon rendered before the label             |
+| `title`   | `string`       | no       | Panel headline. Defaults to `label`        |
+| `body`    | `string`       | no       | Panel body copy                            |
+| `bullets` | `string[]`     | no       | Checkmark list under the body              |
+| `cta`     | `ButtonConfig` | no       | CTA button at the bottom of the panel copy |
+| `visual`  | `HomeVisual`   | no       | Visual shown while the tab is selected     |
 
 ```ts
-type HomeSplitVisual = HomeSplitVisualCode | HomeSplitVisualImage
-
-interface HomeSplitVisualCode {
-  code: string
-  language?: string
-}
-
-interface HomeSplitVisualImage {
-  src: string
-  alt?: string
-  width?: number | string
-  height?: number | string
+{
+  type: 'tabs',
+  label: 'Capabilities',
+  title: 'Pick a thread, follow it through.',
+  orientation: 'vertical',
+  items: [
+    {
+      label: 'Sync engine',
+      icon: { id: 'pixelarticons:reload', color: 'green' },
+      title: 'Your markdown, left where it is',
+      body: 'Ciderpress reads your repo in place — no copying, no restructuring.',
+      bullets: ['Glob discovery', 'Watch mode on every save'],
+      visual: {
+        type: 'terminal',
+        command: 'ciderpress dev',
+        lines: [{ kind: 'ok', text: 'synced 128 pages' }],
+      },
+    },
+    {
+      label: 'OpenAPI',
+      title: 'Specs become reference pages',
+      visual: { type: 'code', language: 'ts', code: "openapi: { spec: 'openapi.yaml' }" },
+    },
+  ],
 }
 ```
 
-| Field      | Type               | Required | Description                                                  |
-| ---------- | ------------------ | -------- | ------------------------------------------------------------ |
-| `code`     | `string`           | yes\*    | Code snippet, highlighted via Rspress's native Shiki         |
-| `language` | `string`           | no       | Language identifier for syntax highlighting (default `'ts'`) |
-| `src`      | `string`           | yes\*    | Image URL or path (base-prefixed at render time)             |
-| `alt`      | `string`           | no       | Alt text for the image                                       |
-| `width`    | `number \| string` | no       | Explicit image width                                         |
-| `height`   | `number \| string` | no       | Explicit image height                                        |
+Narrow breakpoints collapse both orientations to a single stacked column.
 
-\* Provide **either** `code` (code variant) **or** `src` (image variant), not both.
-
-### HomeCtaConfig
+### HomeCtaBlock
 
 ```ts
-interface HomeCtaConfig {
-  title?: string
-  subtitle?: string
-  actions?: ButtonConfig[]
+{
+  type: 'cta',
+  label?: string,
+  title?: string,
+  body?: string,
+  actions?: ButtonConfig[],
 }
 ```
 
-| Field      | Type             | Description                     |
-| ---------- | ---------------- | ------------------------------- |
-| `title`    | `string`         | CTA headline                    |
-| `subtitle` | `string`         | Supporting text                 |
-| `actions`  | `ButtonConfig[]` | CTA buttons (typically up to 2) |
+| Field     | Type             | Description                                   |
+| --------- | ---------------- | --------------------------------------------- |
+| `label`   | `string`         | Small uppercase kicker above the headline     |
+| `title`   | `string`         | CTA headline — the band is skipped without it |
+| `body`    | `string`         | Supporting text                               |
+| `actions` | `ButtonConfig[]` | CTA buttons (typically up to 2)               |
 
-### Shared home types
+### TruncateConfig
 
-These small shapes are reused across multiple home blocks (`features`, `showcase`):
+Shared by `features` and `showcase` blocks. Values are maximum visible lines before CSS `line-clamp` clips with an ellipsis.
 
 ```ts
 interface TruncateConfig {
   title?: number
   description?: number
 }
-
-interface HomeSectionHeading {
-  label?: string
-  title?: string
-  subtitle?: string
-}
 ```
-
-`TruncateConfig` values are maximum visible lines before CSS `line-clamp` clips with an ellipsis. `HomeSectionHeading.label` is the small uppercase kicker rendered above the title.
 
 ## `discover`
 

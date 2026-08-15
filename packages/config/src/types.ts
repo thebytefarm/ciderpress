@@ -801,24 +801,100 @@ export interface TruncateConfig {
 }
 
 /**
- * Section heading shown above a home-page block (features, showcase,
- * etc.). The legacy `eyebrow` field is renamed to `label` to drop design
- * jargon.
+ * Code visual — a snippet rendered with Rspress's native Shiki
+ * highlighter (the same pipeline as markdown code fences), so it themes
+ * identically to the rest of the site.
  */
-export interface HomeSectionHeading {
+export interface HomeVisualCode {
   /**
-   * Small uppercase kicker rendered above the title (was `eyebrow`).
+   * Discriminator identifying the code variant.
    */
-  readonly label?: string
+  readonly type: 'code'
   /**
-   * Heading title — replaces the framework default.
+   * Code snippet rendered as a syntax-highlighted preview.
    */
-  readonly title?: string
+  readonly code: string
   /**
-   * Optional supporting sentence rendered under the title.
+   * Language identifier for syntax highlighting. Defaults to `'ts'`.
    */
-  readonly subtitle?: string
+  readonly language?: string
 }
+
+/**
+ * Image visual — a screenshot or graphic painted inside the visual
+ * frame.
+ */
+export interface HomeVisualImage {
+  /**
+   * Discriminator identifying the image variant.
+   */
+  readonly type: 'image'
+  /**
+   * Image URL or path (base-prefixed at render time).
+   */
+  readonly src: string
+  /**
+   * Alt text for screen readers. Defaults to an empty string, which
+   * marks the image as decorative.
+   */
+  readonly alt?: string
+  /**
+   * Explicit width — defaults to `100%` of the container.
+   */
+  readonly width?: number | string
+  /**
+   * Explicit height — defaults to `auto`.
+   */
+  readonly height?: number | string
+}
+
+/**
+ * Single output line in a {@link HomeVisualTerminal}.
+ */
+export interface HomeVisualLine {
+  /**
+   * Line style:
+   * - `'ok'`   — success marker
+   * - `'info'` — informational marker
+   * - `'cmt'`  — comment / hint line
+   * - `'err'`  — error / warning marker
+   */
+  readonly kind: 'ok' | 'info' | 'cmt' | 'err'
+  /**
+   * Line text. Renders verbatim with the prefix glyph in front.
+   */
+  readonly text: string
+}
+
+/**
+ * Terminal visual — keeps the framework's terminal chrome but uses the
+ * supplied command and output lines.
+ */
+export interface HomeVisualTerminal {
+  /**
+   * Discriminator identifying the terminal variant.
+   */
+  readonly type: 'terminal'
+  /**
+   * Title shown in the fake window's title bar.
+   */
+  readonly windowTitle?: string
+  /**
+   * Command rendered after the `$ ` prompt at the top of the output.
+   */
+  readonly command: string
+  /**
+   * Output lines rendered below the command.
+   */
+  readonly lines: readonly HomeVisualLine[]
+}
+
+/**
+ * A visual paired with home-page copy — highlighted code, an image, or a
+ * terminal transcript. Discriminated on `type`; the same union backs
+ * both {@link HomeHeroConfig.demo} and {@link HomeSplitBlock.visual}.
+ */
+export type HomeVisual = HomeVisualCode | HomeVisualImage | HomeVisualTerminal
 
 /**
  * Home hero block — label, tagline, actions, and optional demo visual.
@@ -837,16 +913,20 @@ export interface HomeHeroConfig {
    */
   readonly actions?: readonly ButtonConfig[]
   /**
-   * Visual rendered next to the hero copy.
+   * Visual rendered next to the hero copy. Pass `false` to hide it.
    */
-  readonly demo?: false | HomeHeroDemoConfig
+  readonly demo?: false | HomeVisual
 }
 
 /**
- * "Used by" / "Trusted by" strip on the home hero (was `HomeTrustConfig`
- * — renamed to drop ambiguous jargon).
+ * "Used by" / "Trusted by" strip, as a home block. Renders nothing when
+ * `names` is empty or omitted.
  */
-export interface HomeProofConfig {
+export interface HomeProofBlock {
+  /**
+   * Discriminator identifying the proof block.
+   */
+  readonly type: 'proof'
   /**
    * Lead phrase rendered before the names (e.g. `'used by'`, `'powering
    * teams at'`).
@@ -859,179 +939,96 @@ export interface HomeProofConfig {
 }
 
 /**
- * Home features block — grid + cards combined into one config (today's
- * top-level `features` list lives under `items` here).
+ * Feature card grid, as a home block. Omit `items` to auto-derive cards
+ * from the first top-level pages.
  */
-export interface HomeFeaturesConfig {
+export interface HomeFeaturesBlock {
   /**
-   * Feature cards rendered in the grid (was top-level `features`).
-   * Optional — omit to customize only the grid layout / heading without
-   * supplying cards (renders an empty grid).
+   * Discriminator identifying the features block.
+   */
+  readonly type: 'features'
+  /**
+   * Small uppercase kicker rendered above the title.
+   */
+  readonly label?: string
+  /**
+   * Heading title rendered above the grid — replaces the framework default.
+   */
+  readonly title?: string
+  /**
+   * Supporting sentence rendered under the title.
+   */
+  readonly body?: string
+  /**
+   * Feature cards rendered in the grid. Omit to auto-derive cards from
+   * the first three top-level pages.
    */
   readonly items?: readonly Feature[]
   /**
-   * Number of columns in the grid at desktop widths (1–4). Smaller
-   * breakpoints automatically reduce this.
+   * Number of columns in the grid at desktop widths (1–4). Defaults to
+   * `3`. Narrow breakpoints collapse to a single column.
    */
   readonly columns?: 1 | 2 | 3 | 4
   /**
    * Line-clamp limits for card text.
    */
   readonly truncate?: TruncateConfig
-  /**
-   * Heading rendered above the grid.
-   */
-  readonly heading?: HomeSectionHeading
 }
 
 /**
- * Generalized card grid for the second home-page block (was
- * `home.workspaces`). Source defaults to the apps + packages +
- * workspaces collection but can be overridden with arbitrary page paths.
+ * Generalized card grid, as a home block. Source defaults to the apps +
+ * packages + workspaces collection but can be pointed at arbitrary page
+ * paths.
  */
-export interface HomeShowcaseConfig {
+export interface HomeShowcaseBlock {
   /**
-   * Number of columns in the grid at desktop widths (1–4).
+   * Discriminator identifying the showcase block.
    */
-  readonly columns?: 1 | 2 | 3 | 4
+  readonly type: 'showcase'
   /**
-   * Line-clamp limits for card text.
+   * Small uppercase kicker rendered above the title.
    */
-  readonly truncate?: TruncateConfig
+  readonly label?: string
   /**
-   * Heading rendered above the grid.
+   * Heading title rendered above the grid.
    */
-  readonly heading?: HomeSectionHeading
+  readonly title?: string
+  /**
+   * Supporting sentence rendered under the title.
+   */
+  readonly body?: string
   /**
    * Card source.
    *
-   * - omit → auto-collect from top-level `apps` + `packages` + `workspaces`
+   * - omit → auto-collect from top-level `apps` + `packages` + `workspaces`,
+   *   grouped by kind with framework headings
    * - `'workspaces'` → same as omit, explicit
-   * - `string[]` → explicit list of page paths
-   *   (e.g. `['/products/cli', '/products/api']`)
+   * - `string[]` → explicit list of page paths rendered as one ungrouped
+   *   grid (e.g. `['/products/cli', '/products/api']`)
    */
   readonly source?: 'workspaces' | readonly string[]
+  /**
+   * Number of columns in the grid at desktop widths (1–4). Defaults to `2`.
+   */
+  readonly columns?: 1 | 2 | 3 | 4
+  /**
+   * Line-clamp limits for card text.
+   */
+  readonly truncate?: TruncateConfig
 }
 
 /**
- * Image-form home hero demo — `<img>` painted inside the demo container.
+ * "Show and tell" split band, as a home block — copy on one side, a
+ * {@link HomeVisual} on the other. Repeatable: list as many as you like,
+ * in any position.
  */
-export interface HomeHeroDemoImage {
+export interface HomeSplitBlock {
   /**
-   * Absolute path or URL to the image asset.
+   * Discriminator identifying the split block.
    */
-  readonly src: string
+  readonly type: 'split'
   /**
-   * Alt text for screen readers.
-   */
-  readonly alt?: string
-  /**
-   * Explicit width — defaults to `100%` of the container.
-   */
-  readonly width?: number | string
-  /**
-   * Explicit height — defaults to `auto`.
-   */
-  readonly height?: number | string
-}
-
-/**
- * Single line in a structured {@link HomeHeroDemoTerminal}.
- */
-export interface HomeHeroDemoLine {
-  /**
-   * Line style:
-   * - `'ok'`   — success marker
-   * - `'info'` — informational marker
-   * - `'cmt'`  — comment / hint line
-   * - `'err'`  — error / warning marker
-   */
-  readonly kind: 'ok' | 'info' | 'cmt' | 'err'
-  /**
-   * Line text. Renders verbatim with the prefix glyph in front.
-   */
-  readonly text: string
-}
-
-/**
- * Structured terminal-form home hero demo — keeps the framework's
- * terminal chrome but uses the supplied command + output lines.
- */
-export interface HomeHeroDemoTerminal {
-  /**
-   * Title shown in the fake window's title bar.
-   */
-  readonly windowTitle?: string
-  /**
-   * Command rendered after the `$ ` prompt at the top of the output.
-   */
-  readonly command: string
-  /**
-   * Output lines rendered below the command.
-   */
-  readonly lines: readonly HomeHeroDemoLine[]
-}
-
-/**
- * Home hero demo block — the visual rendered next to the hero copy
- * (was `HeroDemoConfig`).
- */
-export type HomeHeroDemoConfig = HomeHeroDemoImage | HomeHeroDemoTerminal
-
-/**
- * Code visual for a {@link HomeSplitConfig} — a snippet rendered with
- * Rspress's native Shiki highlighter (the same pipeline as markdown code
- * fences), so it themes identically to the rest of the site.
- */
-export interface HomeSplitVisualCode {
-  /**
-   * Code snippet rendered as a syntax-highlighted preview.
-   */
-  readonly code: string
-  /**
-   * Language identifier for syntax highlighting. Defaults to `'ts'`.
-   */
-  readonly language?: string
-}
-
-/**
- * Image visual for a {@link HomeSplitConfig} — a screenshot or graphic
- * rendered inside the split frame. Mirrors {@link HomeHeroDemoImage}.
- */
-export interface HomeSplitVisualImage {
-  /**
-   * Image URL or path (base-prefixed at render time).
-   */
-  readonly src: string
-  /**
-   * Alt text for the image. Defaults to an empty string.
-   */
-  readonly alt?: string
-  /**
-   * Explicit width (px number or CSS length).
-   */
-  readonly width?: number | string
-  /**
-   * Explicit height (px number or CSS length).
-   */
-  readonly height?: number | string
-}
-
-/**
- * Visual paired with a {@link HomeSplitConfig} copy column — either a
- * highlighted code snippet ({@link HomeSplitVisualCode}) or an image
- * ({@link HomeSplitVisualImage}). Discriminated structurally: code
- * objects carry `code`, image objects carry `src`.
- */
-export type HomeSplitVisual = HomeSplitVisualCode | HomeSplitVisualImage
-
-/**
- * "Show and tell" Split block — title + bullets + visual sample (was
- * `SplitConfig`).
- */
-export interface HomeSplitConfig {
-  /**
-   * Small label rendered above the title (was `eyebrow`).
+   * Small label rendered above the title.
    */
   readonly label?: string
   /**
@@ -1053,19 +1050,108 @@ export interface HomeSplitConfig {
   /**
    * Visual rendered in the column opposite the copy.
    */
-  readonly visual?: HomeSplitVisual
+  readonly visual?: HomeVisual
   /**
-   * Flip the column order — visual on the left, copy on the right.
-   * Defaults to `false` (copy left, visual right).
+   * Flip the column order at desktop widths — visual on the left, copy
+   * on the right. Defaults to `false` (copy left, visual right). The
+   * narrow single-column stack always leads with the copy.
    */
   readonly reverse?: boolean
 }
 
 /**
- * Final CTA band on the home page — title, optional subtitle, and
- * action buttons.
+ * A single entry in a {@link HomeTabsBlock} — one tab in the strip plus
+ * the copy and visual its panel shows while selected.
  */
-export interface HomeCtaConfig {
+export interface HomeTabItem {
+  /**
+   * Tab label rendered in the strip. Required — it is the clickable text.
+   */
+  readonly label: string
+  /**
+   * Icon rendered beside the label in the strip.
+   */
+  readonly icon?: IconConfig
+  /**
+   * Panel headline. Defaults to {@link HomeTabItem.label} when omitted.
+   */
+  readonly title?: string
+  /**
+   * Body copy rendered under the headline while the tab is selected.
+   */
+  readonly body?: string
+  /**
+   * Bulleted checkmark list rendered under the body.
+   */
+  readonly bullets?: readonly string[]
+  /**
+   * CTA button rendered at the bottom of the panel copy.
+   */
+  readonly cta?: ButtonConfig
+  /**
+   * Visual rendered in the panel while the tab is selected.
+   */
+  readonly visual?: HomeVisual
+}
+
+/**
+ * Selectable tab band, as a home block — a strip of tabs driving one
+ * panel. Clicking a tab swaps the panel copy and {@link HomeVisual}; the
+ * first tab is selected on load. Repeatable, like `split`.
+ */
+export interface HomeTabsBlock {
+  /**
+   * Discriminator identifying the tabs block.
+   */
+  readonly type: 'tabs'
+  /**
+   * Small uppercase kicker rendered above the title.
+   */
+  readonly label?: string
+  /**
+   * Heading title rendered above the tab strip.
+   */
+  readonly title?: string
+  /**
+   * Supporting sentence rendered under the title.
+   */
+  readonly body?: string
+  /**
+   * Strip placement:
+   *
+   * - `'vertical'` (default) — tabs stacked in a column beside the panel,
+   *   with the selected tab's copy expanded inline under its label
+   * - `'horizontal'` — tabs in a row above the panel, with the selected
+   *   tab's copy rendered beside the visual
+   *
+   * Narrow breakpoints collapse both to a single stacked column.
+   */
+  readonly orientation?: 'vertical' | 'horizontal'
+  /**
+   * Flip the columns of a `'vertical'` band at desktop widths — panel on
+   * the left, tab strip on the right. Ignored when `orientation` is
+   * `'horizontal'`. Defaults to `false`.
+   */
+  readonly reverse?: boolean
+  /**
+   * Tabs rendered in the strip, in order. Renders nothing when empty.
+   */
+  readonly items: readonly HomeTabItem[]
+}
+
+/**
+ * Final call-to-action band, as a home block. Renders nothing without a
+ * `title`.
+ */
+export interface HomeCtaBlock {
+  /**
+   * Discriminator identifying the CTA block.
+   */
+  readonly type: 'cta'
+  /**
+   * Small uppercase kicker rendered above the headline.
+   */
+  readonly label?: string
   /**
    * Headline rendered at the top of the CTA band.
    */
@@ -1073,9 +1159,9 @@ export interface HomeCtaConfig {
   /**
    * Supporting sentence rendered under the headline.
    */
-  readonly subtitle?: string
+  readonly body?: string
   /**
-   * Action buttons rendered below the subtitle.
+   * Action buttons rendered below the body copy.
    */
   readonly actions?: readonly ButtonConfig[]
 }
@@ -1083,43 +1169,7 @@ export interface HomeCtaConfig {
 /**
  * Discriminator tag identifying a {@link HomeBlock} variant.
  */
-export type HomeBlockType = 'proof' | 'features' | 'showcase' | 'split' | 'cta'
-
-/**
- * "Used by / Trusted by" strip, as a home block.
- */
-export interface HomeProofBlock extends HomeProofConfig {
-  readonly type: 'proof'
-}
-
-/**
- * Features grid, as a home block.
- */
-export interface HomeFeaturesBlock extends HomeFeaturesConfig {
-  readonly type: 'features'
-}
-
-/**
- * Generalized card grid (workspaces / arbitrary pages), as a home block.
- */
-export interface HomeShowcaseBlock extends HomeShowcaseConfig {
-  readonly type: 'showcase'
-}
-
-/**
- * "Show and tell" split section, as a home block. Repeatable — list as
- * many as you like, in any position.
- */
-export interface HomeSplitBlock extends HomeSplitConfig {
-  readonly type: 'split'
-}
-
-/**
- * Final CTA band, as a home block.
- */
-export interface HomeCtaBlock extends HomeCtaConfig {
-  readonly type: 'cta'
-}
+export type HomeBlockType = 'proof' | 'features' | 'showcase' | 'split' | 'tabs' | 'cta'
 
 /**
  * A single band on the home page below the hero. Discriminated on
@@ -1130,6 +1180,7 @@ export type HomeBlock =
   | HomeFeaturesBlock
   | HomeShowcaseBlock
   | HomeSplitBlock
+  | HomeTabsBlock
   | HomeCtaBlock
 
 /**
@@ -1145,12 +1196,30 @@ export interface HomeConfig {
    */
   readonly hero?: HomeHeroConfig
   /**
-   * Ordered list of home-page bands rendered below the hero. Omit to get
-   * the framework default deck (auto-generated features grid + workspace
-   * showcase derived from the repo).
+   * Ordered list of home-page bands rendered below the hero.
+   *
+   * - omit → the framework default deck ({@link DEFAULT_HOME_BLOCKS}):
+   *   an auto-generated features grid plus the workspace showcase
+   * - `[]` → nothing below the hero
    */
   readonly blocks?: readonly HomeBlock[]
 }
+
+/**
+ * Framework default home deck, used when `home.blocks` is omitted: an
+ * auto-generated features grid (derived from the first top-level pages)
+ * plus the workspace showcase.
+ *
+ * Exported so it can be extended rather than retyped:
+ *
+ * ```ts
+ * blocks: [...DEFAULT_HOME_BLOCKS, { type: 'cta', title: 'Ready?' }]
+ * ```
+ */
+export const DEFAULT_HOME_BLOCKS: readonly HomeBlock[] = Object.freeze([
+  { type: 'features' },
+  { type: 'showcase' },
+] as const)
 
 /**
  * Built-in social link icon identifiers.

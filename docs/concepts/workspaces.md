@@ -138,7 +138,7 @@ The `include` pattern is relative to the workspace's base directory (derived fro
 
 ### Where they render
 
-- **Home page** — `apps`, `packages`, and each `WorkspaceGroup` in `workspaces` each become their own card section on the home page (via `home.showcase`). Default ordering is `apps` → `packages` → `workspaces[*]`.
+- **Home page** — `apps`, `packages`, and each `WorkspaceGroup` in `workspaces` each become their own card section on the home page (via a `showcase` block in `home.blocks`). Default ordering is `apps` → `packages` → `workspaces[*]`.
 - **Page landing pages** — when a `Page.path` matches a workspace item's `path`, the matched workspace metadata is rendered as a workspace-style card on that page's auto-generated landing page.
 
 ### Card rendering
@@ -155,20 +155,19 @@ See the [Navigation](/concepts/navigation) concept for details on auto-generated
 
 ## The Home Showcase
 
-The home-page workspace grid is configured under `home.showcase`. It was previously called `home.workspaces`; the rename opens the slot to non-workspace card sources without changing the visual.
+The home-page workspace grid is a `showcase` block in `home.blocks`. It was previously called `home.workspaces`; the rename opens the slot to non-workspace card sources without changing the visual.
 
 ```ts
 home: {
-  showcase: {
-    columns: 3,
-    heading: { label: 'PRODUCTS', title: 'Our monorepo' },
-  },
+  blocks: [{ type: 'showcase', columns: 3, label: 'PRODUCTS', title: 'Our monorepo' }],
 }
 ```
 
+Blocks render in array order and may repeat, so a site can carry several showcase grids with different sources.
+
 ### Source
 
-`home.showcase.source` controls where the cards come from:
+A showcase block's `source` controls where the cards come from:
 
 | Value          | Behavior                                                                                                                  |
 | -------------- | ------------------------------------------------------------------------------------------------------------------------- |
@@ -178,10 +177,13 @@ home: {
 
 ```ts
 home: {
-  showcase: {
-    columns: 2,
-    source: ['/products/cli', '/products/api', '/products/sdk'],
-  },
+  blocks: [
+    {
+      type: 'showcase',
+      columns: 2,
+      source: ['/products/cli', '/products/api', '/products/sdk'],
+    },
+  ],
 }
 ```
 
@@ -209,12 +211,12 @@ Top-level `openapi` has been removed. To attach an OpenAPI spec to a non-workspa
 - **Metadata separate from pages** — workspace metadata lives in `apps`/`packages`/`workspaces` rather than inline on every page. This keeps page definitions focused on information architecture while workspace metadata focuses on project identity.
 - **Path-based matching** — matching by URL path rather than explicit IDs keeps the two systems loosely coupled. A page works with or without workspace metadata.
 - **Three surfaces, not one** — `apps` and `packages` give monorepos the two most common groupings out of the box without forcing readers to learn the `WorkspaceGroup` shape; `workspaces` is the escape hatch for custom groupings.
-- **Showcase, not workspaces** — renaming the home grid from `home.workspaces` to `home.showcase` keeps the slot open for non-workspace card sources (arbitrary page paths) without breaking the monorepo-first default.
+- **Showcase, not workspaces** — renaming the home grid from `home.workspaces` to a `showcase` block keeps the slot open for non-workspace card sources (arbitrary page paths) without breaking the monorepo-first default.
 - **OpenAPI lives on the node, not at the top** — putting `openapi` on `Page` and `Workspace` (and nowhere else) means the spec attaches to a single mount point with no implicit cross-config wiring.
 
 ## References
 
 - [Configuration reference — Workspace](/reference/configuration#workspace) — full field reference
-- [Configuration reference — home.showcase](/reference/configuration#home-showcase) — showcase grid options
+- [Configuration reference — HomeShowcaseBlock](/reference/configuration#homeshowcaseblock) — showcase grid options
 - [Navigation](/concepts/navigation) — landing pages and card rendering
 - [Content](/concepts/content) — `Page` shape, discovery, and defaults

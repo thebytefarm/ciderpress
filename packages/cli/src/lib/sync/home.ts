@@ -1,11 +1,19 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
 
-import { hasGlobChars, resolveOptionalIcon, serializeIcon } from '@ciderpress/config'
+import {
+  DEFAULT_HOME_BLOCKS,
+  collectAllWorkspaceItems,
+  hasGlobChars,
+  resolveOptionalIcon,
+  serializeIcon,
+} from '@ciderpress/config'
 import type {
   Feature,
   HomeBlock,
   HomeConfig,
+  HomeShowcaseBlock,
+  HomeTabItem,
   Page,
   SerializedIcon,
   Workspace,
@@ -52,6 +60,12 @@ export type HomeWorkspaceData = readonly HomeWorkspaceGroupData[]
 export interface HomePageResult {
   readonly content: string
   readonly workspaces: HomeWorkspaceData
+  /**
+   * Non-fatal problems found while compiling `home.blocks` — e.g. a
+   * `showcase.source` path that matches no page. The caller surfaces
+   * these; the sync itself still completes.
+   */
+  readonly warnings: readonly string[]
 }
 
 /**
@@ -145,8 +159,13 @@ export async function generateDefaultHomePage(
 
   // Landing bands compile to an ordered `blocks` array. `heroDemo` still
   // rides along on the hero config verbatim — the HomeLayout resolves its
-  // image/terminal variant at render time.
-  const blocks = await buildHomeBlocks({ home, pages: config.pages, repoRoot })
+  // code/image/terminal variant at render time.
+  const blockResult = await buildHomeBlocks({
+    home,
+    pages: config.pages,
+    workspaces: collectAllWorkspaceItems(config),
+    repoRoot,
+  })
 
   const frontmatterData: Record<string, unknown> = {
     pageType: 'home',
@@ -154,24 +173,15 @@ export async function generateDefaultHomePage(
     ...match(heroDemo)
       .with(P.nonNullable, (h) => ({ heroDemo: h }))
       .otherwise(() => ({})),
-    ...match(blocks.length > 0)
-      .with(true, () => ({ blocks }))
+    ...match(blockResult.blocks.length > 0)
+      .with(true, () => ({ blocks: blockResult.blocks }))
       .otherwise(() => ({})),
   }
 
   const content = stringifyFrontmatter('', frontmatterData)
 
-  return { content, workspaces: workspaceResult.data }
+  return { content, workspaces: workspaceResult.data, warnings: blockResult.warnings }
 }
-
-/**
- * Framework default home deck, synthesized when `home.blocks` is omitted:
- * an auto-generated features grid (derived from the first pages) plus the
- * workspace showcase. Mirrors the pre-blocks default landing surface.
- *
- * @private
- */
-const DEFAULT_HOME_BLOCKS: readonly HomeBlock[] = [{ type: 'features' }, { type: 'showcase' }]
 
 /**
  * Parameters for {@link buildHomeBlocks}.
@@ -181,30 +191,45 @@ const DEFAULT_HOME_BLOCKS: readonly HomeBlock[] = [{ type: 'features' }, { type:
 interface BuildHomeBlocksParams {
   readonly home: HomeConfig | undefined
   readonly pages: readonly Page[]
+  readonly workspaces: readonly Workspace[]
   readonly repoRoot: string
 }
 
 /**
+ * Compiled blocks plus any non-fatal problems found along the way.
+ *
+ * @private
+ */
+interface BuildHomeBlocksResult {
+  readonly blocks: readonly Record<string, unknown>[]
+  readonly warnings: readonly string[]
+}
+
+/**
  * Resolve `home.blocks` into serializable frontmatter blocks, falling back
- * to the framework default deck when none are configured. Only `features`
- * blocks need async resolution (card + icon serialization); every other
+ * to the framework default deck when none are configured. `features` and
+ * `showcase` blocks resolve card data (icons, descriptions); every other
  * block is plain data passed through verbatim.
  *
  * @private
  * @param params - Home config, pages, and repo root
- * @returns Ordered, frontmatter-ready block objects
+ * @returns Ordered, frontmatter-ready block objects plus warnings
  */
-async function buildHomeBlocks(
-  params: BuildHomeBlocksParams
-): Promise<readonly Record<string, unknown>[]> {
-  const { home, pages, repoRoot } = params
+async function buildHomeBlocks(params: BuildHomeBlocksParams): Promise<BuildHomeBlocksResult> {
+  const { home, pages, workspaces, repoRoot } = params
   const configured = match(home)
     .with(P.nonNullable, (h) => h.blocks)
     .otherwise(() => undefined)
   const blockList = match(configured)
     .with(P.nonNullable, (b) => b)
     .otherwise(() => DEFAULT_HOME_BLOCKS)
-  return Promise.all(blockList.map((block) => resolveHomeBlock({ block, pages, repoRoot })))
+  const resolved = await Promise.all(
+    blockList.map((block) => resolveHomeBlock({ block, pages, workspaces, repoRoot }))
+  )
+  return {
+    blocks: resolved.map((r) => r.block),
+    warnings: resolved.flatMap((r) => r.warnings),
+  }
 }
 
 /**
@@ -215,40 +240,222 @@ async function buildHomeBlocks(
 interface ResolveHomeBlockParams {
   readonly block: HomeBlock
   readonly pages: readonly Page[]
+  readonly workspaces: readonly Workspace[]
   readonly repoRoot: string
 }
 
 /**
- * Resolve a single home block into a serializable frontmatter object.
- * `features` blocks resolve their cards (explicit `items` or auto-derived
- * from pages) and serialize icons; all other block types are already
- * plain data and pass through unchanged.
+ * A single compiled block plus any warnings it produced.
  *
  * @private
- * @param params - The block plus pages/repo root for feature resolution
- * @returns Frontmatter-ready block object
  */
-async function resolveHomeBlock(params: ResolveHomeBlockParams): Promise<Record<string, unknown>> {
-  const { block, pages, repoRoot } = params
-  if (block.type !== 'features') {
-    return { ...block }
-  }
-  const features = await match(block.items)
-    .with(P.nonNullable, buildExplicitFeatures)
-    .otherwise(() => buildFeatures(pages, repoRoot))
-  const frontmatterFeatures = buildFrontmatterFeatures(features)
+interface ResolveHomeBlockResult {
+  readonly block: Record<string, unknown>
+  readonly warnings: readonly string[]
+}
+
+/**
+ * Resolve a single home block into a serializable frontmatter object.
+ *
+ * - `features` — resolves cards (explicit `items` or auto-derived from
+ *   the first pages) and serializes their icons
+ * - `showcase` — resolves an explicit `source` path list into cards; the
+ *   default `'workspaces'` source is rendered from `workspaces.json`
+ * - everything else is plain data and passes through unchanged
+ *
+ * @private
+ * @param params - The block plus pages/repo root for card resolution
+ * @returns Frontmatter-ready block object and warnings
+ */
+async function resolveHomeBlock(params: ResolveHomeBlockParams): Promise<ResolveHomeBlockResult> {
+  const { block, pages, workspaces, repoRoot } = params
+  return match(block)
+    .with({ type: 'features' }, async (b) => {
+      const features = await match(b.items)
+        .with(P.nonNullable, buildExplicitFeatures)
+        .otherwise(() => buildFeatures(pages, repoRoot))
+      return {
+        block: { ...b, items: buildFrontmatterFeatures(features) },
+        warnings: [],
+      }
+    })
+    .with({ type: 'showcase' }, (b) =>
+      resolveShowcaseBlock({ block: b, pages, workspaces, repoRoot })
+    )
+    .with({ type: 'tabs' }, (b) =>
+      Promise.resolve({
+        block: { ...b, items: b.items.map(resolveTabItem) },
+        warnings: [],
+      })
+    )
+    .otherwise((b) => Promise.resolve({ block: { ...b }, warnings: [] }))
+}
+
+/**
+ * Resolve a single tab entry for frontmatter. Only the icon needs work —
+ * it is serialized to its Iconify form like feature-card icons; every
+ * other field is plain data and passes through verbatim.
+ *
+ * @private
+ * @param item - Tab entry from `home.blocks[].items`
+ * @returns Frontmatter-ready tab entry
+ */
+function resolveTabItem(item: HomeTabItem): Record<string, unknown> {
+  const { icon, ...rest } = item
+  const serialized = serializeIcon(resolveOptionalIcon(icon))
   return {
-    type: 'features',
-    items: frontmatterFeatures,
-    ...match(block.heading)
-      .with(P.nonNullable, (h) => ({ heading: h }))
+    ...rest,
+    ...match(serialized)
+      .with(P.nonNullable, (i) => ({ icon: i }))
       .otherwise(() => ({})),
-    ...match(block.columns)
-      .with(P.nonNullable, (c) => ({ columns: c }))
-      .otherwise(() => ({})),
-    ...match(block.truncate)
-      .with(P.nonNullable, (t) => ({ truncate: t }))
-      .otherwise(() => ({})),
+  }
+}
+
+/**
+ * Parameters for {@link resolveShowcaseBlock}.
+ *
+ * @private
+ */
+interface ResolveShowcaseBlockParams {
+  readonly block: HomeShowcaseBlock
+  readonly pages: readonly Page[]
+  readonly workspaces: readonly Workspace[]
+  readonly repoRoot: string
+}
+
+/**
+ * Resolve a `showcase` block. An explicit `source` path list compiles to
+ * a `cards` array rendered as one ungrouped grid; the default
+ * `'workspaces'` source carries no cards and the theme falls back to the
+ * grouped workspace data serialized into `.generated/workspaces.json`.
+ *
+ * Each path is matched against workspace items (apps, packages, and
+ * workspace groups) first, then the page tree. Paths that match neither
+ * are skipped with a warning rather than failing the sync.
+ *
+ * @private
+ * @param params - The showcase block plus pages/workspaces/repo root
+ * @returns Frontmatter-ready block object and warnings
+ */
+async function resolveShowcaseBlock(
+  params: ResolveShowcaseBlockParams
+): Promise<ResolveHomeBlockResult> {
+  const { block, pages, workspaces, repoRoot } = params
+  const paths = match(block.source)
+    .with(P.array(P.string), (s) => s)
+    .otherwise(() => null)
+  if (paths === null) {
+    return { block: { ...block }, warnings: [] }
+  }
+
+  const resolved = await Promise.all(
+    paths.map(async (targetPath) => {
+      const workspace = workspaces.find((item) => item.path === targetPath)
+      if (workspace) {
+        return { card: buildWorkspaceCard(workspace), warning: null }
+      }
+      const page = findPageByPath(pages, targetPath)
+      if (page === undefined) {
+        return {
+          card: null,
+          warning: `home showcase source path "${targetPath}" matches no page or workspace — card skipped`,
+        }
+      }
+      return { card: await buildPageCard(page, repoRoot), warning: null }
+    })
+  )
+
+  const { source: _source, ...rest } = block
+  return {
+    block: { ...rest, cards: resolved.map((r) => r.card).filter(isNotNil) },
+    warnings: resolved.map((r) => r.warning).filter(isNotNil),
+  }
+}
+
+/**
+ * Build a showcase card from a workspace item. Workspace entries already
+ * carry every card field, so nothing needs resolving from disk.
+ *
+ * @private
+ * @param workspace - Workspace item to render as a card
+ * @returns Serializable card data
+ */
+function buildWorkspaceCard(workspace: Workspace): HomeWorkspaceCardData {
+  return {
+    title: match(workspace.title)
+      .with(P.string, (t) => t)
+      .otherwise(String),
+    href: workspace.path,
+    icon: serializeIcon(resolveOptionalIcon(workspace.icon)),
+    scope: undefined,
+    description: workspace.description,
+    tags: resolveTagLabels(workspace.tags),
+    badge: workspace.badge,
+  }
+}
+
+/**
+ * Find a page anywhere in the page tree by its configured `path`.
+ *
+ * @private
+ * @param pages - Pages to search, including nested children
+ * @param targetPath - Configured page path (e.g. `/products/cli`)
+ * @returns The matching page, or undefined
+ */
+function findPageByPath(pages: readonly Page[], targetPath: string): Page | undefined {
+  const direct = pages.find((page) => page.path === targetPath)
+  if (direct) {
+    return direct
+  }
+  return pages.reduce<Page | undefined>((found, page) => {
+    if (found) {
+      return found
+    }
+    if (!page.pages) {
+      return undefined
+    }
+    return findPageByPath(page.pages, targetPath)
+  }, undefined)
+}
+
+/**
+ * Build a showcase card from a config page. `page.card` overrides win
+ * over the page's own metadata, mirroring how workspace cards resolve.
+ *
+ * @private
+ * @param page - Page to render as a card
+ * @param repoRoot - Absolute path to repo root, for frontmatter lookups
+ * @returns Serializable card data
+ */
+async function buildPageCard(page: Page, repoRoot: string): Promise<HomeWorkspaceCardData> {
+  const card = page.card
+  const cardIcon = match(card)
+    .with(P.nonNullable, (c) => c.icon)
+    .otherwise(() => undefined)
+  const icon = match(cardIcon)
+    .with(P.nonNullable, (i) => i)
+    .otherwise(() => page.icon)
+  const cardDescription = match(card)
+    .with(P.nonNullable, (c) => c.description)
+    .otherwise(() => undefined)
+  const description = await match(cardDescription)
+    .with(P.string, (d) => Promise.resolve(d))
+    .otherwise(() => extractSectionDescription(page, repoRoot))
+
+  return {
+    title: resolveSectionTitle(page),
+    href: page.path ?? '/',
+    icon: serializeIcon(resolveOptionalIcon(icon)),
+    scope: match(card)
+      .with(P.nonNullable, (c) => c.scope)
+      .otherwise(() => undefined),
+    description,
+    tags: match(card)
+      .with(P.nonNullable, (c) => resolveTagLabels(c.tags))
+      .otherwise(() => []),
+    badge: match(card)
+      .with(P.nonNullable, (c) => c.badge)
+      .otherwise(() => undefined),
   }
 }
 

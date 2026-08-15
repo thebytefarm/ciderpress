@@ -1,4 +1,4 @@
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
@@ -8,6 +8,10 @@ import type { HeroAction } from './hero'
 import './cta.css'
 
 export interface CTAProps {
+  /**
+   * Small uppercase kicker rendered above the headline.
+   */
+  readonly eyebrow?: string
   /**
    * Headline.
    */
@@ -30,12 +34,15 @@ export interface CTAProps {
  * @returns React element.
  */
 export function CTA(props: CTAProps): React.ReactElement {
-  const { title, subtitle, actions } = props
+  const { eyebrow, title, subtitle, actions } = props
   const list = actions ?? []
 
   return (
     <section className="cp-cta">
       <div className="cp-cta__inner">
+        {match(eyebrow)
+          .with(P.string, (e) => <div className="cp-cta__eyebrow">{e}</div>)
+          .otherwise(() => null)}
         <h2 className="cp-cta__title">{title}</h2>
         {match(subtitle)
           .with(undefined, () => null)

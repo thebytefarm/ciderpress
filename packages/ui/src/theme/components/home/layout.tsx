@@ -1,9 +1,4 @@
-import type {
-  ButtonConfig,
-  HomeHeroDemoConfig,
-  HomeSplitVisual,
-  TruncateConfig,
-} from '@ciderpress/config'
+import type { ButtonConfig, HomeVisual, TruncateConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import React from 'react'
@@ -15,12 +10,14 @@ import type { FeatureItem } from './feature-card'
 import { Hero } from './hero'
 import type { HeroAction } from './hero'
 import { HeroDemo } from './hero-demo'
-import { CustomHeroDemo } from './hero-demo-custom'
+import { HomeVisualView } from './home-visual'
 import { PageRail } from './page-rail'
 import { HomeSplit } from './split'
-import { CustomSplitVisual } from './split-visual-custom'
+import { HomeTabs } from './tabs'
+import type { HomeTabEntry } from './tabs'
 import { TrustStrip } from './trust-strip'
 import { HomeWorkspaces } from './workspaces'
+import type { ShowcaseCard } from './workspaces'
 
 interface HomeLayoutProps {
   readonly beforeHero?: React.ReactNode
@@ -35,10 +32,15 @@ interface FrontmatterHero {
   readonly label?: string
 }
 
+/**
+ * Flat heading trio carried by every copy-bearing block.
+ *
+ * @private
+ */
 interface FrontmatterHeading {
   readonly label?: string
   readonly title?: string
-  readonly subtitle?: string
+  readonly body?: string
 }
 
 interface FrontmatterProofBlock {
@@ -47,16 +49,16 @@ interface FrontmatterProofBlock {
   readonly names?: readonly string[]
 }
 
-interface FrontmatterFeaturesBlock {
+interface FrontmatterFeaturesBlock extends FrontmatterHeading {
   readonly type: 'features'
   readonly items?: readonly FeatureItem[]
-  readonly heading?: FrontmatterHeading
+  readonly columns?: 1 | 2 | 3 | 4
   readonly truncate?: TruncateConfig
 }
 
-interface FrontmatterShowcaseBlock {
+interface FrontmatterShowcaseBlock extends FrontmatterHeading {
   readonly type: 'showcase'
-  readonly heading?: FrontmatterHeading
+  readonly cards?: readonly ShowcaseCard[]
   readonly columns?: 1 | 2 | 3 | 4
   readonly truncate?: TruncateConfig
 }
@@ -68,14 +70,19 @@ interface FrontmatterSplitBlock {
   readonly body?: string
   readonly bullets?: readonly string[]
   readonly cta?: ButtonConfig
-  readonly visual?: HomeSplitVisual
+  readonly visual?: HomeVisual
   readonly reverse?: boolean
 }
 
-interface FrontmatterCtaBlock {
+interface FrontmatterTabsBlock extends FrontmatterHeading {
+  readonly type: 'tabs'
+  readonly items?: readonly HomeTabEntry[]
+  readonly orientation?: 'vertical' | 'horizontal'
+  readonly reverse?: boolean
+}
+
+interface FrontmatterCtaBlock extends FrontmatterHeading {
   readonly type: 'cta'
-  readonly title?: string
-  readonly subtitle?: string
   readonly actions?: readonly ButtonConfig[]
 }
 
@@ -84,13 +91,14 @@ type FrontmatterBlock =
   | FrontmatterFeaturesBlock
   | FrontmatterShowcaseBlock
   | FrontmatterSplitBlock
+  | FrontmatterTabsBlock
   | FrontmatterCtaBlock
 
 /**
  * Custom HomeLayout for ciderpress.
  *
  * Renders the hero header followed by an ordered `blocks` array (proof,
- * features, showcase, split, cta) inside a continuous PageRail. Block
+ * features, showcase, split, tabs, cta) inside a continuous PageRail. Block
  * order is the array order and any block type may repeat — the whole deck
  * is driven by `home.blocks`, compiled into frontmatter by the sync engine.
  *
@@ -118,13 +126,13 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   //   undefined → render the framework default
   //   false     → suppress entirely
   //   object    → render the user-supplied custom variant
-  const heroDemoFm = fm.heroDemo as false | HomeHeroDemoConfig | undefined
+  const heroDemoFm = fm.heroDemo as false | HomeVisual | undefined
   const blocks = (fm.blocks as readonly FrontmatterBlock[] | undefined) ?? []
 
   const heroDemoEl = match(heroDemoFm)
     .with(false, () => null)
     .with(undefined, () => <HeroDemo />)
-    .otherwise((d) => <CustomHeroDemo config={d} />)
+    .otherwise((d) => <HomeVisualView visual={d} context="hero" />)
 
   const heroSection = match(hero)
     .with(undefined, () => null)
@@ -167,10 +175,20 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         .otherwise(() => <TrustStrip lead={b.lead} names={names} />)
     })
     .with({ type: 'features' }, (b) => (
-      <HomeFeature items={b.items} heading={b.heading} truncate={b.truncate} />
+      <HomeFeature
+        items={b.items}
+        heading={toHeading(b)}
+        columns={b.columns}
+        truncate={b.truncate}
+      />
     ))
     .with({ type: 'showcase' }, (b) => (
-      <HomeWorkspaces heading={b.heading} columns={b.columns} truncate={b.truncate} />
+      <HomeWorkspaces
+        heading={toHeading(b)}
+        cards={b.cards}
+        columns={b.columns}
+        truncate={b.truncate}
+      />
     ))
     .with({ type: 'split' }, (b) => (
       <HomeSplit
@@ -185,8 +203,18 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         visual={match(b.visual)
           .with(undefined, () => null)
           .otherwise((v) => (
-            <CustomSplitVisual visual={v} />
+            <HomeVisualView visual={v} context="split" />
           ))}
+      />
+    ))
+    .with({ type: 'tabs' }, (b) => (
+      <HomeTabs
+        eyebrow={b.label}
+        title={b.title}
+        body={b.body}
+        items={b.items ?? []}
+        orientation={b.orientation}
+        reverse={b.reverse}
       />
     ))
     .with({ type: 'cta' }, (b) =>
@@ -194,13 +222,26 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         .with(true, () => null)
         .otherwise(() => (
           <CTA
+            eyebrow={b.label}
             title={b.title ?? ''}
-            subtitle={b.subtitle}
+            subtitle={b.body}
             actions={mapButtonsToHeroActions(b.actions)}
           />
         ))
     )
     .exhaustive()
+}
+
+/**
+ * Collect a block's flat `label` / `title` / `body` keys into the heading
+ * object the grid components take.
+ *
+ * @private
+ * @param block - Any block carrying the flat heading trio
+ * @returns Heading object for the grid components
+ */
+function toHeading(block: FrontmatterHeading): FrontmatterHeading {
+  return { label: block.label, title: block.title, body: block.body }
 }
 
 /**

@@ -9,6 +9,15 @@
   padding: 0 32px;
 }
 
+.cp-cta__eyebrow {
+  font-family: var(--cp-font-family-mono);
+  font-size: var(--cp-fs-eyebrow);
+  text-transform: uppercase;
+  letter-spacing: var(--cp-letter-eyebrow);
+  color: var(--cp-c-brand-1);
+  margin-bottom: var(--cp-s-12);
+}
+
 .cp-cta__title {
   font-size: clamp(32px, 5vw, 56px);
   font-weight: 600;

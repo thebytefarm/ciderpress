@@ -120,24 +120,99 @@ export default defineConfig({
         ],
         cta: { variant: 'primary', text: 'Read the docs', href: '/getting-started/quick-start' },
         visual: {
+          type: 'code',
           language: 'ts',
-          code: [
-            "import { defineConfig } from 'ciderpress'",
-            '',
-            'export default defineConfig({',
-            "  title: 'Acme Docs',",
-            '  pages: [',
-            "    { title: 'Guides', include: 'docs/guides/*.md' },",
-            '  ],',
-            "  theme: { themes: ['mulled'] },",
-            '})',
-          ].join('\n'),
+          code: `import { defineConfig } from 'ciderpress'
+
+export default defineConfig({
+  title: 'Acme Docs',
+  pages: [
+    { title: 'Guides', include: 'docs/guides/*.md' },
+  ],
+  theme: { themes: ['mulled'] },
+})`,
         },
+      },
+      {
+        type: 'tabs',
+        label: 'Capabilities',
+        title: 'Pick a thread, follow it through.',
+        body: 'Every band below is one config block away.',
+        orientation: 'vertical',
+        items: [
+          {
+            label: 'Sync engine',
+            icon: { id: 'pixelarticons:reload', color: 'green' },
+            title: 'Your markdown, left where it is',
+            body: 'Ciderpress reads your repo in place — no copying, no restructuring. Globs pick up new files without a config change.',
+            bullets: ['Glob discovery', 'Frontmatter inheritance', 'Watch mode on every save'],
+            visual: {
+              type: 'terminal',
+              windowTitle: 'ciderpress dev',
+              command: 'ciderpress dev',
+              lines: [
+                { kind: 'ok', text: 'synced 128 pages from 6 workspaces' },
+                { kind: 'info', text: 'sidebar + nav generated' },
+                { kind: 'cmt', text: 'watching for changes…' },
+                { kind: 'ok', text: 'ready at http://localhost:3000' },
+              ],
+            },
+          },
+          {
+            label: 'OpenAPI',
+            icon: { id: 'simple-icons:openapiinitiative', color: 'blue' },
+            title: 'Specs become reference pages',
+            body: 'Point a page at a spec file and get interactive endpoint docs with try-it-out requests.',
+            bullets: ['Schema-aware examples', 'Grouped by tag or path'],
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `pages: [
+  {
+    title: 'API',
+    path: '/api',
+    openapi: { spec: 'openapi.yaml', path: '/api' },
+  },
+]`,
+            },
+          },
+          {
+            label: 'Themes',
+            icon: { id: 'pixelarticons:paint-bucket', color: 'purple' },
+            title: 'Six themes, zero wiring',
+            body: 'Swap the whole palette with one key. Light and dark are generated together, so contrast holds either way.',
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `theme: {
+  themes: ['mulled', 'orchard', 'press'],
+  default: 'mulled',
+}`,
+            },
+          },
+          {
+            label: 'AI-ready',
+            icon: { id: 'pixelarticons:robot', color: 'amber' },
+            title: 'Built for agents as well as people',
+            body: 'Every site ships an llms.txt index and serves raw markdown at the same URL, so agents read the source instead of scraping HTML.',
+            bullets: ['Auto llms.txt', 'text/markdown responses', 'Copy-as-markdown on every page'],
+            visual: {
+              type: 'terminal',
+              windowTitle: 'curl',
+              command: 'curl -H "Accept: text/markdown" https://ciderpress.dev/guides/setup',
+              lines: [
+                { kind: 'cmt', text: '# Setup' },
+                { kind: 'cmt', text: 'Install the CLI and point it at your docs.' },
+                { kind: 'ok', text: '200 · text/markdown' },
+              ],
+            },
+          },
+        ],
       },
       {
         type: 'cta',
         title: 'Ship the docs your team deserves.',
-        subtitle: 'One CLI. Three minutes. Production-ready.',
+        body: 'One CLI. Three minutes. Production-ready.',
         actions: [
           { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
           {

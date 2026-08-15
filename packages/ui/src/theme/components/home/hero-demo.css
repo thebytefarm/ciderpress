@@ -72,6 +72,17 @@
   padding: 0;
 }
 
+/* Code-form hero demo — the frame owns the chrome, so strip the native
+   Rspress code block's own margin and rounded corners. */
+.cp-hero-demo--code .rp-codeblock {
+  margin: 0;
+  border-radius: 0;
+}
+
+.cp-hero-demo--code .rp-codeblock pre {
+  overflow-x: auto;
+}
+
 .cp-hero-demo__img {
   display: block;
   width: 100%;

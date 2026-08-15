@@ -49,20 +49,12 @@ import type {
   Frontmatter,
   HomeBlock,
   HomeConfig,
-  HomeCtaConfig,
-  HomeFeaturesConfig,
   HomeHeroConfig,
-  HomeHeroDemoConfig,
-  HomeHeroDemoImage,
-  HomeHeroDemoLine,
-  HomeHeroDemoTerminal,
-  HomeProofConfig,
-  HomeSectionHeading,
-  HomeShowcaseConfig,
-  HomeSplitConfig,
-  HomeSplitVisual,
-  HomeSplitVisualCode,
-  HomeSplitVisualImage,
+  HomeVisual,
+  HomeVisualCode,
+  HomeVisualImage,
+  HomeVisualLine,
+  HomeVisualTerminal,
   IconConfig,
   IconId,
   ImageSource,
@@ -398,14 +390,6 @@ const truncateConfigSchema = z
   })
   .strict()
 
-const homeSectionHeadingSchema = z
-  .object({
-    label: z.string().optional(),
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
-  })
-  .strict()
-
 const announcementConfigSchema = z
   .object({
     id: z.string().optional(),
@@ -422,122 +406,134 @@ const announcementConfigSchema = z
   })
   .strict()
 
-const homeProofConfigSchema = z
+const homeVisualCodeSchema = z
   .object({
-    lead: z.string().optional(),
-    names: z.array(z.string()).optional(),
+    type: z.literal('code'),
+    code: z.string().min(1, 'visual.code must be a non-empty string'),
+    language: z.string().optional(),
   })
   .strict()
 
-const homeCtaConfigSchema = z
+const homeVisualImageSchema = z
   .object({
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
-    actions: z.array(buttonConfigSchema).optional(),
-  })
-  .strict()
-
-const homeHeroDemoImageSchema = z
-  .object({
-    src: z.string().min(1, 'hero.demo.src must be a non-empty string'),
+    type: z.literal('image'),
+    src: z.string().min(1, 'visual.src must be a non-empty string'),
     alt: z.string().optional(),
     width: z.union([z.number(), z.string()]).optional(),
     height: z.union([z.number(), z.string()]).optional(),
   })
   .strict()
 
-const homeHeroDemoLineSchema = z
+const homeVisualLineSchema = z
   .object({
     kind: z.enum(['ok', 'info', 'cmt', 'err']),
     text: z.string(),
   })
   .strict()
 
-const homeHeroDemoTerminalSchema = z
+const homeVisualTerminalSchema = z
   .object({
+    type: z.literal('terminal'),
     windowTitle: z.string().optional(),
-    command: z.string().min(1, 'hero.demo.command must be a non-empty string'),
-    lines: z.array(homeHeroDemoLineSchema),
+    command: z.string().min(1, 'visual.command must be a non-empty string'),
+    lines: z.array(homeVisualLineSchema),
   })
   .strict()
 
-const homeHeroDemoConfigSchema = z.union([homeHeroDemoImageSchema, homeHeroDemoTerminalSchema])
+const homeVisualSchema = z.discriminatedUnion('type', [
+  homeVisualCodeSchema,
+  homeVisualImageSchema,
+  homeVisualTerminalSchema,
+])
 
 const homeHeroConfigSchema = z
   .object({
     label: z.string().optional(),
     tagline: z.string().optional(),
     actions: z.array(buttonConfigSchema).optional(),
-    demo: z.union([z.literal(false), homeHeroDemoConfigSchema]).optional(),
+    demo: z.union([z.literal(false), homeVisualSchema]).optional(),
   })
   .strict()
 
-const homeFeaturesConfigSchema = z
+const homeColumnsSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
+
+const homeProofBlockSchema = z
   .object({
+    type: z.literal('proof'),
+    lead: z.string().optional(),
+    names: z.array(z.string()).optional(),
+  })
+  .strict()
+
+const homeFeaturesBlockSchema = z
+  .object({
+    type: z.literal('features'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
     items: z.array(featureSchema).optional(),
-    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    columns: homeColumnsSchema.optional(),
     truncate: truncateConfigSchema.optional(),
-    heading: homeSectionHeadingSchema.optional(),
   })
   .strict()
 
-const homeShowcaseConfigSchema = z
+const homeShowcaseBlockSchema = z
   .object({
-    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
-    truncate: truncateConfigSchema.optional(),
-    heading: homeSectionHeadingSchema.optional(),
+    type: z.literal('showcase'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
     source: z.union([z.literal('workspaces'), z.array(z.string())]).optional(),
+    columns: homeColumnsSchema.optional(),
+    truncate: truncateConfigSchema.optional(),
   })
   .strict()
 
-const homeSplitVisualCodeSchema = z
+const homeSplitBlockSchema = z
   .object({
-    code: z.string().min(1, 'split.visual.code must be a non-empty string'),
-    language: z.string().optional(),
-  })
-  .strict()
-
-const homeSplitVisualImageSchema = z
-  .object({
-    src: z.string().min(1, 'split.visual.src must be a non-empty string'),
-    alt: z.string().optional(),
-    width: z.union([z.number(), z.string()]).optional(),
-    height: z.union([z.number(), z.string()]).optional(),
-  })
-  .strict()
-
-const homeSplitVisualSchema = z.union([homeSplitVisualCodeSchema, homeSplitVisualImageSchema])
-
-const homeSplitConfigSchema = z
-  .object({
+    type: z.literal('split'),
     label: z.string().optional(),
     title: z.string().min(1, 'split.title is required'),
     body: z.string().optional(),
     bullets: z.array(z.string()).optional(),
     cta: buttonConfigSchema.optional(),
-    visual: homeSplitVisualSchema.optional(),
+    visual: homeVisualSchema.optional(),
     reverse: z.boolean().optional(),
   })
   .strict()
 
-const homeProofBlockSchema = z
-  .object({ type: z.literal('proof'), ...homeProofConfigSchema.shape })
+const homeTabItemSchema = z
+  .object({
+    label: z.string().min(1, 'tabs.items[].label is required'),
+    icon: iconConfigSchema.optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    bullets: z.array(z.string()).optional(),
+    cta: buttonConfigSchema.optional(),
+    visual: homeVisualSchema.optional(),
+  })
   .strict()
 
-const homeFeaturesBlockSchema = z
-  .object({ type: z.literal('features'), ...homeFeaturesConfigSchema.shape })
-  .strict()
-
-const homeShowcaseBlockSchema = z
-  .object({ type: z.literal('showcase'), ...homeShowcaseConfigSchema.shape })
-  .strict()
-
-const homeSplitBlockSchema = z
-  .object({ type: z.literal('split'), ...homeSplitConfigSchema.shape })
+const homeTabsBlockSchema = z
+  .object({
+    type: z.literal('tabs'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    orientation: z.enum(['vertical', 'horizontal']).optional(),
+    reverse: z.boolean().optional(),
+    items: z.array(homeTabItemSchema),
+  })
   .strict()
 
 const homeCtaBlockSchema = z
-  .object({ type: z.literal('cta'), ...homeCtaConfigSchema.shape })
+  .object({
+    type: z.literal('cta'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    actions: z.array(buttonConfigSchema).optional(),
+  })
   .strict()
 
 const homeBlockSchema = z.discriminatedUnion('type', [
@@ -545,6 +541,7 @@ const homeBlockSchema = z.discriminatedUnion('type', [
   homeFeaturesBlockSchema,
   homeShowcaseBlockSchema,
   homeSplitBlockSchema,
+  homeTabsBlockSchema,
   homeCtaBlockSchema,
 ])
 
@@ -830,31 +827,15 @@ const _guardSortStrategy: z.ZodType<SortStrategy> = sortStrategySchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeHeroConfig: z.ZodType<HomeHeroConfig> = homeHeroConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeProofConfig: z.ZodType<HomeProofConfig> = homeProofConfigSchema
+const _guardHomeVisual: z.ZodType<HomeVisual> = homeVisualSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeFeaturesConfig: z.ZodType<HomeFeaturesConfig> = homeFeaturesConfigSchema
+const _guardHomeVisualCode: z.ZodType<HomeVisualCode> = homeVisualCodeSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeShowcaseConfig: z.ZodType<HomeShowcaseConfig> = homeShowcaseConfigSchema
+const _guardHomeVisualImage: z.ZodType<HomeVisualImage> = homeVisualImageSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitConfig: z.ZodType<HomeSplitConfig> = homeSplitConfigSchema
+const _guardHomeVisualTerminal: z.ZodType<HomeVisualTerminal> = homeVisualTerminalSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitVisual: z.ZodType<HomeSplitVisual> = homeSplitVisualSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitVisualCode: z.ZodType<HomeSplitVisualCode> = homeSplitVisualCodeSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitVisualImage: z.ZodType<HomeSplitVisualImage> = homeSplitVisualImageSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeCtaConfig: z.ZodType<HomeCtaConfig> = homeCtaConfigSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoConfig: z.ZodType<HomeHeroDemoConfig> = homeHeroDemoConfigSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoImage: z.ZodType<HomeHeroDemoImage> = homeHeroDemoImageSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoTerminal: z.ZodType<HomeHeroDemoTerminal> = homeHeroDemoTerminalSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoLine: z.ZodType<HomeHeroDemoLine> = homeHeroDemoLineSchema
-// oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSectionHeading: z.ZodType<HomeSectionHeading> = homeSectionHeadingSchema
+const _guardHomeVisualLine: z.ZodType<HomeVisualLine> = homeVisualLineSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeBlock: z.ZodType<HomeBlock> = homeBlockSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

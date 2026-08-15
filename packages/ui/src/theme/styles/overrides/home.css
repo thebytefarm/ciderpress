@@ -183,7 +183,8 @@
    through as hairlines between cells. Each cell paints its own panel bg. */
   .cp-feature-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* `--cp-feature-cols` is set inline from the block's `columns` key. */
+    grid-template-columns: repeat(var(--cp-feature-cols, 3), 1fr);
     gap: 1px;
     background: var(--cp-c-border);
     border: 1px solid var(--cp-c-border);

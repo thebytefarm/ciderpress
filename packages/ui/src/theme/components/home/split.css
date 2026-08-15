@@ -24,14 +24,22 @@
   }
 }
 
-/* Reverse layout — visual first, copy second. Order-based so it flips in
-   both the two-column grid and the single-column mobile stack. */
-.cp-split__inner--reverse .cp-split__copy {
-  order: 2;
+/* Copy-only band — no visual to sit beside, so the copy owns the row. */
+.cp-split__inner--full {
+  grid-template-columns: 1fr;
 }
 
-.cp-split__inner--reverse .cp-split__visual {
-  order: 1;
+/* Reverse layout — visual first, copy second. Scoped to the two-column
+   grid: the narrow single-column stack always leads with the copy, so a
+   reversed band doesn't push its image above the headline. */
+@media (min-width: 881px) {
+  .cp-split__inner--reverse .cp-split__copy {
+    order: 2;
+  }
+
+  .cp-split__inner--reverse .cp-split__visual {
+    order: 1;
+  }
 }
 
 .cp-split__copy {
@@ -142,6 +150,15 @@
 
 .cp-split__visual .rp-codeblock pre {
   overflow-x: auto;
+}
+
+/* Terminal visual reuses the hero demo chrome; the split frame already
+   owns the border, radius, and shadow, so flatten the inner shell. */
+.cp-split__visual .cp-hero-demo {
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Image visual fills the frame width, preserving aspect ratio. */

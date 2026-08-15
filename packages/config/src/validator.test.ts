@@ -1,3 +1,4 @@
+import { match, P } from 'massaman/match'
 import { describe, it, expect } from 'vitest'
 
 import { defineConfig } from './define-config.ts'
@@ -141,12 +142,13 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
-  it('should accept home.hero.demo as a structured terminal', () => {
+  it('should accept home.hero.demo as a terminal visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
         hero: {
           demo: {
+            type: 'terminal',
             windowTitle: '~/code/acme — acme dev',
             command: 'acme dev',
             lines: [
@@ -160,10 +162,26 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
-  it('should accept home.hero.demo as an image', () => {
+  it('should accept home.hero.demo as an image visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
-      home: { hero: { demo: { src: '/cli.svg', alt: 'CLI' } } },
+      home: { hero: { demo: { type: 'image', src: '/cli.svg', alt: 'CLI' } } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.hero.demo as a code visual', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { demo: { type: 'code', code: 'const x = 1', language: 'ts' } } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.hero.demo as false', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { demo: false } },
     })
     expect(error).toBeNull()
   })
@@ -178,7 +196,7 @@ describe('validateConfig() — white-label acceptance config', () => {
             label: 'Configuration',
             title: 'One config',
             bullets: ['typed', 'validated'],
-            visual: { code: 'export default {}', language: 'ts' },
+            visual: { type: 'code', code: 'export default {}', language: 'ts' },
           },
         ],
       },
@@ -190,7 +208,33 @@ describe('validateConfig() — white-label acceptance config', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
-        blocks: [{ type: 'split', title: 'Screenshot', visual: { src: '/shot.png', alt: 'UI' } }],
+        blocks: [
+          {
+            type: 'split',
+            title: 'Screenshot',
+            visual: { type: 'image', src: '/shot.png', alt: 'UI' },
+          },
+        ],
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept a split block with a terminal visual', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [
+          {
+            type: 'split',
+            title: 'Deploy',
+            visual: {
+              type: 'terminal',
+              command: 'acme deploy',
+              lines: [{ kind: 'ok', text: 'done' }],
+            },
+          },
+        ],
       },
     })
     expect(error).toBeNull()
@@ -201,11 +245,58 @@ describe('validateConfig() — white-label acceptance config', () => {
       ...whiteLabelConfig,
       home: {
         blocks: [
-          { type: 'split', title: 'One', visual: { code: 'a', language: 'ts' } },
-          { type: 'split', title: 'Two', reverse: true, visual: { src: '/b.png' } },
+          { type: 'split', title: 'One', visual: { type: 'code', code: 'a', language: 'ts' } },
+          { type: 'split', title: 'Two', reverse: true, visual: { type: 'image', src: '/b.png' } },
         ],
       },
     })
+    expect(error).toBeNull()
+  })
+
+  it('should accept a tabs block in either orientation', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [
+          {
+            type: 'tabs',
+            orientation: 'vertical',
+            items: [
+              {
+                label: 'Sync',
+                icon: 'pixelarticons:reload',
+                body: 'Watches your repo',
+                bullets: ['Glob discovery'],
+                cta: { variant: 'primary', text: 'Docs', href: '/guides' },
+                visual: { type: 'code', code: 'const a = 1', language: 'ts' },
+              },
+            ],
+          },
+          { type: 'tabs', orientation: 'horizontal', reverse: true, items: [{ label: 'API' }] },
+        ],
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject a tabs block with an unknown orientation', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'tabs', orientation: 'diagonal', items: [{ label: 'API' }] }] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject a tab item without a label', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'tabs', items: [{ body: 'No label' }] }] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should accept an empty home.blocks array', () => {
+    const [error] = validateConfig({ ...whiteLabelConfig, home: { blocks: [] } })
     expect(error).toBeNull()
   })
 
@@ -217,17 +308,49 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toMatchObject({ type: 'validation_failed' })
   })
 
-  it('should reject a split block that has both code and image visuals', () => {
+  it('should reject a visual with no type discriminator', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'split', title: 'Bad', visual: { code: 'a' } }] },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject a visual whose fields do not match its type', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
-        blocks: [{ type: 'split', title: 'Bad', visual: { code: 'a', src: '/b.png' } }],
+        blocks: [{ type: 'split', title: 'Bad', visual: { type: 'code', src: '/b.png' } }],
       },
     })
     expect(error).toMatchObject({ type: 'validation_failed' })
   })
 
-  it('should accept features + showcase blocks with headings', () => {
+  it('should report the offending path for an unknown visual key', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'split', title: 'Bad', visual: { type: 'code', code: 'a', cdoe: 'b' } }],
+      },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+    const issues = match(error)
+      .with({ errors: P.nonNullable }, (e) => e.errors)
+      .otherwise(() => [])
+    expect(issues.map((issue) => issue.path.join('.'))).toContain('home.blocks.0.visual')
+  })
+
+  it('should reject a nested heading object on a features block', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'features', heading: { title: 'What you get' } }],
+      },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should accept features + showcase blocks with flat headings', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: {
@@ -236,13 +359,17 @@ describe('validateConfig() — white-label acceptance config', () => {
             type: 'features',
             items: [{ title: 'F', description: 'D' }],
             columns: 3,
-            heading: { label: 'Features', title: 'What you get' },
+            label: 'Features',
+            title: 'What you get',
+            body: 'Everything you need.',
           },
           {
             type: 'showcase',
             columns: 2,
-            heading: { title: 'Everything in the monorepo' },
+            title: 'Everything in the monorepo',
+            source: ['/packages/sdk'],
           },
+          { type: 'cta', title: 'Ready?', body: 'Ship today.' },
         ],
       },
     })
