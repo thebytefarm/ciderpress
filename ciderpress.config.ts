@@ -137,7 +137,7 @@ export default defineConfig({
         type: 'tabs',
         label: 'Capabilities',
         title: 'Pick a **thread**, follow it through.',
-        body: 'Every band below is one config block away.',
+        body: 'Every band below is ==one config block== away.',
         orientation: 'vertical',
         items: [
           {

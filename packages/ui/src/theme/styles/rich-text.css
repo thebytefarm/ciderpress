@@ -2,8 +2,8 @@
  * Rich text — inline markup rendered from config copy.
  *
  * Config strings run through the inline renderer, so any display copy
- * can carry `**emphasis**` (bold + brand colour), `*italic*`,
- * `` `code` ``, links, and a whitelist of inline HTML. These rules keep that markup legible
+ * can carry `**emphasis**` (bold + brand colour), `==highlight==`,
+ * `*italic*`, `` `code` ``, links, and a whitelist of inline HTML. These rules keep that markup legible
  * inside headings and body copy alike, where the document-level
  * typography does not reach.
  */
@@ -58,11 +58,21 @@
   text-underline-offset: 3px;
 }
 
-/* `<mark>` defaults to a yellow browser highlight — retint it. */
-.cp-accent mark,
+/* Highlight — what `==text==` renders as. `<mark>` defaults to a yellow
+   browser highlight, so retint it to the brand. The bare-element
+   selectors cover `<mark>` written as HTML in config copy, which carries
+   no class of its own. */
+.cp-mark,
 .cp-hero__title mark,
+.cp-hero__tagline mark,
+.cp-split__title mark,
 .cp-split__body mark,
-.cp-tabs__body mark {
+.cp-tabs__title mark,
+.cp-tabs__body mark,
+.cp-cta__title mark,
+.cp-cta__sub mark,
+.cp-feature-section-head__title mark,
+.cp-feature-section-head__sub mark {
   background: var(--cp-c-brand-soft);
   color: var(--cp-c-text-1);
   padding: 0.05em 0.25em;

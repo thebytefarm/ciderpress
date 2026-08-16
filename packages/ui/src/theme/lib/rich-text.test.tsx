@@ -50,6 +50,16 @@ describe('renderRichText()', () => {
     expect(out).toContain('<strong class="cp-accent">Zero Effort</strong>')
   })
 
+  it('should render highlight markers as a tinted mark', () => {
+    expect(html('Now with ==OpenAPI==')).toContain('<mark class="cp-mark">OpenAPI</mark>')
+  })
+
+  it('should keep highlight and accent distinct', () => {
+    const out = html('**accent** and ==highlight==')
+    expect(out).toContain('<strong class="cp-accent">accent</strong>')
+    expect(out).toContain('<mark class="cp-mark">highlight</mark>')
+  })
+
   it('should render code spans literally', () => {
     expect(html('Run `ciderpress dev`')).toContain('<code>ciderpress dev</code>')
   })
@@ -157,6 +167,10 @@ describe('toPlainText()', () => {
     expect(toPlainText('Docs, **Zero Effort**')).toBe('Docs, Zero Effort')
   })
 
+  it('should strip highlight markers', () => {
+    expect(toPlainText('Now with ==OpenAPI== support')).toBe('Now with OpenAPI support')
+  })
+
   it('should strip emphasis and italic markers', () => {
     expect(toPlainText('Ship **fast** and *typed*')).toBe('Ship fast and typed')
   })
@@ -197,5 +211,9 @@ describe('hasAccentMarker()', () => {
 
   it('should not treat html strong as an explicit accent', () => {
     expect(hasAccentMarker('Docs, <strong>Zero Effort</strong>')).toBe(false)
+  })
+
+  it('should not treat a highlight marker as an accent', () => {
+    expect(hasAccentMarker('Docs, ==Zero Effort==')).toBe(false)
   })
 })

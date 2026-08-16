@@ -27,14 +27,17 @@ Every display string in the config accepts inline markup — no flag, no opt-in.
 
 | Syntax                   | Renders                                         |
 | ------------------------ | ----------------------------------------------- |
-| `**emphasis**`           | bold **and** brand-coloured — the accent        |
+| `**accent**`             | bold **and** brand-coloured                     |
+| `==highlight==`          | tinted `<mark>` background                      |
 | `*italic*`               | `<em>`                                          |
 | `` `code` ``             | inline `<code>`, sized to the surrounding text  |
 | `[text](/href)`          | link, SPA-routed when internal                  |
 | `<br>`                   | line break                                      |
 | `<strong>plain</strong>` | bold with no colour, when you want weight alone |
 
-There is one emphasis rule: **`**` is the accent.** A heading is already bold, so weight by itself would say nothing there — `**` colours the phrase instead, in headings and body copy alike. Reach for `<strong>` on the rare occasion you want bold without the colour.
+`**` is the accent: a heading is already bold, so weight by itself would say nothing there — `**` colours the phrase instead, in headings and body copy alike. Reach for `<strong>` on the rare occasion you want bold without the colour. `==` keeps the meaning it has in Obsidian, Typora, and markdown-it-mark — a highlight.
+
+Because inline HTML is supported, `<span class="cp-accent">text</span>` and `<mark>text</mark>` are equivalent long forms of the two markers. Useful when you want the accent on part of a word, or inside copy that already uses asterisks.
 
 Inline HTML is allowed for `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class`, `title`, and (on `<a>`) `href` attributes.
 
@@ -45,6 +48,7 @@ home: {
   },
   blocks: [
     { type: 'split', title: 'One config, **validated at boot**' },
+    { type: 'tabs', title: 'Now with ==OpenAPI==' },
     { type: 'cta', body: 'Questions? [Open an issue](https://github.com/acme/docs/issues).' },
   ],
 }

@@ -46,6 +46,13 @@ const STRIPPED_TAGS: ReadonlySet<string> = new Set([
  */
 export const ACCENT_CLASS = 'cp-accent'
 
+/**
+ * Highlight class. `==text==` is the ecosystem's highlight marker
+ * (Obsidian, Typora, markdown-it-mark), so it renders a tinted `<mark>`
+ * rather than being redefined as a second accent.
+ */
+export const MARK_CLASS = 'cp-mark'
+
 // Ordered alternation — the earliest match wins, and `**` is tried
 // before `*` so bold is not read as two italics. A fenced code span
 // comes first so markers inside it stay literal.
@@ -55,7 +62,7 @@ export const ACCENT_CLASS = 'cp-accent'
 // the classic backtracking blowup, and the trailing `/` of a
 // self-closing tag is cheaper to read off the captured text.
 const TOKEN_PATTERN =
-  /(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:\*([^*\n]+?)\*)|(?:\[([^\]]*)\]\(([^)\s]+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>)/
+  /(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:==([\s\S]+?)==)|(?:\*([^*\n]+?)\*)|(?:\[([^\]]*)\]\(([^)\s]+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>)/
 
 const ATTR_PATTERN = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
 
@@ -82,9 +89,9 @@ export type InlineNode =
  * Parse config copy into inline nodes, applying an inline-only markdown
  * subset plus a whitelist of inline HTML.
  *
- * Supported: `**accent**`, `*italic*`, `` `code` ``, `[text](/href)`,
- * `<br>`, and the tags in {@link ALLOWED_TAGS}. Use `<strong>` or
- * `<b>` for bold that is not brand-coloured. Links
+ * Supported: `**accent**`, `==highlight==`, `*italic*`, `` `code` ``,
+ * `[text](/href)`, `<br>`, and the tags in {@link ALLOWED_TAGS}. Use
+ * `<strong>` or `<b>` for bold that is not brand-coloured. Links
  * are validated with {@link safeUrl}, so `javascript:` and friends are
  * dropped. Unknown tags are unwrapped and dangerous ones removed whole,
  * so a renderer never has to trust the input.
@@ -194,7 +201,7 @@ interface TokenStep {
  * @returns Nodes and the remaining input
  */
 function consumeToken(found: RegExpExecArray, after: string): TokenStep {
-  const [, code, bold, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
+  const [, code, bold, highlight, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
   // Sequential guards rather than a `match` on the group tuple: the
   // groups are independent `string | undefined` slots, so matching one
   // tells the compiler nothing useful about the others.
@@ -203,6 +210,9 @@ function consumeToken(found: RegExpExecArray, after: string): TokenStep {
   }
   if (bold !== undefined) {
     return { nodes: [accentNode(parseInline(bold))], rest: after }
+  }
+  if (highlight !== undefined) {
+    return { nodes: [markNode(parseInline(highlight))], rest: after }
   }
   if (italic !== undefined) {
     return { nodes: [element('em', parseInline(italic))], rest: after }
@@ -433,6 +443,18 @@ function codeNode(value: string): InlineNode {
  */
 function accentNode(children: readonly InlineNode[]): InlineNode {
   return { kind: 'element', tag: 'strong', className: ACCENT_CLASS, children }
+}
+
+/**
+ * Build a highlight node — a tinted `<mark>`, matching what `==` means
+ * in Obsidian, Typora, and markdown-it-mark.
+ *
+ * @private
+ * @param children - Parsed contents
+ * @returns Mark element node
+ */
+function markNode(children: readonly InlineNode[]): InlineNode {
+  return { kind: 'element', tag: 'mark', className: MARK_CLASS, children }
 }
 
 /**
