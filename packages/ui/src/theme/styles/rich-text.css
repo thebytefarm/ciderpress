@@ -2,13 +2,14 @@
  * Rich text — inline markup rendered from config copy.
  *
  * Config strings run through the inline renderer, so any display copy
- * can carry `**bold**`, `*italic*`, `` `code` ``, `==accent==`, links,
- * and a whitelist of inline HTML. These rules keep that markup legible
+ * can carry `**emphasis**` (bold + brand colour), `*italic*`,
+ * `` `code` ``, links, and a whitelist of inline HTML. These rules keep that markup legible
  * inside headings and body copy alike, where the document-level
  * typography does not reach.
  */
 
-/* Accent span — the explicit form of the hero title's auto-accent. */
+/* Accent — what `**emphasis**` renders as, and the explicit form of
+   the hero title's auto-accent. */
 .cp-accent {
   color: var(--cp-c-brand-1);
 }

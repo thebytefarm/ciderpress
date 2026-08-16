@@ -30,16 +30,24 @@ describe('renderRichText()', () => {
     expect(html('Beautiful docs')).toBe('Beautiful docs')
   })
 
-  it('should render bold markers as strong', () => {
-    expect(html('Ship **fast**')).toContain('<strong>fast</strong>')
+  it('should render emphasis markers as a branded strong', () => {
+    expect(html('Ship **fast**')).toContain('<strong class="cp-accent">fast</strong>')
+  })
+
+  it('should render html strong as plain bold, without the accent', () => {
+    const out = html('Ship <strong>fast</strong>')
+    expect(out).toContain('<strong>fast</strong>')
+    expect(out).not.toContain('cp-accent')
   })
 
   it('should render italic markers as em', () => {
     expect(html('Ship *fast*')).toContain('<em>fast</em>')
   })
 
-  it('should render accent markers as a branded span', () => {
-    expect(html('Docs, ==Zero Effort==')).toContain('<span class="cp-accent">Zero Effort</span>')
+  it('should accent only the marked words', () => {
+    const out = html('Docs, **Zero Effort**')
+    expect(out).toContain('Docs, ')
+    expect(out).toContain('<strong class="cp-accent">Zero Effort</strong>')
   })
 
   it('should render code spans literally', () => {
@@ -47,7 +55,7 @@ describe('renderRichText()', () => {
   })
 
   it('should not parse markers inside a code span', () => {
-    expect(html('`**not bold**`')).toContain('<code>**not bold**</code>')
+    expect(html('`**not accented**`')).toContain('<code>**not accented**</code>')
   })
 
   it('should render an external markdown link as an anchor', () => {
@@ -75,10 +83,6 @@ describe('renderRichText()', () => {
     expect(out).not.toContain('javascript')
     expect(out).not.toContain('<a')
     expect(out).toContain('click')
-  })
-
-  it('should render whitelisted inline html', () => {
-    expect(html('Ship <strong>fast</strong>')).toContain('<strong>fast</strong>')
   })
 
   it('should keep the class attribute on a whitelisted tag', () => {
@@ -133,8 +137,8 @@ describe('renderRichText()', () => {
     expect(html('<span   class="x"   >hi</span>')).toContain('<span class="x">hi</span>')
   })
 
-  it('should nest markup inside an accent span', () => {
-    expect(html('==Zero `dev` Effort==')).toContain('<code>dev</code>')
+  it('should nest markup inside an accent', () => {
+    expect(html('**Zero `dev` Effort**')).toContain('<code>dev</code>')
   })
 
   it('should leave a stray closing tag out of the output', () => {
@@ -150,10 +154,10 @@ describe('renderRichText()', () => {
 
 describe('toPlainText()', () => {
   it('should strip accent markers', () => {
-    expect(toPlainText('Docs, ==Zero Effort==')).toBe('Docs, Zero Effort')
+    expect(toPlainText('Docs, **Zero Effort**')).toBe('Docs, Zero Effort')
   })
 
-  it('should strip bold and italic markers', () => {
+  it('should strip emphasis and italic markers', () => {
     expect(toPlainText('Ship **fast** and *typed*')).toBe('Ship fast and typed')
   })
 
@@ -180,7 +184,7 @@ describe('toPlainText()', () => {
 
 describe('hasAccentMarker()', () => {
   it('should detect an accent marker', () => {
-    expect(hasAccentMarker('Docs, ==Zero Effort==')).toBe(true)
+    expect(hasAccentMarker('Docs, **Zero Effort**')).toBe(true)
   })
 
   it('should return false without a marker', () => {
@@ -188,6 +192,10 @@ describe('hasAccentMarker()', () => {
   })
 
   it('should return false for a lone marker', () => {
-    expect(hasAccentMarker('a == b')).toBe(false)
+    expect(hasAccentMarker('a ** b')).toBe(false)
+  })
+
+  it('should not treat html strong as an explicit accent', () => {
+    expect(hasAccentMarker('Docs, <strong>Zero Effort</strong>')).toBe(false)
   })
 })

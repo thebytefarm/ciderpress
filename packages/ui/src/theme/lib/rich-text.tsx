@@ -12,8 +12,8 @@ export { hasAccentMarker, toPlainText } from './rich-text-parse.ts'
  * Render config copy as React nodes, applying an inline-only markdown
  * subset plus a whitelist of inline HTML.
  *
- * Supported: `**bold**`, `*italic*`, `` `code` ``, `==accent==`,
- * `[text](/href)`, `<br>`, and a whitelist of inline tags. Parsing and
+ * Supported: `**accent**`, `*italic*`, `` `code` ``, `[text](/href)`,
+ * `<br>`, and a whitelist of inline tags. Parsing and
  * sanitizing happen in `rich-text-parse`; this renders the resulting
  * nodes as React elements, so `dangerouslySetInnerHTML` is never
  * involved and unknown markup cannot execute.
@@ -22,7 +22,7 @@ export { hasAccentMarker, toPlainText } from './rich-text-parse.ts'
  * @returns React nodes ready to render inline
  *
  * @example
- * renderRichText('Beautiful Docs, ==Zero Effort==')
+ * renderRichText('Beautiful Docs, **Zero Effort**')
  * renderRichText('Runs on `ciderpress dev` — see [the guide](/guides).')
  */
 export function renderRichText(text: string): React.ReactNode {

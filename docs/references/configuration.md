@@ -25,24 +25,26 @@ Configuration is loaded via [c12](https://github.com/unjs/c12). Supported file f
 
 Every display string in the config accepts inline markup — no flag, no opt-in. Ciderpress parses it and drops anything unsafe.
 
-| Syntax          | Renders                                        |
-| --------------- | ---------------------------------------------- |
-| `**bold**`      | `<strong>`                                     |
-| `*italic*`      | `<em>`                                         |
-| `` `code` ``    | inline `<code>`, sized to the surrounding text |
-| `==accent==`    | brand-coloured span                            |
-| `[text](/href)` | link, SPA-routed when internal                 |
-| `<br>`          | line break                                     |
+| Syntax                   | Renders                                         |
+| ------------------------ | ----------------------------------------------- |
+| `**emphasis**`           | bold **and** brand-coloured — the accent        |
+| `*italic*`               | `<em>`                                          |
+| `` `code` ``             | inline `<code>`, sized to the surrounding text  |
+| `[text](/href)`          | link, SPA-routed when internal                  |
+| `<br>`                   | line break                                      |
+| `<strong>plain</strong>` | bold with no colour, when you want weight alone |
+
+There is one emphasis rule: **`**` is the accent.** A heading is already bold, so weight by itself would say nothing there — `**` colours the phrase instead, in headings and body copy alike. Reach for `<strong>` on the rare occasion you want bold without the colour.
 
 Inline HTML is allowed for `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class`, `title`, and (on `<a>`) `href` attributes.
 
 ```ts
 home: {
   hero: {
-    tagline: 'Point it at your `markdown`. **No restructuring.**',
+    tagline: 'Point it at your `markdown`. <strong>No restructuring.</strong>',
   },
   blocks: [
-    { type: 'split', title: 'One config, ==validated at boot==' },
+    { type: 'split', title: 'One config, **validated at boot**' },
     { type: 'cta', body: 'Questions? [Open an issue](https://github.com/acme/docs/issues).' },
   ],
 }
@@ -64,20 +66,20 @@ Block markdown — lists, headings, blockquotes, tables — is **not** supported
 The same string is stripped to bare text wherever markup cannot render: `<title>`, `<meta name="description">`, Open Graph tags, `aria-label`s, and image `alt` text. One value serves both.
 
 ```ts
-description: 'Beautiful Docs, ==Zero Effort==',
-// hero headline → Beautiful Docs, <span class="cp-accent">Zero Effort</span>
+description: 'Beautiful Docs, **Zero Effort**',
+// hero headline → Beautiful Docs, <strong class="cp-accent">Zero Effort</strong>
 // <meta name="description"> → Beautiful Docs, Zero Effort
 ```
 
 ### Hero title accent
 
-The hero headline accents its trailing half automatically. Add `==accent==` anywhere in the title to take that over and accent exactly what you marked:
+The hero headline accents its trailing half automatically. Bold anything in the title and that guess steps aside — you get exactly what you marked:
 
 ```ts
 // automatic — trailing half is accented
 description: 'Beautiful Docs, Zero Effort',
 // explicit — only the marked words
-description: 'Beautiful ==Docs==, Zero Effort',
+description: 'Beautiful **Docs**, Zero Effort',
 ```
 
 ### Escape hatch

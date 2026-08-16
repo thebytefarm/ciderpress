@@ -357,13 +357,13 @@ function toHeading(block: FrontmatterHeading): FrontmatterHeading {
  *
  * Two modes, so the default is good and the override is exact:
  *
- * - **explicit** — a title carrying `==accent==` accents precisely what
- *   the author marked, and nothing else
+ * - **explicit** — a title carrying `**emphasis**` accents precisely
+ *   what the author marked, and nothing else
  * - **automatic** — otherwise the trailing half of the words is
  *   accented, the long-standing behaviour
  *
- * Either way the copy runs through the inline renderer, so bold, code,
- * and links work in a title regardless of which mode applies.
+ * Either way the copy runs through the inline renderer, so code and
+ * links work in a title regardless of which mode applies.
  *
  * @private
  * @param raw - The raw title string from frontmatter.

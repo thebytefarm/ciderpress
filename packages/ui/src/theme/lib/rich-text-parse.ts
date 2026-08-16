@@ -40,8 +40,9 @@ const STRIPPED_TAGS: ReadonlySet<string> = new Set([
 ])
 
 /**
- * Accent span class. `==text==` is the explicit form of the hero
- * title's automatic accent.
+ * Accent class. `**text**` is emphasis in display copy, and emphasis
+ * here means the brand colour — a heading is already bold, so weight
+ * alone would say nothing.
  */
 export const ACCENT_CLASS = 'cp-accent'
 
@@ -54,7 +55,7 @@ export const ACCENT_CLASS = 'cp-accent'
 // the classic backtracking blowup, and the trailing `/` of a
 // self-closing tag is cheaper to read off the captured text.
 const TOKEN_PATTERN =
-  /(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:==([\s\S]+?)==)|(?:\*([^*\n]+?)\*)|(?:\[([^\]]*)\]\(([^)\s]+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>)/
+  /(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:\*([^*\n]+?)\*)|(?:\[([^\]]*)\]\(([^)\s]+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>)/
 
 const ATTR_PATTERN = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
 
@@ -81,8 +82,9 @@ export type InlineNode =
  * Parse config copy into inline nodes, applying an inline-only markdown
  * subset plus a whitelist of inline HTML.
  *
- * Supported: `**bold**`, `*italic*`, `` `code` ``, `==accent==`,
- * `[text](/href)`, `<br>`, and the tags in {@link ALLOWED_TAGS}. Links
+ * Supported: `**accent**`, `*italic*`, `` `code` ``, `[text](/href)`,
+ * `<br>`, and the tags in {@link ALLOWED_TAGS}. Use `<strong>` or
+ * `<b>` for bold that is not brand-coloured. Links
  * are validated with {@link safeUrl}, so `javascript:` and friends are
  * dropped. Unknown tags are unwrapped and dangerous ones removed whole,
  * so a renderer never has to trust the input.
@@ -94,7 +96,7 @@ export type InlineNode =
  * @returns Parsed inline nodes in source order
  *
  * @example
- * parseRichText('Docs, ==Zero Effort==')
+ * parseRichText('Docs, **Zero Effort**')
  */
 export function parseRichText(text: string): readonly InlineNode[] {
   if (typeof text !== 'string' || text.length === 0) {
@@ -106,23 +108,23 @@ export function parseRichText(text: string): readonly InlineNode[] {
 /**
  * Strip inline markup, returning bare text. Use for values that land
  * where elements cannot go — `<title>`, `<meta>` content, `alt` /
- * `aria-label`, and the search index — so `==Zero== Effort` reads as
+ * `aria-label`, and the search index — so `**Zero** Effort` reads as
  * `Zero Effort` instead of leaking its markers.
  *
  * @param text - Raw string from config or frontmatter
  * @returns The same copy with markup removed
  *
  * @example
- * toPlainText('Beautiful Docs, ==Zero Effort==') // → 'Beautiful Docs, Zero Effort'
+ * toPlainText('Beautiful Docs, **Zero Effort**') // → 'Beautiful Docs, Zero Effort'
  */
 export function toPlainText(text: string): string {
   return flattenNodes(parseRichText(text))
 }
 
 /**
- * Whether copy carries an explicit `==accent==` span. The hero title
- * uses this to choose between its positional auto-accent and the
- * author's explicit one.
+ * Whether copy carries an explicit `**accent**`. The hero title uses
+ * this to choose between its positional auto-accent and the author's
+ * explicit one.
  *
  * @param text - Raw string from config or frontmatter
  * @returns True when an accent marker is present
@@ -131,7 +133,7 @@ export function hasAccentMarker(text: string): boolean {
   if (typeof text !== 'string') {
     return false
   }
-  return /==[\s\S]+?==/.test(text)
+  return /\*\*[\s\S]+?\*\*/.test(text)
 }
 
 /**
@@ -192,7 +194,7 @@ interface TokenStep {
  * @returns Nodes and the remaining input
  */
 function consumeToken(found: RegExpExecArray, after: string): TokenStep {
-  const [, code, bold, accent, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
+  const [, code, bold, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
   // Sequential guards rather than a `match` on the group tuple: the
   // groups are independent `string | undefined` slots, so matching one
   // tells the compiler nothing useful about the others.
@@ -200,10 +202,7 @@ function consumeToken(found: RegExpExecArray, after: string): TokenStep {
     return { nodes: [codeNode(code)], rest: after }
   }
   if (bold !== undefined) {
-    return { nodes: [element('strong', parseInline(bold))], rest: after }
-  }
-  if (accent !== undefined) {
-    return { nodes: [accentNode(parseInline(accent))], rest: after }
+    return { nodes: [accentNode(parseInline(bold))], rest: after }
   }
   if (italic !== undefined) {
     return { nodes: [element('em', parseInline(italic))], rest: after }
@@ -425,14 +424,15 @@ function codeNode(value: string): InlineNode {
 }
 
 /**
- * Build an accent span node.
+ * Build an accent node — bold *and* brand-coloured, so it reads as
+ * emphasis in body copy and as the accent phrase in a heading.
  *
  * @private
  * @param children - Parsed contents
  * @returns Accent element node
  */
 function accentNode(children: readonly InlineNode[]): InlineNode {
-  return { kind: 'element', tag: 'span', className: ACCENT_CLASS, children }
+  return { kind: 'element', tag: 'strong', className: ACCENT_CLASS, children }
 }
 
 /**
