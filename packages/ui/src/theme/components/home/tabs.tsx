@@ -3,6 +3,7 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 import { Tab, TabList, TabPanel, Tabs } from 'react-aria-components'
 
+import { renderRichText, toPlainText } from '../../lib/rich-text.tsx'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 import { CardIcon } from '../shared/card-icon'
@@ -132,8 +133,9 @@ export function HomeTabs(props: HomeTabsProps): React.ReactElement | null {
   const sectionClass = match(reverse ?? false)
     .with(true, () => `cp-tabs cp-tabs--${axis} cp-tabs--reverse`)
     .otherwise(() => `cp-tabs cp-tabs--${axis}`)
+  // aria-label takes a bare string — strip any markup the title carries.
   const listLabel = match(title)
-    .with(P.string, (t) => t)
+    .with(P.string, (t) => toPlainText(t))
     .otherwise(() => 'Highlights')
 
   return (
@@ -144,7 +146,7 @@ export function HomeTabs(props: HomeTabsProps): React.ReactElement | null {
           {list.map((item, index) => (
             <Tab key={`${item.label}-${index}`} id={String(index)} className="cp-tabs__tab">
               {renderTabIcon(item.icon)}
-              <span className="cp-tabs__tab-label">{item.label}</span>
+              <span className="cp-tabs__tab-label">{renderRichText(item.label)}</span>
             </Tab>
           ))}
         </TabList>
@@ -192,13 +194,17 @@ function renderHead(head: TabsHead): React.ReactElement | null {
   return (
     <div className="cp-feature-section-head">
       {match(eyebrow)
-        .with(P.string, (e) => <div className="cp-feature-section-head__eyebrow">{e}</div>)
+        .with(P.string, (e) => (
+          <div className="cp-feature-section-head__eyebrow">{renderRichText(e)}</div>
+        ))
         .otherwise(() => null)}
       {match(title)
-        .with(P.string, (t) => <h2 className="cp-feature-section-head__title">{t}</h2>)
+        .with(P.string, (t) => (
+          <h2 className="cp-feature-section-head__title">{renderRichText(t)}</h2>
+        ))
         .otherwise(() => null)}
       {match(body)
-        .with(P.string, (s) => <p className="cp-feature-section-head__sub">{s}</p>)
+        .with(P.string, (s) => <p className="cp-feature-section-head__sub">{renderRichText(s)}</p>)
         .otherwise(() => null)}
     </div>
   )
@@ -252,9 +258,9 @@ function renderPanelCopy(item: HomeTabEntry): React.ReactElement {
 
   return (
     <div className="cp-tabs__copy">
-      <h3 className="cp-tabs__title">{heading}</h3>
+      <h3 className="cp-tabs__title">{renderRichText(heading)}</h3>
       {match(item.body)
-        .with(P.string, (b) => <p className="cp-tabs__body">{b}</p>)
+        .with(P.string, (b) => <p className="cp-tabs__body">{renderRichText(b)}</p>)
         .otherwise(() => null)}
       {match(bullets.length === 0)
         .with(true, () => null)
@@ -263,7 +269,7 @@ function renderPanelCopy(item: HomeTabEntry): React.ReactElement {
             {bullets.map((bullet) => (
               <li key={bullet}>
                 <span className="cp-tabs__check">✓</span>
-                <span>{bullet}</span>
+                <span>{renderRichText(bullet)}</span>
               </li>
             ))}
           </ul>

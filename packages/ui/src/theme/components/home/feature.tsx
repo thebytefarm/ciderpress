@@ -2,6 +2,7 @@ import type { TruncateConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
@@ -56,9 +57,9 @@ export function HomeFeature(props: HomeFeatureProps): React.ReactElement | null 
       (list) => (
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
-            <div className="cp-feature-section-head__eyebrow">{headingEyebrow}</div>
-            <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
-            <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
+            <div className="cp-feature-section-head__eyebrow">{renderRichText(headingEyebrow)}</div>
+            <h2 className="cp-feature-section-head__title">{renderRichText(headingTitle)}</h2>
+            <p className="cp-feature-section-head__sub">{renderRichText(headingSubtitle)}</p>
           </div>
           <div className="cp-feature-grid" style={gridStyle}>
             {list.map((f, i) => renderFeature(f, i, truncate))}

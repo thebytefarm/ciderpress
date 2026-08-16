@@ -40,6 +40,7 @@ import { readJs } from './head/read.ts'
 import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
+import { toPlainText } from './theme/lib/rich-text-parse.ts'
 
 interface CreateRspressConfigOptions {
   readonly config: CiderpressConfig
@@ -232,8 +233,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     llms: true,
 
-    title: config.title ?? 'ciderpress',
-    description: config.description ?? 'Documentation',
+    // Markup is allowed in config copy, but these land in `<title>`
+    // and `<meta name="description">`, which take bare text.
+    title: toPlainText(config.title ?? 'ciderpress'),
+    description: toPlainText(config.description ?? 'Documentation'),
 
     icon: resolveFaviconPath(favicon),
     // `<HeaderLogo />` paints the visible brand inside `cp-header-logo`

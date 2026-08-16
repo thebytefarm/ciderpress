@@ -23,6 +23,7 @@ import './styles/layers.css'
 import './styles/overrides/fonts.css'
 import './styles/overrides/tokens.css'
 import './styles/overrides/rspress.css'
+import './styles/rich-text.css'
 // Theme color palettes — scoped via [data-cp-theme][data-cp-variant] selectors.
 // `mulled.css` ships first because it is `DEFAULT_THEME_NAME` — its rules emit
 // the `:root { ... }` FOUC fallback that paints before JS hydrates the
@@ -107,6 +108,8 @@ export type { TrustStripProps } from './components/home/trust-strip'
 export { HomeSplit } from './components/home/split'
 export type { SplitProps, SplitAction } from './components/home/split'
 export { HomeTabs } from './components/home/tabs'
+export { RichText, renderRichText } from './lib/rich-text.tsx'
+export { hasAccentMarker, toPlainText } from './lib/rich-text-parse.ts'
 export type { HomeTabsProps, HomeTabEntry, TabsAction } from './components/home/tabs'
 export { CTA } from './components/home/cta'
 export type { CTAProps } from './components/home/cta'

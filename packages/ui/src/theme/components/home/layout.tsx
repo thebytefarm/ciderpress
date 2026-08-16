@@ -3,6 +3,7 @@ import { useFrontmatter } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import React from 'react'
 
+import { hasAccentMarker, renderRichText } from '../../lib/rich-text.tsx'
 import { SiteFooter } from '../footer/site-footer'
 import { CTA } from './cta'
 import { HomeFeature } from './feature'
@@ -154,9 +155,9 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     .with(undefined, () => null)
     .otherwise((h) => (
       <Hero
-        eyebrow={h.label}
+        eyebrow={renderRichText(h.label ?? '')}
         title={renderTitle(h.text ?? h.name ?? '')}
-        tagline={h.tagline}
+        tagline={renderRichText(h.tagline ?? '')}
         actions={mapButtonsToHeroActions(h.actions)}
         demo={heroDemoEl}
       />
@@ -209,8 +210,8 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
     .with({ type: 'split' }, (b) => (
       <HomeSplit
         eyebrow={b.label}
-        title={b.title}
-        body={b.body}
+        title={renderRichText(b.title)}
+        body={renderRichText(b.body ?? '')}
         bullets={b.bullets ?? []}
         action={mapButtonToAction(b.cta)}
         reverse={b.reverse}
@@ -237,8 +238,8 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
         .otherwise(() => (
           <CTA
             eyebrow={b.label}
-            title={b.title ?? ''}
-            subtitle={b.body}
+            title={renderRichText(b.title ?? '')}
+            subtitle={renderRichText(b.body ?? '')}
             actions={mapButtonsToHeroActions(b.actions)}
           />
         ))
@@ -352,36 +353,43 @@ function toHeading(block: FrontmatterHeading): FrontmatterHeading {
 }
 
 /**
- * Render a hero title with the trailing segment styled as a gradient.
+ * Render a hero title, accenting part of it in the brand colour.
  *
- * Splits the title on its last word break and wraps the tail in
- * `<span className="cp-hero__grad">`. When the title is a single word
- * (or empty), it renders verbatim.
+ * Two modes, so the default is good and the override is exact:
+ *
+ * - **explicit** — a title carrying `==accent==` accents precisely what
+ *   the author marked, and nothing else
+ * - **automatic** — otherwise the trailing half of the words is
+ *   accented, the long-standing behaviour
+ *
+ * Either way the copy runs through the inline renderer, so bold, code,
+ * and links work in a title regardless of which mode applies.
  *
  * @private
  * @param raw - The raw title string from frontmatter.
- * @returns Title fragment with a gradient tail when applicable.
+ * @returns Title fragment.
  */
 function renderTitle(raw: string): React.ReactNode {
   const trimmed = raw.trim()
-  return match(trimmed.length === 0)
-    .with(true, () => null)
-    .otherwise(() => {
-      const words = trimmed.split(/\s+/)
-      return match(words.length <= 1)
-        .with(true, () => trimmed)
-        .otherwise(() => {
-          const tailCount = Math.max(1, Math.ceil(words.length / 2))
-          const headWords = words.slice(0, words.length - tailCount).join(' ')
-          const tailWords = words.slice(words.length - tailCount).join(' ')
-          return (
-            <>
-              {headWords}
-              <span className="cp-hero__grad"> {tailWords}</span>
-            </>
-          )
-        })
-    })
+  if (trimmed.length === 0) {
+    return null
+  }
+  if (hasAccentMarker(trimmed)) {
+    return renderRichText(trimmed)
+  }
+  const words = trimmed.split(/\s+/)
+  if (words.length <= 1) {
+    return renderRichText(trimmed)
+  }
+  const tailCount = Math.max(1, Math.ceil(words.length / 2))
+  const headWords = words.slice(0, words.length - tailCount).join(' ')
+  const tailWords = words.slice(words.length - tailCount).join(' ')
+  return (
+    <>
+      {renderRichText(headWords)}
+      <span className="cp-hero__grad"> {renderRichText(tailWords)}</span>
+    </>
+  )
 }
 
 /**

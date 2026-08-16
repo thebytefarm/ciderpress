@@ -1,6 +1,7 @@
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
@@ -81,7 +82,7 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
           {match(eyebrow)
             .with(undefined, () => null)
             .otherwise((e) => (
-              <div className="cp-split__eyebrow">{e}</div>
+              <div className="cp-split__eyebrow">{renderRichText(e)}</div>
             ))}
           <h2 className="cp-split__title">{title}</h2>
           {match(body)
@@ -96,7 +97,7 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
                 {list.map((bullet) => (
                   <li key={bullet}>
                     <span className="cp-split__check">✓</span>
-                    <span>{bullet}</span>
+                    <span>{renderRichText(bullet)}</span>
                   </li>
                 ))}
               </ul>

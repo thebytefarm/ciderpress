@@ -1,6 +1,7 @@
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 import type { HeroAction } from './hero'
@@ -41,7 +42,7 @@ export function CTA(props: CTAProps): React.ReactElement {
     <section className="cp-cta">
       <div className="cp-cta__inner">
         {match(eyebrow)
-          .with(P.string, (e) => <div className="cp-cta__eyebrow">{e}</div>)
+          .with(P.string, (e) => <div className="cp-cta__eyebrow">{renderRichText(e)}</div>)
           .otherwise(() => null)}
         <h2 className="cp-cta__title">{title}</h2>
         {match(subtitle)

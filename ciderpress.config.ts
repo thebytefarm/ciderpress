@@ -3,7 +3,7 @@ import { createElement } from 'react'
 
 export default defineConfig({
   title: 'ciderpress',
-  description: 'Beautiful Docs, Zero Effort',
+  description: 'Beautiful Docs, ==Zero Effort==',
   version: 'v1.0',
   theme: {
     themes: ['honeycrisp'],
@@ -47,7 +47,7 @@ export default defineConfig({
     hero: {
       label: '★ open source · v0.5 · MIT',
       tagline:
-        'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
+        'An opinionated documentation framework for monorepos. **No restructuring**, no plugins, no theme wiring — just point it at your `markdown`.',
       actions: [
         {
           variant: 'primary',
@@ -136,7 +136,7 @@ export default defineConfig({
       {
         type: 'tabs',
         label: 'Capabilities',
-        title: 'Pick a thread, follow it through.',
+        title: 'Pick a ==thread==, follow it through.',
         body: 'Every band below is one config block away.',
         orientation: 'vertical',
         items: [

@@ -4,6 +4,7 @@ import type React from 'react'
 
 import { useCiderpress } from '../../hooks/use-ciderpress'
 import type { WorkspaceCardData, WorkspaceGroupData } from '../../hooks/use-ciderpress'
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { WorkspaceCard } from '../workspaces/card'
 import { WorkspaceGrid } from '../workspaces/grid'
 
@@ -101,13 +102,17 @@ function renderHeading(
   return (
     <div className="cp-feature-section-head">
       {match(label)
-        .with(P.string, (e) => <div className="cp-feature-section-head__eyebrow">{e}</div>)
+        .with(P.string, (e) => (
+          <div className="cp-feature-section-head__eyebrow">{renderRichText(e)}</div>
+        ))
         .otherwise(() => null)}
       {match(title)
-        .with(P.string, (t) => <h2 className="cp-feature-section-head__title">{t}</h2>)
+        .with(P.string, (t) => (
+          <h2 className="cp-feature-section-head__title">{renderRichText(t)}</h2>
+        ))
         .otherwise(() => null)}
       {match(body)
-        .with(P.string, (s) => <p className="cp-feature-section-head__sub">{s}</p>)
+        .with(P.string, (s) => <p className="cp-feature-section-head__sub">{renderRichText(s)}</p>)
         .otherwise(() => null)}
     </div>
   )

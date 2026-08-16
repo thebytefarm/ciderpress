@@ -1,6 +1,8 @@
 import { match } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
+
 import './trust-strip.css'
 
 export interface TrustStripProps {
@@ -28,10 +30,10 @@ export function TrustStrip(props: TrustStripProps): React.ReactElement | null {
     .otherwise(() => (
       <section className="cp-trust">
         <div className="cp-trust__row">
-          <span className="cp-trust__lead">{lead}</span>
+          <span className="cp-trust__lead">{renderRichText(lead)}</span>
           {names.map((name, i) => (
             <span key={`${name}:${i}`} className="cp-trust__item">
-              <span className="cp-trust__name">{name}</span>
+              <span className="cp-trust__name">{renderRichText(name)}</span>
               {match(i < names.length - 1)
                 .with(true, () => <span className="cp-trust__sep">·</span>)
                 .otherwise(() => null)}

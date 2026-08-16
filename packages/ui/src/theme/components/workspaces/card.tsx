@@ -1,6 +1,7 @@
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { Card } from '../shared/card'
 import { CardIcon } from '../shared/card-icon'
 import type { CardIconInput } from '../shared/resolve-card-icon'
@@ -93,7 +94,7 @@ export function WorkspaceCard({
         className={clampClass('cp-workspace-card__desc', descriptionLines)}
         style={clampStyle(descriptionLines)}
       >
-        {d}
+        {renderRichText(d)}
       </span>
     ))
     .otherwise(() => null)
@@ -122,7 +123,7 @@ export function WorkspaceCard({
               className={clampClass('cp-workspace-card__name', titleLines)}
               style={clampStyle(titleLines)}
             >
-              {name}
+              {renderRichText(name)}
             </span>
           </div>
         </div>

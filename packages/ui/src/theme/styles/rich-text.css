@@ -1,0 +1,69 @@
+/**
+ * Rich text — inline markup rendered from config copy.
+ *
+ * Config strings run through the inline renderer, so any display copy
+ * can carry `**bold**`, `*italic*`, `` `code` ``, `==accent==`, links,
+ * and a whitelist of inline HTML. These rules keep that markup legible
+ * inside headings and body copy alike, where the document-level
+ * typography does not reach.
+ */
+
+/* Accent span — the explicit form of the hero title's auto-accent. */
+.cp-accent {
+  color: var(--cp-c-brand-1);
+}
+
+/* Inline code in display copy: the document code style is tuned for
+   prose, so scale it to the surrounding text instead. */
+.cp-hero__title code,
+.cp-hero__tagline code,
+.cp-split__title code,
+.cp-split__body code,
+.cp-tabs__title code,
+.cp-tabs__body code,
+.cp-cta__title code,
+.cp-cta__sub code,
+.cp-feature-section-head__title code,
+.cp-feature-section-head__sub code {
+  font-family: var(--cp-font-family-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: var(--cp-radius-xs);
+  background: var(--cp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+}
+
+/* Links inside display copy inherit their surroundings and pick up the
+   brand colour, rather than the document link treatment. */
+.cp-hero__tagline a,
+.cp-split__body a,
+.cp-tabs__body a,
+.cp-cta__sub a,
+.cp-feature-section-head__sub a {
+  color: var(--cp-c-brand-1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* A heading link should not shout — keep the heading colour, mark it
+   with an underline only. */
+.cp-hero__title a,
+.cp-split__title a,
+.cp-tabs__title a,
+.cp-cta__title a,
+.cp-feature-section-head__title a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* `<mark>` defaults to a yellow browser highlight — retint it. */
+.cp-accent mark,
+.cp-hero__title mark,
+.cp-split__body mark,
+.cp-tabs__body mark {
+  background: var(--cp-c-brand-soft);
+  color: var(--cp-c-text-1);
+  padding: 0.05em 0.25em;
+  border-radius: var(--cp-radius-xs);
+}
