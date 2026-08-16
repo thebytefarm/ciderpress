@@ -4,7 +4,7 @@
 
 Config copy now accepts inline markup — always on, no flag.
 
-Any display string in `ciderpress.config.ts` can carry `**accent**`, `==highlight==`, `*italic*`, `` `code` ``, `[links](/href)`, `<br>`, and a whitelist of inline HTML tags (`b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, `ins`) keeping only their `class`, `title`, and `href` attributes.
+Any display string in `ciderpress.config.ts` can carry `**accent**`, `==highlight==`, `*italic*`, `` `code` ``, `[links](/href)`, `<br>`, and a whitelist of inline HTML tags (`a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, `ins`) keeping only their `class`, `title`, and `href` attributes.
 
 `**` is the accent — bold _and_ brand-coloured — because a heading is already bold, so weight alone would say nothing there. `==` is a highlight (tinted `<mark>`), matching Obsidian / Typora / markdown-it-mark rather than being redefined. Use `<strong>` for bold without the colour.
 

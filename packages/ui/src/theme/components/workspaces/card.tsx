@@ -66,7 +66,6 @@ export function WorkspaceCard({
   titleLines,
   descriptionLines,
 }: WorkspaceCardProps): React.ReactElement {
-  const name = title.toLowerCase()
   const resolved = resolveCardIcon(icon)
 
   const iconEl = match(resolved)
@@ -123,7 +122,7 @@ export function WorkspaceCard({
               className={clampClass('cp-workspace-card__name', titleLines)}
               style={clampStyle(titleLines)}
             >
-              {renderRichText(name)}
+              {renderRichText(title)}
             </span>
           </div>
         </div>

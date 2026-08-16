@@ -133,14 +133,43 @@ export function toPlainText(text: string): string {
  * this to choose between its positional auto-accent and the author's
  * explicit one.
  *
+ * Derived from the parsed nodes rather than a raw regex: markers inside
+ * a code span are literal text, and treating them as an accent would
+ * suppress the hero's automatic one while rendering no accent at all.
+ *
  * @param text - Raw string from config or frontmatter
- * @returns True when an accent marker is present
+ * @returns True when an accent element is present
  */
 export function hasAccentMarker(text: string): boolean {
-  if (typeof text !== 'string') {
-    return false
-  }
-  return /\*\*[\s\S]+?\*\*/.test(text)
+  return containsAccent(parseRichText(text))
+}
+
+/**
+ * Whether copy is entirely unmarked text. Callers that slice a string
+ * before rendering it — the hero's positional accent, for one — must
+ * not cut through markup, so they use this to bail out.
+ *
+ * @param text - Raw string from config or frontmatter
+ * @returns True when parsing yields nothing but text
+ */
+export function isPlainText(text: string): boolean {
+  return parseRichText(text).every((node) => node.kind === 'text')
+}
+
+/**
+ * Whether any node in the tree is an accent element.
+ *
+ * @private
+ * @param nodes - Parsed inline nodes
+ * @returns True when an accent element is present at any depth
+ */
+function containsAccent(nodes: readonly InlineNode[]): boolean {
+  return nodes.some((node) =>
+    match(node)
+      .with({ kind: 'element' }, (n) => n.className === ACCENT_CLASS || containsAccent(n.children))
+      .with({ kind: 'link' }, (n) => containsAccent(n.children))
+      .otherwise(() => false)
+  )
 }
 
 /**
@@ -162,7 +191,7 @@ function parseInline(input: string): readonly InlineNode[] {
   }
   const lead = input.slice(0, found.index)
   const after = input.slice(found.index + found[0].length)
-  const step = consumeToken(found, after)
+  const step = consumeToken({ found, after })
   return [...textNodes(lead), ...step.nodes, ...parseInline(step.rest)]
 }
 
@@ -193,14 +222,23 @@ interface TokenStep {
 }
 
 /**
+ * Parameters for {@link consumeToken}.
+ *
+ * @private
+ */
+interface ConsumeTokenParams {
+  readonly found: RegExpExecArray
+  readonly after: string
+}
+
+/**
  * Convert one token match into nodes.
  *
  * @private
- * @param found - Match produced by {@link TOKEN_PATTERN}
- * @param after - Input following the match
+ * @param params - The token match and the input following it
  * @returns Nodes and the remaining input
  */
-function consumeToken(found: RegExpExecArray, after: string): TokenStep {
+function consumeToken({ found, after }: ConsumeTokenParams): TokenStep {
   const [, code, bold, highlight, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
   // Sequential guards rather than a `match` on the group tuple: the
   // groups are independent `string | undefined` slots, so matching one
@@ -215,10 +253,10 @@ function consumeToken(found: RegExpExecArray, after: string): TokenStep {
     return { nodes: [markNode(parseInline(highlight))], rest: after }
   }
   if (italic !== undefined) {
-    return { nodes: [element('em', parseInline(italic))], rest: after }
+    return { nodes: [element({ tag: 'em', children: parseInline(italic) })], rest: after }
   }
   if (linkHref !== undefined) {
-    return { nodes: linkNodes(linkText ?? '', linkHref), rest: after }
+    return { nodes: linkNodes({ text: linkText ?? '', href: linkHref }), rest: after }
   }
   if (tagName !== undefined) {
     const tail = (rawAttrs ?? '').trimEnd()
@@ -275,10 +313,10 @@ function consumeTag(params: ConsumeTagParams): TokenStep {
     return { nodes: [{ kind: 'break' }], rest: after }
   }
   if (isSelfClosing) {
-    return { nodes: selfClosingNodes(tagName, attrs), rest: after }
+    return { nodes: selfClosingNodes({ tagName, attrs }), rest: after }
   }
 
-  const close = findClosingTag(after, tagName)
+  const close = findClosingTag({ text: after, tagName })
   if (close === null) {
     // Unterminated: drop the rest outright for dangerous tags so their
     // body never paints, otherwise just unwrap the opener.
@@ -294,12 +332,22 @@ function consumeTag(params: ConsumeTagParams): TokenStep {
     return { nodes: [], rest }
   }
   if (tagName === 'a') {
-    return { nodes: anchorNodes(attrs, parseInline(inner)), rest }
+    return { nodes: anchorNodes({ attrs, children: parseInline(inner) }), rest }
   }
   if (ALLOWED_TAGS.has(tagName)) {
-    return { nodes: [taggedElement(tagName, attrs, parseInline(inner))], rest }
+    return { nodes: [taggedElement({ tag: tagName, attrs, children: parseInline(inner) })], rest }
   }
   return { nodes: parseInline(inner), rest }
+}
+
+/**
+ * Parameters for {@link selfClosingNodes}.
+ *
+ * @private
+ */
+interface SelfClosingNodesParams {
+  readonly tagName: string
+  readonly attrs: string
 }
 
 /**
@@ -307,15 +355,24 @@ function consumeTag(params: ConsumeTagParams): TokenStep {
  * they render empty.
  *
  * @private
- * @param tagName - Lowercased tag name
- * @param attrs - Raw attribute text
+ * @param params - Lowercased tag name and raw attribute text
  * @returns Zero or one element nodes
  */
-function selfClosingNodes(tagName: string, attrs: string): readonly InlineNode[] {
+function selfClosingNodes({ tagName, attrs }: SelfClosingNodesParams): readonly InlineNode[] {
   if (!ALLOWED_TAGS.has(tagName)) {
     return []
   }
-  return [taggedElement(tagName, attrs, [])]
+  return [taggedElement({ tag: tagName, attrs, children: [] })]
+}
+
+/**
+ * Parameters for {@link findClosingTag}.
+ *
+ * @private
+ */
+interface FindClosingTagParams {
+  readonly text: string
+  readonly tagName: string
 }
 
 /**
@@ -325,14 +382,13 @@ function selfClosingNodes(tagName: string, attrs: string): readonly InlineNode[]
  * from a parsed tag name would compile user input into a pattern.
  *
  * @private
- * @param text - Input following the opening tag
- * @param tagName - Lowercased tag name to close
+ * @param params - Input following the opening tag, and the tag to close
  * @returns Start/end offsets of the closing tag, or null when absent
  */
-function findClosingTag(
-  text: string,
-  tagName: string
-): { readonly start: number; readonly end: number } | null {
+function findClosingTag({
+  text,
+  tagName,
+}: FindClosingTagParams): { readonly start: number; readonly end: number } | null {
   const start = text.toLowerCase().indexOf(`</${tagName}`)
   if (start < 0) {
     return null
@@ -371,17 +427,36 @@ function parseAttrs(attrs: string): {
 }
 
 /**
+ * Parameters for {@link taggedElement}.
+ *
+ * @private
+ */
+interface TaggedElementParams {
+  readonly tag: string
+  readonly attrs: string
+  readonly children: readonly InlineNode[]
+}
+
+/**
  * Build an element node from a whitelisted tag and its attributes.
  *
  * @private
- * @param tag - Lowercased tag name
- * @param attrs - Raw attribute text
- * @param children - Parsed contents
+ * @param params - Tag name, raw attribute text, and parsed contents
  * @returns Element node
  */
-function taggedElement(tag: string, attrs: string, children: readonly InlineNode[]): InlineNode {
+function taggedElement({ tag, attrs, children }: TaggedElementParams): InlineNode {
   const parsed = parseAttrs(attrs)
   return { kind: 'element', tag, className: parsed.className, title: parsed.title, children }
+}
+
+/**
+ * Parameters for {@link anchorNodes}.
+ *
+ * @private
+ */
+interface AnchorNodesParams {
+  readonly attrs: string
+  readonly children: readonly InlineNode[]
 }
 
 /**
@@ -389,11 +464,10 @@ function taggedElement(tag: string, attrs: string, children: readonly InlineNode
  * unwrapped to its text when the destination is rejected or missing.
  *
  * @private
- * @param attrs - Raw attribute text
- * @param children - Parsed contents
+ * @param params - Raw attribute text and parsed contents
  * @returns Link node, or the bare contents
  */
-function anchorNodes(attrs: string, children: readonly InlineNode[]): readonly InlineNode[] {
+function anchorNodes({ attrs, children }: AnchorNodesParams): readonly InlineNode[] {
   const { href } = parseAttrs(attrs)
   if (href === undefined) {
     return children
@@ -406,15 +480,24 @@ function anchorNodes(attrs: string, children: readonly InlineNode[]): readonly I
 }
 
 /**
+ * Parameters for {@link linkNodes}.
+ *
+ * @private
+ */
+interface LinkNodesParams {
+  readonly text: string
+  readonly href: string
+}
+
+/**
  * Nodes for a markdown link, falling back to bare text when the
  * destination fails validation.
  *
  * @private
- * @param text - Link label
- * @param href - Raw destination
+ * @param params - Link label and raw destination
  * @returns Link node, or the parsed label
  */
-function linkNodes(text: string, href: string): readonly InlineNode[] {
+function linkNodes({ text, href }: LinkNodesParams): readonly InlineNode[] {
   const safe = safeUrl(href)
   if (safe === null) {
     return parseInline(text)
@@ -458,14 +541,23 @@ function markNode(children: readonly InlineNode[]): InlineNode {
 }
 
 /**
+ * Parameters for {@link element}.
+ *
+ * @private
+ */
+interface ElementParams {
+  readonly tag: string
+  readonly children: readonly InlineNode[]
+}
+
+/**
  * Build a plain element node with no attributes.
  *
  * @private
- * @param tag - Element tag
- * @param children - Parsed contents
+ * @param params - Element tag and parsed contents
  * @returns Element node
  */
-function element(tag: string, children: readonly InlineNode[]): InlineNode {
+function element({ tag, children }: ElementParams): InlineNode {
   return { kind: 'element', tag, children }
 }
 

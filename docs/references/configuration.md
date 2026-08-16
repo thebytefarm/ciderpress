@@ -39,7 +39,7 @@ Every display string in the config accepts inline markup — no flag, no opt-in.
 
 Because inline HTML is supported, `<span class="cp-accent">text</span>` and `<mark>text</mark>` are equivalent long forms of the two markers. Useful when you want the accent on part of a word, or inside copy that already uses asterisks.
 
-Inline HTML is allowed for `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class`, `title`, and (on `<a>`) `href` attributes.
+Inline HTML is allowed for `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class`, `title`, and (on `<a>`) `href` attributes. An `<a href>` is validated exactly like a markdown link.
 
 ```ts
 home: {

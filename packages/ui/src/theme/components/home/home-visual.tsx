@@ -129,6 +129,14 @@ interface VisualTerminalProps {
  */
 function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
   const { windowTitle, command, lines } = props.config
+  // Hand-authored frontmatter bypasses the schema; a non-string here
+  // reaches React as a child and throws mid-render.
+  const commandText = match(command)
+    .with(P.string, (c) => c)
+    .otherwise(() => '')
+  const title = match(windowTitle)
+    .with(P.string, (w) => w)
+    .otherwise(() => undefined)
   // `lines` is required by the type but frontmatter is unvalidated on
   // hand-authored home pages — a missing key would otherwise throw here
   // and blank the whole page.
@@ -144,15 +152,13 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
         <span className="cp-hero-demo__dot" />
         <span className="cp-hero-demo__dot" />
         <span className="cp-hero-demo__dot" />
-        {match(windowTitle)
-          .with(undefined, () => null)
-          .otherwise((t) => (
-            <span className="cp-hero-demo__title">{t}</span>
-          ))}
+        {match(title)
+          .with(P.string, (w) => <span className="cp-hero-demo__title">{w}</span>)
+          .otherwise(() => null)}
       </div>
       <pre className="cp-hero-demo__body">
         <span className="cp-hero-demo__prompt">$ </span>
-        {command}
+        {commandText}
         {'\n\n'}
         {output.map((line, i) => (
           <TerminalLine key={`${line.kind}-${i}`} line={line} />

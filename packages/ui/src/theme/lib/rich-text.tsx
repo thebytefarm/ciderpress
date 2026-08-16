@@ -6,7 +6,7 @@ import type { InlineNode } from './rich-text-parse.ts'
 import { parseRichText } from './rich-text-parse.ts'
 import { RouteLink } from './route-link.tsx'
 
-export { hasAccentMarker, toPlainText } from './rich-text-parse.ts'
+export { hasAccentMarker, isPlainText, toPlainText } from './rich-text-parse.ts'
 
 /**
  * Render config copy as React nodes, applying an inline-only markdown

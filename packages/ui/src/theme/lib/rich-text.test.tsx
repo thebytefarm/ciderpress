@@ -1,7 +1,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, it, expect, vi } from 'vitest'
 
-import { hasAccentMarker, renderRichText, toPlainText } from './rich-text.tsx'
+import { hasAccentMarker, isPlainText, renderRichText, toPlainText } from './rich-text.tsx'
 
 // `RouteLink` pulls in Rspress's router, which resolves the
 // `virtual-routes` module only inside a real build. Stand in a plain
@@ -215,5 +215,31 @@ describe('hasAccentMarker()', () => {
 
   it('should not treat a highlight marker as an accent', () => {
     expect(hasAccentMarker('Docs, ==Zero Effort==')).toBe(false)
+  })
+
+  it('should not treat a marker inside a code span as an accent', () => {
+    expect(hasAccentMarker('Write `**bold**` for the accent')).toBe(false)
+  })
+
+  it('should detect an accent nested inside a link', () => {
+    expect(hasAccentMarker('[**Docs**](/docs)')).toBe(true)
+  })
+})
+
+describe('isPlainText()', () => {
+  it('should return true for unmarked copy', () => {
+    expect(isPlainText('Beautiful Docs, Zero Effort')).toBe(true)
+  })
+
+  it('should return false for copy carrying a link', () => {
+    expect(isPlainText('See [the guide](/guides)')).toBe(false)
+  })
+
+  it('should return false for copy carrying a code span', () => {
+    expect(isPlainText('Run `ciderpress dev`')).toBe(false)
+  })
+
+  it('should return false for copy carrying html', () => {
+    expect(isPlainText('Ship <strong>fast</strong>')).toBe(false)
   })
 })

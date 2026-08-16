@@ -3,7 +3,7 @@ import { useFrontmatter } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import React from 'react'
 
-import { hasAccentMarker, renderRichText } from '../../lib/rich-text.tsx'
+import { hasAccentMarker, isPlainText, renderRichText } from '../../lib/rich-text.tsx'
 import { SiteFooter } from '../footer/site-footer'
 import { CTA } from './cta'
 import { HomeFeature } from './feature'
@@ -359,8 +359,12 @@ function toHeading(block: FrontmatterHeading): FrontmatterHeading {
  *
  * - **explicit** — a title carrying `**emphasis**` accents precisely
  *   what the author marked, and nothing else
- * - **automatic** — otherwise the trailing half of the words is
- *   accented, the long-standing behaviour
+ * - **automatic** — a title of unmarked text accents the trailing half
+ *   of its words, the long-standing behaviour
+ *
+ * A title carrying any other markup renders as written: the automatic
+ * pass works on the raw string, so it would cut links and code spans in
+ * half.
  *
  * Either way the copy runs through the inline renderer, so code and
  * links work in a title regardless of which mode applies.
@@ -374,7 +378,10 @@ function renderTitle(raw: string): React.ReactNode {
   if (trimmed.length === 0) {
     return null
   }
-  if (hasAccentMarker(trimmed)) {
+  // The automatic accent slices the raw string, so it can only run on
+  // copy with no markup in it — splitting `[a b](/c)` or `` `a b` ``
+  // down the middle would produce two broken fragments.
+  if (hasAccentMarker(trimmed) || !isPlainText(trimmed)) {
     return renderRichText(trimmed)
   }
   const words = trimmed.split(/\s+/)

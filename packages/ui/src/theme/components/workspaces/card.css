@@ -69,6 +69,10 @@
   font-size: 15px;
   font-weight: 700;
   color: var(--cp-c-text-1);
+  /* Presentational lowercase. Done here rather than in JS because the
+     title may carry inline markup — lowercasing the source would also
+     lowercase link targets and class names inside it. */
+  text-transform: lowercase;
 }
 
 .cp-workspace-card__desc {
