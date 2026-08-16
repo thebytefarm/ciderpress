@@ -257,19 +257,24 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
 function mapButtonToAction(
   button: ButtonConfig | undefined
 ): { readonly text: string; readonly link: string; readonly theme?: 'brand' | 'alt' } | undefined {
-  return match(button)
-    .with(undefined, () => undefined)
-    .otherwise((b) => ({
-      text: b.text,
-      link: b.href,
-      theme: mapButtonVariantToHeroTheme(b.variant),
-    }))
+  if (!isButtonConfig(button)) {
+    return undefined
+  }
+  return {
+    text: button.text,
+    link: button.href,
+    theme: mapButtonVariantToHeroTheme(button.variant),
+  }
 }
 
 /**
  * Convert frontmatter tab entries into the component's entry shape. Only
  * the CTA needs work — its `ButtonConfig` becomes a `link`/`theme`
  * action; every other field passes through.
+ *
+ * Malformed entries are dropped rather than rendered: a YAML sequence
+ * with a blank item yields `null`, which would throw on the first
+ * property read.
  *
  * @private
  * @param items - Tab entries from frontmatter, possibly absent or malformed
@@ -279,7 +284,59 @@ function mapTabItems(items: readonly FrontmatterTabItem[] | undefined): readonly
   if (!Array.isArray(items)) {
     return []
   }
-  return items.map((item) => ({ ...item, cta: mapButtonToAction(item.cta) }))
+  return items.filter(isTabItem).map(toTabEntry)
+}
+
+/**
+ * Project one validated frontmatter tab entry onto the component's entry
+ * shape — only the CTA changes form.
+ *
+ * @private
+ * @param item - Validated tab entry from frontmatter
+ * @returns Component-ready tab entry
+ */
+function toTabEntry(item: FrontmatterTabItem): HomeTabEntry {
+  return {
+    label: item.label,
+    icon: item.icon,
+    title: item.title,
+    body: item.body,
+    bullets: item.bullets,
+    cta: mapButtonToAction(item.cta),
+    visual: item.visual,
+  }
+}
+
+/**
+ * Whether a frontmatter value is a usable tab entry. `label` is the one
+ * required field — it is the clickable text and the render key.
+ *
+ * @private
+ * @param value - Unvalidated entry from frontmatter
+ * @returns True when the entry can be rendered
+ */
+function isTabItem(value: unknown): value is FrontmatterTabItem {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const item = value as { label?: unknown }
+  return typeof item.label === 'string'
+}
+
+/**
+ * Whether a frontmatter value is a usable button config. Both `text` and
+ * `href` must be strings — `safeUrl` would throw on a missing `href`.
+ *
+ * @private
+ * @param value - Unvalidated button from frontmatter
+ * @returns True when the button can be rendered
+ */
+function isButtonConfig(value: unknown): value is ButtonConfig {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const button = value as { text?: unknown; href?: unknown }
+  return typeof button.text === 'string' && typeof button.href === 'string'
 }
 
 /**
@@ -340,10 +397,10 @@ function renderTitle(raw: string): React.ReactNode {
 function mapButtonsToHeroActions(
   actions: readonly ButtonConfig[] | undefined
 ): readonly HeroAction[] | undefined {
-  if (actions === undefined) {
+  if (!Array.isArray(actions)) {
     return undefined
   }
-  return actions.map((action) => ({
+  return actions.filter(isButtonConfig).map((action) => ({
     text: action.text,
     link: action.href,
     theme: mapButtonVariantToHeroTheme(action.variant),

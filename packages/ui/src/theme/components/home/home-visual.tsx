@@ -135,7 +135,7 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
   const output = match(lines)
     .with(
       P.when((l): l is readonly HomeVisualLine[] => Array.isArray(l)),
-      (l) => l
+      (l) => l.filter(isTerminalLine)
     )
     .otherwise(() => [])
   return (
@@ -162,6 +162,23 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
   )
 }
 
+/**
+ * Whether a frontmatter value is a renderable terminal line. A YAML
+ * sequence with a blank entry yields `null`, which would throw on the
+ * first property read.
+ *
+ * @private
+ * @param value - Unvalidated line from frontmatter
+ * @returns True when the line can be rendered
+ */
+function isTerminalLine(value: unknown): value is HomeVisualLine {
+  if (typeof value !== 'object' || value === null) {
+    return false
+  }
+  const line = value as { text?: unknown }
+  return typeof line.text === 'string'
+}
+
 interface TerminalLineProps {
   readonly line: HomeVisualLine
 }
@@ -175,18 +192,19 @@ interface TerminalLineProps {
  * @returns Glyph-prefixed line followed by a newline
  */
 function TerminalLine(props: TerminalLineProps): React.ReactElement {
+  // `kind` is a union in the type but arrives unvalidated from
+  // hand-authored frontmatter — fall back to the neutral marker rather
+  // than throwing on an unknown value.
   const className = match(props.line.kind)
     .with('ok', () => 'cp-hero-demo__ok')
-    .with('info', () => 'cp-hero-demo__info')
     .with('cmt', () => 'cp-hero-demo__cmt')
     .with('err', () => 'cp-hero-demo__err')
-    .exhaustive()
+    .otherwise(() => 'cp-hero-demo__info')
   const glyph = match(props.line.kind)
     .with('ok', () => ' ✓')
-    .with('info', () => ' ▸')
     .with('cmt', () => ' ↻')
     .with('err', () => ' ✗')
-    .exhaustive()
+    .otherwise(() => ' ▸')
   return (
     <>
       <span className={className}>{glyph}</span> {props.line.text}
