@@ -186,7 +186,7 @@ export default defineConfig({
               type: 'code',
               language: 'ts',
               code: `theme: {
-  themes: ['mulled', 'orchard', 'press'],
+  themes: ['honeycrisp', 'mulled', 'midnight'],
   defaultVariant: 'dark',
 }`,
             },
