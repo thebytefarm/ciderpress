@@ -26,6 +26,25 @@ home: {
 
 Each block carries a flat `label` / `title` / `body` heading trio instead of a nested `heading` object. Omitting `home.blocks` still yields the framework default deck (auto features grid + workspace showcase); `blocks: []` renders nothing below the hero.
 
+### Proof strips take logos
+
+A `proof` block's `names` accepts either a plain string or a `ProofLogo`, and the two mix in one strip:
+
+```ts
+{
+  type: 'proof',
+  lead: 'used by',
+  names: [
+    { src: '/logos/acme.svg', alt: 'Acme', href: 'https://acme.dev', height: 22 },
+    'Globex',
+  ],
+}
+```
+
+`height` defaults to `20`. Set it per logo to optically balance marks whose aspect ratios differ, and trim each asset's `viewBox` to its artwork first: padding baked into the file shrinks the mark inside its box, so two logos set to the same height render at different sizes.
+
+`mono: true` draws a logo as a silhouette in the current text colour instead of its own palette. Reach for it when a mark's baked colours only read against one background, since ciderpress ships a light variant for every theme.
+
 ### One visual union
 
 `hero.demo` and `split.visual` now take the same `HomeVisual` — a union discriminated on a **required** `type` field:
@@ -39,6 +58,8 @@ Split bands also gain `reverse`, which flips the columns (visual left, copy righ
 ### New `tabs` block
 
 A strip of selectable tabs driving one panel — click a tab, the panel's copy and visual swap. `orientation: 'vertical'` (default) puts the strip beside the panel; `'horizontal'` runs it above. Built on react-aria-components, so arrow-key navigation and tab/tabpanel ARIA wiring are handled.
+
+A tab's `cta` renders where the axis puts it: horizontal closes the copy column, beside the visual; vertical renders it after the visual, so the button closes the panel instead of splitting the body copy from the visual.
 
 ```ts
 {
@@ -64,7 +85,7 @@ A strip of selectable tabs driving one panel — click a tab, the panel's copy a
 
 Removed from `@ciderpress/config`: `HomeSectionId`, `HomeLayoutEntry`, `DEFAULT_HOME_LAYOUT`, `HomeSectionHeading`, `HomeProofConfig`, `HomeFeaturesConfig`, `HomeShowcaseConfig`, `HomeSplitConfig`, `HomeCtaConfig`, `HomeSplitVisual`, `HomeHeroDemoConfig`, `HomeHeroDemoImage`, `HomeHeroDemoTerminal`, `HomeHeroDemoLine`.
 
-Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`, `DEFAULT_HOME_BLOCKS`.
+Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `ProofLogo`, `ProofItem`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`, `DEFAULT_HOME_BLOCKS`.
 
 Added to `@ciderpress/ui`: `HomeTabs`, `HomeTabsProps`, `HomeTabEntry`, `TabsAction`. `CTA` gains an `eyebrow` prop, and `HomeSplit`'s `visual` prop is now optional — a copy-only split renders full width instead of painting an empty frame.
 
