@@ -457,11 +457,23 @@ const homeHeroConfigSchema = z
 
 const homeColumnsSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
 
+const proofLogoSchema = z
+  .object({
+    src: z.string().min(1),
+    alt: z.string().min(1),
+    href: z.string().min(1).optional(),
+    height: z.number().positive().optional(),
+    mono: z.boolean().optional(),
+  })
+  .strict()
+
+const proofItemSchema = z.union([z.string(), proofLogoSchema])
+
 const homeProofBlockSchema = z
   .object({
     type: z.literal('proof'),
     lead: z.string().optional(),
-    names: z.array(z.string()).optional(),
+    names: z.array(proofItemSchema).optional(),
   })
   .strict()
 

@@ -2596,7 +2596,40 @@
                   "names": {
                     "type": "array",
                     "items": {
-                      "type": "string"
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "src": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "alt": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "href": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "height": {
+                              "type": "number",
+                              "exclusiveMinimum": 0
+                            },
+                            "mono": {
+                              "type": "boolean"
+                            }
+                          },
+                          "required": [
+                            "src",
+                            "alt"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
                     }
                   }
                 },

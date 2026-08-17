@@ -919,6 +919,48 @@ export interface HomeHeroConfig {
 }
 
 /**
+ * A logo rendered in the proof strip instead of a plain name.
+ */
+export interface ProofLogo {
+  /**
+   * Public URL of the logo asset (e.g. `'/logos/acme.svg'`). SVG and
+   * PNG both work; the file needs a transparent background.
+   */
+  readonly src: string
+  /**
+   * Accessible name for the logo, used as the image's alt text.
+   */
+  readonly alt: string
+  /**
+   * Optional link target. When set, the logo becomes a link.
+   */
+  readonly href?: string
+  /**
+   * Rendered height in pixels. Defaults to `20`. Use this to optically
+   * balance marks whose aspect ratios differ.
+   *
+   * Trim the asset's viewBox to its artwork first: padding baked into
+   * the file shrinks the mark inside the box, so two logos set to the
+   * same height render at different sizes.
+   */
+  readonly height?: number
+  /**
+   * Draw the logo as a silhouette in the current text color instead of
+   * its own colors. Defaults to `false`.
+   *
+   * Use this when a mark's baked palette only reads against one
+   * background — a light wordmark disappears on light themes, and
+   * ciderpress ships a light variant for every theme.
+   */
+  readonly mono?: boolean
+}
+
+/**
+ * One entry in the proof strip — either a plain name or a {@link ProofLogo}.
+ */
+export type ProofItem = string | ProofLogo
+
+/**
  * "Used by" / "Trusted by" strip, as a home block. Renders nothing when
  * `names` is empty or omitted.
  */
@@ -933,9 +975,11 @@ export interface HomeProofBlock {
    */
   readonly lead?: string
   /**
-   * Company / team names rendered as a comma-separated list after the lead.
+   * Entries rendered after the lead, in order. Plain strings render as
+   * text; {@link ProofLogo} entries render as themed logo images. The two
+   * can be mixed.
    */
-  readonly names?: readonly string[]
+  readonly names?: readonly ProofItem[]
 }
 
 /**

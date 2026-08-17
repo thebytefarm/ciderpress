@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="842" height="212" viewBox="0 0 842 212" role="img" aria-labelledby="title description">
+  <title id="title">viteval</title>
+  <desc id="description">Viteval check and sparkle icon with viteval wordmark</desc>
+  <defs>
+    <linearGradient id="viteval-check" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#4B0D6E" />
+      <stop offset="0.42" stop-color="#7B21B0" />
+      <stop offset="1" stop-color="#C05CF5" />
+    </linearGradient>
+    <path id="viteval-spark" d="M0 -1Q0 0 1 0Q0 0 0 1Q0 0 -1 0Q0 0 0 -1Z" />
+  </defs>
+
+  <g transform="translate(-20 -15)" aria-hidden="true">
+    <path
+      d="M20 115 119 199 221 115"
+      fill="none"
+      stroke="url(#viteval-check)"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="27"
+    />
+    <g fill="#F9C231">
+      <use href="#viteval-spark" transform="translate(158 68) scale(45)" />
+      <use href="#viteval-spark" transform="translate(69 39) scale(24)" />
+      <use href="#viteval-spark" transform="translate(84 104) scale(19)" />
+    </g>
+  </g>
+
+  <text
+    x="245"
+    y="175"
+    fill="#F3E8D2"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    font-size="155"
+    font-weight="700"
+    letter-spacing="-8"
+  >viteval</text>
+</svg>

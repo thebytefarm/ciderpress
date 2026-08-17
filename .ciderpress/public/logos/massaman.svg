@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="888" height="205" viewBox="0 0 888 205" role="img" aria-labelledby="title description">
+  <title id="title">massaman</title>
+  <desc id="description">Massaman curry bowl icon and massaman wordmark</desc>
+  <defs>
+    <filter id="wordmark-shadow" x="-20%" y="-30%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#090806" flood-opacity="0.28" />
+    </filter>
+  </defs>
+
+  <!--
+    Shifts the artwork onto the origin. The source viewBox was offset
+    ("30 15 1140 270") and left ~200 units of dead space on the right, so
+    the mark rendered at 76% of its declared height and sat visibly
+    smaller than the other logos in the proof strip.
+  -->
+  <g transform="translate(-80 -47)">
+
+  <svg x="50" y="30" width="240" height="240" viewBox="0 0 512 512" aria-hidden="true">
+    <defs>
+      <filter id="logo-shadow" x="-20%" y="-20%" width="140%" height="160%">
+        <feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#090806" flood-opacity="0.34" />
+      </filter>
+    </defs>
+
+    <g filter="url(#logo-shadow)" stroke="#211813" stroke-linejoin="round">
+      <path d="M65 218h382c-5 137-78 229-191 229S70 355 65 218Z" fill="#54282a" stroke-width="12" />
+      <path d="M103 358c35 44 91 69 153 69s118-25 153-69" fill="none" stroke="#8b4742" stroke-linecap="round" stroke-width="9" opacity="0.62" />
+      <ellipse cx="256" cy="220" rx="192" ry="94" fill="#dfba72" stroke-width="12" />
+      <ellipse cx="256" cy="220" rx="174" ry="76" fill="#b95732" stroke="#71301f" stroke-width="9" />
+
+      <g transform="rotate(-9 256 220)" stroke="#3d412e" stroke-linejoin="round">
+        <g transform="translate(246 221) rotate(-155) scale(1.05)">
+          <path d="M-5 0C8-18 29-17 42 0 29 17 8 18-5 0Z" fill="#69704a" stroke-width="5" />
+          <path d="M0 0H38" fill="none" stroke-linecap="round" stroke-width="5" />
+        </g>
+        <g transform="translate(260 220) rotate(-25)">
+          <path d="M-5 0C8-18 29-17 42 0 29 17 8 18-5 0Z" fill="#69704a" stroke-width="5" />
+          <path d="M0 0H38" fill="none" stroke-linecap="round" stroke-width="5" />
+        </g>
+      </g>
+    </g>
+
+    <g fill="none" stroke="#f0dfbf" stroke-linecap="round" stroke-width="7" opacity="0.88">
+      <path d="M183 129c-20-12-8-30 3-42 12-14 14-30-2-43" stroke-dasharray="11 13" />
+      <path d="M256 119c-18-17-3-31 5-43 9-14 8-28-5-40" stroke-dasharray="11 13" />
+      <path d="M329 129c20-12 8-30-3-42-12-14-14-30 2-43" stroke-dasharray="11 13" />
+    </g>
+
+    <text
+      x="256"
+      y="388"
+      fill="#f3e8d2"
+      font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+      font-size="72"
+      font-weight="600"
+      text-anchor="middle"
+    >{λ}</text>
+  </svg>
+
+  <text
+    x="285"
+    y="215"
+    fill="#f3e8d2"
+    filter="url(#wordmark-shadow)"
+    font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
+    font-size="155"
+    font-weight="700"
+    letter-spacing="-8"
+  >massaman</text>
+
+  </g>
+</svg>

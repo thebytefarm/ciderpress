@@ -60,6 +60,8 @@ export type {
   HomeBlock,
   HomeBlockType,
   HomeProofBlock,
+  ProofLogo,
+  ProofItem,
   HomeFeaturesBlock,
   HomeShowcaseBlock,
   HomeSplitBlock,
