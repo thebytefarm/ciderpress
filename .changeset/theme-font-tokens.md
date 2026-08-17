@@ -12,7 +12,7 @@ stacks.
 
 Two things caused that. Component CSS hardcoded font stacks (the feature
 card title was pinned to `Geist Pixel Square`), and the canonical tokens
-were derived *from* the hardcoded compatibility variables rather than the
+were derived _from_ the hardcoded compatibility variables rather than the
 other way round, so a theme value could never win. The dependency is now
 inverted: `--cp-font-family-*` and `--rp-font-family-*` all resolve
 through `--cp-ff-sans`, `--cp-ff-mono`, and `--cp-ff-display`.

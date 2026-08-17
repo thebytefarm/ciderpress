@@ -1,10 +1,20 @@
 import { CiderpressLogo, defineConfig } from 'ciderpress'
 import { createElement } from 'react'
 
+// Single source of truth for every version string on the site: the
+// published package's own manifest. Typing them by hand let the hero badge
+// (v0.5), the version selector (v1.0), and the actual release drift apart.
+//
+// Imported by relative path rather than as `ciderpress/package.json`,
+// because the package's `exports` map does not expose `./package.json`.
+// A JSON import rather than `readFileSync`, because this config is bundled
+// into the client build, where `node:fs` cannot resolve.
+import pkg from './packages/ciderpress/package.json'
+
 export default defineConfig({
   title: 'ciderpress',
   description: 'Beautiful Docs, **Zero Effort**',
-  version: 'v1.0',
+  version: `v${pkg.version}`,
   theme: {
     themes: ['honeycrisp'],
   },
@@ -38,16 +48,16 @@ export default defineConfig({
       { text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' },
     ],
     promo: {
-      title: 'Ship docs that stay in sync',
-      body: 'Pull docs from your codebase and keep them green automatically.',
+      title: 'Docs that follow your code',
+      body: 'Point ciderpress at markdown in your repo and the site rebuilds as you edit.',
       cta: { text: 'Try ciderpress →', href: '/getting-started/quick-start' },
     },
   },
   home: {
     hero: {
-      label: '★ open source · v0.5 · MIT',
+      label: `v${pkg.version} · MIT`,
       tagline:
-        'An opinionated documentation framework for monorepos. <strong>No restructuring</strong>, no plugins, no theme wiring — just point it at your `markdown`.',
+        'An opinionated documentation framework for monorepos. **No restructuring**, no plugins, no theme wiring. Just point it at your `markdown`.',
       actions: [
         {
           variant: 'primary',
@@ -63,7 +73,35 @@ export default defineConfig({
       {
         type: 'proof',
         lead: 'used by',
-        names: ['maltty', 'viteval', 'massaman', 'marxml'],
+        // Heights are tuned per mark, not shared: these logos range from
+        // 3.3:1 to 6.1:1, so a single height would let the widest one
+        // dominate the row.
+        names: [
+          {
+            src: '/logos/maltty.svg',
+            alt: 'maltty',
+            href: 'https://github.com/thebytefarm/maltty',
+            height: 22,
+          },
+          {
+            src: '/logos/massaman.svg',
+            alt: 'massaman',
+            href: 'https://github.com/zrosenbauer/massaman',
+            height: 22,
+          },
+          {
+            src: '/logos/marxml.png',
+            alt: 'marxml',
+            href: 'https://github.com/thebytefarm/marxml',
+            height: 15,
+          },
+          {
+            src: '/logos/viteval.svg',
+            alt: 'viteval',
+            href: 'https://github.com/viteval/viteval',
+            height: 22,
+          },
+        ],
       },
       {
         type: 'features',
@@ -71,8 +109,7 @@ export default defineConfig({
         items: [
           {
             title: 'Zero Effort',
-            description:
-              'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
+            description: 'Give it a glob. It finds your pages and builds the site around them.',
             icon: 'pixelarticons:speed-fast',
           },
           {
@@ -84,7 +121,7 @@ export default defineConfig({
           {
             title: 'AI-Friendly',
             description:
-              'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
+              'Ships an llms.txt index and serves raw markdown, so agents read the source.',
             icon: 'pixelarticons:robot',
           },
           {
@@ -106,19 +143,23 @@ export default defineConfig({
           },
         ],
       },
-      { type: 'showcase' },
+      {
+        type: 'showcase',
+        label: 'Packages',
+        title: 'Six packages, **one install**.',
+        body: 'This site documents its own source with the same card grid you get for free.',
+      },
       {
         type: 'split',
         label: 'Configuration',
-        title: 'One file. Validated. Type-safe.',
-        body: 'Define your docs site in ciderpress.config.ts. Zod validates at boot — no surprises in prod.',
+        title: 'One typed config file.',
+        body: 'Your whole site lives in `ciderpress.config.ts`. It gets validated on load, so a typo fails at startup instead of in production.',
         bullets: [
           'Type-safe config with full IntelliSense',
-          'Hot-reloads on every save',
-          'Composable presets for OpenAPI, blog, changelog',
-          'First-class i18n out of the box',
+          'Points at existing docs in place, so nothing has to move',
+          'Restarts only when it has to, most edits hot-reload',
         ],
-        cta: { variant: 'primary', text: 'Read the docs', href: '/getting-started/quick-start' },
+        cta: { variant: 'primary', text: 'Read the docs', href: '/reference/configuration' },
         visual: {
           type: 'code',
           language: 'ts',
@@ -136,15 +177,15 @@ export default defineConfig({
       {
         type: 'tabs',
         label: 'Capabilities',
-        title: 'Pick a **thread**, follow it through.',
-        body: 'Every band below is ==one config block== away.',
-        orientation: 'vertical',
+        title: 'Every one of these is **one config block**.',
+        body: 'No plugin to install, no theme to fork.',
+        orientation: 'horizontal',
         items: [
           {
             label: 'Sync engine',
             icon: { id: 'pixelarticons:reload', color: 'green' },
             title: 'Your markdown, left where it is',
-            body: 'Ciderpress reads your repo in place — no copying, no restructuring. Globs pick up new files without a config change.',
+            body: 'Ciderpress reads your repo where it sits, with no copying and no restructuring. Globs pick up new files, so adding a page means adding a file.',
             bullets: ['Glob discovery', 'Frontmatter inheritance', 'Watch mode on every save'],
             visual: {
               type: 'terminal',
@@ -212,8 +253,8 @@ export default defineConfig({
       },
       {
         type: 'cta',
-        title: 'Ship the docs your team deserves.',
-        body: 'One CLI. Three minutes. Production-ready.',
+        title: 'Point it at your docs.',
+        body: 'Run `ciderpress setup` and you have a site.',
         actions: [
           { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
           {
@@ -310,7 +351,7 @@ export default defineConfig({
       title: '@ciderpress/templates',
       icon: { id: 'pixelarticons:note', color: 'slate' },
       description:
-        'Documentation templates SDK — built-in templates, extensions, and custom registrations',
+        'Documentation templates SDK with built-in templates, extensions, and custom registrations',
       tags: ['typescript', 'liquid'],
       path: '/packages/templates',
     },
