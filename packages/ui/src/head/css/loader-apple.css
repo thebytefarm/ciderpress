@@ -171,7 +171,7 @@ html::after {
   margin-top: -14px;
   text-align: left;
   color: var(--cp-c-text-2, #888);
-  font-family: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--cp-ff-display, 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif);
   font-size: 28px;
   font-weight: 400;
   line-height: 1;

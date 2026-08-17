@@ -16,11 +16,16 @@
  */
 
 @layer ciderpress.overrides {
-  html:root {
-    /* Fonts — map Geist into Rspress's font stack */
-    --rp-font-family-base: 'Geist', ui-sans-serif, system-ui, sans-serif;
-    --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
-  }
+  /* ── Fonts — deliberately NOT set here.
+
+     Rspress declares `--rp-font-family-base` / `--rp-font-family-mono` on
+     `:root` *unlayered*, and unlayered declarations beat every cascade
+     layer regardless of selector specificity — so a `html:root` rule in
+     this layer silently lost and Rspress's Inter/Menlo defaults stayed in
+     force. Both vars are now emitted from the active theme's own unlayered
+     block (`COMPAT_VAR_MAP` in `@ciderpress/theme`), which wins on
+     specificity, with a fallback declaration in
+     `styles/overrides/tokens.css`. ─────────────────────────────────── */
 
   /* ── LLMs UI — Ciderpress mounts its own `<LlmsContainer />` inside
      `<CiderpressDocsBar />`. The H1 placement is suppressed natively

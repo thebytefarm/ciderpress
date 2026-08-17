@@ -130,8 +130,11 @@ html[data-cp-theme='arcade'][data-cp-variant='dark'] {
   --cp-radius-lg: 10px;
   --cp-radius-md-lg: 12px;
   --cp-radius-pill: 9999px;
-  --cp-ff-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --cp-ff-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
   --cp-fw-regular: 400;
   --cp-fw-medium: 500;
   --cp-fw-semibold: 600;
@@ -270,4 +273,16 @@ html[data-cp-theme='arcade'][data-cp-variant='dark'] {
   --rp-home-feature-bg: #18183d;
   --rp-home-hero-secondary-color: rgba(224, 255, 224, 0.72);
   --rp-home-hero-title-color: #e0ffe0;
+  --rp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-pixel: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 }

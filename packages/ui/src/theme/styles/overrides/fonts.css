@@ -1,10 +1,11 @@
 /**
  * Self-hosted Geist fonts (vercel/geist-font).
  *
- * `Geist` is the base sans-serif (used everywhere by default).
- * `Geist Pixel Square` is a decorative pixel font kept available via
- * `--cp-font-family-pixel` for the brand mark and any opt-in surfaces.
- * `Geist Mono` is used for code, eyebrow labels, status pills, etc.
+ * These `@font-face` rules only make the faces *available*. Which face a
+ * surface actually uses is decided by the active theme's `fonts.family`
+ * tokens — see `styles/overrides/tokens.css`. The built-in themes map
+ * `sans` and `mono` to `Geist Mono` and `display` to `Geist Pixel Square`;
+ * `Geist` (proportional) is shipped for custom themes that want it.
  */
 
 @font-face {

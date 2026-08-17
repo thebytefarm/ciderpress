@@ -243,6 +243,45 @@ export default defineConfig({
 
 The theme validates at config time and emits one `html[data-cp-theme='{name}'][data-cp-variant='{variant}']` CSS block per variant.
 
+### Fonts
+
+A theme declares three font slots under `fonts.family`. Every font on the page resolves back to one of them — there is no separate stylesheet to patch and no component-level override to write.
+
+```ts
+fonts: {
+  family: {
+    sans: "'Courier New', 'Lucida Console', Monaco, monospace",
+    mono: "'Courier New', 'Lucida Console', Monaco, monospace",
+    display: "'Press Start 2P', monospace", // optional
+  },
+  // ... weight, size
+}
+```
+
+| Slot      | Canonical variable | Surfaces                                                                              |
+| --------- | ------------------ | ------------------------------------------------------------------------------------- |
+| `sans`    | `--cp-ff-sans`     | Base UI and prose — document body, hero title/tagline/buttons, nav, sidebar, doc text |
+| `mono`    | `--cp-ff-mono`     | Code blocks, inline code, terminal chrome, OpenAPI fields, eyebrow labels             |
+| `display` | `--cp-ff-display`  | Decorative headline surfaces — feature-card titles, brand marks, loader label         |
+
+`display` is optional and falls back to `sans`, so a theme that declares only `sans` and `mono` still renders every surface in its own fonts.
+
+`sans` is the base font, not necessarily a sans-serif face — the built-in themes point it at Geist Mono so the whole site reads as a terminal surface. Pick whatever face the body copy should use.
+
+#### Compatibility variables
+
+Each theme block also emits these aliases so older rules — and Rspress's own internals — follow the active theme:
+
+| Variable                                         | Resolves to            |
+| ------------------------------------------------ | ---------------------- |
+| `--cp-font-family-base`, `--cp-font-family-sans` | `fonts.family.sans`    |
+| `--cp-font-family-mono`                          | `fonts.family.mono`    |
+| `--cp-font-family-pixel`                         | `fonts.family.display` |
+| `--rp-font-family-base`                          | `fonts.family.sans`    |
+| `--rp-font-family-mono`                          | `fonts.family.mono`    |
+
+These are emitted inside the theme's `html[data-cp-theme][data-cp-variant]` block rather than in a cascade layer. Rspress declares `--rp-font-family-*` on `:root` **unlayered**, and unlayered declarations outrank every `@layer` regardless of specificity — the theme block is the only place an override wins.
+
 ### Sharing tokens between variants
 
 Token tree shapes are identical across variants. To share spacing/radii/fonts/etc. between `dark` and `light`, use object spread:
@@ -267,16 +306,17 @@ defineTheme({
 
 ### Constraints
 
-| Constraint                     | Detail                                                                                                                                                                                                                                |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Theme `name` is a slug         | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                    |
-| Reserved names rejected        | Custom themes cannot reuse a built-in slug (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) — those slugs are owned by `@ciderpress/theme`.                                                                     |
-| At least one variant required  | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                           |
-| Token tree must be complete    | Every leaf in `CiderpressTokens` is required _per variant_. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                                                        |
-| Token values are CSS-safe      | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                |
-| `defaultVariant` must exist    | When provided, the value must point at a declared `variants.*` entry.                                                                                                                                                                 |
-| Persisted theme is validated   | When the theme switcher is enabled, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.   |
-| Persisted variant is validated | The active variant is persisted in `localStorage`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
+| Constraint                         | Detail                                                                                                                                                                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Theme `name` is a slug             | Must match `/^[a-z0-9][a-z0-9-]*$/`. Used directly in the `html[data-cp-theme='{name}']` selector.                                                                                                                                    |
+| Reserved names rejected            | Custom themes cannot reuse a built-in slug (`mulled`, `honeycrisp`, `grannysmith`, `amber`, `midnight`, `arcade`) — those slugs are owned by `@ciderpress/theme`.                                                                     |
+| At least one variant required      | `variants` must declare `dark`, `light`, or both. Empty `variants: {}` raises a `ZodError`.                                                                                                                                           |
+| Token tree must be complete        | Every leaf in `CiderpressTokens` is required _per variant_, except `fonts.family.display`. `defineTheme` validates each declared variant through `tokensSchema` and throws on missing leaves.                                         |
+| `fonts.family.display` is optional | Omit it and `defineTheme` fills it from `fonts.family.sans` before freezing the token tree, so the emitted CSS always carries a `--cp-ff-display` declaration.                                                                        |
+| Token values are CSS-safe          | Token strings reject `;`, `{`, `}`, and `</style>` to prevent CSS injection in tenant-supplied themes.                                                                                                                                |
+| `defaultVariant` must exist        | When provided, the value must point at a declared `variants.*` entry.                                                                                                                                                                 |
+| Persisted theme is validated       | When the theme switcher is enabled, the active theme is persisted in `localStorage`. On the next visit the value is intersected against the registry — stale entries are cleared and the user falls back to the build-time default.   |
+| Persisted variant is validated     | The active variant is persisted in `localStorage`. On the next visit it's intersected against the active theme's `variants` — when the user's theme no longer supports that variant, the theme's `defaultVariant` is applied instead. |
 
 ## Comparing Approaches
 
