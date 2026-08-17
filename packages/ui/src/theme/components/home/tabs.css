@@ -194,6 +194,17 @@
   margin-top: var(--cp-s-2);
 }
 
+/*
+ * On the vertical axis the CTA is a panel-level child rendered after the
+ * visual, so it closes the panel instead of splitting the body copy from
+ * the visual. Horizontal keeps its CTA inside the copy column, where the
+ * side-by-side columns already put it in the right place.
+ */
+.cp-tabs--vertical .cp-tabs__panel > .cp-tabs__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
 .cp-tabs__btn {
   display: inline-flex;
   align-items: center;

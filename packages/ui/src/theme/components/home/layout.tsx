@@ -17,6 +17,7 @@ import { HomeSplit } from './split'
 import { HomeTabs } from './tabs'
 import type { HomeTabEntry } from './tabs'
 import { TrustStrip } from './trust-strip'
+import type { TrustItem } from './trust-strip'
 import { HomeWorkspaces } from './workspaces'
 import type { ShowcaseCard } from './workspaces'
 
@@ -30,7 +31,13 @@ interface FrontmatterHero {
   readonly text?: string
   readonly tagline?: string
   readonly actions?: readonly ButtonConfig[]
-  readonly label?: string
+  /**
+   * Eyebrow chip copy. The sync engine reads `hero.label` from the config
+   * and emits it under this key (see `emitHero` in
+   * `@ciderpress/cli/lib/sync/home.ts`), so the frontmatter name is
+   * `eyebrow`, not `label`.
+   */
+  readonly eyebrow?: string
 }
 
 /**
@@ -47,7 +54,7 @@ interface FrontmatterHeading {
 interface FrontmatterProofBlock {
   readonly type: 'proof'
   readonly lead?: string
-  readonly names?: readonly string[]
+  readonly names?: readonly TrustItem[]
 }
 
 interface FrontmatterFeaturesBlock extends FrontmatterHeading {
@@ -155,9 +162,9 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
     .with(undefined, () => null)
     .otherwise((h) => (
       <Hero
-        eyebrow={renderRichText(h.label ?? '')}
+        eyebrow={renderOptionalRichText(h.eyebrow)}
         title={renderTitle(h.text ?? h.name ?? '')}
-        tagline={renderRichText(h.tagline ?? '')}
+        tagline={renderOptionalRichText(h.tagline)}
         actions={mapButtonsToHeroActions(h.actions)}
         demo={heroDemoEl}
       />
@@ -350,6 +357,26 @@ function isButtonConfig(value: unknown): value is ButtonConfig {
  */
 function toHeading(block: FrontmatterHeading): FrontmatterHeading {
   return { label: block.label, title: block.title, body: block.body }
+}
+
+/**
+ * Render optional rich-text copy, collapsing absent or blank values to
+ * `undefined` rather than an empty node.
+ *
+ * Callers treat `undefined` as "omit this element entirely". Passing
+ * `renderRichText('')` instead returns an empty-but-defined node, which
+ * slips past those checks and paints a styled shell with no content in
+ * it: an empty eyebrow chip renders as a stray pill above the headline.
+ *
+ * @private
+ * @param raw - Optional raw copy from frontmatter.
+ * @returns Rendered fragment, or undefined when there is nothing to show.
+ */
+function renderOptionalRichText(raw: string | undefined): React.ReactNode {
+  const value = raw ?? ''
+  return match(value.trim() === '')
+    .with(true, () => undefined)
+    .otherwise(() => renderRichText(value))
 }
 
 /**

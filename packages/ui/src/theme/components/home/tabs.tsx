@@ -156,8 +156,11 @@ export function HomeTabs(props: HomeTabsProps): React.ReactElement | null {
             id={String(index)}
             className={panelClass(item.visual)}
           >
-            {renderPanelCopy(item)}
+            {renderPanelCopy(item, axis)}
             {renderPanelVisual(item.visual)}
+            {match(axis)
+              .with('vertical', () => renderPanelCta(item.cta))
+              .otherwise(() => null)}
           </TabPanel>
         ))}
       </Tabs>
@@ -242,15 +245,28 @@ function panelClass(visual: HomeVisual | undefined): string {
 }
 
 /**
- * Render a panel's copy column — headline, body, bullets, and CTA. The
- * headline falls back to the tab label so a minimal entry still reads as
- * a titled panel.
+ * Which way the tab strip runs relative to its panel.
+ *
+ * @private
+ */
+type TabsAxis = 'horizontal' | 'vertical'
+
+/**
+ * Render a panel's copy column: headline, body, bullets, and, on the
+ * horizontal axis, the CTA. The headline falls back to the tab label so
+ * a minimal entry still reads as a titled panel.
+ *
+ * The CTA's home depends on the axis. Horizontal lays copy and visual out
+ * as side-by-side columns, so the CTA closes the copy column. Vertical
+ * stacks them, where that same placement would wedge the button between
+ * the body text and the visual, so the panel renders it last instead.
  *
  * @private
  * @param item - The selected tab entry
+ * @param axis - Orientation the band is rendering on
  * @returns Copy column element
  */
-function renderPanelCopy(item: HomeTabEntry): React.ReactElement {
+function renderPanelCopy(item: HomeTabEntry, axis: TabsAxis): React.ReactElement {
   const heading = match(item.title)
     .with(P.string, (t) => t)
     .otherwise(() => item.label)
@@ -274,7 +290,9 @@ function renderPanelCopy(item: HomeTabEntry): React.ReactElement {
             ))}
           </ul>
         ))}
-      {renderPanelCta(item.cta)}
+      {match(axis)
+        .with('horizontal', () => renderPanelCta(item.cta))
+        .otherwise(() => null)}
     </div>
   )
 }
@@ -296,10 +314,15 @@ function renderPanelCta(cta: TabsAction | undefined): React.ReactElement | null 
       const className = match(a.theme ?? 'brand')
         .with('brand', () => 'cp-tabs__btn cp-tabs__btn--primary')
         .otherwise(() => 'cp-tabs__btn')
+      // Wrapped rather than returned bare: the CTA is a direct child of
+      // the panel so it lands under the visual, and an unwrapped link
+      // would stretch as a flex item and break out of the grid columns.
       return (
-        <RouteLink className={className} href={href}>
-          {a.text}
-        </RouteLink>
+        <div className="cp-tabs__actions">
+          <RouteLink className={className} href={href}>
+            {a.text}
+          </RouteLink>
+        </div>
       )
     })
     .otherwise(() => null)
