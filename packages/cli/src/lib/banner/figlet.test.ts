@@ -7,16 +7,6 @@ const DIGITS = [...'0123456789']
 const SPECIALS = [...' -._']
 const SEP = '────────────────────────────────'
 
-/**
- * Wrap rendered lines with separator borders for readable snapshots.
- *
- * @param lines - Rendered glyph rows
- * @returns Bordered string for snapshot comparison
- */
-function bordered(lines: readonly string[]): string {
-  return [SEP, ...lines, SEP].join('\n')
-}
-
 describe('renderFigletText (ANSI Shadow)', () => {
   it.each(ALPHABET)('should render letter %s', (letter) => {
     const result = renderFigletText(letter)
@@ -71,3 +61,14 @@ describe('renderPixelText (RubiFont)', () => {
     expect(result.lines).toStrictEqual(known.lines)
   })
 })
+
+/**
+ * Wrap rendered lines with separator borders for readable snapshots.
+ *
+ * @private
+ * @param lines - Rendered glyph rows
+ * @returns Bordered string for snapshot comparison
+ */
+function bordered(lines: readonly string[]): string {
+  return [SEP, ...lines, SEP].join('\n')
+}

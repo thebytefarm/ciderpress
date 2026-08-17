@@ -5,7 +5,7 @@ Set up your local environment to contribute to ciderpress.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
-- [pnpm](https://pnpm.io/) 10.x (`corepack enable` to activate)
+- [pnpm](https://pnpm.io/) 11.x (any recent pnpm will do — the `packageManager` field pins the exact version and pnpm switches to it automatically)
 - [Git](https://git-scm.com/)
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (optional but recommended)
 
@@ -88,8 +88,12 @@ pnpm build && pnpm check
 **Fix:**
 
 ```bash
-corepack enable
+npm install -g pnpm
 ```
+
+Once pnpm is on your PATH it reads the `packageManager` field in the root
+`package.json` and switches itself to the pinned version, so the globally
+installed one only needs to be recent enough to bootstrap.
 
 ### Lockfile mismatch after switching branches
 

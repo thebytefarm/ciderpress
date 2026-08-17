@@ -1,6 +1,8 @@
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
+
 import './card.css'
 
 export interface WorkspaceGridProps {
@@ -41,11 +43,14 @@ export function WorkspaceGrid({
 
   return (
     <>
+      {/* Rich text, matching the card titles and descriptions this grid
+          wraps — a group heading was the one string in the block that
+          showed its `**markers**` literally. */}
       {match(heading)
-        .with(P.string, (h) => <h2>{h}</h2>)
+        .with(P.string, (h) => <h2>{renderRichText(h)}</h2>)
         .otherwise(() => null)}
       {match(description)
-        .with(P.string, (d) => <p className="cp-workspace-section__desc">{d}</p>)
+        .with(P.string, (d) => <p className="cp-workspace-section__desc">{renderRichText(d)}</p>)
         .otherwise(() => null)}
       <div className="cp-workspace-grid" style={style}>
         {children}

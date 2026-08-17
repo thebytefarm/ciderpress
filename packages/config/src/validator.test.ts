@@ -253,6 +253,62 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
+  it('should accept a proof block mixing bare names and logo entries', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [
+          {
+            type: 'proof',
+            lead: 'used by',
+            names: [
+              'Acme',
+              { src: '/logos/acme.svg', alt: 'Acme' },
+              { src: '/logos/beta.svg', alt: 'Beta', href: '/beta', height: 24, mono: true },
+            ],
+          },
+        ],
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject a proof logo missing its alt text', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'proof', names: [{ src: '/logos/acme.svg' }] }] },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should reject an empty proof name', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { blocks: [{ type: 'proof', names: [''] }] },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should reject a fractional proof logo height', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'proof', names: [{ src: '/logos/acme.svg', alt: 'Acme', height: 0.5 }] }],
+      },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should reject an unknown key on a proof logo', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'proof', names: [{ src: '/logos/acme.svg', alt: 'Acme', width: 40 }] }],
+      },
+    })
+    expect(error).not.toBeNull()
+  })
+
   it('should accept a tabs block in either orientation', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,

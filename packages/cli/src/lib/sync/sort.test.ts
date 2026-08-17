@@ -4,10 +4,6 @@ import { describe, it, expect } from 'vitest'
 import { sortEntries } from './resolve/sort'
 import type { ResolvedEntry } from './types'
 
-function reverseComparator(a: ResolvedPage, b: ResolvedPage): number {
-  return b.title.localeCompare(a.title)
-}
-
 describe('sortEntries()', () => {
   const leafA: ResolvedEntry = {
     title: 'Zebra',
@@ -63,3 +59,15 @@ describe('sortEntries()', () => {
     expect(result.map((e) => e.title)).toStrictEqual(['Zebra', 'Mango', 'Apple'])
   })
 })
+
+/**
+ * Sort two pages by descending title, exercising the custom-comparator path.
+ *
+ * @private
+ * @param a - First page
+ * @param b - Second page
+ * @returns Negative when `a` sorts first, positive when `b` does
+ */
+function reverseComparator(a: ResolvedPage, b: ResolvedPage): number {
+  return b.title.localeCompare(a.title)
+}

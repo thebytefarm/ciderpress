@@ -2,7 +2,6 @@ import fs from 'node:fs/promises'
 import path from 'node:path'
 
 import {
-  DEFAULT_HOME_BLOCKS,
   collectAllWorkspaceItems,
   hasGlobChars,
   resolveOptionalIcon,
@@ -24,6 +23,16 @@ import { isNotNil, isString } from 'massaman/predicate'
 
 import { parse as parseFrontmatter, stringify as stringifyFrontmatter } from './frontmatter.ts'
 import { resolveSectionTitle } from './resolve/text.ts'
+
+/**
+ * Framework default home deck, used when `home.blocks` is omitted: an
+ * auto-generated features grid (derived from the first top-level pages)
+ * plus the workspace showcase.
+ */
+const defaultHomeBlocks: readonly HomeBlock[] = Object.freeze([
+  { type: 'features' },
+  { type: 'showcase' },
+] as const)
 
 /**
  * Serializable workspace card data for a single item.
@@ -55,11 +64,14 @@ export type HomeWorkspaceData = readonly HomeWorkspaceGroupData[]
 
 /**
  * Result of generating the default home page.
- * Contains the markdown content and workspace data.
+ *
+ * Workspace data is not carried here — `sync()` builds it directly from
+ * {@link buildWorkspaceData} for `.generated/workspaces.json`, and
+ * returning a second copy meant every sync walked apps, packages, and
+ * workspace groups twice to produce a field nothing read.
  */
 export interface HomePageResult {
   readonly content: string
-  readonly workspaces: HomeWorkspaceData
   /**
    * Non-fatal problems found while compiling `home.blocks` — e.g. a
    * `showcase.source` path that matches no page. The caller surfaces
@@ -111,29 +123,16 @@ export async function generateDefaultHomePage(
   const description = config.description ?? title
   const firstLink = findFirstLink(config.pages)
   const home = config.home
-  const hero = match(home)
-    .with(P.nonNullable, (h) => h.hero)
-    .otherwise(() => undefined)
-  const workspaceResult = buildWorkspaceData(config)
 
   // Landing-page extensions live on the typed `HomeConfig` now — no more
   // `Record<string, unknown>` casts. Destructure with a defaulted empty
   // object so optional fields surface as `undefined` cleanly.
-  const label = match(hero)
-    .with(P.nonNullable, (h) => h.label)
-    .otherwise(() => undefined)
-  const tagline = match(hero)
-    .with(P.nonNullable, (h) => h.tagline)
-    .otherwise(() => undefined)
-  const heroActions = match(hero)
-    .with(P.nonNullable, (h) => h.actions)
-    .otherwise(() => undefined)
-  const heroDemo = match(hero)
-    .with(P.nonNullable, (h) => h.demo)
-    .otherwise(() => undefined)
-  const brandBanner = match(config.brand)
-    .with(P.nonNullable, (b) => b.banner)
-    .otherwise(() => undefined)
+  const { hero } = home ?? {}
+  const { label, tagline, actions: heroActions, demo: heroDemo } = hero ?? {}
+  const { banner: brandBanner } = config.brand ?? {}
+  // `BannerConfig` is `string | BannerFn`, so this stays a `P.string`
+  // guard rather than a `??` default — a function banner must fall back to
+  // the static path, not be serialized into the frontmatter.
   const bannerSrc = match(brandBanner)
     .with(P.string, (s) => s)
     .otherwise(() => '/banner.svg')
@@ -164,6 +163,7 @@ export async function generateDefaultHomePage(
     home,
     pages: config.pages,
     workspaces: collectAllWorkspaceItems(config),
+    scopes: buildWorkspaceScopes(config),
     repoRoot,
   })
 
@@ -180,7 +180,7 @@ export async function generateDefaultHomePage(
 
   const content = stringifyFrontmatter('', frontmatterData)
 
-  return { content, workspaces: workspaceResult.data, warnings: blockResult.warnings }
+  return { content, warnings: blockResult.warnings }
 }
 
 /**
@@ -192,6 +192,7 @@ interface BuildHomeBlocksParams {
   readonly home: HomeConfig | undefined
   readonly pages: readonly Page[]
   readonly workspaces: readonly Workspace[]
+  readonly scopes: ReadonlyMap<string, string>
   readonly repoRoot: string
 }
 
@@ -216,18 +217,14 @@ interface BuildHomeBlocksResult {
  * @returns Ordered, frontmatter-ready block objects plus warnings
  */
 async function buildHomeBlocks(params: BuildHomeBlocksParams): Promise<BuildHomeBlocksResult> {
-  const { home, pages, workspaces, repoRoot } = params
-  const configured = match(home)
-    .with(P.nonNullable, (h) => h.blocks)
-    .otherwise(() => undefined)
-  const blockList = match(configured)
-    .with(P.nonNullable, (b) => b)
-    .otherwise(() => DEFAULT_HOME_BLOCKS)
+  const { home, pages, workspaces, scopes, repoRoot } = params
+  const { blocks } = home ?? {}
+  const blockList = blocks ?? defaultHomeBlocks
   const resolved = await Promise.all(
-    blockList.map((block) => resolveHomeBlock({ block, pages, workspaces, repoRoot }))
+    blockList.map((block) => resolveHomeBlock({ block, pages, workspaces, scopes, repoRoot }))
   )
   return {
-    blocks: resolved.map((r) => r.block),
+    blocks: resolved.map((r) => r.block).filter(isNotNil),
     warnings: resolved.flatMap((r) => r.warnings),
   }
 }
@@ -241,6 +238,7 @@ interface ResolveHomeBlockParams {
   readonly block: HomeBlock
   readonly pages: readonly Page[]
   readonly workspaces: readonly Workspace[]
+  readonly scopes: ReadonlyMap<string, string>
   readonly repoRoot: string
 }
 
@@ -250,7 +248,11 @@ interface ResolveHomeBlockParams {
  * @private
  */
 interface ResolveHomeBlockResult {
-  readonly block: Record<string, unknown>
+  /**
+   * The frontmatter-ready block, or null when it could not be compiled and
+   * should not reach the page.
+   */
+  readonly block: Record<string, unknown> | null
   readonly warnings: readonly string[]
 }
 
@@ -268,27 +270,43 @@ interface ResolveHomeBlockResult {
  * @returns Frontmatter-ready block object and warnings
  */
 async function resolveHomeBlock(params: ResolveHomeBlockParams): Promise<ResolveHomeBlockResult> {
-  const { block, pages, workspaces, repoRoot } = params
-  return match(block)
-    .with({ type: 'features' }, async (b) => {
-      const features = await match(b.items)
-        .with(P.nonNullable, buildExplicitFeatures)
-        .otherwise(() => buildFeatures(pages, repoRoot))
-      return {
-        block: { ...b, items: buildFrontmatterFeatures(features) },
-        warnings: [],
-      }
-    })
-    .with({ type: 'showcase' }, (b) =>
-      resolveShowcaseBlock({ block: b, pages, workspaces, repoRoot })
-    )
-    .with({ type: 'tabs' }, (b) =>
-      Promise.resolve({
-        block: { ...b, items: b.items.map(resolveTabItem) },
-        warnings: [],
+  const { block, pages, workspaces, scopes, repoRoot } = params
+  return (
+    match(block)
+      .with({ type: 'features' }, async (b) => {
+        const features = await match(b.items)
+          .with(P.nonNullable, buildExplicitFeatures)
+          .otherwise(() => buildFeatures(pages, repoRoot))
+        return {
+          block: { ...b, items: buildFrontmatterFeatures(features) },
+          warnings: [],
+        }
       })
-    )
-    .otherwise((b) => Promise.resolve({ block: { ...b }, warnings: [] }))
+      .with({ type: 'showcase' }, (b) =>
+        resolveShowcaseBlock({ block: b, pages, workspaces, scopes, repoRoot })
+      )
+      .with({ type: 'tabs' }, (b) =>
+        Promise.resolve({
+          block: { ...b, items: b.items.map(resolveTabItem) },
+          warnings: [],
+        })
+      )
+      .with({ type: P.union('proof', 'split', 'cta') }, (b) =>
+        Promise.resolve({ block: { ...b }, warnings: [] })
+      )
+      // Anything else is a block type this CLI does not know. Dropping it
+      // with a warning keeps the writer and the theme in agreement: the
+      // renderer has no arm for it either, and forwarding it verbatim used
+      // to put an unrenderable block into frontmatter with no signal.
+      .otherwise((b) =>
+        Promise.resolve({
+          block: null,
+          warnings: [
+            `home block type "${String((b as { type?: unknown }).type)}" is not recognized — block skipped`,
+          ],
+        })
+      )
+  )
 }
 
 /**
@@ -320,6 +338,7 @@ interface ResolveShowcaseBlockParams {
   readonly block: HomeShowcaseBlock
   readonly pages: readonly Page[]
   readonly workspaces: readonly Workspace[]
+  readonly scopes: ReadonlyMap<string, string>
   readonly repoRoot: string
 }
 
@@ -340,19 +359,22 @@ interface ResolveShowcaseBlockParams {
 async function resolveShowcaseBlock(
   params: ResolveShowcaseBlockParams
 ): Promise<ResolveHomeBlockResult> {
-  const { block, pages, workspaces, repoRoot } = params
+  const { block, pages, workspaces, scopes, repoRoot } = params
   const paths = match(block.source)
     .with(P.array(P.string), (s) => s)
     .otherwise(() => null)
   if (paths === null) {
-    return { block: { ...block }, warnings: [] }
+    // Strip `source` on this branch too — the theme has no `source` key and
+    // leaving it in only adds noise to a generated, diffed file.
+    const { source: _unused, ...rest } = block
+    return { block: { ...rest }, warnings: [] }
   }
 
   const resolved = await Promise.all(
     paths.map(async (targetPath) => {
       const workspace = workspaces.find((item) => item.path === targetPath)
       if (workspace) {
-        return { card: buildWorkspaceCard(workspace), warning: null }
+        return { card: buildWorkspaceCard({ workspace, scopes }), warning: null }
       }
       const page = findPageByPath([...pages, ...workspacePages(workspaces)], targetPath)
       if (page === undefined) {
@@ -373,25 +395,58 @@ async function resolveShowcaseBlock(
 }
 
 /**
+ * Parameters for {@link buildWorkspaceCard}.
+ *
+ * @private
+ */
+interface BuildWorkspaceCardParams {
+  readonly workspace: Workspace
+  readonly scopes: ReadonlyMap<string, string>
+}
+
+/**
  * Build a showcase card from a workspace item. Workspace entries already
  * carry every card field, so nothing needs resolving from disk.
  *
+ * The scope chip is looked up rather than left blank: the same app reached
+ * through the default deck renders an `apps/` chip, and hardcoding
+ * `undefined` here made an explicit `showcase.source` drop it, so one
+ * workspace rendered two different ways depending on how it was reached.
+ *
  * @private
- * @param workspace - Workspace item to render as a card
+ * @param params - Workspace item to render, and the path-to-scope lookup
  * @returns Serializable card data
  */
-function buildWorkspaceCard(workspace: Workspace): HomeWorkspaceCardData {
+function buildWorkspaceCard({
+  workspace,
+  scopes,
+}: BuildWorkspaceCardParams): HomeWorkspaceCardData {
   return {
     title: match(workspace.title)
       .with(P.string, (t) => t)
       .otherwise(String),
     href: workspace.path,
     icon: serializeIcon(resolveOptionalIcon(workspace.icon)),
-    scope: undefined,
+    scope: scopes.get(workspace.path),
     description: workspace.description,
     tags: resolveTagLabels(workspace.tags),
     badge: workspace.badge,
   }
+}
+
+/**
+ * Map each app/package path to the scope chip the default deck gives it.
+ * Custom workspace groups carry no scope, so they are absent from the map.
+ *
+ * @private
+ * @param config - Ciderpress config with apps and packages
+ * @returns Lookup from workspace path to scope label
+ */
+function buildWorkspaceScopes(config: CiderpressConfig): ReadonlyMap<string, string> {
+  return new Map([
+    ...(config.apps ?? []).map((app) => [app.path, 'apps/'] as const),
+    ...(config.packages ?? []).map((pkg) => [pkg.path, 'packages/'] as const),
+  ])
 }
 
 /**
@@ -606,15 +661,14 @@ function buildFrontmatterFeatures(
 
 /**
  * Convert explicit user-defined features into resolved features.
- * Icon colors are cycled in the same way as auto-generated features.
  *
  * @private
  * @param features - User-defined feature config entries
- * @returns Resolved feature data with icon identifiers and colors
+ * @returns Resolved feature data with icon identifiers
  */
 function buildExplicitFeatures(features: readonly Feature[]): Promise<readonly ResolvedFeature[]> {
   return Promise.resolve(
-    features.map((f, _index) => {
+    features.map((f) => {
       const resolved = resolveOptionalIcon(f.icon)
       const titleStr = match(f.title)
         .with(P.string, (t) => t)
@@ -689,8 +743,8 @@ function findFirstLink(pages: readonly Page[]): string {
 }
 
 /**
- * Build resolved feature data from the first 3 config pages
- * with Iconify identifiers and cycled icon colors.
+ * Build resolved feature data from the first 3 config pages, with
+ * Iconify identifiers.
  *
  * @private
  * @param pages - Config pages to derive features from
@@ -702,7 +756,7 @@ function buildFeatures(
   repoRoot: string
 ): Promise<readonly ResolvedFeature[]> {
   return Promise.all(
-    pages.slice(0, 3).map(async (section, _index) => {
+    pages.slice(0, 3).map(async (section) => {
       const link = section.path ?? findFirstChildLink(section)
       const details = await extractSectionDescription(section, repoRoot)
       const resolved = resolveOptionalIcon(section.icon)

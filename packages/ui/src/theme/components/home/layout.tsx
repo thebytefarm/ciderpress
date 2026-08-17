@@ -1,6 +1,6 @@
 import type { ButtonConfig, HomeVisual, TruncateConfig } from '@ciderpress/config'
 import { useFrontmatter } from '@rspress/core/runtime'
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import React from 'react'
 
 import { hasAccentMarker, isPlainText, renderRichText } from '../../lib/rich-text.tsx'
@@ -153,9 +153,12 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   const heroDemoFm = fm.heroDemo as false | HomeVisual | undefined
   const blocks = (fm.blocks as readonly FrontmatterBlock[] | undefined) ?? []
 
+  // `P.nullish`, not `undefined`: a blank `heroDemo:` in a hand-authored
+  // index.md parses to null, which misses an `undefined` arm and would
+  // reach HomeVisualView with nothing to render.
   const heroDemoEl = match(heroDemoFm)
     .with(false, () => null)
-    .with(undefined, () => <HeroDemo />)
+    .with(P.nullish, () => <HeroDemo />)
     .otherwise((d) => <HomeVisualView visual={d} context="hero" />)
 
   const heroSection = match(hero)
@@ -185,6 +188,13 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
 
 /**
  * Render a single home block by its discriminated `type`.
+ *
+ * Terminates in `.otherwise`, not `.exhaustive`: `blocks` is read from
+ * frontmatter with a cast, and a hand-authored `index.md` short-circuits
+ * the sync engine's block compilation entirely, so an unrecognized `type`
+ * is reachable user input. `.exhaustive()` would throw `NonExhaustiveError`
+ * mid-render and take down the whole page — and the SSG build with it —
+ * over one typo. An unknown block renders as nothing instead.
  *
  * @private
  * @param block - Frontmatter block compiled from `home.blocks`.
@@ -218,12 +228,12 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
       <HomeSplit
         eyebrow={b.label}
         title={renderRichText(b.title)}
-        body={renderRichText(b.body ?? '')}
+        body={renderOptionalRichText(b.body)}
         bullets={b.bullets ?? []}
         action={mapButtonToAction(b.cta)}
         reverse={b.reverse}
         visual={match(b.visual)
-          .with(undefined, () => null)
+          .with(P.nullish, () => null)
           .otherwise((v) => (
             <HomeVisualView visual={v} context="split" />
           ))}
@@ -240,18 +250,21 @@ function renderBlock(block: FrontmatterBlock): React.ReactNode {
       />
     ))
     .with({ type: 'cta' }, (b) =>
-      match(b.title === undefined)
-        .with(true, () => null)
-        .otherwise(() => (
+      // Blank/absent title, not just `undefined` — a hand-authored `title:`
+      // parses to null and `title: ''` is empty, and either would paint the
+      // full band (eyebrow, glow, buttons) around an empty headline.
+      match(renderOptionalRichText(b.title))
+        .with(P.nullish, () => null)
+        .otherwise((title) => (
           <CTA
             eyebrow={b.label}
-            title={renderRichText(b.title ?? '')}
-            subtitle={renderRichText(b.body ?? '')}
+            title={title}
+            subtitle={renderOptionalRichText(b.body)}
             actions={mapButtonsToHeroActions(b.actions)}
           />
         ))
     )
-    .exhaustive()
+    .otherwise(() => null)
 }
 
 /**
@@ -453,6 +466,11 @@ function mapButtonsToHeroActions(
  * Project the `'primary' | 'secondary' | 'ghost'` variant token back into
  * the legacy `'brand' | 'alt'` token that `<Hero />` accepts.
  *
+ * Terminates in `.otherwise`: `isButtonConfig` only checks `text` and
+ * `href`, so an unrecognized `variant` on a hand-authored button reaches
+ * here. This runs for hero, split, and tab CTAs alike, and `.exhaustive()`
+ * threw on all three. An unknown variant falls back to the default style.
+ *
  * @private
  * @param variant - Optional variant from the unified button config
  * @returns `'brand'`, `'alt'`, or `undefined`
@@ -461,9 +479,7 @@ function mapButtonVariantToHeroTheme(
   variant: ButtonConfig['variant']
 ): 'brand' | 'alt' | undefined {
   return match(variant)
-    .with(undefined, () => undefined)
     .with('primary', () => 'brand' as const)
-    .with('secondary', () => 'alt' as const)
-    .with('ghost', () => 'alt' as const)
-    .exhaustive()
+    .with(P.union('secondary', 'ghost'), () => 'alt' as const)
+    .otherwise(() => undefined)
 }

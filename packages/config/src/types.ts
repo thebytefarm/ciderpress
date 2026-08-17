@@ -1242,28 +1242,12 @@ export interface HomeConfig {
   /**
    * Ordered list of home-page bands rendered below the hero.
    *
-   * - omit → the framework default deck ({@link DEFAULT_HOME_BLOCKS}):
-   *   an auto-generated features grid plus the workspace showcase
+   * - omit → the framework default deck: an auto-generated features grid
+   *   (derived from the first top-level pages) plus the workspace showcase
    * - `[]` → nothing below the hero
    */
   readonly blocks?: readonly HomeBlock[]
 }
-
-/**
- * Framework default home deck, used when `home.blocks` is omitted: an
- * auto-generated features grid (derived from the first top-level pages)
- * plus the workspace showcase.
- *
- * Exported so it can be extended rather than retyped:
- *
- * ```ts
- * blocks: [...DEFAULT_HOME_BLOCKS, { type: 'cta', title: 'Ready?' }]
- * ```
- */
-export const DEFAULT_HOME_BLOCKS: readonly HomeBlock[] = Object.freeze([
-  { type: 'features' },
-  { type: 'showcase' },
-] as const)
 
 /**
  * Built-in social link icon identifiers.

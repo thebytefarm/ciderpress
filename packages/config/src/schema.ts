@@ -459,15 +459,23 @@ const homeColumnsSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.l
 
 const proofLogoSchema = z
   .object({
-    src: z.string().min(1),
-    alt: z.string().min(1),
-    href: z.string().min(1).optional(),
-    height: z.number().positive().optional(),
+    src: z.string().min(1, 'proof.names[].src must be a non-empty string'),
+    alt: z.string().min(1, 'proof.names[].alt must be a non-empty string'),
+    href: z.string().min(1, 'proof.names[].href must be a non-empty string').optional(),
+    // Integer: the value is written straight into `style="height: Npx"`, so a
+    // fractional height renders a sub-pixel logo.
+    height: z.number().int().positive('proof.names[].height must be a positive integer').optional(),
     mono: z.boolean().optional(),
   })
   .strict()
 
-const proofItemSchema = z.union([z.string(), proofLogoSchema])
+// The bare-string form needs the same non-empty floor as `alt` — an empty
+// name renders an empty span that still emits its separator dot, leaving a
+// dangling `·` in the strip.
+const proofItemSchema = z.union([
+  z.string().min(1, 'proof.names[] must be a non-empty string'),
+  proofLogoSchema,
+])
 
 const homeProofBlockSchema = z
   .object({
@@ -795,6 +803,35 @@ export const pathsSchema = z
 // removed, or renamed without updating the type, TypeScript errors.
 // Recursive schemas (navItemSchema, pageSchema) are already guarded
 // via their z.ZodType<T> annotations above.
+//
+// `z.ZodType<T>` alone is not enough. It asserts only that the schema
+// output is ASSIGNABLE to `T`, which with mostly-optional fields accepts
+// a schema MISSING one of the type's fields and a schema carrying fields
+// the type does not have. Because every block schema is `.strict()`, a
+// field added to the interface but not the schema typechecks green and
+// then rejects the user's config at load with `Unrecognized key` — the
+// failure lands on the user, not on CI.
+//
+// The home guards below pair the assignability check with `SameKeys`,
+// which compares the two key sets in both directions. Key-set equality
+// rather than full invariant identity is deliberate: these interfaces
+// declare `readonly` members and `z.infer` does not, so an exact-identity
+// check would fail on every one of them for a reason that is not drift.
+
+/**
+ * Every key of `T`, distributed so a discriminated union contributes the
+ * keys of all its variants rather than only those they share.
+ */
+type AllKeys<T> = T extends unknown ? keyof T : never
+
+/**
+ * True only when `A` and `B` declare exactly the same keys.
+ */
+type SameKeys<A, B> = [Exclude<AllKeys<A>, AllKeys<B>> | Exclude<AllKeys<B>, AllKeys<A>>] extends [
+  never,
+]
+  ? true
+  : false
 
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
@@ -839,19 +876,38 @@ const _guardSortStrategy: z.ZodType<SortStrategy> = sortStrategySchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeHeroConfig: z.ZodType<HomeHeroConfig> = homeHeroConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeHeroConfig: SameKeys<z.infer<typeof homeHeroConfigSchema>, HomeHeroConfig> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisual: z.ZodType<HomeVisual> = homeVisualSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeVisual: SameKeys<z.infer<typeof homeVisualSchema>, HomeVisual> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisualCode: z.ZodType<HomeVisualCode> = homeVisualCodeSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeVisualCode: SameKeys<z.infer<typeof homeVisualCodeSchema>, HomeVisualCode> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisualImage: z.ZodType<HomeVisualImage> = homeVisualImageSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeVisualImage: SameKeys<z.infer<typeof homeVisualImageSchema>, HomeVisualImage> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisualTerminal: z.ZodType<HomeVisualTerminal> = homeVisualTerminalSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeVisualTerminal: SameKeys<
+  z.infer<typeof homeVisualTerminalSchema>,
+  HomeVisualTerminal
+> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisualLine: z.ZodType<HomeVisualLine> = homeVisualLineSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeVisualLine: SameKeys<z.infer<typeof homeVisualLineSchema>, HomeVisualLine> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeBlock: z.ZodType<HomeBlock> = homeBlockSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeBlock: SameKeys<z.infer<typeof homeBlockSchema>, HomeBlock> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeConfig: z.ZodType<HomeConfig> = homeConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeConfig: SameKeys<z.infer<typeof homeConfigSchema>, HomeConfig> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardBrandConfig: z.ZodType<BrandConfig> = brandConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

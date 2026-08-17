@@ -46,11 +46,16 @@
    *   mono     code, terminal chrome, eyebrow labels
    *   display  decorative headline / brand-mark face (falls back to sans)
    *
-   * ciderpress's own built-in themes point `sans` at Geist Mono — the whole
-   * site reads as a terminal-style surface — but a custom theme is free to
-   * make it proportional.
+   * These values mirror `SHARED_FONTS.family` in `@ciderpress/theme`, so a
+   * themeless page degrades to the house default rather than to a different
+   * design: `sans` is proportional (Inter), `mono` is Geist Mono, `display`
+   * is Geist Pixel Square. Putting the mono stack in `sans` turns every
+   * proportional surface — hero, body, nav, sidebar — monospace; the
+   * regression guard in `packages/theme/src/fonts.test.ts` exists for that.
    */
-    --cp-ff-sans: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+    --cp-ff-sans:
+      'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
     --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
     --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 

@@ -1,4 +1,4 @@
-export { SOCIAL_LINK_ICONS, DEFAULT_HOME_BLOCKS } from './types.ts'
+export { SOCIAL_LINK_ICONS } from './types.ts'
 
 export type {
   CiderpressConfig,

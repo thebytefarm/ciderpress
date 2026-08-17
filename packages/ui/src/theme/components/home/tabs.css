@@ -22,8 +22,19 @@
 }
 
 /* Reverse — panel left, strip right. Scoped to the two-column grid so
-   the narrow stack always leads with the tabs. */
+   the narrow stack always leads with the tabs.
+
+   The TRACKS swap, not the items. `order` changes which track each item
+   lands in but leaves the track sizes where they are, so ordering alone
+   put the panel — headline, body, bullets and its visual — into the
+   220-320px strip column and stretched the tab labels across the 1fr
+   remainder. The idiom was borrowed from split.css, where the columns are
+   a symmetric `1fr 1fr` and reordering is equivalent. */
 @media (min-width: 881px) {
+  .cp-tabs--vertical.cp-tabs--reverse .cp-tabs__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  }
+
   .cp-tabs--vertical.cp-tabs--reverse .cp-tabs__list {
     order: 2;
   }
@@ -181,12 +192,17 @@
   color: var(--cp-c-text-1);
 }
 
+/* The glyph is real text (`✓`), so contrast rules apply to it. Against the
+   near-transparent `--cp-c-brand-soft` chip it is effectively brand-on-page,
+   which measured 2.27:1 on mulled/dark and under 4:1 on four other combos —
+   legible as a smudge at best. `--cp-c-text-1` on the same chip is the
+   pairing already used by `.cp-mark`, and clears 12.7:1 everywhere. */
 .cp-tabs__check {
   width: var(--cp-size-check);
   height: var(--cp-size-check);
   border-radius: 50%;
   background: var(--cp-c-brand-soft);
-  color: var(--cp-c-brand-1);
+  color: var(--cp-c-text-1);
   display: grid;
   place-items: center;
   font-size: var(--cp-fs-check);
@@ -217,13 +233,26 @@
   background: transparent;
   color: var(--cp-c-text-1);
   cursor: pointer;
-  transition: all var(--cp-duration-fast) var(--cp-ease-base);
+  /* Named rather than `all`: `all` would animate any layout property added
+     later, turning a padding tweak into an unintended reflow animation. */
+  transition:
+    background var(--cp-duration-fast) var(--cp-ease-base),
+    border-color var(--cp-duration-fast) var(--cp-ease-base),
+    color var(--cp-duration-fast) var(--cp-ease-base);
   text-decoration: none;
 }
 
 .cp-tabs__btn:hover {
   background: var(--cp-c-bg-soft);
   border-color: var(--cp-c-border);
+}
+
+/* Matches the ring on `.cp-tabs__tab` — without it the CTA fell back to the
+   UA default outline, which is nearly invisible on the dark themes and read
+   as a different focus treatment inside one component. */
+.cp-tabs__btn:focus-visible {
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
 }
 
 .cp-tabs__btn--primary {

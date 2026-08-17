@@ -3,32 +3,6 @@ import { fileURLToPath } from 'node:url'
 
 import { describe, it, expect } from 'vitest'
 
-/**
- * Read a stylesheet from this package's `src/` tree.
- *
- * @private
- * @param relative - Path relative to `packages/ui/src`
- * @returns File contents as UTF-8
- */
-function readStyle(relative: string): string {
-  return readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8')
-}
-
-/**
- * Collect every `font-family: <value>` declaration in a stylesheet, with
- * comments stripped so prose mentioning a font name never trips an assertion.
- *
- * @private
- * @param css - CSS source
- * @returns Declared values in source order
- */
-function fontFamilyValues(css: string): readonly string[] {
-  const withoutComments = css.replaceAll(/\/\*[\s\S]*?\*\//g, '')
-  return [...withoutComments.matchAll(/font-family:\s*([^;]+);/g)].map((m) =>
-    (m[1] as string).trim()
-  )
-}
-
 const TOKENS_CSS = readStyle('./theme/styles/overrides/tokens.css')
 const RSPRESS_CSS = readStyle('./theme/styles/overrides/rspress.css')
 
@@ -106,3 +80,29 @@ describe('surface stylesheets', () => {
     )
   })
 })
+
+/**
+ * Read a stylesheet from this package's `src/` tree.
+ *
+ * @private
+ * @param relative - Path relative to `packages/ui/src`
+ * @returns File contents as UTF-8
+ */
+function readStyle(relative: string): string {
+  return readFileSync(fileURLToPath(new URL(relative, import.meta.url)), 'utf8')
+}
+
+/**
+ * Collect every `font-family: <value>` declaration in a stylesheet, with
+ * comments stripped so prose mentioning a font name never trips an assertion.
+ *
+ * @private
+ * @param css - CSS source
+ * @returns Declared values in source order
+ */
+function fontFamilyValues(css: string): readonly string[] {
+  const withoutComments = css.replaceAll(/\/\*[\s\S]*?\*\//g, '')
+  return [...withoutComments.matchAll(/font-family:\s*([^;]+);/g)].map((m) =>
+    (m[1] as string).trim()
+  )
+}

@@ -4,8 +4,10 @@
  * These `@font-face` rules only make the faces *available*. Which face a
  * surface actually uses is decided by the active theme's `fonts.family`
  * tokens — see `styles/overrides/tokens.css`. The built-in themes map
- * `sans` and `mono` to `Geist Mono` and `display` to `Geist Pixel Square`;
- * `Geist` (proportional) is shipped for custom themes that want it.
+ * `mono` to `Geist Mono` and `display` to `Geist Pixel Square`, and leave
+ * `sans` proportional (the Inter stack) so body, nav, sidebar and hero copy
+ * stay readable; `Geist` is shipped for custom themes that want a
+ * proportional face from this family instead.
  */
 
 @font-face {

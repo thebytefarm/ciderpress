@@ -65,7 +65,7 @@ export function HomeWorkspaces(props: HomeWorkspacesProps): React.ReactElement |
       match(workspaces)
         .with(
           P.when((w): w is readonly WorkspaceGroupData[] => Array.isArray(w) && w.length > 0),
-          (groups) => groups.map((group) => renderGroup(group, resolvedColumns, truncate))
+          (groups) => groups.map((group, i) => renderGroup(group, resolvedColumns, truncate, i))
         )
         .otherwise(() => null)
     )
@@ -74,8 +74,17 @@ export function HomeWorkspaces(props: HomeWorkspacesProps): React.ReactElement |
     .with(null, () => null)
     .otherwise((content) => (
       <div className="cp-workspace-section">
-        <hr className="cp-divider" />
-        {renderHeading(heading)}
+        {/* The rule separates this band from the heading above it, so a
+            block with no heading of its own would render it as an orphan
+            line floating over the cards. */}
+        {match(renderHeading(heading))
+          .with(P.nullish, () => null)
+          .otherwise((head) => (
+            <>
+              <hr className="cp-divider" />
+              {head}
+            </>
+          ))}
         {content}
       </div>
     ))
@@ -176,16 +185,20 @@ function renderCard(
  * @param group - Workspace group data with heading, description, and cards
  * @param columns - Column count for the grid
  * @param truncate - Optional line-clamp limits for card text
+ * @param index - Position in the group list, to disambiguate the key
  * @returns Workspace grid element
  */
 function renderGroup(
   group: WorkspaceGroupData,
   columns: 1 | 2 | 3 | 4,
-  truncate: TruncateConfig | undefined
+  truncate: TruncateConfig | undefined,
+  index: number
 ): React.ReactElement {
   return (
+    // Heading alone is not unique — two configured workspace groups may
+    // share a title, which collided into one React key.
     <WorkspaceGrid
-      key={group.heading}
+      key={`${group.heading}-${index}`}
       heading={group.heading}
       description={group.description}
       columns={columns}

@@ -6,53 +6,6 @@ import { generateDefaultHomePage } from './home.ts'
 
 const REPO_ROOT = '/repo'
 
-function config(overrides: Partial<CiderpressConfig> = {}): CiderpressConfig {
-  return {
-    title: 'Acme Docs',
-    description: 'Everything about Acme',
-    pages: [
-      { title: 'Guides', path: '/guides', description: 'How-to walkthroughs' },
-      { title: 'Reference', path: '/reference' },
-      { title: 'Concepts', path: '/concepts' },
-    ],
-    ...overrides,
-  } as CiderpressConfig
-}
-
-/**
- * Compile a config's home page and return its parsed frontmatter blocks.
- *
- * @private
- * @param overrides - Config fields layered onto the fixture
- * @returns Parsed `blocks` array (empty when the key is absent)
- */
-async function blocksFor(
-  overrides: Partial<CiderpressConfig> = {}
-): Promise<readonly Record<string, unknown>[]> {
-  const result = await generateDefaultHomePage(config(overrides), REPO_ROOT)
-  const { data } = parseFrontmatter(result.content)
-  const blocks = data.blocks
-  if (!Array.isArray(blocks)) {
-    return []
-  }
-  return blocks as readonly Record<string, unknown>[]
-}
-
-/**
- * Read a key off a compiled block without optional chaining.
- *
- * @private
- * @param block - Compiled block, or undefined when the array was empty
- * @param key - Frontmatter key to read
- * @returns The key's value, or undefined
- */
-function firstBlockValue(block: Record<string, unknown> | undefined, key: string): unknown {
-  if (block === undefined) {
-    return undefined
-  }
-  return block[key]
-}
-
 describe('generateDefaultHomePage()', () => {
   it('should synthesize the default deck when home.blocks is omitted', async () => {
     const blocks = await blocksFor()
@@ -108,8 +61,8 @@ describe('generateDefaultHomePage()', () => {
       },
     })
     const [first] = blocks
-    expect(firstBlockValue(first, 'items')).toMatchObject([
-      { title: 'Fast', details: 'Very', icon: {} },
+    expect(firstBlockValue(first, 'items')).toEqual([
+      { title: 'Fast', details: 'Very', icon: 'pixelarticons:speed-fast' },
     ])
   })
 
@@ -197,8 +150,8 @@ describe('generateDefaultHomePage()', () => {
       },
     })
     const [first] = blocks
-    expect(firstBlockValue(first, 'items')).toMatchObject([
-      { label: 'Sync', body: 'Watches your repo', icon: {} },
+    expect(firstBlockValue(first, 'items')).toEqual([
+      { label: 'Sync', body: 'Watches your repo', icon: 'pixelarticons:reload' },
       { label: 'Themes' },
     ])
   })
@@ -252,3 +205,57 @@ describe('generateDefaultHomePage()', () => {
     expect(data.heroDemo).toMatchObject({ type: 'terminal', command: 'acme dev' })
   })
 })
+
+/**
+ * Build a config fixture with a three-page top level.
+ *
+ * @private
+ * @param overrides - Config fields layered onto the fixture
+ * @returns Complete config carrying the overrides
+ */
+function config(overrides: Partial<CiderpressConfig> = {}): CiderpressConfig {
+  return {
+    title: 'Acme Docs',
+    description: 'Everything about Acme',
+    pages: [
+      { title: 'Guides', path: '/guides', description: 'How-to walkthroughs' },
+      { title: 'Reference', path: '/reference' },
+      { title: 'Concepts', path: '/concepts' },
+    ],
+    ...overrides,
+  } as CiderpressConfig
+}
+
+/**
+ * Compile a config's home page and return its parsed frontmatter blocks.
+ *
+ * @private
+ * @param overrides - Config fields layered onto the fixture
+ * @returns Parsed `blocks` array (empty when the key is absent)
+ */
+async function blocksFor(
+  overrides: Partial<CiderpressConfig> = {}
+): Promise<readonly Record<string, unknown>[]> {
+  const result = await generateDefaultHomePage(config(overrides), REPO_ROOT)
+  const { data } = parseFrontmatter(result.content)
+  const blocks = data.blocks
+  if (!Array.isArray(blocks)) {
+    return []
+  }
+  return blocks as readonly Record<string, unknown>[]
+}
+
+/**
+ * Read a key off a compiled block without optional chaining.
+ *
+ * @private
+ * @param block - Compiled block, or undefined when the array was empty
+ * @param key - Frontmatter key to read
+ * @returns The key's value, or undefined
+ */
+function firstBlockValue(block: Record<string, unknown> | undefined, key: string): unknown {
+  if (block === undefined) {
+    return undefined
+  }
+  return block[key]
+}

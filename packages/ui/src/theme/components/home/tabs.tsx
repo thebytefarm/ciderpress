@@ -146,7 +146,11 @@ export function HomeTabs(props: HomeTabsProps): React.ReactElement | null {
           {list.map((item, index) => (
             <Tab key={`${item.label}-${index}`} id={String(index)} className="cp-tabs__tab">
               {renderTabIcon(item.icon)}
-              <span className="cp-tabs__tab-label">{renderRichText(item.label)}</span>
+              {/* Plain text, not rich: the tab is already an interactive
+                  `role="tab"`, and a markdown link in a label would nest an
+                  anchor inside it — invalid DOM that breaks keyboard
+                  traversal and screen-reader announcement. */}
+              <span className="cp-tabs__tab-label">{toPlainText(item.label)}</span>
             </Tab>
           ))}
         </TabList>

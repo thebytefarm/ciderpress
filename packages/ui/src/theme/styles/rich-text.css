@@ -9,9 +9,35 @@
  */
 
 /* Accent — what `**emphasis**` renders as, and the explicit form of
-   the hero title's auto-accent. */
+   the hero title's auto-accent.
+
+   `--cp-c-brand-1` is a FILL colour: it is tuned to sit behind
+   `--cp-c-brand-fg`, not to be read as text on the page background. Used
+   directly here it failed WCAG AA in four theme/variant combinations, and
+   on mulled/dark it measured 2.38:1 — under even the 3:1 large-text floor,
+   so it failed at any size including the hero headline.
+
+   Accent copy lands in 16px/400 body text (`.cp-tabs__body`,
+   `.cp-split__body`), so the 4.5:1 bar applies. Every dark variant clears
+   it with `--cp-c-brand-light` (5.26:1 on honeycrisp and mulled, up to
+   15.22:1 on arcade) and every light variant with `--cp-c-brand-2`
+   (4.83:1 on amber, up to 9.35:1 on mulled). The variant-less fallback
+   matches the light rule because the unthemed page background is light.
+
+   `--cp-c-brand-lighter` is deliberately NOT used here. It is the palest
+   rung of the ramp, so it clears contrast by a wide margin (10.43:1 on
+   honeycrisp) but washes the hue out — a light red reads as pink, not as
+   the brand. `light` is the most saturated rung that still clears 4.5:1.
+
+   The same pair is used for the home eyebrows (`.cp-hero__eyebrow` aside,
+   which is a text-2 pill): see home.css, cta.css and split.css. Keep them
+   in step — they are the only other places brand colour carries text. */
 .cp-accent {
-  color: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-2, var(--cp-c-brand-1));
+}
+
+html[data-cp-variant='dark'] .cp-accent {
+  color: var(--cp-c-brand-light, var(--cp-c-brand-1));
 }
 
 /* Inline code in display copy: the document code style is tuned for

@@ -45,6 +45,28 @@ A `proof` block's `names` accepts either a plain string or a `ProofLogo`, and th
 
 `mono: true` draws a logo as a silhouette in the current text colour instead of its own palette. Reach for it when a mark's baked colours only read against one background, since ciderpress ships a light variant for every theme.
 
+### Migration
+
+Every mapping from the old shape to the new one. The `type` field on a visual is **required**, so an un-migrated `visual` or `demo` fails config load rather than degrading.
+
+| Before                                | After                                                                   |
+| ------------------------------------- | ----------------------------------------------------------------------- |
+| `home.proof: { ... }`                 | `home.blocks: [{ type: 'proof', ... }]`                                 |
+| `home.features: { ... }`              | `home.blocks: [{ type: 'features', ... }]`                              |
+| `home.showcase: { ... }`              | `home.blocks: [{ type: 'showcase', ... }]`                              |
+| `home.split: { ... }`                 | `home.blocks: [{ type: 'split', ... }]`                                 |
+| `home.cta: { ... }`                   | `home.blocks: [{ type: 'cta', ... }]`                                   |
+| `home.layout: ['proof', 'cta']`       | array order of `home.blocks`                                            |
+| `home.split: false`                   | omit the block                                                          |
+| `split.visual: { code, language }`    | `visual: { type: 'code', code, language }`                              |
+| `hero.demo: { src, alt }`             | `demo: { type: 'image', src, alt }`                                     |
+| `hero.demo: { command, lines }`       | `demo: { type: 'terminal', command, lines }`                            |
+| `heading: { label, title, subtitle }` | flat `label` / `title` / `body` on the block (`subtitle` is now `body`) |
+
+Hand-authored `index.md` files are not migrated for you — the sync engine skips block compilation when you ship your own home page, so update its frontmatter by hand. Unrecognised top-level home keys (`proof:`, `cta:`, `split:`) are ignored rather than rendered.
+
+There is no replacement for `HomeLayoutEntry`'s `component` escape hatch — arbitrary React sections are no longer part of the home config. Use `beforeHero` / `afterHero` on `HomeLayout`, or a custom page.
+
 ### One visual union
 
 `hero.demo` and `split.visual` now take the same `HomeVisual` — a union discriminated on a **required** `type` field:
@@ -85,7 +107,7 @@ A tab's `cta` renders where the axis puts it: horizontal closes the copy column,
 
 Removed from `@ciderpress/config`: `HomeSectionId`, `HomeLayoutEntry`, `DEFAULT_HOME_LAYOUT`, `HomeSectionHeading`, `HomeProofConfig`, `HomeFeaturesConfig`, `HomeShowcaseConfig`, `HomeSplitConfig`, `HomeCtaConfig`, `HomeSplitVisual`, `HomeHeroDemoConfig`, `HomeHeroDemoImage`, `HomeHeroDemoTerminal`, `HomeHeroDemoLine`.
 
-Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `ProofLogo`, `ProofItem`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`, `DEFAULT_HOME_BLOCKS`.
+Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `ProofLogo`, `ProofItem`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`.
 
 Added to `@ciderpress/ui`: `HomeTabs`, `HomeTabsProps`, `HomeTabEntry`, `TabsAction`. `CTA` gains an `eyebrow` prop, and `HomeSplit`'s `visual` prop is now optional — a copy-only split renders full width instead of painting an empty frame.
 

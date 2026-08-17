@@ -33,16 +33,22 @@ interface HomeVisualViewProps {
  * - **terminal** — the framework's fake-macOS chrome painted with the
  *   supplied command and output lines.
  *
+ * Terminates in `.otherwise`, not `.exhaustive`: on a hand-authored home
+ * page this receives raw frontmatter, where a blank `visual:` parses to
+ * null and `type:` may name a variant that does not exist. Throwing
+ * `NonExhaustiveError` from here failed the entire site build, so an
+ * unrenderable visual yields nothing instead.
+ *
  * @param props - Validated visual config and the surface it renders into
- * @returns The visual's React element
+ * @returns The visual's React element, or null when it cannot be rendered
  */
-export function HomeVisualView(props: HomeVisualViewProps): React.ReactElement {
+export function HomeVisualView(props: HomeVisualViewProps): React.ReactElement | null {
   const { visual, context } = props
   return match(visual)
     .with({ type: 'code' }, (v) => renderCode(v.code, v.language, context))
     .with({ type: 'image' }, (v) => renderImage(v, context))
     .with({ type: 'terminal' }, (v) => <VisualTerminal config={v} />)
-    .exhaustive()
+    .otherwise(() => null)
 }
 
 /**

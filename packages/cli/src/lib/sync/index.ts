@@ -35,6 +35,16 @@ export interface SyncResult {
   readonly pagesRemoved: number
   readonly elapsed: number
   /**
+   * Non-fatal problems found while compiling the home page — an
+   * unresolvable `showcase.source` path, an unrecognized block type.
+   *
+   * Returned as well as logged: logging is gated on `quiet`, so a CI sync
+   * used to discard these entirely and a band could vanish from the built
+   * site with no signal anywhere. Callers that care can inspect this
+   * regardless of log settings.
+   */
+  readonly warnings: readonly string[]
+  /**
    * When set, the sync failed and this message describes why.
    * Callers should treat a non-null error as a hard failure.
    */
@@ -128,6 +138,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
       pagesSkipped: 0,
       pagesRemoved: 0,
       elapsed: performance.now() - start,
+      warnings: [],
       error: resolveErr.message,
     }
   }
@@ -296,7 +307,13 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     )
   }
 
-  return { pagesWritten: written, pagesSkipped: skipped, pagesRemoved: removed, elapsed }
+  return {
+    pagesWritten: written,
+    pagesSkipped: skipped,
+    pagesRemoved: removed,
+    elapsed,
+    warnings: homeWarnings,
+  }
 }
 
 /**

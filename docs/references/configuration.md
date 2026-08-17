@@ -23,7 +23,9 @@ Configuration is loaded via [c12](https://github.com/unjs/c12). Supported file f
 
 ## Rich text
 
-Every display string in the config accepts inline markup — no flag, no opt-in. Ciderpress parses it and drops anything unsafe.
+Display strings on the home page accept inline markup — no flag, no opt-in. Ciderpress parses it and drops anything unsafe.
+
+This covers the hero, every `home.blocks[]` band (proof, features, showcase, split, tabs, cta), and workspace cards. Strings outside those surfaces — `footer`, `sidebar.promo`, sidebar link text, and `announcement` — render verbatim today, so markers in them show as literal characters.
 
 | Syntax                   | Renders                                         |
 | ------------------------ | ----------------------------------------------- |
@@ -34,12 +36,23 @@ Every display string in the config accepts inline markup — no flag, no opt-in.
 | `[text](/href)`          | link, SPA-routed when internal                  |
 | `<br>`                   | line break                                      |
 | `<strong>plain</strong>` | bold with no colour, when you want weight alone |
+| `\*`                     | a literal marker character                      |
 
 `**` is the accent: a heading is already bold, so weight by itself would say nothing there — `**` colours the phrase instead, in headings and body copy alike. Reach for `<strong>` on the rare occasion you want bold without the colour. `==` keeps the meaning it has in Obsidian, Typora, and markdown-it-mark — a highlight.
 
 Because inline HTML is supported, `<span class="cp-accent">text</span>` and `<mark>text</mark>` are equivalent long forms of the two markers. Useful when you want the accent on part of a word, or inside copy that already uses asterisks.
 
-Inline HTML is allowed for `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class`, `title`, and (on `<a>`) `href` attributes. An `<a href>` is validated exactly like a markdown link.
+Inline HTML is allowed for `a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, and `ins`, keeping only the `class` (or `classname`), `title`, and (on `<a>`) `href` attributes. An `<a href>` is validated exactly like a markdown link.
+
+### Escaping
+
+A backslash makes any marker literal — `\*`, `` \` ``, `\=`, `\[`, `\]`, `\<`, and `\\`. Needed when copy has to name a glob or an expression:
+
+```ts
+description: 'Discovers \\*\\*/\\*.md across the repo'
+```
+
+An asterisk is only read as italic when it hugs its text, so `2 * 3` and a bare `*.md` already pass through untouched; reach for the backslash when a marker sits directly against a word.
 
 ```ts
 home: {
@@ -67,7 +80,7 @@ Block markdown — lists, headings, blockquotes, tables — is **not** supported
 
 ### Plain-text contexts
 
-The same string is stripped to bare text wherever markup cannot render: `<title>`, `<meta name="description">`, Open Graph tags, `aria-label`s, and image `alt` text. One value serves both.
+The same string is stripped to bare text wherever markup cannot render: the document `<title>`, `<meta name="description">`, and the tab strip's `aria-label`. One value serves both.
 
 ```ts
 description: 'Beautiful Docs, **Zero Effort**',
@@ -418,7 +431,7 @@ packages:   Workspace[],
 workspaces: WorkspaceGroup[],
 ```
 
-All three drive the home page card grid (via `home.showcase`), the auto-generated landing card on their parent, and the workspace introduction page.
+All three drive the home page card grid (via a `showcase` block in `home.blocks`), the auto-generated landing card on their parent, and the workspace introduction page.
 
 ### Workspace
 
@@ -890,13 +903,11 @@ home: {
 | `hero`   | `HomeHeroConfig` | Headline, tagline, actions, and the optional demo visual. Always rendered first |
 | `blocks` | `HomeBlock[]`    | Ordered landing bands below the hero. Omit for the auto-generated default deck  |
 
-`blocks: []` renders nothing below the hero. `DEFAULT_HOME_BLOCKS` is exported so the default deck can be extended rather than retyped:
+`blocks: []` renders nothing below the hero. Omitting `blocks` renders the default deck — a features grid plus the workspace showcase. To keep that deck and add to it, write it out and append:
 
 ```ts
-import { DEFAULT_HOME_BLOCKS } from 'ciderpress'
-
 home: {
-  blocks: [...DEFAULT_HOME_BLOCKS, { type: 'cta', title: 'Ready?' }],
+  blocks: [{ type: 'features' }, { type: 'showcase' }, { type: 'cta', title: 'Ready?' }],
 }
 ```
 
@@ -992,14 +1003,40 @@ Terminal `lines[].kind` picks the prefix glyph: `ok` → `✓`, `info` → `▸`
 {
   type: 'proof',
   lead?: string,
-  names?: string[],
+  names?: (string | ProofLogo)[],
 }
 ```
 
-| Field   | Type       | Description                                           |
-| ------- | ---------- | ----------------------------------------------------- |
-| `lead`  | `string`   | Lead phrase (e.g. `"used by"`, `"powering teams at"`) |
-| `names` | `string[]` | List of names — the band is skipped when empty        |
+| Field   | Type                      | Description                                             |
+| ------- | ------------------------- | ------------------------------------------------------- |
+| `lead`  | `string`                  | Lead phrase (e.g. `"used by"`, `"powering teams at"`)   |
+| `names` | `(string \| ProofLogo)[]` | Names, logos, or a mix — the band is skipped when empty |
+
+#### ProofLogo
+
+An entry may be a bare string or a logo object. Mix both in one strip.
+
+```ts
+{
+  type: 'proof',
+  lead: 'used by',
+  names: [
+    'Acme',
+    { src: '/logos/beta.svg', alt: 'Beta' },
+    { src: '/logos/gamma.svg', alt: 'Gamma', href: 'https://gamma.dev', height: 24, mono: true },
+  ],
+}
+```
+
+| Field    | Type      | Default | Description                                                                                                   |
+| -------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------- |
+| `src`    | `string`  | —       | Required. Public path to the asset, base-prefixed on a mounted `base`                                         |
+| `alt`    | `string`  | —       | Required. Accessible name for the logo                                                                        |
+| `href`   | `string`  | —       | Makes the logo a link. Validated like any other href; rejected schemes drop the link and keep the mark        |
+| `height` | `integer` | `20`    | Rendered height in pixels; width follows the asset's aspect ratio                                             |
+| `mono`   | `boolean` | `false` | Draw the asset as a silhouette in the current text colour, so one file works on every theme and both variants |
+
+`mono` reads only the asset's alpha channel, so trim the artwork's `viewBox` to the mark itself — surrounding padding becomes part of the silhouette.
 
 ### HomeFeaturesBlock
 

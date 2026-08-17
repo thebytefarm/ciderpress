@@ -159,7 +159,11 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     active: '#7f1d1d',
     fg: '#ffffff',
     soft: 'rgba(220, 38, 38, 0.14)',
-    light: '#f87171',
+    // Accent copy on dark resolves to `light`. Red 400 (#f87171) read as
+    // salmon rather than as the brand; red 500 holds AA at 5.26:1 on the
+    // near-black canvas while staying recognisably red, and still sits
+    // between `primary` and `lighter` on the ramp.
+    light: '#ef4444',
     lighter: '#fca5a5',
   },
   grannysmith: {
@@ -177,7 +181,10 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     active: '#450a0a',
     fg: '#ffffff',
     soft: 'rgba(153, 27, 27, 0.14)',
-    light: '#dc2626',
+    // Accent copy on dark resolves to `light`. Red 600 (#dc2626) missed the
+    // 4.5:1 bar at 4.10:1; red 500 clears it at 5.26:1 and still lightens the
+    // deep burgundy `primary`.
+    light: '#ef4444',
     lighter: '#f87171',
   },
   amber: {

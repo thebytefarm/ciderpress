@@ -1,3 +1,4 @@
+import { unfold } from 'massaman/array'
 import { match } from 'massaman/match'
 
 import { safeUrl } from './safe-url.ts'
@@ -53,18 +54,46 @@ export const ACCENT_CLASS = 'cp-accent'
  */
 export const MARK_CLASS = 'cp-mark'
 
-// Ordered alternation — the earliest match wins, and `**` is tried
-// before `*` so bold is not read as two italics. A fenced code span
-// comes first so markers inside it stay literal.
+// Ordered alternation, earliest match wins. Alternation order only breaks
+// ties at the SAME start index, so `**` being listed before `*` does not by
+// itself stop a stray earlier `*` from claiming a later bold's opening
+// marker — the italic branch carries `(?<!\*)` / `(?!\*)` guards for that.
 //
-// The tag branch takes everything up to `>` as one `[^>]*` run rather
-// than a nested optional-attribute group: nesting quantifiers there is
-// the classic backtracking blowup, and the trailing `/` of a
-// self-closing tag is cheaper to read off the captured text.
+// A backslash escape comes first so `\*`, `` \` ``, `\[`, `\<`, `\=` and
+// `\\` can be written literally. Without it a docs site cannot put `*.md`
+// or `**/*.ts` in its own copy.
+//
+// A fenced code span comes next so markers inside it stay literal.
+//
+// The tag branch reads attributes as a quote-aware run so a `>` inside an
+// attribute value does not truncate the tag, and pins the tag name with a
+// `(?=[\s/>])` lookahead so the name group and the attribute run cannot
+// overlap — that ambiguity, not attribute nesting, is the backtracking
+// blowup. The trailing `/` of a self-closing tag is read off the captured
+// text.
+// The italic branch also requires its delimiters to "flank" the text —
+// the opener followed by a non-space, the closer preceded by one — which
+// is CommonMark's rule and what keeps `2 * 3 * 4` from italicising ` 3 `.
+//
+// The unsafe-regex lint is suppressed below rather than satisfied: every
+// alternation here is disjoint on its first character (`"` / `'` / neither
+// for attributes; `(` / not-`(` for link destinations), so there is no
+// ambiguity for a backtracking engine to explore. Measured linear from 2k
+// to 128k chars (0.19ms -> 0.45ms) across tag-name runs, attribute runs,
+// quote runs, unbalanced parens, and unterminated quotes. The pattern this
+// replaced *was* quadratic (2ms -> 427ms over the same range).
+/* oxlint-disable security/detect-unsafe-regex -- disjoint alternations, measured linear */
 const TOKEN_PATTERN =
-  /(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:==([\s\S]+?)==)|(?:\*([^*\n]+?)\*)|(?:\[([^\]]*)\]\(([^)\s]+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)([^>]*)>)/
+  /(?:\\([*=`[\]<\\]))|(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:==([\s\S]+?)==)|(?:(?<!\*)\*(?=[^\s*])([^*\n]+?)(?<=[^\s*])\*(?!\*))|(?:\[([^\]]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)(?=[\s/>])((?:"[^"]*"|'[^']*'|[^>"'])*)>)/
+/* oxlint-enable security/detect-unsafe-regex */
 
 const ATTR_PATTERN = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
+
+/**
+ * Characters that may follow `</name` in a well-formed closing tag. Used to
+ * reject a prefix hit — `</s` must not close on `</span>`.
+ */
+const CLOSE_TAG_BOUNDARY = /[\s>]/
 
 /**
  * One parsed inline node. Plain data, so the same parse feeds both the
@@ -96,6 +125,10 @@ export type InlineNode =
  * dropped. Unknown tags are unwrapped and dangerous ones removed whole,
  * so a renderer never has to trust the input.
  *
+ * A backslash escapes any marker character — `\*`, `` \` ``, `\=`, `\[`,
+ * `\]`, `\<`, `\\` — so copy can name a glob or an expression such as
+ * `2 * 3` without it being read as markup.
+ *
  * Block markdown (lists, headings, blockquotes) is out of scope: these
  * fields are single-line display copy.
  *
@@ -109,7 +142,7 @@ export function parseRichText(text: string): readonly InlineNode[] {
   if (typeof text !== 'string' || text.length === 0) {
     return []
   }
-  return parseInline(text)
+  return parseInline({ input: text, inLink: false })
 }
 
 /**
@@ -173,26 +206,50 @@ function containsAccent(nodes: readonly InlineNode[]): boolean {
 }
 
 /**
- * Tokenize copy into inline nodes. Recursive rather than iterative:
- * each pass takes the text before the first token, the token itself,
- * then continues on what the token left behind.
+ * Parameters for {@link parseInline}.
  *
  * @private
- * @param input - Remaining unparsed copy
+ */
+interface ParseInlineParams {
+  readonly input: string
+  /**
+   * Whether parsing is already inside a link. Nested anchors are invalid
+   * DOM — React warns and browsers split the tree on hydration — so a
+   * link found while this is set renders as its label alone.
+   */
+  readonly inLink: boolean
+}
+
+/**
+ * Tokenize copy into inline nodes. Each step takes the text before the
+ * first token, the token itself, then continues on what the token left
+ * behind.
+ *
+ * Driven by `unfold` rather than self-recursion: a self-recursive walk
+ * adds a stack frame per token and JS has no tail-call elimination, so
+ * long copy overflowed the stack with an unattributed `RangeError` that
+ * failed the whole SSG build. Nesting still recurses — through
+ * {@link consumeToken} — but that depth is bounded by how deeply the
+ * markup nests, not by how many tokens the string holds.
+ *
+ * @private
+ * @param params - Remaining unparsed copy and whether it sits inside a link
  * @returns Parsed nodes in source order
  */
-function parseInline(input: string): readonly InlineNode[] {
-  if (input.length === 0) {
-    return []
-  }
-  const found = TOKEN_PATTERN.exec(input)
-  if (found === null) {
-    return [{ kind: 'text', value: input }]
-  }
-  const lead = input.slice(0, found.index)
-  const after = input.slice(found.index + found[0].length)
-  const step = consumeToken({ found, after })
-  return [...textNodes(lead), ...step.nodes, ...parseInline(step.rest)]
+function parseInline({ input, inLink }: ParseInlineParams): readonly InlineNode[] {
+  return unfold<string, readonly InlineNode[]>((remaining) => {
+    if (remaining.length === 0) {
+      return false
+    }
+    const found = TOKEN_PATTERN.exec(remaining)
+    if (found === null) {
+      return [[{ kind: 'text', value: remaining }], '']
+    }
+    const lead = remaining.slice(0, found.index)
+    const after = remaining.slice(found.index + found[0].length)
+    const step = consumeToken({ found, after, inLink })
+    return [[...textNodes(lead), ...step.nodes], step.rest]
+  }, input).flat()
 }
 
 /**
@@ -229,34 +286,42 @@ interface TokenStep {
 interface ConsumeTokenParams {
   readonly found: RegExpExecArray
   readonly after: string
+  readonly inLink: boolean
 }
 
 /**
  * Convert one token match into nodes.
  *
  * @private
- * @param params - The token match and the input following it
+ * @param params - The token match, the input following it, and link depth
  * @returns Nodes and the remaining input
  */
-function consumeToken({ found, after }: ConsumeTokenParams): TokenStep {
-  const [, code, bold, highlight, italic, linkText, linkHref, closing, tagName, rawAttrs] = found
+function consumeToken({ found, after, inLink }: ConsumeTokenParams): TokenStep {
+  const [, escaped, code, bold, highlight, italic, linkText, linkHref, closing, tagName, rawAttrs] =
+    found
   // Sequential guards rather than a `match` on the group tuple: the
   // groups are independent `string | undefined` slots, so matching one
   // tells the compiler nothing useful about the others.
+  if (escaped !== undefined) {
+    return { nodes: [{ kind: 'text', value: escaped }], rest: after }
+  }
   if (code !== undefined) {
     return { nodes: [codeNode(code)], rest: after }
   }
   if (bold !== undefined) {
-    return { nodes: [accentNode(parseInline(bold))], rest: after }
+    return { nodes: [accentNode(parseInline({ input: bold, inLink }))], rest: after }
   }
   if (highlight !== undefined) {
-    return { nodes: [markNode(parseInline(highlight))], rest: after }
+    return { nodes: [markNode(parseInline({ input: highlight, inLink }))], rest: after }
   }
   if (italic !== undefined) {
-    return { nodes: [element({ tag: 'em', children: parseInline(italic) })], rest: after }
+    return {
+      nodes: [element({ tag: 'em', children: parseInline({ input: italic, inLink }) })],
+      rest: after,
+    }
   }
   if (linkHref !== undefined) {
-    return { nodes: linkNodes({ text: linkText ?? '', href: linkHref }), rest: after }
+    return { nodes: linkNodes({ text: linkText ?? '', href: linkHref, inLink }), rest: after }
   }
   if (tagName !== undefined) {
     const tail = (rawAttrs ?? '').trimEnd()
@@ -269,6 +334,7 @@ function consumeToken({ found, after }: ConsumeTokenParams): TokenStep {
       isClosing: closing === '/',
       isSelfClosing,
       after,
+      inLink,
     })
   }
   return { nodes: [{ kind: 'text', value: found[0] }], rest: after }
@@ -285,6 +351,7 @@ interface ConsumeTagParams {
   readonly isClosing: boolean
   readonly isSelfClosing: boolean
   readonly after: string
+  readonly inLink: boolean
 }
 
 /**
@@ -305,7 +372,7 @@ interface ConsumeTagParams {
  * @returns Nodes and the remaining input
  */
 function consumeTag(params: ConsumeTagParams): TokenStep {
-  const { tagName, attrs, isClosing, isSelfClosing, after } = params
+  const { tagName, attrs, isClosing, isSelfClosing, after, inLink } = params
   if (isClosing) {
     return { nodes: [], rest: after }
   }
@@ -332,12 +399,17 @@ function consumeTag(params: ConsumeTagParams): TokenStep {
     return { nodes: [], rest }
   }
   if (tagName === 'a') {
-    return { nodes: anchorNodes({ attrs, children: parseInline(inner) }), rest }
+    return { nodes: anchorNodes({ attrs, inner, inLink }), rest }
   }
   if (ALLOWED_TAGS.has(tagName)) {
-    return { nodes: [taggedElement({ tag: tagName, attrs, children: parseInline(inner) })], rest }
+    return {
+      nodes: [
+        taggedElement({ tag: tagName, attrs, children: parseInline({ input: inner, inLink }) }),
+      ],
+      rest,
+    }
   }
-  return { nodes: parseInline(inner), rest }
+  return { nodes: parseInline({ input: inner, inLink }), rest }
 }
 
 /**
@@ -389,12 +461,50 @@ function findClosingTag({
   text,
   tagName,
 }: FindClosingTagParams): { readonly start: number; readonly end: number } | null {
-  const start = text.toLowerCase().indexOf(`</${tagName}`)
-  if (start < 0) {
+  return scanForClose({ lower: text.toLowerCase(), tagName, from: 0 })
+}
+
+/**
+ * Parameters for {@link scanForClose}.
+ *
+ * @private
+ */
+interface ScanForCloseParams {
+  readonly lower: string
+  readonly tagName: string
+  readonly from: number
+}
+
+/**
+ * Find the next `</tagName>` at or after `from`, skipping prefix hits.
+ *
+ * A bare `indexOf('</' + tagName)` treats `</span>` as a match for `</s`,
+ * so `<s>a <span>b</span> c</s>` closed the strikethrough on the span's
+ * tag: the inner element vanished and the trailing copy escaped its
+ * styling. Every whitelisted tag that prefixes another — `s`, `b`, `i`,
+ * `u` against `span`/`strong`/`small`/`sub`/`sup`/`br`/`ins` — hit this.
+ * The character after the name must therefore be `>` or whitespace.
+ *
+ * @private
+ * @param params - Lowercased haystack, tag to close, and search offset
+ * @returns Start/end offsets of the closing tag, or null when absent
+ */
+function scanForClose({
+  lower,
+  tagName,
+  from,
+}: ScanForCloseParams): { readonly start: number; readonly end: number } | null {
+  const needle = `</${tagName}`
+  const start = lower.indexOf(needle, from)
+  if (start === -1) {
     return null
   }
-  const gt = text.indexOf('>', start)
-  if (gt < 0) {
+  const boundary = lower.charAt(start + needle.length)
+  if (!CLOSE_TAG_BOUNDARY.test(boundary)) {
+    return scanForClose({ lower, tagName, from: start + needle.length })
+  }
+  const gt = lower.indexOf('>', start)
+  if (gt === -1) {
     return null
   }
   return { start, end: gt + 1 }
@@ -456,27 +566,30 @@ function taggedElement({ tag, attrs, children }: TaggedElementParams): InlineNod
  */
 interface AnchorNodesParams {
   readonly attrs: string
-  readonly children: readonly InlineNode[]
+  readonly inner: string
+  readonly inLink: boolean
 }
 
 /**
  * Nodes for an `<a>` element — validated through {@link safeUrl}, and
- * unwrapped to its text when the destination is rejected or missing.
+ * unwrapped to its text when the destination is rejected, missing, or
+ * would nest one anchor inside another.
  *
  * @private
- * @param params - Raw attribute text and parsed contents
+ * @param params - Raw attribute text, raw contents, and link depth
  * @returns Link node, or the bare contents
  */
-function anchorNodes({ attrs, children }: AnchorNodesParams): readonly InlineNode[] {
+function anchorNodes({ attrs, inner, inLink }: AnchorNodesParams): readonly InlineNode[] {
   const { href } = parseAttrs(attrs)
-  if (href === undefined) {
-    return children
+  if (href === undefined || inLink) {
+    return parseInline({ input: inner, inLink })
   }
   const safe = safeUrl(href)
   if (safe === null) {
-    return children
+    return parseInline({ input: inner, inLink })
   }
-  return [{ kind: 'link', href: safe, children }]
+  const children = parseInline({ input: inner, inLink: true })
+  return linkOrChildren({ href: safe, children })
 }
 
 /**
@@ -487,22 +600,51 @@ function anchorNodes({ attrs, children }: AnchorNodesParams): readonly InlineNod
 interface LinkNodesParams {
   readonly text: string
   readonly href: string
+  readonly inLink: boolean
 }
 
 /**
  * Nodes for a markdown link, falling back to bare text when the
- * destination fails validation.
+ * destination fails validation or the link would nest inside another.
  *
  * @private
- * @param params - Link label and raw destination
+ * @param params - Link label, raw destination, and link depth
  * @returns Link node, or the parsed label
  */
-function linkNodes({ text, href }: LinkNodesParams): readonly InlineNode[] {
+function linkNodes({ text, href, inLink }: LinkNodesParams): readonly InlineNode[] {
   const safe = safeUrl(href)
-  if (safe === null) {
-    return parseInline(text)
+  if (safe === null || inLink) {
+    return parseInline({ input: text, inLink })
   }
-  return [{ kind: 'link', href: safe, children: parseInline(text) }]
+  return linkOrChildren({ href: safe, children: parseInline({ input: text, inLink: true }) })
+}
+
+/**
+ * Parameters for {@link linkOrChildren}.
+ *
+ * @private
+ */
+interface LinkOrChildrenParams {
+  readonly href: string
+  readonly children: readonly InlineNode[]
+}
+
+/**
+ * Wrap contents in a link, dropping the link when it has no contents.
+ *
+ * An empty label — `[](/x)` or `<a href="/x"></a>` — would render an
+ * anchor with no accessible name, which screen readers announce as a bare
+ * "link" and which fails WCAG 2.4.4.
+ *
+ * @private
+ * @param params - Validated destination and parsed contents
+ * @returns A single link node, or nothing
+ */
+function linkOrChildren({ href, children }: LinkOrChildrenParams): readonly InlineNode[] {
+  if (children.length === 0) {
+    return []
+  }
+  return [{ kind: 'link', href, children }]
 }
 
 /**

@@ -14,8 +14,14 @@
   font-size: var(--cp-fs-eyebrow);
   text-transform: uppercase;
   letter-spacing: var(--cp-letter-eyebrow);
-  color: var(--cp-c-brand-1);
+  /* Same shade pair as `.cp-accent` — `--cp-c-brand-1` is a fill colour and
+     misses 4.5:1 at this size on several themes. See styles/rich-text.css. */
+  color: var(--cp-c-brand-2, var(--cp-c-brand-1));
   margin-bottom: var(--cp-s-12);
+}
+
+html[data-cp-variant='dark'] .cp-cta__eyebrow {
+  color: var(--cp-c-brand-light, var(--cp-c-brand-1));
 }
 
 .cp-cta__title {

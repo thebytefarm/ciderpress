@@ -158,8 +158,16 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    color: var(--cp-c-brand-1);
+    /* Eyebrows are 11px, so the 4.5:1 bar applies. `--cp-c-brand-1` is a fill
+       colour and misses it in four theme/variant pairs (2.38:1 on mulled dark,
+       4.10:1 on honeycrisp dark, ~3.1:1 on amber and grannysmith light), so
+       take the same shade pair `.cp-accent` uses — see styles/rich-text.css. */
+    color: var(--cp-c-brand-2, var(--cp-c-brand-1));
     margin-bottom: 12px;
+  }
+
+  html[data-cp-variant='dark'] .cp-feature-section-head__eyebrow {
+    color: var(--cp-c-brand-light, var(--cp-c-brand-1));
   }
 
   .cp-feature-section-head__title {

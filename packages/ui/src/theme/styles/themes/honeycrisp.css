@@ -7,7 +7,7 @@ html[data-cp-theme='honeycrisp'][data-cp-variant='dark'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(220, 38, 38, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #f87171;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #fca5a5;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -97,7 +97,7 @@ html[data-cp-theme='honeycrisp'][data-cp-variant='dark'] {
   --cp-oas-deprecated: var(--cp-c-text-3);
   --cp-oas-required: #dc2626;
   --cp-button-brand-bg: #dc2626;
-  --cp-button-brand-hover-bg: #f87171;
+  --cp-button-brand-hover-bg: #ef4444;
   --cp-button-brand-active-bg: #b91c1c;
   --cp-button-brand-text: #ffffff;
   --cp-s-1: 1px;
@@ -254,7 +254,7 @@ html[data-cp-theme='honeycrisp'][data-cp-variant='dark'] {
   --rp-c-bg-mute: #0a0a0a;
   --rp-c-bg-soft: #1c1c1c;
   --rp-c-brand: #dc2626;
-  --rp-c-brand-light: #f87171;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #fca5a5;
   --rp-c-brand-dark: #b91c1c;
   --rp-c-brand-darker: #7f1d1d;
@@ -294,7 +294,7 @@ html[data-cp-theme='honeycrisp'][data-cp-variant='light'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(220, 38, 38, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #f87171;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #fca5a5;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -541,7 +541,7 @@ html[data-cp-theme='honeycrisp'][data-cp-variant='light'] {
   --rp-c-bg-mute: #ffffff;
   --rp-c-bg-soft: #f0f0f0;
   --rp-c-brand: #dc2626;
-  --rp-c-brand-light: #f87171;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #fca5a5;
   --rp-c-brand-dark: #b91c1c;
   --rp-c-brand-darker: #7f1d1d;

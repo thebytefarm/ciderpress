@@ -21,14 +21,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-
+      # Node must be set up BEFORE pnpm: the codspeed-macro runner ships Node
+      # 18, and pnpm 11's self-installer uses `import.meta.dirname` (Node
+      # 20.11+). Leaving pnpm first makes the installer crash on that runner.
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '24'
-          cache: 'pnpm'
+
+      # `cache: 'pnpm'` on setup-node can't be used here since pnpm isn't on
+      # PATH yet, so let action-setup cache the store instead.
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          cache: true
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

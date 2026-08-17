@@ -1,6 +1,5 @@
 export {
   SOCIAL_LINK_ICONS,
-  DEFAULT_HOME_BLOCKS,
   defineConfig,
   defineTheme,
   hasGlobChars,

@@ -7,7 +7,7 @@
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -97,7 +97,7 @@
   --cp-oas-deprecated: var(--cp-c-text-3);
   --cp-oas-required: #dc2626;
   --cp-button-brand-bg: #991b1b;
-  --cp-button-brand-hover-bg: #dc2626;
+  --cp-button-brand-hover-bg: #ef4444;
   --cp-button-brand-active-bg: #7f1d1d;
   --cp-button-brand-text: #ffffff;
   --cp-s-1: 1px;
@@ -254,7 +254,7 @@
   --rp-c-bg-mute: #0a0a0a;
   --rp-c-bg-soft: #1c1c1c;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;
@@ -294,7 +294,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -384,7 +384,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --cp-oas-deprecated: var(--cp-c-text-3);
   --cp-oas-required: #dc2626;
   --cp-button-brand-bg: #991b1b;
-  --cp-button-brand-hover-bg: #dc2626;
+  --cp-button-brand-hover-bg: #ef4444;
   --cp-button-brand-active-bg: #7f1d1d;
   --cp-button-brand-text: #ffffff;
   --cp-s-1: 1px;
@@ -541,7 +541,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --rp-c-bg-mute: #0a0a0a;
   --rp-c-bg-soft: #1c1c1c;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;
@@ -581,7 +581,7 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -828,7 +828,7 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --rp-c-bg-mute: #fbf6f4;
   --rp-c-bg-soft: #ead9d4;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;

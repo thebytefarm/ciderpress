@@ -12,15 +12,6 @@ vi.mock(import('node:fs/promises'), () => ({
 
 const { buildWorkspaceCardJsx, generateLandingContent } = await import('./landing')
 
-function mockEntry(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
-  return {
-    title: 'Test Entry',
-    link: '/test',
-    page: { outputPath: 'test.md', frontmatter: {} },
-    ...overrides,
-  }
-}
-
 describe('buildWorkspaceCardJsx()', () => {
   it('should generate card with title and href', () => {
     const result = buildWorkspaceCardJsx({ title: 'My Doc', link: '/docs/my-doc' })
@@ -134,3 +125,19 @@ describe('generateLandingContent()', () => {
     expect(result).toContain('<SectionCard ')
   })
 })
+
+/**
+ * Build a resolved entry backed by the mocked `readFile` description.
+ *
+ * @private
+ * @param overrides - Entry fields layered onto the fixture
+ * @returns Resolved entry pointing at a stub page
+ */
+function mockEntry(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
+  return {
+    title: 'Test Entry',
+    link: '/test',
+    page: { outputPath: 'test.md', frontmatter: {} },
+    ...overrides,
+  }
+}

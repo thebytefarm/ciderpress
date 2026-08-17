@@ -14,17 +14,6 @@ vi.mock('@rspress/core/runtime', async () => {
   }
 })
 
-/**
- * Render copy to static markup for assertions.
- *
- * @private
- * @param text - Raw copy to render
- * @returns Rendered HTML string
- */
-function html(text: string): string {
-  return renderToStaticMarkup(<>{renderRichText(text)}</>)
-}
-
 describe('renderRichText()', () => {
   it('should render plain copy unchanged', () => {
     expect(html('Beautiful docs')).toBe('Beautiful docs')
@@ -243,3 +232,104 @@ describe('isPlainText()', () => {
     expect(isPlainText('Ship <strong>fast</strong>')).toBe(false)
   })
 })
+
+describe('tag nesting', () => {
+  // `indexOf('</' + tag)` matched `</span>` when closing `</s`, so the inner
+  // element vanished and the outer one ended early, letting trailing copy
+  // escape its styling. Every whitelisted tag that prefixes another hit it.
+  it('should not close a tag on a longer tag that shares its prefix', () => {
+    expect(html('<s>a <span>b</span> c</s>')).toBe('<s>a <span>b</span> c</s>')
+  })
+
+  it('should nest strong inside s', () => {
+    expect(html('<s>strike <strong>x</strong> tail</s>')).toBe(
+      '<s>strike <strong>x</strong> tail</s>'
+    )
+  })
+
+  it('should nest ins inside i', () => {
+    expect(html('<i>a <ins>b</ins> c</i>')).toBe('<i>a <ins>b</ins> c</i>')
+  })
+
+  it('should keep an attribute value containing a closing bracket', () => {
+    expect(html('<span title="a > b">hi</span>')).toBe('<span title="a &gt; b">hi</span>')
+  })
+
+  it('should still strip a script nested inside another tag', () => {
+    expect(html('<s>a<script>alert(1)</script>b</s>')).toBe('<s>ab</s>')
+  })
+})
+
+describe('escaping', () => {
+  // A docs framework has to be able to name a glob in its own copy.
+  it('should leave glob syntax alone', () => {
+    expect(html('Glob patterns like *.md and **/*.ts')).toBe('Glob patterns like *.md and **/*.ts')
+  })
+
+  it('should not italicise a spaced asterisk', () => {
+    expect(html('2 * 3 * 4')).toBe('2 * 3 * 4')
+  })
+
+  it('should render an escaped marker literally', () => {
+    expect(html('literal \\*not italic\\*')).toBe('literal *not italic*')
+  })
+
+  it('should strip markers out of plain text without eating the glob', () => {
+    expect(toPlainText('Glob **/*.ts')).toBe('Glob **/*.ts')
+  })
+
+  it('should still italicise a properly flanked marker', () => {
+    expect(html('*café*')).toBe('<em>café</em>')
+  })
+
+  it('should not let a stray asterisk swallow a later accent', () => {
+    expect(html('**Fast** builds * **typed** config')).toBe(
+      '<strong class="cp-accent">Fast</strong> builds * <strong class="cp-accent">typed</strong> config'
+    )
+  })
+})
+
+describe('links', () => {
+  it('should keep balanced parens in a destination', () => {
+    expect(html('[wiki](https://en.wikipedia.org/wiki/Foo_(bar))')).toContain(
+      'href="https://en.wikipedia.org/wiki/Foo_(bar)"'
+    )
+  })
+
+  it('should not leave a stray bracket after a parenthesised destination', () => {
+    expect(html('[wiki](https://en.wikipedia.org/wiki/Foo_(bar))')).not.toContain('</a>)')
+  })
+
+  // An anchor with no accessible name announces as a bare "link".
+  it('should drop a link with an empty label', () => {
+    expect(html('[](/x)')).toBe('')
+  })
+
+  // Nested anchors are invalid DOM — React warns and browsers split the tree.
+  it('should not nest an anchor inside an anchor', () => {
+    expect(html('<a href="/a">see [b](/c)</a>')).toBe('<a href="/a">see b</a>')
+  })
+
+  it('should still reject a javascript destination', () => {
+    expect(html('<a href="javascript:alert(1)">x</a>')).toBe('x')
+  })
+})
+
+describe('long input', () => {
+  // Self-recursion added a frame per token, so long copy overflowed the
+  // stack with an unattributed RangeError that failed the whole build.
+  it('should parse many tokens without exhausting the stack', () => {
+    expect(() => renderRichText('*a* '.repeat(9000))).not.toThrow()
+  })
+})
+
+/**
+ * Render copy to static markup for assertions.
+ *
+ * @private
+ * @param text - Raw copy to render
+ * @returns Rendered HTML string
+ */
+function html(text: string): string {
+  return renderToStaticMarkup(<>{renderRichText(text)}</>)
+}

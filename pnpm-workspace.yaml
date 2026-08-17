@@ -5,6 +5,33 @@ packages:
   - 'benchmarks'
   - 'e2e'
 
+# pnpm 11 replaced `onlyBuiltDependencies` with this map, and `strictDepBuilds`
+# now defaults to true — so every package with an install script must be
+# explicitly reviewed here or the install errors. The `false` entries preserve
+# the pnpm 10 behaviour, where esbuild was the only dependency allowed to build.
+allowBuilds:
+  esbuild: true
+  '@swc/core': false
+  '@vscode/vsce-sign': false
+  core-js: false
+  keytar: false
+  msw: false
+  sharp: false
+
+overrides:
+  '@rsbuild/core': 2.0.0-rc.1
+  # vite reaches this repo only through vitest and Ladle — Rspress builds on
+  # Rspack and pulls no vite at all. @codspeed/vitest-plugin and Ladle's react
+  # plugins still cap their vite range at ^7, which left a second vite major in
+  # the tree under pnpm 11. Both are verified working on 8.x (ladle build and
+  # the full bench suite pass), so pin one vite for the whole workspace.
+  vite: ^8.2.1
+
+packageExtensions:
+  ink-gradient:
+    peerDependencies:
+      react: '*'
+
 catalog:
   # Pinned: 0.23.2 regressed esm output.filename (.mjs -> .js) and dts emit. Revisit on next rslib release.
   '@rslib/core': 0.23.1

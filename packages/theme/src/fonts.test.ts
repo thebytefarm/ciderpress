@@ -10,44 +10,6 @@ const PIXEL_DISPLAY = "'Press Start 2P', monospace"
 const BASE_TOKENS = BUILT_IN_THEMES.midnight.variants.dark as CiderpressTokens
 
 /**
- * Build a token tree from the `midnight` built-in with only `fonts.family`
- * replaced. Keeps the fixture honest — every other token stays a real,
- * schema-valid value, so `defineTheme` exercises the full validation path.
- *
- * @private
- * @param family - Font family slots to substitute
- * @returns Complete token tree carrying the supplied families
- */
-function tokensWithFamily(family: {
-  readonly sans: string
-  readonly mono: string
-  readonly display?: string
-}): CiderpressTokens {
-  return {
-    ...BASE_TOKENS,
-    fonts: { ...BASE_TOKENS.fonts, family },
-  }
-}
-
-/**
- * Extract the value of a CSS custom property from the first declaration
- * block that declares it.
- *
- * @private
- * @param css - CSS source to scan
- * @param cssVar - Custom property name including the leading `--`
- * @returns Declared value, or `null` when the property is never declared
- */
-function readVar(css: string, cssVar: string): string | null {
-  const needle = `${cssVar}: `
-  const line = css.split('\n').find((raw) => raw.trim().startsWith(needle))
-  if (line === undefined) {
-    return null
-  }
-  return line.trim().slice(needle.length).replace(/;$/, '').trim()
-}
-
-/**
  * Every CSS variable that must resolve to the theme's `fonts.family.sans`.
  */
 const SANS_VARS: readonly string[] = [
@@ -192,3 +154,41 @@ describe('built-in theme font stacks', () => {
     )
   })
 })
+
+/**
+ * Build a token tree from the `midnight` built-in with only `fonts.family`
+ * replaced. Keeps the fixture honest — every other token stays a real,
+ * schema-valid value, so `defineTheme` exercises the full validation path.
+ *
+ * @private
+ * @param family - Font family slots to substitute
+ * @returns Complete token tree carrying the supplied families
+ */
+function tokensWithFamily(family: {
+  readonly sans: string
+  readonly mono: string
+  readonly display?: string
+}): CiderpressTokens {
+  return {
+    ...BASE_TOKENS,
+    fonts: { ...BASE_TOKENS.fonts, family },
+  }
+}
+
+/**
+ * Extract the value of a CSS custom property from the first declaration
+ * block that declares it.
+ *
+ * @private
+ * @param css - CSS source to scan
+ * @param cssVar - Custom property name including the leading `--`
+ * @returns Declared value, or `null` when the property is never declared
+ */
+function readVar(css: string, cssVar: string): string | null {
+  const needle = `${cssVar}: `
+  const line = css.split('\n').find((raw) => raw.trim().startsWith(needle))
+  if (line === undefined) {
+    return null
+  }
+  return line.trim().slice(needle.length).replace(/;$/, '').trim()
+}

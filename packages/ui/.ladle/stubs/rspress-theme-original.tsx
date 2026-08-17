@@ -31,3 +31,17 @@ export function Layout({ children }: LayoutProps): React.ReactElement {
 export function SidebarList(): React.ReactElement {
   return <ul />
 }
+
+export interface TagProps {
+  readonly tag?: string
+}
+
+/**
+ * Plain stand-in for Rspress's `Tag`, used by the sidebar badge fallback path.
+ *
+ * @param props - The tag text to render
+ * @returns Span wrapping the tag text
+ */
+export function Tag({ tag }: TagProps): React.ReactElement {
+  return <span>{tag}</span>
+}

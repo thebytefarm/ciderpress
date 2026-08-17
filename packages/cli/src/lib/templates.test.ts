@@ -18,28 +18,6 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true })
 })
 
-/**
- * Write a template file into the current temp dir.
- *
- * @param name - File name (with extension)
- * @param body - Full file contents
- */
-function write(name: string, body: string): void {
-  writeFileSync(join(dir, name), body, 'utf8')
-}
-
-/**
- * Write a template file into a sub-directory of the current temp dir.
- *
- * @param subdir - Sub-directory (relative to the temp dir), created if needed
- * @param name - File name (with extension)
- * @param body - Full file contents
- */
-function writeIn(subdir: string, name: string, body: string): void {
-  mkdirSync(join(dir, subdir), { recursive: true })
-  writeFileSync(join(dir, subdir, name), body, 'utf8')
-}
-
 describe('resolveTemplates()', () => {
   it('should return built-ins only when no templates are configured', async () => {
     const { registry, resolved, issues } = await resolveTemplates({
@@ -171,3 +149,27 @@ describe('toTemplateSelectOptions()', () => {
     expect(options.find((option) => option.value === 'api')).toMatchObject({ label: 'foobar/API' })
   })
 })
+
+/**
+ * Write a template file into the current temp dir.
+ *
+ * @private
+ * @param name - File name (with extension)
+ * @param body - Full file contents
+ */
+function write(name: string, body: string): void {
+  writeFileSync(join(dir, name), body, 'utf8')
+}
+
+/**
+ * Write a template file into a sub-directory of the current temp dir.
+ *
+ * @private
+ * @param subdir - Sub-directory (relative to the temp dir), created if needed
+ * @param name - File name (with extension)
+ * @param body - Full file contents
+ */
+function writeIn(subdir: string, name: string, body: string): void {
+  mkdirSync(join(dir, subdir), { recursive: true })
+  writeFileSync(join(dir, subdir, name), body, 'utf8')
+}
