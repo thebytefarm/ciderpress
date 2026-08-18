@@ -45,7 +45,7 @@ If your project uses pnpm, enable corepack in your Vercel project settings or ad
 
 ```json
 {
-  "packageManager": "pnpm@10.32.0"
+  "packageManager": "pnpm@11.22.0"
 }
 ```
 

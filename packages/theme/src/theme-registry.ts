@@ -141,6 +141,14 @@ interface RawBrandPalette {
   readonly soft: string
   readonly light: string
   readonly lighter: string
+  /**
+   * Dark-variant brand button hover fill. Kept separate from `light` because
+   * the two answer different contrast questions: `light` carries accent text
+   * on the page background, while this sits *behind* white button text and so
+   * has to stay dark enough to clear 4.5:1 against it. Tuning one for legible
+   * accent copy would otherwise silently drag the other under the bar.
+   */
+  readonly buttonHover: string
 }
 
 /**
@@ -150,7 +158,7 @@ interface RawBrandPalette {
  * without introducing a circular import.
  *
  * `light` / `lighter` shades feed the Rspress compat block — they live on the
- * brand surface so `RSPRESS_COMPAT_MAP` can pick them up by token path.
+ * brand surface so `COMPAT_VAR_MAP` can pick them up by token path.
  */
 const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Object.freeze({
   honeycrisp: {
@@ -159,8 +167,13 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     active: '#7f1d1d',
     fg: '#ffffff',
     soft: 'rgba(220, 38, 38, 0.14)',
-    light: '#f87171',
+    // Accent copy on dark resolves to `light`. Red 400 (#f87171) read as
+    // salmon rather than as the brand; red 500 holds AA at 5.26:1 on the
+    // near-black canvas while staying recognisably red, and still sits
+    // between `primary` and `lighter` on the ramp.
+    light: '#ef4444',
     lighter: '#fca5a5',
+    buttonHover: '#ef4444',
   },
   grannysmith: {
     primary: '#65a30d',
@@ -170,6 +183,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(101, 163, 13, 0.14)',
     light: '#a3e635',
     lighter: '#bef264',
+    buttonHover: '#a3e635',
   },
   mulled: {
     primary: '#991b1b',
@@ -177,8 +191,12 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     active: '#450a0a',
     fg: '#ffffff',
     soft: 'rgba(153, 27, 27, 0.14)',
-    light: '#dc2626',
+    // Accent copy on dark resolves to `light`. Red 600 (#dc2626) missed the
+    // 4.5:1 bar at 4.10:1; red 500 clears it at 5.26:1 and still lightens the
+    // deep burgundy `primary`.
+    light: '#ef4444',
     lighter: '#f87171',
+    buttonHover: '#dc2626',
   },
   amber: {
     primary: '#d97706',
@@ -188,6 +206,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(217, 119, 6, 0.14)',
     light: '#fbbf24',
     lighter: '#fcd34d',
+    buttonHover: '#fbbf24',
   },
   midnight: {
     primary: '#60a5fa',
@@ -197,6 +216,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(96, 165, 250, 0.14)',
     light: '#93c5fd',
     lighter: '#bfdbfe',
+    buttonHover: '#93c5fd',
   },
   arcade: {
     primary: '#00ff88',
@@ -206,6 +226,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(0, 255, 136, 0.14)',
     light: '#66ffbb',
     lighter: '#99ffcc',
+    buttonHover: '#66ffbb',
   },
 })
 
@@ -334,11 +355,19 @@ const SHARED_GRADIENT_COLORS = {
 } as const
 
 /**
- * Full mapping of Rspress (`--rp-*`) CSS variables to the ciderpress token path
+ * Full mapping of compatibility CSS variables to the ciderpress token path
  * that supplies each value. Emitted by `themeToCss` after the canonical
- * `--cp-*` declaration block so every Rspress internal component reads
- * from the ciderpress design system — Rspress is an implementation detail,
+ * `--cp-*` declaration block so every Rspress internal component — and every
+ * ciderpress rule still written against a pre-token variable name — reads
+ * from the ciderpress design system. Rspress is an implementation detail,
  * ciderpress tokens are the canonical surface.
+ *
+ * These declarations must live in the theme block rather than in
+ * `styles/overrides/tokens.css`: that file is inside `@layer
+ * ciderpress.tokens`, and Rspress ships its own `:root` defaults **unlayered**
+ * — unlayered declarations beat every layer regardless of specificity. Theme
+ * blocks are unlayered and carry `html[data-cp-theme][data-cp-variant]`
+ * specificity, so they are the only place a `--rp-*` override actually wins.
  *
  * Grouped by category for readability. New rspress vars should be added
  * here when they appear; rspress vars that map to a missing concept can
@@ -393,6 +422,18 @@ const SHARED_GRADIENT_COLORS = {
  *   --rp-home-hero-secondary-color   text.text2
  *   --rp-home-hero-title-color       text.text1
  *
+ * Fonts — the theme's three family slots drive every legacy font variable.
+ * `--rp-font-family-base` is what Rspress's own `body { font-family }` rule
+ * reads, so mapping it here is what makes the whole document (hero included)
+ * follow the active theme:
+ *
+ *   --rp-font-family-base     fonts.family.sans
+ *   --rp-font-family-mono     fonts.family.mono
+ *   --cp-font-family-base     fonts.family.sans
+ *   --cp-font-family-sans     fonts.family.sans
+ *   --cp-font-family-mono     fonts.family.mono
+ *   --cp-font-family-pixel    fonts.family.display
+ *
  * Intentionally unmapped (rspress defaults remain in force):
  *  - `--rp-c-brand-rgb`: needs `r, g, b` tuple, no equivalent token
  *  - `--rp-c-gray*`: rspress internal neutrals, low surface area
@@ -404,7 +445,7 @@ const SHARED_GRADIENT_COLORS = {
  *  - Layout/size/z-index vars: ciderpress sets these via `--cp-*` directly on
  *    its own components; rspress's layout chrome uses its own defaults
  */
-const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
+const COMPAT_VAR_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
   '--rp-c-bg': 'colors.surface.bg',
   '--rp-c-bg-alt': 'colors.surface.bgAlt',
   '--rp-c-bg-dark': 'colors.surface.gutter',
@@ -430,29 +471,36 @@ const RSPRESS_COMPAT_MAP: Readonly<Record<string, TokenPath>> = Object.freeze({
   '--rp-home-feature-bg': 'colors.surface.bgSoft',
   '--rp-home-hero-secondary-color': 'colors.text.text2',
   '--rp-home-hero-title-color': 'colors.text.text1',
+  '--rp-font-family-base': 'fonts.family.sans',
+  '--rp-font-family-mono': 'fonts.family.mono',
+  '--cp-font-family-base': 'fonts.family.sans',
+  '--cp-font-family-sans': 'fonts.family.sans',
+  '--cp-font-family-mono': 'fonts.family.mono',
+  '--cp-font-family-pixel': 'fonts.family.display',
 })
 
 /**
- * Declared-order list of `--rp-*` keys for deterministic emission ordering.
+ * Declared-order list of compatibility var keys for deterministic emission
+ * ordering.
  */
-const RSPRESS_COMPAT_VAR_NAMES: readonly string[] = Object.freeze(Object.keys(RSPRESS_COMPAT_MAP))
+const COMPAT_VAR_NAMES: readonly string[] = Object.freeze(Object.keys(COMPAT_VAR_MAP))
 
 /**
- * Precomputed `[cssVar, segments]` pairs for every Rspress compatibility
- * variable in `RSPRESS_COMPAT_MAP`.
+ * Precomputed `[cssVar, segments]` pairs for every compatibility variable in
+ * `COMPAT_VAR_MAP`.
  *
- * Mirrors `TOKEN_RENDER_PLAN` for the `--rp-*` side: splitting each token
- * path on `.` once at module load avoids re-splitting per declaration per
- * theme per build.
+ * Mirrors `TOKEN_RENDER_PLAN` for the compat side: splitting each token path
+ * on `.` once at module load avoids re-splitting per declaration per theme
+ * per build.
  */
-const RSPRESS_RENDER_PLAN: readonly {
+const COMPAT_RENDER_PLAN: readonly {
   readonly cssVar: string
   readonly segments: readonly string[]
 }[] = Object.freeze(
-  RSPRESS_COMPAT_VAR_NAMES.map((cssVar) =>
+  COMPAT_VAR_NAMES.map((cssVar) =>
     Object.freeze({
       cssVar,
-      segments: Object.freeze((RSPRESS_COMPAT_MAP[cssVar] as string).split('.')),
+      segments: Object.freeze((COMPAT_VAR_MAP[cssVar] as string).split('.')),
     })
   )
 )
@@ -556,11 +604,35 @@ const SHARED_RADII = {
 /**
  * Shared font tokens — families, weights, and sizes from `tokens.css`
  * lines L33–L109.
+ *
+ * `sans` is the base UI/prose slot: body, nav, sidebar, hero headline.
+ * It carries Rspress's own Inter stack, which is what ciderpress has always
+ * shipped.
+ *
+ * That is easy to get wrong, so it is worth stating plainly. `tokens.css`
+ * declares `--cp-font-family-base: 'Geist Mono'` and has since the start,
+ * but the declaration never took effect: Rspress ships an *unlayered*
+ * `body { font-family: var(--rp-font-family-base) }`, and an unlayered rule
+ * outranks anything in a cascade layer no matter how specific. So
+ * `--rp-font-family-base` stayed on Inter and the site rendered Inter.
+ * Verified against ciderpress.dev, whose hero computes to the stack below.
+ *
+ * Once `--rp-font-family-base` is wired to this slot, the value here is
+ * live rather than decorative. Putting the mono stack in `sans` turns every
+ * proportional surface monospace and silently redesigns the site, so `sans`
+ * stays proportional and `mono` owns code and terminal chrome.
+ *
+ * `display` holds the decorative pixel face used for brand marks and
+ * feature-card headings.
  */
 const SHARED_FONTS = {
   family: {
-    sans: "'Geist', ui-sans-serif, system-ui, sans-serif",
+    sans:
+      "'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, " +
+      "'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', " +
+      "'Helvetica Neue', sans-serif",
     mono: "'Geist Mono', ui-monospace, 'SFMono-Regular', monospace",
+    display: "'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif",
   },
   weight: {
     regular: 400,
@@ -855,7 +927,7 @@ export function defineTheme(input: CiderpressThemeInput): CiderpressTheme {
  *
  * For each variant V in `theme.variants` the emitter writes one
  * `html[data-cp-theme='{name}'][data-cp-variant='{V}']` block. Iteration
- * order is fixed by `TOKEN_TO_CSS_VAR` (then `RSPRESS_COMPAT_MAP`) so the
+ * order is fixed by `TOKEN_TO_CSS_VAR` (then `COMPAT_VAR_MAP`) so the
  * output is byte-deterministic given the same input.
  *
  * The FOUC-root theme (`FOUC_ROOT_THEME_NAME` — tracks `DEFAULT_THEME_NAME`)
@@ -959,50 +1031,44 @@ type ParsedTokens = z.infer<typeof tokensSchema>
  * @param tokens - Token tree to walk
  * @returns The leaf value (string or number) at the resolved path
  */
-function resolveBySegments(segments: readonly string[], tokens: CiderpressTokens): string | number {
+function resolveBySegments(
+  segments: readonly string[],
+  tokens: CiderpressTokens
+): string | number | undefined {
   const value = segments.reduce<unknown>(
     (node, segment) => (node as Record<string, unknown>)[segment],
     tokens
   )
-  return value as string | number
+  return value as string | number | undefined
 }
 
 /**
- * Render a single `  --cp-*: value;` line for one precomputed token entry.
+ * Render a single `  --cp-*: value;` line for one precomputed plan entry.
+ *
+ * Returns an empty array when the token tree carries no value at the path so
+ * the caller can `flatMap` without emitting `--cp-x: undefined;`. Only
+ * optional token slots (`fonts.family.display`) can miss, and only on a
+ * theme object built without `defineTheme`.
  *
  * @private
  * @param entry - Precomputed render plan entry (cssVar + segments)
  * @param tokens - Token tree containing the value
- * @returns CSS declaration line (no trailing newline)
+ * @returns Single-element array with the declaration line, or an empty array
  */
 function renderDeclaration(
   entry: { readonly cssVar: string; readonly segments: readonly string[] },
   tokens: CiderpressTokens
-): string {
+): readonly string[] {
   const value = resolveBySegments(entry.segments, tokens)
-  return `  ${entry.cssVar}: ${value};`
-}
-
-/**
- * Render a single `  --rp-*: value;` line for a precomputed Rspress
- * compatibility var entry.
- *
- * @private
- * @param entry - Precomputed render plan entry (cssVar + segments)
- * @param tokens - Token tree containing the source value
- * @returns CSS declaration line (no trailing newline)
- */
-function renderRpDeclaration(
-  entry: { readonly cssVar: string; readonly segments: readonly string[] },
-  tokens: CiderpressTokens
-): string {
-  const value = resolveBySegments(entry.segments, tokens)
-  return `  ${entry.cssVar}: ${value};`
+  if (value === undefined) {
+    return []
+  }
+  return [`  ${entry.cssVar}: ${value};`]
 }
 
 /**
  * Render the full declaration body — all `--cp-*` tokens in registry order
- * followed by every `--rp-*` compatibility var in `RSPRESS_COMPAT_MAP` order.
+ * followed by every compatibility var in `COMPAT_VAR_MAP` order.
  *
  * Both halves consume precomputed `[cssVar, segments]` plans so dotted token
  * paths are split exactly once at module load — never per declaration.
@@ -1012,9 +1078,9 @@ function renderRpDeclaration(
  * @returns Multi-line CSS body (no surrounding braces)
  */
 function renderDeclarationBody(tokens: CiderpressTokens): string {
-  const cpLines = TOKEN_RENDER_PLAN.map((entry) => renderDeclaration(entry, tokens))
-  const rpLines = RSPRESS_RENDER_PLAN.map((entry) => renderRpDeclaration(entry, tokens))
-  return [...cpLines, ...rpLines].join('\n')
+  const cpLines = TOKEN_RENDER_PLAN.flatMap((entry) => renderDeclaration(entry, tokens))
+  const compatLines = COMPAT_RENDER_PLAN.flatMap((entry) => renderDeclaration(entry, tokens))
+  return [...cpLines, ...compatLines].join('\n')
 }
 
 /**
@@ -1074,7 +1140,33 @@ function validateVariant(raw: unknown): CiderpressTokens | undefined {
   if (raw === undefined) {
     return undefined
   }
-  return tokensSchema.parse(raw) as CiderpressTokens
+  return withResolvedDisplayFont(tokensSchema.parse(raw) as CiderpressTokens)
+}
+
+/**
+ * Fill the optional `fonts.family.display` slot from `fonts.family.sans`.
+ *
+ * `display` is the only optional leaf in the token tree. Resolving it here —
+ * once, at theme-build time — means every downstream consumer (`themeToCss`,
+ * the FOUC head block, the docs) sees a complete `fonts.family` group and
+ * never has to re-implement the fallback.
+ *
+ * @private
+ * @param tokens - Validated token tree
+ * @returns The same tree when `display` is set, otherwise a copy with `display` = `sans`
+ */
+function withResolvedDisplayFont(tokens: CiderpressTokens): CiderpressTokens {
+  const family = tokens.fonts.family
+  if (family.display !== undefined) {
+    return tokens
+  }
+  return {
+    ...tokens,
+    fonts: {
+      ...tokens.fonts,
+      family: { ...family, display: family.sans },
+    },
+  }
 }
 
 /**
@@ -1377,7 +1469,7 @@ function buildHoneycrispDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1545,7 +1637,7 @@ function buildGrannysmithDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1715,7 +1807,7 @@ function buildMulledDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1884,7 +1976,7 @@ function buildAmberDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },

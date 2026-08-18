@@ -1,0 +1,106 @@
+/**
+ * Rich text — inline markup rendered from config copy.
+ *
+ * Config strings run through the inline renderer, so any display copy
+ * can carry `**emphasis**` (bold + brand colour), `==highlight==`,
+ * `*italic*`, `` `code` ``, links, and a whitelist of inline HTML. These rules keep that markup legible
+ * inside headings and body copy alike, where the document-level
+ * typography does not reach.
+ */
+
+/* Accent — what `**emphasis**` renders as, and the explicit form of
+   the hero title's auto-accent.
+
+   `--cp-c-brand-1` is a FILL colour: it is tuned to sit behind
+   `--cp-c-brand-fg`, not to be read as text on the page background. Used
+   directly here it failed WCAG AA in four theme/variant combinations, and
+   on mulled/dark it measured 2.38:1 — under even the 3:1 large-text floor,
+   so it failed at any size including the hero headline.
+
+   Accent copy lands in 16px/400 body text (`.cp-tabs__body`,
+   `.cp-split__body`), so the 4.5:1 bar applies. Every dark variant clears
+   it with `--cp-c-brand-light` (5.26:1 on honeycrisp and mulled, up to
+   15.22:1 on arcade) and every light variant with `--cp-c-brand-2`
+   (4.83:1 on amber, up to 9.35:1 on mulled). The variant-less fallback
+   matches the light rule because the unthemed page background is light.
+
+   `--cp-c-brand-lighter` is deliberately NOT used here. It is the palest
+   rung of the ramp, so it clears contrast by a wide margin (10.43:1 on
+   honeycrisp) but washes the hue out — a light red reads as pink, not as
+   the brand. `light` is the most saturated rung that still clears 4.5:1.
+
+   The same pair is used for the home eyebrows (`.cp-hero__eyebrow` aside,
+   which is a text-2 pill): see home.css, cta.css and split.css. Keep them
+   in step — they are the only other places brand colour carries text. */
+.cp-accent {
+  color: var(--cp-c-brand-2, var(--cp-c-brand-1));
+}
+
+html[data-cp-variant='dark'] .cp-accent {
+  color: var(--cp-c-brand-light, var(--cp-c-brand-1));
+}
+
+/* Inline code in display copy: the document code style is tuned for
+   prose, so scale it to the surrounding text instead. */
+.cp-hero__title code,
+.cp-hero__tagline code,
+.cp-split__title code,
+.cp-split__body code,
+.cp-tabs__title code,
+.cp-tabs__body code,
+.cp-cta__title code,
+.cp-cta__sub code,
+.cp-feature-section-head__title code,
+.cp-feature-section-head__sub code {
+  font-family: var(--cp-font-family-mono);
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: var(--cp-radius-xs);
+  background: var(--cp-c-bg-soft);
+  border: 1px solid var(--cp-c-border);
+}
+
+/* Links inside display copy inherit their surroundings and pick up the
+   brand colour, rather than the document link treatment. */
+.cp-hero__tagline a,
+.cp-split__body a,
+.cp-tabs__body a,
+.cp-cta__sub a,
+.cp-feature-section-head__sub a {
+  color: var(--cp-c-brand-1);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* A heading link should not shout — keep the heading colour, mark it
+   with an underline only. */
+.cp-hero__title a,
+.cp-split__title a,
+.cp-tabs__title a,
+.cp-cta__title a,
+.cp-feature-section-head__title a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* Highlight — what `==text==` renders as. `<mark>` defaults to a yellow
+   browser highlight, so retint it to the brand. The bare-element
+   selectors cover `<mark>` written as HTML in config copy, which carries
+   no class of its own. */
+.cp-mark,
+.cp-hero__title mark,
+.cp-hero__tagline mark,
+.cp-split__title mark,
+.cp-split__body mark,
+.cp-tabs__title mark,
+.cp-tabs__body mark,
+.cp-cta__title mark,
+.cp-cta__sub mark,
+.cp-feature-section-head__title mark,
+.cp-feature-section-head__sub mark {
+  background: var(--cp-c-brand-soft);
+  color: var(--cp-c-text-1);
+  padding: 0.05em 0.25em;
+  border-radius: var(--cp-radius-xs);
+}

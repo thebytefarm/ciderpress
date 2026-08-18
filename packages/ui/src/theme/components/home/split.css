@@ -24,6 +24,24 @@
   }
 }
 
+/* Copy-only band — no visual to sit beside, so the copy owns the row. */
+.cp-split__inner--full {
+  grid-template-columns: 1fr;
+}
+
+/* Reverse layout — visual first, copy second. Scoped to the two-column
+   grid: the narrow single-column stack always leads with the copy, so a
+   reversed band doesn't push its image above the headline. */
+@media (min-width: 881px) {
+  .cp-split__inner--reverse .cp-split__copy {
+    order: 2;
+  }
+
+  .cp-split__inner--reverse .cp-split__visual {
+    order: 1;
+  }
+}
+
 .cp-split__copy {
   min-width: 0;
 }
@@ -33,8 +51,14 @@
   font-size: var(--cp-fs-eyebrow);
   text-transform: uppercase;
   letter-spacing: var(--cp-letter-eyebrow);
-  color: var(--cp-c-brand-1);
+  /* Same shade pair as `.cp-accent` — `--cp-c-brand-1` is a fill colour and
+     misses 4.5:1 at this size on several themes. See styles/rich-text.css. */
+  color: var(--cp-c-brand-2, var(--cp-c-brand-1));
   margin-bottom: var(--cp-s-12);
+}
+
+html[data-cp-variant='dark'] .cp-split__eyebrow {
+  color: var(--cp-c-brand-light, var(--cp-c-brand-1));
 }
 
 .cp-split__title {
@@ -115,7 +139,7 @@
   border-color: var(--cp-c-brand-2);
 }
 
-/* Code visual styling — works for any pre/code or window child */
+/* Visual frame — wraps a native code block, an image, or a window child */
 .cp-split__visual {
   border: 1px solid var(--cp-c-border);
   border-radius: var(--cp-radius-lg);
@@ -123,26 +147,29 @@
   background: var(--cp-code-block-bg);
 }
 
-.cp-split__visual pre {
+/* Native Rspress code block (Shiki) fills the frame — strip its own
+   margin and rounded corners so the frame owns the chrome. */
+.cp-split__visual .rp-codeblock {
   margin: 0;
-  padding: var(--cp-s-18) var(--cp-s-20);
-  font-family: var(--cp-font-family-mono);
-  font-size: var(--cp-fs-code);
-  line-height: var(--cp-lh-code);
-  white-space: pre;
-  overflow-x: auto;
-  color: var(--cp-c-text-1);
+  border-radius: 0;
 }
 
-.cp-split__visual .tok-kw {
-  color: var(--cp-c-syntax-kw);
+.cp-split__visual .rp-codeblock pre {
+  overflow-x: auto;
 }
-.cp-split__visual .tok-str {
-  color: var(--cp-c-syntax-str);
+
+/* Terminal visual reuses the hero demo chrome; the split frame already
+   owns the border, radius, and shadow, so flatten the inner shell. */
+.cp-split__visual .cp-hero-demo {
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
-.cp-split__visual .tok-fn {
-  color: var(--cp-c-syntax-fn);
-}
-.cp-split__visual .tok-cmt {
-  color: var(--cp-c-text-3);
+
+/* Image visual fills the frame width, preserving aspect ratio. */
+.cp-split__img {
+  display: block;
+  width: 100%;
+  height: auto;
 }

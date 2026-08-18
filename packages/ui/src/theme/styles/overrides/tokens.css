@@ -35,30 +35,43 @@
   :root {
     /* ── Font families ──────────────────────────────────────── */
     /**
-   * Default body / UI font — Geist Mono. Whole site reads as a
-   * terminal-style mono surface.
+   * The active theme owns every font on the page. `--cp-ff-sans`,
+   * `--cp-ff-mono`, and `--cp-ff-display` are the canonical tokens
+   * (`fonts.family.{sans,mono,display}` in `@ciderpress/theme`); each theme
+   * emits all three from its own unlayered block, so the values below only
+   * apply when no theme CSS is present at all.
+   *
+   * Semantics:
+   *   sans     base UI + prose font — body, nav, sidebar, hero, cards, docs
+   *   mono     code, terminal chrome, eyebrow labels
+   *   display  decorative headline / brand-mark face (falls back to sans)
+   *
+   * These values mirror `SHARED_FONTS.family` in `@ciderpress/theme`, so a
+   * themeless page degrades to the house default rather than to a different
+   * design: `sans` is proportional (Inter), `mono` is Geist Mono, `display`
+   * is Geist Pixel Square. Putting the mono stack in `sans` turns every
+   * proportional surface — hero, body, nav, sidebar — monospace; the
+   * regression guard in `packages/theme/src/fonts.test.ts` exists for that.
    */
-    --cp-font-family-base: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
-    /**
-   * Optional sans fallback — exposed for cases that explicitly want
-   * proportional Geist (e.g. very long prose passages).
-   */
-    --cp-font-family-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
-    /**
-   * Decorative pixel-art font — opt-in for brand marks, headlines, etc.
-   * Apply with `font-family: var(--cp-font-family-pixel)` on the target.
-   */
-    --cp-font-family-pixel: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
-    /**
-   * Monospace alias — same as base. Kept for callsites that explicitly
-   * tag "this should be monospace" (code, shortcuts, eyebrow labels) so
-   * the intent stays readable in the stylesheet.
-   */
-    --cp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+    --cp-ff-sans:
+      'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+      Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+    --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 
-    /* Canonical aliases matching TOKEN_TO_CSS_VAR (fonts.family.sans/mono). */
-    --cp-ff-sans: var(--cp-font-family-sans);
-    --cp-ff-mono: var(--cp-font-family-mono);
+    /**
+   * Compatibility aliases. Every one of these resolves through a canonical
+   * token above, so a rule written against the older name still follows the
+   * active theme. Themes re-declare them in their own block (see
+   * `COMPAT_VAR_MAP` in `@ciderpress/theme`) — the declarations here are the
+   * no-theme-CSS fallback.
+   */
+    --cp-font-family-base: var(--cp-ff-sans);
+    --cp-font-family-sans: var(--cp-ff-sans);
+    --cp-font-family-mono: var(--cp-ff-mono);
+    --cp-font-family-pixel: var(--cp-ff-display);
+    --rp-font-family-base: var(--cp-ff-sans);
+    --rp-font-family-mono: var(--cp-ff-mono);
 
     /* ── Font weights ───────────────────────────────────────── */
     --cp-fw-regular: 400;
@@ -272,13 +285,18 @@
     --cp-announce-h: 36px;
   }
 
-  /* ── Typography defaults — match the mockup (14px / 1.5 / Geist) ── */
+  /* ── Typography defaults — match the mockup (14px / 1.5) ──────────
+     `body` is listed for completeness only: Rspress's own unlayered
+     `body { font-family: var(--rp-font-family-base) }` outranks anything
+     in a layer, so the document font is really carried by the theme's
+     `--rp-font-family-base` declaration. Both sides resolve to
+     `fonts.family.sans`, so the two agree. ──────────────────────────── */
   html body,
   html .rp-doc,
   html .rspress-doc,
   html .rp-home-hero,
   html .rp-nav {
-    font-family: var(--cp-font-family-base);
+    font-family: var(--cp-ff-sans);
   }
 
   html body {

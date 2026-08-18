@@ -50,6 +50,7 @@ Organize each source file in this order:
 - Every private helper must have JSDoc with `@private` tag
 - Exported functions appear first so readers see the public API without scrolling
 - No banner or divider comments between sections — the `export` keyword and JSDoc are the separators
+- Test files follow the same order: constants, then `describe` blocks, then fixture builders and other helpers at the bottom of the file with `@private`. Function declarations hoist, so helpers still resolve from the `describe` blocks above them
 
 ## Formatting (OXFmt)
 

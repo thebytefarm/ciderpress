@@ -426,10 +426,14 @@ const ciderpressRadiiSchema = z
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardRadii: z.ZodType<CiderpressRadii> = ciderpressRadiiSchema
 
+// `display` is optional at the boundary — `defineTheme` fills it from `sans`
+// before the token tree is frozen, so the emitted CSS always carries a
+// `--cp-ff-display` declaration.
 const ciderpressFontFamiliesSchema = z
   .object({
     sans: tokenStringSchema,
     mono: tokenStringSchema,
+    display: tokenStringSchema.optional(),
   })
   .strict()
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

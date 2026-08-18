@@ -18,7 +18,7 @@
 }
 
 .cp-feature-card__title {
-  font-family: 'Geist Pixel Square', var(--rp-font-family-base, sans-serif);
+  font-family: var(--cp-ff-display);
   font-size: var(--cp-fs-feature-title);
   font-weight: var(--cp-fw-bold);
   color: var(--rp-c-text-1, var(--cp-c-text-1));

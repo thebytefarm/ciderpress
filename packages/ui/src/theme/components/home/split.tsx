@@ -1,6 +1,7 @@
-import { match } from 'massaman/match'
+import { match, P } from 'massaman/match'
 import type React from 'react'
 
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { RouteLink } from '../../lib/route-link.tsx'
 import { safeUrl } from '../../lib/safe-url.ts'
 
@@ -43,9 +44,16 @@ export interface SplitProps {
    */
   readonly action?: SplitAction
   /**
-   * Right-side content — typically a code preview or screenshot.
+   * Visual content — typically a code preview or screenshot. Omit (or
+   * pass `null`) for a copy-only band; the visual column collapses
+   * instead of painting an empty frame.
    */
-  readonly visual: React.ReactNode
+  readonly visual?: React.ReactNode
+  /**
+   * Flip the column order — visual first, copy second. Defaults to
+   * `false` (copy first, visual second).
+   */
+  readonly reverse?: boolean
 }
 
 /**
@@ -56,17 +64,25 @@ export interface SplitProps {
  * @returns React element.
  */
 export function HomeSplit(props: SplitProps): React.ReactElement {
-  const { eyebrow, title, body, bullets, action, visual } = props
+  const { eyebrow, title, body, bullets, action, visual, reverse } = props
   const list = bullets ?? []
+  // Without a visual the band is a single column — the two-column grid
+  // would otherwise leave half the row empty.
+  const layoutClass = match(visual)
+    .with(P.nullish, () => 'cp-split__inner cp-split__inner--full')
+    .otherwise(() => 'cp-split__inner')
+  const innerClass = match(reverse ?? false)
+    .with(true, () => `${layoutClass} cp-split__inner--reverse`)
+    .otherwise(() => layoutClass)
 
   return (
     <section className="cp-split">
-      <div className="cp-split__inner">
+      <div className={innerClass}>
         <div className="cp-split__copy">
           {match(eyebrow)
             .with(undefined, () => null)
             .otherwise((e) => (
-              <div className="cp-split__eyebrow">{e}</div>
+              <div className="cp-split__eyebrow">{renderRichText(e)}</div>
             ))}
           <h2 className="cp-split__title">{title}</h2>
           {match(body)
@@ -81,7 +97,7 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
                 {list.map((bullet) => (
                   <li key={bullet}>
                     <span className="cp-split__check">✓</span>
-                    <span>{bullet}</span>
+                    <span>{renderRichText(bullet)}</span>
                   </li>
                 ))}
               </ul>
@@ -100,7 +116,11 @@ export function HomeSplit(props: SplitProps): React.ReactElement {
               )
             })}
         </div>
-        <div className="cp-split__visual">{visual}</div>
+        {match(visual)
+          .with(P.nullish, () => null)
+          .otherwise((v) => (
+            <div className="cp-split__visual">{v}</div>
+          ))}
       </div>
     </section>
   )

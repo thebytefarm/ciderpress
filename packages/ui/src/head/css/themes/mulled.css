@@ -7,7 +7,7 @@
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -130,8 +130,11 @@
   --cp-radius-lg: 10px;
   --cp-radius-md-lg: 12px;
   --cp-radius-pill: 9999px;
-  --cp-ff-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --cp-ff-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
   --cp-fw-regular: 400;
   --cp-fw-medium: 500;
   --cp-fw-semibold: 600;
@@ -251,7 +254,7 @@
   --rp-c-bg-mute: #0a0a0a;
   --rp-c-bg-soft: #1c1c1c;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;
@@ -270,6 +273,18 @@
   --rp-home-feature-bg: #1c1c1c;
   --rp-home-hero-secondary-color: rgba(245, 245, 245, 0.72);
   --rp-home-hero-title-color: #f5f5f5;
+  --rp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-pixel: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 }
 
 html[data-cp-theme='mulled'][data-cp-variant='dark'] {
@@ -279,7 +294,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -402,8 +417,11 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --cp-radius-lg: 10px;
   --cp-radius-md-lg: 12px;
   --cp-radius-pill: 9999px;
-  --cp-ff-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --cp-ff-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
   --cp-fw-regular: 400;
   --cp-fw-medium: 500;
   --cp-fw-semibold: 600;
@@ -523,7 +541,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --rp-c-bg-mute: #0a0a0a;
   --rp-c-bg-soft: #1c1c1c;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;
@@ -542,6 +560,18 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --rp-home-feature-bg: #1c1c1c;
   --rp-home-hero-secondary-color: rgba(245, 245, 245, 0.72);
   --rp-home-hero-title-color: #f5f5f5;
+  --rp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-pixel: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 }
 
 html[data-cp-theme='mulled'][data-cp-variant='light'] {
@@ -551,7 +581,7 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --cp-c-brand-fg: #ffffff;
   --cp-c-brand-soft: rgba(153, 27, 27, 0.14);
   --cp-c-on-brand: #ffffff;
-  --cp-c-brand-light: #dc2626;
+  --cp-c-brand-light: #ef4444;
   --cp-c-brand-lighter: #f87171;
   --cp-c-success: #16a34a;
   --cp-c-error: #dc2626;
@@ -674,8 +704,11 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --cp-radius-lg: 10px;
   --cp-radius-md-lg: 12px;
   --cp-radius-pill: 9999px;
-  --cp-ff-sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+  --cp-ff-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   --cp-ff-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-ff-display: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
   --cp-fw-regular: 400;
   --cp-fw-medium: 500;
   --cp-fw-semibold: 600;
@@ -795,7 +828,7 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --rp-c-bg-mute: #fbf6f4;
   --rp-c-bg-soft: #ead9d4;
   --rp-c-brand: #991b1b;
-  --rp-c-brand-light: #dc2626;
+  --rp-c-brand-light: #ef4444;
   --rp-c-brand-lighter: #f87171;
   --rp-c-brand-dark: #7f1d1d;
   --rp-c-brand-darker: #450a0a;
@@ -814,4 +847,16 @@ html[data-cp-theme='mulled'][data-cp-variant='light'] {
   --rp-home-feature-bg: #ead9d4;
   --rp-home-hero-secondary-color: rgba(42, 6, 6, 0.72);
   --rp-home-hero-title-color: #2a0606;
+  --rp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --rp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-base:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-sans:
+    'Inter var experimental', 'Inter var', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --cp-font-family-mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', monospace;
+  --cp-font-family-pixel: 'Geist Pixel Square', ui-sans-serif, system-ui, sans-serif;
 }

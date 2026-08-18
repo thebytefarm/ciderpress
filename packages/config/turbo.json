@@ -4,7 +4,7 @@
   "tasks": {
     "generate:schema": {
       "dependsOn": ["^build"],
-      "inputs": ["src/**", "scripts/generate-schema.ts"],
+      "inputs": ["src/**", "scripts/generate-schema.ts", "package.json"],
       "outputs": ["schemas/**"]
     },
     "build": {

@@ -111,8 +111,28 @@ const runWrite = async () => {
 }
 
 /**
- * Compare each generated target against its on-disk contents. Print a
- * stale-file report and exit non-zero if any file is out of date.
+ * Collapse whitespace so a comparison ignores formatting.
+ *
+ * `postbuild` runs `oxfmt --write` after this generator, and oxfmt reflows
+ * any declaration past the print width — the font stacks, among others. A
+ * byte-for-byte comparison against the formatted file on disk therefore
+ * reported all 12 files stale no matter what, which silently retired the
+ * only drift guard these generated files have.
+ *
+ * @param {string | null} value - File contents, or null when absent
+ * @returns {string | null} Contents with runs of whitespace collapsed
+ */
+const normalize = (value) => {
+  if (value === null) {
+    return null
+  }
+  return value.replace(/\s+/g, ' ').trim()
+}
+
+/**
+ * Compare each generated target against its on-disk contents, ignoring
+ * formatting. Print a stale-file report and exit non-zero if any file is
+ * out of date.
  *
  * @returns {Promise<void>}
  */
@@ -121,7 +141,7 @@ const runCheck = async () => {
   const results = await Promise.all(
     targets.map(async ({ path, contents }) => {
       const current = await readFileOrNull(path)
-      return { path, fresh: current === contents }
+      return { path, fresh: normalize(current) === normalize(contents) }
     })
   )
   const stale = results.filter((r) => !r.fresh)

@@ -2,6 +2,7 @@ import { match, P } from 'massaman/match'
 import type React from 'react'
 
 import './feature-card.css'
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { Card } from '../shared/card'
 import { CardIcon } from '../shared/card-icon'
 import type { CardIconInput } from '../shared/resolve-card-icon'
@@ -64,14 +65,14 @@ export function FeatureCard({
               className={clampClass('cp-feature-card__title', titleLines)}
               style={clampStyle(titleLines)}
             >
-              {title}
+              {renderRichText(title)}
             </span>
           </div>
           <span
             className={clampClass('cp-feature-card__desc', descriptionLines)}
             style={clampStyle(descriptionLines)}
           >
-            {description}
+            {renderRichText(description)}
           </span>
           {linkTail}
         </Card>

@@ -1,0 +1,299 @@
+.cp-tabs {
+  padding: var(--cp-s-96) var(--cp-s-32);
+}
+
+@media (max-width: 720px) {
+  .cp-tabs {
+    padding: var(--cp-s-64) var(--cp-s-20);
+  }
+}
+
+.cp-tabs__inner {
+  max-width: var(--cp-size-split-max);
+  margin: 0 auto;
+}
+
+/* ── Vertical band — strip beside the panel ──────────────────── */
+.cp-tabs--vertical .cp-tabs__inner {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  gap: var(--cp-s-48);
+  align-items: start;
+}
+
+/* Reverse — panel left, strip right. Scoped to the two-column grid so
+   the narrow stack always leads with the tabs.
+
+   The TRACKS swap, not the items. `order` changes which track each item
+   lands in but leaves the track sizes where they are, so ordering alone
+   put the panel — headline, body, bullets and its visual — into the
+   220-320px strip column and stretched the tab labels across the 1fr
+   remainder. The idiom was borrowed from split.css, where the columns are
+   a symmetric `1fr 1fr` and reordering is equivalent. */
+@media (min-width: 881px) {
+  .cp-tabs--vertical.cp-tabs--reverse .cp-tabs__inner {
+    grid-template-columns: minmax(0, 1fr) minmax(220px, 320px);
+  }
+
+  .cp-tabs--vertical.cp-tabs--reverse .cp-tabs__list {
+    order: 2;
+  }
+
+  .cp-tabs--vertical.cp-tabs--reverse .cp-tabs__panel {
+    order: 1;
+  }
+}
+
+@media (max-width: 880px) {
+  .cp-tabs--vertical .cp-tabs__inner {
+    grid-template-columns: 1fr;
+    gap: var(--cp-s-32);
+  }
+}
+
+.cp-tabs--vertical .cp-tabs__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-4);
+}
+
+.cp-tabs--vertical .cp-tabs__tab[data-selected] {
+  box-shadow: inset 2px 0 0 var(--cp-c-brand-1);
+}
+
+.cp-tabs--vertical .cp-tabs__panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-24);
+  min-width: 0;
+}
+
+/* ── Horizontal band — strip above the panel ─────────────────── */
+.cp-tabs--horizontal .cp-tabs__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-40);
+}
+
+.cp-tabs--horizontal .cp-tabs__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cp-s-8);
+  border-bottom: 1px solid var(--cp-c-border);
+}
+
+.cp-tabs--horizontal .cp-tabs__tab {
+  border-radius: var(--cp-radius-md) var(--cp-radius-md) 0 0;
+}
+
+.cp-tabs--horizontal .cp-tabs__tab[data-selected] {
+  box-shadow: inset 0 -2px 0 var(--cp-c-brand-1);
+}
+
+.cp-tabs--horizontal .cp-tabs__panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--cp-s-48);
+  align-items: center;
+}
+
+@media (max-width: 880px) {
+  .cp-tabs--horizontal .cp-tabs__panel {
+    grid-template-columns: 1fr;
+    gap: var(--cp-s-32);
+  }
+}
+
+/* Copy-only tab — no visual to sit beside, so the copy owns the row. */
+.cp-tabs--horizontal .cp-tabs__panel--full {
+  grid-template-columns: 1fr;
+}
+
+/* ── Tab ─────────────────────────────────────────────────────── */
+.cp-tabs__tab {
+  display: flex;
+  align-items: center;
+  gap: var(--cp-s-12);
+  padding: var(--cp-s-12) var(--cp-s-16);
+  border-radius: var(--cp-radius-md);
+  font-size: var(--cp-fs-body);
+  color: var(--cp-c-text-2);
+  cursor: pointer;
+  transition:
+    background var(--cp-duration-fast) var(--cp-ease-base),
+    color var(--cp-duration-fast) var(--cp-ease-base);
+}
+
+.cp-tabs__tab[data-hovered] {
+  background: var(--cp-c-bg-soft);
+  color: var(--cp-c-text-1);
+}
+
+.cp-tabs__tab[data-selected] {
+  background: var(--cp-c-brand-soft);
+  color: var(--cp-c-text-1);
+  font-weight: 600;
+}
+
+.cp-tabs__tab[data-focus-visible] {
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
+}
+
+/* Shrink the shared card icon chip to strip scale. */
+.cp-tabs__tab .cp-card__icon {
+  width: var(--cp-size-icon-box-sm);
+  height: var(--cp-size-icon-box-sm);
+}
+
+.cp-tabs__tab .cp-card__icon svg {
+  width: var(--cp-size-icon-svg-sm);
+  height: var(--cp-size-icon-svg-sm);
+}
+
+.cp-tabs__tab-label {
+  min-width: 0;
+}
+
+/* ── Panel copy ──────────────────────────────────────────────── */
+.cp-tabs__copy {
+  min-width: 0;
+}
+
+.cp-tabs__title {
+  font-size: clamp(20px, 2.2vw, 26px);
+  font-weight: 600;
+  letter-spacing: var(--cp-letter-display);
+  line-height: var(--cp-lh-display);
+  margin: 0 0 var(--cp-s-12);
+  color: var(--cp-c-text-1);
+}
+
+.cp-tabs__body {
+  font-size: var(--cp-fs-body);
+  line-height: var(--cp-lh-relaxed);
+  color: var(--cp-c-text-2);
+  margin: 0 0 var(--cp-s-20);
+}
+
+.cp-tabs__bullets {
+  list-style: none;
+  margin: 0 0 var(--cp-s-20);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--cp-s-12);
+}
+
+.cp-tabs__bullets li {
+  display: flex;
+  gap: var(--cp-s-12);
+  font-size: var(--cp-fs-bullet);
+  color: var(--cp-c-text-1);
+}
+
+/* The glyph is real text (`✓`), so contrast rules apply to it. Against the
+   near-transparent `--cp-c-brand-soft` chip it is effectively brand-on-page,
+   which measured 2.27:1 on mulled/dark and under 4:1 on four other combos —
+   legible as a smudge at best. `--cp-c-text-1` on the same chip is the
+   pairing already used by `.cp-mark`, and clears 12.7:1 everywhere. */
+.cp-tabs__check {
+  width: var(--cp-size-check);
+  height: var(--cp-size-check);
+  border-radius: 50%;
+  background: var(--cp-c-brand-soft);
+  color: var(--cp-c-text-1);
+  display: grid;
+  place-items: center;
+  font-size: var(--cp-fs-check);
+  flex-shrink: 0;
+  margin-top: var(--cp-s-2);
+}
+
+/*
+ * On the vertical axis the CTA is a panel-level child rendered after the
+ * visual, so it closes the panel instead of splitting the body copy from
+ * the visual. Horizontal keeps its CTA inside the copy column, where the
+ * side-by-side columns already put it in the right place.
+ */
+.cp-tabs--vertical .cp-tabs__panel > .cp-tabs__actions {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.cp-tabs__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cp-s-8);
+  padding: var(--cp-s-10) var(--cp-s-18);
+  font-size: var(--cp-fs-btn);
+  font-weight: 500;
+  border-radius: var(--cp-radius-pill);
+  border: 1px solid var(--cp-c-border);
+  background: transparent;
+  color: var(--cp-c-text-1);
+  cursor: pointer;
+  /* Named rather than `all`: `all` would animate any layout property added
+     later, turning a padding tweak into an unintended reflow animation. */
+  transition:
+    background var(--cp-duration-fast) var(--cp-ease-base),
+    border-color var(--cp-duration-fast) var(--cp-ease-base),
+    color var(--cp-duration-fast) var(--cp-ease-base);
+  text-decoration: none;
+}
+
+.cp-tabs__btn:hover {
+  background: var(--cp-c-bg-soft);
+  border-color: var(--cp-c-border);
+}
+
+/* Matches the ring on `.cp-tabs__tab` — without it the CTA fell back to the
+   UA default outline, which is nearly invisible on the dark themes and read
+   as a different focus treatment inside one component. */
+.cp-tabs__btn:focus-visible {
+  outline: var(--cp-size-focus-ring) solid var(--cp-c-brand-1);
+  outline-offset: var(--cp-size-focus-ring-offset);
+}
+
+.cp-tabs__btn--primary {
+  background: var(--cp-c-brand-1);
+  color: var(--cp-c-brand-fg);
+  border-color: var(--cp-c-brand-1);
+  font-weight: 600;
+}
+
+.cp-tabs__btn--primary:hover {
+  background: var(--cp-c-brand-2);
+  border-color: var(--cp-c-brand-2);
+}
+
+/* ── Panel visual — same frame as the split band ─────────────── */
+.cp-tabs__visual {
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-lg);
+  overflow: hidden;
+  background: var(--cp-code-block-bg);
+  min-width: 0;
+}
+
+.cp-tabs__visual .rp-codeblock {
+  margin: 0;
+  border-radius: 0;
+}
+
+.cp-tabs__visual .rp-codeblock pre {
+  overflow-x: auto;
+}
+
+.cp-tabs__visual .cp-hero-demo {
+  max-width: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.cp-tabs__img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

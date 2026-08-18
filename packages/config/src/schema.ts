@@ -47,21 +47,14 @@ import type {
   FooterColumn,
   FooterConfig,
   Frontmatter,
+  HomeBlock,
   HomeConfig,
-  HomeCtaConfig,
-  HomeFeaturesConfig,
   HomeHeroConfig,
-  HomeHeroDemoConfig,
-  HomeHeroDemoImage,
-  HomeHeroDemoLine,
-  HomeHeroDemoTerminal,
-  HomeLayoutEntry,
-  HomeProofConfig,
-  HomeSectionHeading,
-  HomeSectionId,
-  HomeShowcaseConfig,
-  HomeSplitConfig,
-  HomeSplitVisual,
+  HomeVisual,
+  HomeVisualCode,
+  HomeVisualImage,
+  HomeVisualLine,
+  HomeVisualTerminal,
   IconConfig,
   IconId,
   ImageSource,
@@ -73,7 +66,6 @@ import type {
   NavItem,
   OpenAPISpec,
   Page,
-  Paths,
   ReportLinkConfig,
   ResolvedPage,
   SidebarConfig,
@@ -103,7 +95,6 @@ const editLinkUrlFnSchema = z.custom<(page: ResolvedPage) => string>(isFunction)
 const editLinkOnResolveFnSchema = z.custom<(page: ResolvedPage) => void>(isFunction)
 const reportLinkUrlFnSchema = z.custom<(page: ResolvedPage) => string>(isFunction)
 const reportLinkOnResolveFnSchema = z.custom<(page: ResolvedPage) => void>(isFunction)
-const layoutComponentSchema = z.custom<ComponentType<{ readonly paths: Paths }>>(isFunction)
 const loaderComponentSchema = z.custom<ComponentType>(isFunction)
 
 const logoConfigSchema = z.union([z.string(), logoFnSchema])
@@ -399,14 +390,6 @@ const truncateConfigSchema = z
   })
   .strict()
 
-const homeSectionHeadingSchema = z
-  .object({
-    label: z.string().optional(),
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
-  })
-  .strict()
-
 const announcementConfigSchema = z
   .object({
     id: z.string().optional(),
@@ -423,128 +406,169 @@ const announcementConfigSchema = z
   })
   .strict()
 
-const homeProofConfigSchema = z
+const homeVisualCodeSchema = z
   .object({
-    lead: z.string().optional(),
-    names: z.array(z.string()).optional(),
+    type: z.literal('code'),
+    code: z.string().min(1, 'visual.code must be a non-empty string'),
+    language: z.string().optional(),
   })
   .strict()
 
-const homeCtaConfigSchema = z
+const homeVisualImageSchema = z
   .object({
-    title: z.string().optional(),
-    subtitle: z.string().optional(),
-    actions: z.array(buttonConfigSchema).optional(),
-  })
-  .strict()
-
-const homeHeroDemoImageSchema = z
-  .object({
-    src: z.string().min(1, 'hero.demo.src must be a non-empty string'),
+    type: z.literal('image'),
+    src: z.string().min(1, 'visual.src must be a non-empty string'),
     alt: z.string().optional(),
     width: z.union([z.number(), z.string()]).optional(),
     height: z.union([z.number(), z.string()]).optional(),
   })
   .strict()
 
-const homeHeroDemoLineSchema = z
+const homeVisualLineSchema = z
   .object({
     kind: z.enum(['ok', 'info', 'cmt', 'err']),
     text: z.string(),
   })
   .strict()
 
-const homeHeroDemoTerminalSchema = z
+const homeVisualTerminalSchema = z
   .object({
+    type: z.literal('terminal'),
     windowTitle: z.string().optional(),
-    command: z.string().min(1, 'hero.demo.command must be a non-empty string'),
-    lines: z.array(homeHeroDemoLineSchema),
+    command: z.string().min(1, 'visual.command must be a non-empty string'),
+    lines: z.array(homeVisualLineSchema),
   })
   .strict()
 
-const homeHeroDemoConfigSchema = z.union([homeHeroDemoImageSchema, homeHeroDemoTerminalSchema])
+const homeVisualSchema = z.discriminatedUnion('type', [
+  homeVisualCodeSchema,
+  homeVisualImageSchema,
+  homeVisualTerminalSchema,
+])
 
 const homeHeroConfigSchema = z
   .object({
     label: z.string().optional(),
     tagline: z.string().optional(),
     actions: z.array(buttonConfigSchema).optional(),
-    demo: z.union([z.literal(false), homeHeroDemoConfigSchema]).optional(),
+    demo: z.union([z.literal(false), homeVisualSchema]).optional(),
   })
   .strict()
 
-const homeFeaturesConfigSchema = z
+const homeColumnsSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)])
+
+const proofLogoSchema = z
   .object({
+    src: z.string().min(1, 'proof.names[].src must be a non-empty string'),
+    alt: z.string().min(1, 'proof.names[].alt must be a non-empty string'),
+    href: z.string().min(1, 'proof.names[].href must be a non-empty string').optional(),
+    // Integer: the value is written straight into `style="height: Npx"`, so a
+    // fractional height renders a sub-pixel logo.
+    height: z.number().int().positive('proof.names[].height must be a positive integer').optional(),
+    mono: z.boolean().optional(),
+  })
+  .strict()
+
+// The bare-string form needs the same non-empty floor as `alt` — an empty
+// name renders an empty span that still emits its separator dot, leaving a
+// dangling `·` in the strip.
+const proofItemSchema = z.union([
+  z.string().min(1, 'proof.names[] must be a non-empty string'),
+  proofLogoSchema,
+])
+
+const homeProofBlockSchema = z
+  .object({
+    type: z.literal('proof'),
+    lead: z.string().optional(),
+    names: z.array(proofItemSchema).optional(),
+  })
+  .strict()
+
+const homeFeaturesBlockSchema = z
+  .object({
+    type: z.literal('features'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
     items: z.array(featureSchema).optional(),
-    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
+    columns: homeColumnsSchema.optional(),
     truncate: truncateConfigSchema.optional(),
-    heading: homeSectionHeadingSchema.optional(),
   })
   .strict()
 
-const homeShowcaseConfigSchema = z
+const homeShowcaseBlockSchema = z
   .object({
-    columns: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]).optional(),
-    truncate: truncateConfigSchema.optional(),
-    heading: homeSectionHeadingSchema.optional(),
+    type: z.literal('showcase'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
     source: z.union([z.literal('workspaces'), z.array(z.string())]).optional(),
+    columns: homeColumnsSchema.optional(),
+    truncate: truncateConfigSchema.optional(),
   })
   .strict()
 
-const homeSplitVisualSchema = z
+const homeSplitBlockSchema = z
   .object({
-    code: z.string().min(1, 'split.visual.code must be a non-empty string'),
-    language: z.string().optional(),
-  })
-  .strict()
-
-const homeSplitConfigSchema = z
-  .object({
+    type: z.literal('split'),
     label: z.string().optional(),
     title: z.string().min(1, 'split.title is required'),
     body: z.string().optional(),
     bullets: z.array(z.string()).optional(),
     cta: buttonConfigSchema.optional(),
-    visual: homeSplitVisualSchema.optional(),
+    visual: homeVisualSchema.optional(),
+    reverse: z.boolean().optional(),
   })
   .strict()
 
-const homeSectionIdSchema = z.enum(['hero', 'proof', 'features', 'showcase', 'split', 'cta'])
+const homeTabItemSchema = z
+  .object({
+    label: z.string().min(1, 'tabs.items[].label is required'),
+    icon: iconConfigSchema.optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    bullets: z.array(z.string()).optional(),
+    cta: buttonConfigSchema.optional(),
+    visual: homeVisualSchema.optional(),
+  })
+  .strict()
 
-const homeLayoutEntrySchema = z.union([
-  homeSectionIdSchema,
-  z.object({ sectionId: homeSectionIdSchema }).strict(),
-  z.object({ component: layoutComponentSchema }).strict(),
-  z.object({ component: z.string() }).strict(),
+const homeTabsBlockSchema = z
+  .object({
+    type: z.literal('tabs'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    orientation: z.enum(['vertical', 'horizontal']).optional(),
+    reverse: z.boolean().optional(),
+    items: z.array(homeTabItemSchema),
+  })
+  .strict()
+
+const homeCtaBlockSchema = z
+  .object({
+    type: z.literal('cta'),
+    label: z.string().optional(),
+    title: z.string().optional(),
+    body: z.string().optional(),
+    actions: z.array(buttonConfigSchema).optional(),
+  })
+  .strict()
+
+const homeBlockSchema = z.discriminatedUnion('type', [
+  homeProofBlockSchema,
+  homeFeaturesBlockSchema,
+  homeShowcaseBlockSchema,
+  homeSplitBlockSchema,
+  homeTabsBlockSchema,
+  homeCtaBlockSchema,
 ])
 
 const homeConfigSchema = z
   .object({
     hero: homeHeroConfigSchema.optional(),
-    proof: homeProofConfigSchema.optional(),
-    features: homeFeaturesConfigSchema.optional(),
-    showcase: homeShowcaseConfigSchema.optional(),
-    split: z.union([z.literal(false), homeSplitConfigSchema]).optional(),
-    cta: homeCtaConfigSchema.optional(),
-    layout: z
-      .array(homeLayoutEntrySchema)
-      .refine(
-        (entries) => {
-          const sectionIds = entries.flatMap((entry) => {
-            if (typeof entry === 'string') {
-              return [entry]
-            }
-            if (entry !== null && typeof entry === 'object' && 'sectionId' in entry) {
-              return [entry.sectionId]
-            }
-            return []
-          })
-          return new Set(sectionIds).size === sectionIds.length
-        },
-        { message: 'home.layout must not contain duplicate section ids' }
-      )
-      .meta({ uniqueItems: true })
-      .optional(),
+    blocks: z.array(homeBlockSchema).optional(),
   })
   .strict()
 
@@ -779,6 +803,35 @@ export const pathsSchema = z
 // removed, or renamed without updating the type, TypeScript errors.
 // Recursive schemas (navItemSchema, pageSchema) are already guarded
 // via their z.ZodType<T> annotations above.
+//
+// `z.ZodType<T>` alone is not enough. It asserts only that the schema
+// output is ASSIGNABLE to `T`, which with mostly-optional fields accepts
+// a schema MISSING one of the type's fields and a schema carrying fields
+// the type does not have. Because every block schema is `.strict()`, a
+// field added to the interface but not the schema typechecks green and
+// then rejects the user's config at load with `Unrecognized key` — the
+// failure lands on the user, not on CI.
+//
+// The home guards below pair the assignability check with `SameKeys`,
+// which compares the two key sets in both directions. Key-set equality
+// rather than full invariant identity is deliberate: these interfaces
+// declare `readonly` members and `z.infer` does not, so an exact-identity
+// check would fail on every one of them for a reason that is not drift.
+
+/**
+ * Every key of `T`, distributed so a discriminated union contributes the
+ * keys of all its variants rather than only those they share.
+ */
+type AllKeys<T> = T extends unknown ? keyof T : never
+
+/**
+ * True only when `A` and `B` declare exactly the same keys.
+ */
+type SameKeys<A, B> = [Exclude<AllKeys<A>, AllKeys<B>> | Exclude<AllKeys<B>, AllKeys<A>>] extends [
+  never,
+]
+  ? true
+  : false
 
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
@@ -823,33 +876,38 @@ const _guardSortStrategy: z.ZodType<SortStrategy> = sortStrategySchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeHeroConfig: z.ZodType<HomeHeroConfig> = homeHeroConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeProofConfig: z.ZodType<HomeProofConfig> = homeProofConfigSchema
+const _keysHomeHeroConfig: SameKeys<z.infer<typeof homeHeroConfigSchema>, HomeHeroConfig> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeFeaturesConfig: z.ZodType<HomeFeaturesConfig> = homeFeaturesConfigSchema
+const _guardHomeVisual: z.ZodType<HomeVisual> = homeVisualSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeShowcaseConfig: z.ZodType<HomeShowcaseConfig> = homeShowcaseConfigSchema
+const _keysHomeVisual: SameKeys<z.infer<typeof homeVisualSchema>, HomeVisual> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitConfig: z.ZodType<HomeSplitConfig> = homeSplitConfigSchema
+const _guardHomeVisualCode: z.ZodType<HomeVisualCode> = homeVisualCodeSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSplitVisual: z.ZodType<HomeSplitVisual> = homeSplitVisualSchema
+const _keysHomeVisualCode: SameKeys<z.infer<typeof homeVisualCodeSchema>, HomeVisualCode> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeCtaConfig: z.ZodType<HomeCtaConfig> = homeCtaConfigSchema
+const _guardHomeVisualImage: z.ZodType<HomeVisualImage> = homeVisualImageSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoConfig: z.ZodType<HomeHeroDemoConfig> = homeHeroDemoConfigSchema
+const _keysHomeVisualImage: SameKeys<z.infer<typeof homeVisualImageSchema>, HomeVisualImage> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoImage: z.ZodType<HomeHeroDemoImage> = homeHeroDemoImageSchema
+const _guardHomeVisualTerminal: z.ZodType<HomeVisualTerminal> = homeVisualTerminalSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoTerminal: z.ZodType<HomeHeroDemoTerminal> = homeHeroDemoTerminalSchema
+const _keysHomeVisualTerminal: SameKeys<
+  z.infer<typeof homeVisualTerminalSchema>,
+  HomeVisualTerminal
+> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeHeroDemoLine: z.ZodType<HomeHeroDemoLine> = homeHeroDemoLineSchema
+const _guardHomeVisualLine: z.ZodType<HomeVisualLine> = homeVisualLineSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSectionHeading: z.ZodType<HomeSectionHeading> = homeSectionHeadingSchema
+const _keysHomeVisualLine: SameKeys<z.infer<typeof homeVisualLineSchema>, HomeVisualLine> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeLayoutEntry: z.ZodType<HomeLayoutEntry> = homeLayoutEntrySchema
+const _guardHomeBlock: z.ZodType<HomeBlock> = homeBlockSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeBlock: SameKeys<z.infer<typeof homeBlockSchema>, HomeBlock> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeConfig: z.ZodType<HomeConfig> = homeConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
-const _guardHomeSectionId: z.ZodType<HomeSectionId> = homeSectionIdSchema
+const _keysHomeConfig: SameKeys<z.infer<typeof homeConfigSchema>, HomeConfig> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardBrandConfig: z.ZodType<BrandConfig> = brandConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

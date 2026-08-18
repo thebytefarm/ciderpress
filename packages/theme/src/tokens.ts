@@ -300,11 +300,24 @@ export interface CiderpressRadii {
 }
 
 /**
- * Font-family stack.
+ * Font-family stacks. These three slots are the only font sources a theme
+ * declares — every `--cp-font-family-*` / `--rp-font-family-*` variable in
+ * the stylesheet resolves back to one of them.
+ *
+ * | Slot      | CSS variable        | Surfaces                                                    |
+ * |-----------|---------------------|-------------------------------------------------------------|
+ * | `sans`    | `--cp-ff-sans`      | Base UI + prose: body, nav, sidebar, hero, cards, doc text  |
+ * | `mono`    | `--cp-ff-mono`      | Code blocks, inline code, terminal chrome, eyebrow labels   |
+ * | `display` | `--cp-ff-display`   | Decorative headline / brand-mark surfaces                   |
+ *
+ * `display` is optional and falls back to `sans` when omitted, so a theme
+ * that only declares `sans` + `mono` still renders every surface in its own
+ * fonts.
  */
 export interface CiderpressFontFamilies {
   readonly sans: string
   readonly mono: string
+  readonly display?: string
 }
 
 /**
@@ -691,6 +704,7 @@ export type TokenPath =
   // fonts.family
   | 'fonts.family.sans'
   | 'fonts.family.mono'
+  | 'fonts.family.display'
   // fonts.weight
   | 'fonts.weight.regular'
   | 'fonts.weight.medium'
@@ -956,6 +970,7 @@ export const TOKEN_TO_CSS_VAR: Readonly<Record<TokenPath, string>> = Object.free
   'radii.pill': '--cp-radius-pill',
   'fonts.family.sans': '--cp-ff-sans',
   'fonts.family.mono': '--cp-ff-mono',
+  'fonts.family.display': '--cp-ff-display',
   'fonts.weight.regular': '--cp-fw-regular',
   'fonts.weight.medium': '--cp-fw-medium',
   'fonts.weight.semibold': '--cp-fw-semibold',

@@ -1,16 +1,22 @@
-import type { HomeFeaturesConfig } from '@ciderpress/config'
-import { useFrontmatter } from '@rspress/core/runtime'
+import type { TruncateConfig } from '@ciderpress/config'
 import { match, P } from 'massaman/match'
 import type React from 'react'
 
-import { useCiderpress } from '../../hooks/use-ciderpress'
+import { renderRichText } from '../../lib/rich-text.tsx'
 import { FeatureCard } from './feature-card'
 import type { FeatureItem } from './feature-card'
 
 interface FrontmatterFeaturesHeading {
   readonly label?: string
   readonly title?: string
-  readonly subtitle?: string
+  readonly body?: string
+}
+
+interface HomeFeatureProps {
+  readonly items?: readonly FeatureItem[]
+  readonly heading?: FrontmatterFeaturesHeading
+  readonly columns?: 1 | 2 | 3 | 4
+  readonly truncate?: TruncateConfig
 }
 
 const DEFAULT_HEADING_EYEBROW = 'Features'
@@ -19,23 +25,15 @@ const DEFAULT_HEADING_SUBTITLE =
   "Everything you need, nothing you don't. Configured in TypeScript, validated at boot."
 
 /**
- * Custom HomeFeature override for ciderpress.
- * Uses useFrontmatter() hook to read features and renders with FeatureCard/FeatureGrid styling.
+ * Features grid block. Renders the supplied feature cards under a heading,
+ * or nothing when no cards are present.
  *
- * @returns React element with feature grid or null
+ * @param props - Resolved feature cards, optional heading, and truncation limits.
+ * @returns React element with the feature grid, or null.
  */
-export function HomeFeature(): React.ReactElement | null {
-  const { frontmatter } = useFrontmatter()
-  const { home } = useCiderpress()
-  const gridConfig = home && home.features
-
-  // Rspress types frontmatter as its own FrontMatterMeta shape which does not
-  // include ciderpress-specific `features`. The double cast is necessary because
-  // no shared Zod schema exists for frontmatter validation at runtime.
-  const fm = frontmatter as Record<string, unknown>
-  const features = fm.features as readonly FeatureItem[] | undefined
-  const heading = fm.featuresHeading as FrontmatterFeaturesHeading | undefined
-  // Frontmatter is unvalidated user content — a `featuresHeading.title: {}`
+export function HomeFeature(props: HomeFeatureProps): React.ReactElement | null {
+  const { items, heading, columns, truncate } = props
+  // Frontmatter is unvalidated user content — a `heading.title: {}`
   // would otherwise render as `[object Object]` in the H2. Treat any
   // non-string value as missing and fall through to the framework default.
   const headingEyebrow = match(heading && heading.label)
@@ -44,22 +42,27 @@ export function HomeFeature(): React.ReactElement | null {
   const headingTitle = match(heading && heading.title)
     .with(P.string, (s) => s)
     .otherwise(() => DEFAULT_HEADING_TITLE)
-  const headingSubtitle = match(heading && heading.subtitle)
+  const headingSubtitle = match(heading && heading.body)
     .with(P.string, (s) => s)
     .otherwise(() => DEFAULT_HEADING_SUBTITLE)
+  // Column count rides on a custom property so the grid keeps its CSS
+  // media queries — a narrow viewport still collapses to one column.
+  const gridStyle = match(columns)
+    .with(P.number, (c) => ({ '--cp-feature-cols': String(c) }) as React.CSSProperties)
+    .otherwise(() => undefined)
 
-  return match(features)
+  return match(items)
     .with(
       P.when((f): f is readonly FeatureItem[] => Array.isArray(f) && f.length > 0),
-      (items) => (
+      (list) => (
         <div className="cp-feature-section">
           <div className="cp-feature-section-head">
-            <div className="cp-feature-section-head__eyebrow">{headingEyebrow}</div>
-            <h2 className="cp-feature-section-head__title">{headingTitle}</h2>
-            <p className="cp-feature-section-head__sub">{headingSubtitle}</p>
+            <div className="cp-feature-section-head__eyebrow">{renderRichText(headingEyebrow)}</div>
+            <h2 className="cp-feature-section-head__title">{renderRichText(headingTitle)}</h2>
+            <p className="cp-feature-section-head__sub">{renderRichText(headingSubtitle)}</p>
           </div>
-          <div className="cp-feature-grid">
-            {items.map((f, i) => renderFeature(f, i, gridConfig))}
+          <div className="cp-feature-grid" style={gridStyle}>
+            {list.map((f, i) => renderFeature(f, i, truncate))}
           </div>
         </div>
       )
@@ -74,16 +77,16 @@ export function HomeFeature(): React.ReactElement | null {
  * @private
  * @param feature - Feature item data
  * @param index - Array index for key generation
- * @param gridConfig - Optional grid config for truncation
+ * @param truncate - Optional line-clamp limits for card text
  * @returns Feature card element
  */
 function renderFeature(
   feature: FeatureItem,
   index: number,
-  gridConfig: HomeFeaturesConfig | undefined
+  truncate: TruncateConfig | undefined
 ): React.ReactElement {
-  const titleLines = gridConfig && gridConfig.truncate && gridConfig.truncate.title
-  const descLines = gridConfig && gridConfig.truncate && gridConfig.truncate.description
+  const titleLines = truncate && truncate.title
+  const descLines = truncate && truncate.description
 
   return (
     <FeatureCard

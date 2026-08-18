@@ -31,3 +31,44 @@
 .cp-trust__sep {
   color: var(--cp-c-text-3);
 }
+
+.cp-trust__logo {
+  display: inline-block;
+  width: auto;
+  vertical-align: middle;
+}
+
+/*
+ * Mono variant: paint a solid block of the current text color, clipped
+ * to the asset's alpha channel. One file then tracks every theme and
+ * both variants, which is the escape hatch for marks whose baked
+ * palette only reads against one background.
+ */
+.cp-trust__logo--mono {
+  background-color: currentcolor;
+  color: var(--cp-c-text-2);
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-size: contain;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: contain;
+  transition: color 0.15s ease;
+}
+
+/* Lays out at the asset's intrinsic ratio to give the mask a width. */
+.cp-trust__logo--mono img {
+  display: block;
+  height: 100%;
+  width: auto;
+  visibility: hidden;
+}
+
+.cp-trust__link {
+  display: inline-flex;
+  align-items: center;
+}
+
+.cp-trust__link:hover .cp-trust__logo--mono {
+  color: var(--cp-c-text-1);
+}

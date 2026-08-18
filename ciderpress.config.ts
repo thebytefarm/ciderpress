@@ -1,10 +1,20 @@
 import { CiderpressLogo, defineConfig } from 'ciderpress'
 import { createElement } from 'react'
 
+// Single source of truth for every version string on the site: the
+// published package's own manifest. Typing them by hand let the hero badge
+// (v0.5), the version selector (v1.0), and the actual release drift apart.
+//
+// Imported by relative path rather than as `ciderpress/package.json`,
+// because the package's `exports` map does not expose `./package.json`.
+// A JSON import rather than `readFileSync`, because this config is bundled
+// into the client build, where `node:fs` cannot resolve.
+import pkg from './packages/ciderpress/package.json'
+
 export default defineConfig({
   title: 'ciderpress',
-  description: 'Beautiful Docs, Zero Effort',
-  version: 'v1.0',
+  description: 'Beautiful Docs, **Zero Effort**',
+  version: `v${pkg.version}`,
   theme: {
     themes: ['honeycrisp'],
   },
@@ -38,16 +48,16 @@ export default defineConfig({
       { text: 'Contributing', href: '/contributing', icon: 'pixelarticons:git-merge' },
     ],
     promo: {
-      title: 'Ship docs that stay in sync',
-      body: 'Pull docs from your codebase and keep them green automatically.',
+      title: 'Docs that follow your code',
+      body: 'Point ciderpress at markdown in your repo and the site rebuilds as you edit.',
       cta: { text: 'Try ciderpress →', href: '/getting-started/quick-start' },
     },
   },
   home: {
     hero: {
-      label: '★ open source · v0.5 · MIT',
+      label: `v${pkg.version} · MIT`,
       tagline:
-        'An opinionated documentation framework for monorepos. No restructuring, no plugins, no theme wiring — just point it at your markdown.',
+        'An opinionated documentation framework for monorepos. **No restructuring**, no plugins, no theme wiring. Just point it at your `markdown`.',
       actions: [
         {
           variant: 'primary',
@@ -57,61 +67,204 @@ export default defineConfig({
         { variant: 'secondary', text: 'Quick Start', href: '/getting-started/quick-start' },
       ],
     },
-    proof: {
-      lead: 'used by',
-      names: ['maltty', 'viteval', 'massaman', 'marxml'],
-    },
-    features: {
-      truncate: { description: 2 },
-      items: [
-        {
-          title: 'Zero Effort',
-          description:
-            'No restructuring, no plugins, no theme wiring. Point it at markdown and ship.',
-          icon: 'pixelarticons:speed-fast',
+    // Ordered landing bands. Array order is render order; any block type
+    // may repeat (e.g. multiple `split`s).
+    blocks: [
+      {
+        type: 'proof',
+        lead: 'used by',
+        // Heights are tuned per mark, not shared: these logos range from
+        // 3.3:1 to 6.1:1, so a single height would let the widest one
+        // dominate the row.
+        names: [
+          {
+            src: '/logos/maltty.svg',
+            alt: 'maltty',
+            href: 'https://github.com/thebytefarm/maltty',
+            height: 22,
+          },
+          {
+            src: '/logos/massaman.svg',
+            alt: 'massaman',
+            href: 'https://github.com/zrosenbauer/massaman',
+            height: 22,
+          },
+          {
+            src: '/logos/marxml.png',
+            alt: 'marxml',
+            href: 'https://github.com/thebytefarm/marxml',
+            height: 15,
+          },
+          {
+            src: '/logos/viteval.svg',
+            alt: 'viteval',
+            href: 'https://github.com/viteval/viteval',
+            height: 22,
+          },
+        ],
+      },
+      {
+        type: 'features',
+        truncate: { description: 2 },
+        items: [
+          {
+            title: 'Zero Effort',
+            description: 'Give it a glob. It finds your pages and builds the site around them.',
+            icon: 'pixelarticons:speed-fast',
+          },
+          {
+            title: 'Your Structure',
+            description:
+              'Config maps to how you already organize markdown. The tool fits your docs.',
+            icon: 'pixelarticons:layout',
+          },
+          {
+            title: 'AI-Friendly',
+            description:
+              'Ships an llms.txt index and serves raw markdown, so agents read the source.',
+            icon: 'pixelarticons:robot',
+          },
+          {
+            title: 'Monorepo Native',
+            description:
+              'First-class workspace support with sidebar islands and auto-generated landing pages.',
+            icon: 'pixelarticons:git-merge',
+          },
+          {
+            title: 'VSCode Extension',
+            description: 'Preview your docs site directly inside VS Code as you write.',
+            icon: 'simple-icons:visualstudiocode',
+          },
+          {
+            title: 'OpenAPI Support',
+            description:
+              'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
+            icon: 'simple-icons:openapiinitiative',
+          },
+        ],
+      },
+      {
+        type: 'showcase',
+        label: 'Packages',
+        title: 'Six packages, **one install**.',
+        body: 'This site documents its own source with the same card grid you get for free.',
+      },
+      {
+        type: 'split',
+        label: 'Configuration',
+        title: 'One typed config file.',
+        body: 'Your whole site lives in `ciderpress.config.ts`. It gets validated on load, so a typo fails at startup instead of in production.',
+        bullets: [
+          'Type-safe config with full IntelliSense',
+          'Points at existing docs in place, so nothing has to move',
+          'Restarts only when it has to, most edits hot-reload',
+        ],
+        cta: { variant: 'primary', text: 'Read the docs', href: '/reference/configuration' },
+        visual: {
+          type: 'code',
+          language: 'ts',
+          code: `import { defineConfig } from 'ciderpress'
+
+export default defineConfig({
+  title: 'Acme Docs',
+  pages: [
+    { title: 'Guides', include: 'docs/guides/*.md' },
+  ],
+  theme: { themes: ['mulled'] },
+})`,
         },
-        {
-          title: 'Your Structure',
-          description: 'Config maps to how you already organize markdown. The tool fits your docs.',
-          icon: 'pixelarticons:layout',
-        },
-        {
-          title: 'AI-Friendly',
-          description:
-            'Auto llms.txt generation, raw markdown served as text/markdown, and glob discovery that picks up new files without config changes.',
-          icon: 'pixelarticons:robot',
-        },
-        {
-          title: 'Monorepo Native',
-          description:
-            'First-class workspace support with sidebar islands and auto-generated landing pages.',
-          icon: 'pixelarticons:git-merge',
-        },
-        {
-          title: 'VSCode Extension',
-          description: 'Preview your docs site directly inside VS Code as you write.',
-          icon: 'simple-icons:visualstudiocode',
-        },
-        {
-          title: 'OpenAPI Support',
-          description:
-            'Drop in an OpenAPI spec and get interactive API reference pages with try-it-out requests.',
-          icon: 'simple-icons:openapiinitiative',
-        },
-      ],
-    },
-    cta: {
-      title: 'Ship the docs your team deserves.',
-      subtitle: 'One CLI. Three minutes. Production-ready.',
-      actions: [
-        { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
-        {
-          variant: 'secondary',
-          text: 'Star on GitHub →',
-          href: 'https://github.com/thebytefarm/ciderpress',
-        },
-      ],
-    },
+      },
+      {
+        type: 'tabs',
+        label: 'Capabilities',
+        title: 'Every one of these is **one config block**.',
+        body: 'No plugin to install, no theme to fork.',
+        orientation: 'horizontal',
+        items: [
+          {
+            label: 'Sync engine',
+            icon: { id: 'pixelarticons:reload', color: 'green' },
+            title: 'Your markdown, left where it is',
+            body: 'Ciderpress reads your repo where it sits, with no copying and no restructuring. Globs pick up new files, so adding a page means adding a file.',
+            bullets: ['Glob discovery', 'Frontmatter inheritance', 'Watch mode on every save'],
+            visual: {
+              type: 'terminal',
+              windowTitle: 'ciderpress dev',
+              command: 'ciderpress dev',
+              lines: [
+                { kind: 'ok', text: 'synced 128 pages from 6 workspaces' },
+                { kind: 'info', text: 'sidebar + nav generated' },
+                { kind: 'cmt', text: 'watching for changes…' },
+                { kind: 'ok', text: 'ready at http://localhost:3000' },
+              ],
+            },
+          },
+          {
+            label: 'OpenAPI',
+            icon: { id: 'simple-icons:openapiinitiative', color: 'blue' },
+            title: 'Specs become reference pages',
+            body: 'Point a page at a spec file and get interactive endpoint docs with try-it-out requests.',
+            bullets: ['Schema-aware examples', 'Grouped by tag or path'],
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `pages: [
+  {
+    title: 'API',
+    path: '/api',
+    openapi: { spec: 'openapi.yaml', path: '/api' },
+  },
+]`,
+            },
+          },
+          {
+            label: 'Themes',
+            icon: { id: 'pixelarticons:paint-bucket', color: 'purple' },
+            title: 'Six themes, zero wiring',
+            body: 'Swap the whole palette with one key. Light and dark are generated together, so contrast holds either way.',
+            cta: { variant: 'secondary', text: 'Browse themes', href: '/concepts/themes' },
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `theme: {
+  themes: ['honeycrisp', 'mulled', 'midnight'],
+  defaultVariant: 'dark',
+}`,
+            },
+          },
+          {
+            label: 'AI-ready',
+            icon: { id: 'pixelarticons:robot', color: 'amber' },
+            title: 'Built for agents as well as people',
+            body: 'Every site ships an llms.txt index and serves raw markdown at the same URL, so agents read the source instead of scraping HTML.',
+            bullets: ['Auto llms.txt', 'text/markdown responses', 'Copy-as-markdown on every page'],
+            visual: {
+              type: 'terminal',
+              windowTitle: 'curl',
+              command: 'curl -H "Accept: text/markdown" https://ciderpress.dev/guides/setup',
+              lines: [
+                { kind: 'cmt', text: '# Setup' },
+                { kind: 'cmt', text: 'Install the CLI and point it at your docs.' },
+                { kind: 'ok', text: '200 · text/markdown' },
+              ],
+            },
+          },
+        ],
+      },
+      {
+        type: 'cta',
+        title: 'Point it at your docs.',
+        body: 'Run `ciderpress setup` and you have a site.',
+        actions: [
+          { variant: 'primary', text: 'Get started', href: '/getting-started/quick-start' },
+          {
+            variant: 'secondary',
+            text: 'Star on GitHub →',
+            href: 'https://github.com/thebytefarm/ciderpress',
+          },
+        ],
+      },
+    ],
   },
   packages: [
     {
@@ -198,7 +351,7 @@ export default defineConfig({
       title: '@ciderpress/templates',
       icon: { id: 'pixelarticons:note', color: 'slate' },
       description:
-        'Documentation templates SDK — built-in templates, extensions, and custom registrations',
+        'Documentation templates SDK with built-in templates, extensions, and custom registrations',
       tags: ['typescript', 'liquid'],
       path: '/packages/templates',
     },

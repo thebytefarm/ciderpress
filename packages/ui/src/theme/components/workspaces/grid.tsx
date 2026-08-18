@@ -1,16 +1,21 @@
+import { match, P } from 'massaman/match'
 import type React from 'react'
+
+import { renderRichText } from '../../lib/rich-text.tsx'
 
 import './card.css'
 
 export interface WorkspaceGridProps {
   /**
-   * Section heading (e.g. "Apps", "Packages").
+   * Section heading (e.g. "Apps", "Packages"). Omitted for an ungrouped
+   * grid, such as a showcase block with an explicit `source` list.
    */
-  readonly heading: string
+  readonly heading?: string
   /**
-   * Brief description rendered below the heading.
+   * Brief description rendered below the heading. Omitted for an
+   * ungrouped grid.
    */
-  readonly description: string
+  readonly description?: string
   /**
    * Number of grid columns.
    */
@@ -38,8 +43,15 @@ export function WorkspaceGrid({
 
   return (
     <>
-      <h2>{heading}</h2>
-      <p className="cp-workspace-section__desc">{description}</p>
+      {/* Rich text, matching the card titles and descriptions this grid
+          wraps — a group heading was the one string in the block that
+          showed its `**markers**` literally. */}
+      {match(heading)
+        .with(P.string, (h) => <h2>{renderRichText(h)}</h2>)
+        .otherwise(() => null)}
+      {match(description)
+        .with(P.string, (d) => <p className="cp-workspace-section__desc">{renderRichText(d)}</p>)
+        .otherwise(() => null)}
       <div className="cp-workspace-grid" style={style}>
         {children}
       </div>

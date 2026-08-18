@@ -10,23 +10,6 @@ const RULES: readonly BadgeRule[] = [
   { match: '/framework/scaling', badge: { text: 'LEAF', variant: 'info' } },
 ]
 
-function ctx(overrides: Partial<BadgeContext> = {}): BadgeContext {
-  return { rules: RULES, registry: [], groupBadges: false, ...overrides }
-}
-
-function leaf(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
-  return { title: 'Scaling', link: '/framework/scaling', ...overrides }
-}
-
-function collapsibleDoc(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
-  return {
-    title: 'Templates',
-    link: '/framework/templates',
-    items: [{ title: 'Concept', link: '/framework/templates/concept' }],
-    ...overrides,
-  }
-}
-
 describe('applyBadges()', () => {
   it('should stamp a leaf page badge on both the sidebar tag and the badge map', async () => {
     const result = await applyBadges([leaf()], ctx())
@@ -55,3 +38,41 @@ describe('applyBadges()', () => {
     expect(result.badgeMap['/framework/scaling']).toEqual([{ text: 'LEAF', variant: 'info' }])
   })
 })
+
+/**
+ * Build a badge context over the fixture rules.
+ *
+ * @private
+ * @param overrides - Context fields layered onto the fixture
+ * @returns Complete badge context
+ */
+function ctx(overrides: Partial<BadgeContext> = {}): BadgeContext {
+  return { rules: RULES, registry: [], groupBadges: false, ...overrides }
+}
+
+/**
+ * Build a leaf entry matching the `LEAF` badge rule.
+ *
+ * @private
+ * @param overrides - Entry fields layered onto the fixture
+ * @returns Resolved entry without children
+ */
+function leaf(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
+  return { title: 'Scaling', link: '/framework/scaling', ...overrides }
+}
+
+/**
+ * Build a collapsible-doc entry matching the `GRP` badge rule.
+ *
+ * @private
+ * @param overrides - Entry fields layered onto the fixture
+ * @returns Resolved entry carrying its own link plus one child
+ */
+function collapsibleDoc(overrides: Partial<ResolvedEntry> = {}): ResolvedEntry {
+  return {
+    title: 'Templates',
+    link: '/framework/templates',
+    items: [{ title: 'Concept', link: '/framework/templates/concept' }],
+    ...overrides,
+  }
+}

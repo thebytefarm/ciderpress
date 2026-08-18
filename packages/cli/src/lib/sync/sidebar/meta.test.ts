@@ -3,62 +3,6 @@ import { describe, expect, it } from 'vitest'
 import type { ResolvedEntry } from '../types'
 import { buildMetaDirectories, buildRootMeta } from './meta'
 
-/**
- * Simulates the packages section from ciderpress.config.ts where each package
- * section has a landing page leaf that shares the same path as the parent.
- *
- * ```
- * packages/
- *   cli.md          ← leaf "Overview" at /packages/cli
- *   cli/
- *     changelog.md  ← leaf "Changelog" at /packages/cli/changelog
- * ```
- */
-function makePackageSection(params: {
-  readonly name: string
-  readonly label: string
-}): ResolvedEntry {
-  const { name, label } = params
-  return {
-    title: label,
-    link: `/packages/${name}`,
-    items: [
-      {
-        title: 'Overview',
-        link: `/packages/${name}`,
-        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
-      },
-      {
-        title: 'Changelog',
-        link: `/packages/${name}/changelog`,
-        page: { outputPath: `packages/${name}/changelog.md`, frontmatter: {} },
-      },
-    ],
-  }
-}
-
-/**
- * Simulates a package section with only a landing page and no subdirectory
- * content (e.g., @ciderpress/templates has no Changelog).
- */
-function makePackageSectionNoSubdir(params: {
-  readonly name: string
-  readonly label: string
-}): ResolvedEntry {
-  const { name, label } = params
-  return {
-    title: label,
-    link: `/packages/${name}`,
-    items: [
-      {
-        title: 'Overview',
-        link: `/packages/${name}`,
-        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
-      },
-    ],
-  }
-}
-
 const packagesRoot: ResolvedEntry = {
   title: 'Packages',
   link: '/packages',
@@ -363,3 +307,67 @@ describe('buildMetaDirectories()', () => {
     expect(names).toStrictEqual(['intro', 'faq', 'api'])
   })
 })
+
+/**
+ * Simulates the packages section from ciderpress.config.ts where each package
+ * section has a landing page leaf that shares the same path as the parent.
+ *
+ * ```
+ * packages/
+ *   cli.md          ← leaf "Overview" at /packages/cli
+ *   cli/
+ *     changelog.md  ← leaf "Changelog" at /packages/cli/changelog
+ * ```
+ *
+ * @private
+ * @param params - Package directory name and sidebar label
+ * @returns Section entry carrying an Overview and a Changelog leaf
+ */
+function makePackageSection(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
+  const { name, label } = params
+  return {
+    title: label,
+    link: `/packages/${name}`,
+    items: [
+      {
+        title: 'Overview',
+        link: `/packages/${name}`,
+        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
+      },
+      {
+        title: 'Changelog',
+        link: `/packages/${name}/changelog`,
+        page: { outputPath: `packages/${name}/changelog.md`, frontmatter: {} },
+      },
+    ],
+  }
+}
+
+/**
+ * Simulates a package section with only a landing page and no subdirectory
+ * content (e.g., @ciderpress/templates has no Changelog).
+ *
+ * @private
+ * @param params - Package directory name and sidebar label
+ * @returns Section entry carrying only an Overview leaf
+ */
+function makePackageSectionNoSubdir(params: {
+  readonly name: string
+  readonly label: string
+}): ResolvedEntry {
+  const { name, label } = params
+  return {
+    title: label,
+    link: `/packages/${name}`,
+    items: [
+      {
+        title: 'Overview',
+        link: `/packages/${name}`,
+        page: { outputPath: `packages/${name}.md`, frontmatter: {} },
+      },
+    ],
+  }
+}

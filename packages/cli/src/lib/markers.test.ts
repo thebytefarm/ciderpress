@@ -17,18 +17,6 @@ afterEach(() => {
   rmSync(dir, { recursive: true, force: true })
 })
 
-/**
- * Write a content file into a sub-path of the current temp dir.
- *
- * @param name - Relative file path (sub-directories created as needed)
- * @param body - Full file contents
- */
-function write(name: string, body: string): void {
-  const full = join(dir, name)
-  mkdirSync(join(full, '..'), { recursive: true })
-  writeFileSync(full, body, 'utf8')
-}
-
 describe('scanMarkers()', () => {
   it('should return no issues when content is clean', async () => {
     write('content/guide.md', '# Guide\n\nAll filled in.\n')
@@ -75,3 +63,16 @@ describe('scanMarkers()', () => {
     expect(issues).toStrictEqual([])
   })
 })
+
+/**
+ * Write a content file into a sub-path of the current temp dir.
+ *
+ * @private
+ * @param name - Relative file path (sub-directories created as needed)
+ * @param body - Full file contents
+ */
+function write(name: string, body: string): void {
+  const full = join(dir, name)
+  mkdirSync(join(full, '..'), { recursive: true })
+  writeFileSync(full, body, 'utf8')
+}

@@ -89,109 +89,187 @@ export default defineConfig({
       // Dashboard-style hero demo — image variant. Renders the
       // dashboard.svg preview inside the framework's framed hero slot
       // (rounded corners + brand-soft glow preserved).
-      demo: { src: '/dashboard.svg', alt: 'Acme Corp control plane' },
+      demo: { type: 'image', src: '/dashboard.svg', alt: 'Acme Corp control plane' },
     },
-    // Custom Split section. Replaces the framework's "Acme Docs"
-    // example with Acme's actual SDK config preview.
-    split: {
-      label: 'Type-safe by default',
-      title: 'One config. Validated at boot.',
-      body: 'Acme services are described by acme.config.ts. The SDK validates against your live database schema on deploy — drift never ships.',
-      bullets: [
-        'Typed handlers, typed events, typed database',
-        'Schema drift caught at typecheck time',
-        'Feature flags + audit retention next to code',
-        'Per-environment overrides without forking',
-      ],
-      cta: {
-        variant: 'primary',
-        text: 'Read configuration',
-        href: '/getting-started/configuration',
+    // Custom band order — push the CTA up under the hero so the primary
+    // conversion sits before any further reading. No proof strip (we
+    // don't have names yet). Array order is render order.
+    blocks: [
+      {
+        type: 'cta',
+        title: 'Ready to ship?',
+        body: 'Install the CLI and have a service deployed in under fifteen minutes.',
+        actions: [
+          { variant: 'primary', text: 'Quickstart', href: '/getting-started/quickstart' },
+          { variant: 'secondary', text: 'API reference', href: '/api/overview' },
+        ],
       },
-      visual: {
-        language: 'ts',
-        code: [
-          "import { defineConfig } from '@acme/sdk'",
-          '',
-          'export default defineConfig({',
-          "  name: 'billing',",
-          "  regions: ['us-east', 'eu-west'],",
-          '  database: { pool: { min: 2, max: 16 } },',
-          '  flags: {',
-          "    invoice_v2: { default: false, owner: 'platform@acme.co' },",
-          '  },',
-          '})',
-        ].join('\n'),
-      },
-    },
-    features: {
-      columns: 3,
-      heading: {
+      {
+        type: 'features',
+        columns: 3,
         label: 'What you get',
         title: 'Built for the engineers who ship.',
-        subtitle:
-          'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
+        body: 'A typed SDK, an OpenAPI spec, a managed edge runtime, and a control plane — all wired together before you write your first handler.',
+        items: [
+          {
+            title: 'Typed SDK',
+            description:
+              'Generated from your live OpenAPI spec on every deploy. End-to-end inference.',
+            icon: 'pixelarticons:script-text',
+            link: '/packages/sdk',
+          },
+          {
+            title: 'Managed edge runtime',
+            description: '40+ POPs, sub-50ms p99 cold starts, regional pinning, zero-config DR.',
+            icon: 'pixelarticons:cloud',
+            link: '/apps/edge',
+          },
+          {
+            title: 'Control plane',
+            description: 'Audit logs, customer impersonation, feature flags — next to your code.',
+            icon: 'pixelarticons:dashboard',
+            link: '/apps/dashboard',
+          },
+          {
+            title: 'Webhook delivery',
+            description: 'Signed events with 24h retries and a built-in DLQ.',
+            icon: 'pixelarticons:notification',
+            link: '/guides/webhooks',
+          },
+          {
+            title: 'Observability built in',
+            description:
+              'Structured logs, OpenTelemetry traces, custom metrics — no agent install.',
+            icon: 'pixelarticons:chart',
+            link: '/guides/observability',
+          },
+          {
+            title: 'Rate limits you control',
+            description: 'Token-bucket limiter with per-workspace ceilings and burst behaviour.',
+            icon: 'pixelarticons:speed-fast',
+            link: '/api/rate-limits',
+          },
+        ],
       },
-      items: [
-        {
-          title: 'Typed SDK',
-          description:
-            'Generated from your live OpenAPI spec on every deploy. End-to-end inference.',
-          icon: 'pixelarticons:script-text',
-          link: '/packages/sdk',
-        },
-        {
-          title: 'Managed edge runtime',
-          description: '40+ POPs, sub-50ms p99 cold starts, regional pinning, zero-config DR.',
-          icon: 'pixelarticons:cloud',
-          link: '/apps/edge',
-        },
-        {
-          title: 'Control plane',
-          description: 'Audit logs, customer impersonation, feature flags — next to your code.',
-          icon: 'pixelarticons:dashboard',
-          link: '/apps/dashboard',
-        },
-        {
-          title: 'Webhook delivery',
-          description: 'Signed events with 24h retries and a built-in DLQ.',
-          icon: 'pixelarticons:notification',
-          link: '/guides/webhooks',
-        },
-        {
-          title: 'Observability built in',
-          description: 'Structured logs, OpenTelemetry traces, custom metrics — no agent install.',
-          icon: 'pixelarticons:chart',
-          link: '/guides/observability',
-        },
-        {
-          title: 'Rate limits you control',
-          description: 'Token-bucket limiter with per-workspace ceilings and burst behaviour.',
-          icon: 'pixelarticons:speed-fast',
-          link: '/api/rate-limits',
-        },
-      ],
-    },
-    showcase: {
-      columns: 2,
-      heading: {
+      {
+        type: 'showcase',
+        columns: 2,
         label: 'Apps & Packages',
         title: 'Everything in the monorepo.',
-        subtitle: 'Browse the dashboard app, the edge runtime, and the official SDK.',
+        body: 'Browse the dashboard app, the edge runtime, and the official SDK.',
       },
-    },
-    cta: {
-      title: 'Ready to ship?',
-      subtitle: 'Install the CLI and have a service deployed in under fifteen minutes.',
-      actions: [
-        { variant: 'primary', text: 'Quickstart', href: '/getting-started/quickstart' },
-        { variant: 'secondary', text: 'API reference', href: '/api/overview' },
-      ],
-    },
-    // Custom section order — push the CTA up under the hero so the
-    // primary conversion sits before any further reading. Proof strip
-    // is dropped (we don't have names yet).
-    layout: ['hero', 'cta', 'features', 'showcase', 'split'],
+      // Custom Split section. Replaces the framework's "Acme Docs"
+      // example with Acme's actual SDK config preview.
+      {
+        type: 'split',
+        label: 'Type-safe by default',
+        title: 'One config. Validated at boot.',
+        body: 'Acme services are described by acme.config.ts. The SDK validates against your live database schema on deploy — drift never ships.',
+        bullets: [
+          'Typed handlers, typed events, typed database',
+          'Schema drift caught at typecheck time',
+          'Feature flags + audit retention next to code',
+          'Per-environment overrides without forking',
+        ],
+        cta: {
+          variant: 'primary',
+          text: 'Read configuration',
+          href: '/getting-started/configuration',
+        },
+        visual: {
+          type: 'code',
+          language: 'ts',
+          code: `import { defineConfig } from '@acme/sdk'
+
+export default defineConfig({
+  name: 'billing',
+  regions: ['us-east', 'eu-west'],
+  database: { pool: { min: 2, max: 16 } },
+  flags: {
+    invoice_v2: { default: false, owner: 'platform@acme.co' },
+  },
+})`,
+        },
+      },
+      // Second split, reversed — visual on the left at desktop. Shows the
+      // terminal visual variant sharing the split frame.
+      {
+        type: 'split',
+        label: 'One command',
+        title: 'Deploy from anywhere.',
+        body: 'The CLI ships your handlers to every region in a single pass, with health gates between waves.',
+        bullets: ['Regional canaries by default', 'Instant rollback to any prior build'],
+        reverse: true,
+        visual: {
+          type: 'terminal',
+          windowTitle: '~/acme/billing — acme deploy',
+          command: 'acme deploy --env production',
+          lines: [
+            { kind: 'info', text: 'building 3 handlers' },
+            { kind: 'ok', text: 'us-east  healthy (12 isolates)' },
+            { kind: 'ok', text: 'eu-west  healthy (8 isolates)' },
+            { kind: 'cmt', text: 'rollback available: acme rollback billing@41' },
+          ],
+        },
+      },
+      // Horizontal tab band — strip above the panel, one visual per tab.
+      {
+        type: 'tabs',
+        orientation: 'horizontal',
+        label: 'Workflows',
+        title: 'Four surfaces, one platform.',
+        items: [
+          {
+            label: 'Handlers',
+            icon: 'pixelarticons:script-text',
+            title: 'Write a handler, ship a route',
+            body: 'Every exported handler becomes an edge route with a typed client method.',
+            bullets: ['Typed request + response', 'Zero routing config'],
+            visual: {
+              type: 'code',
+              language: 'ts',
+              code: `export const charge = handler({
+  input: z.object({ amount: z.number() }),
+  async run({ input, ctx }) {
+    return ctx.billing.charge(input.amount)
+  },
+})`,
+            },
+          },
+          {
+            label: 'Webhooks',
+            icon: 'pixelarticons:notification',
+            title: 'Signed events with a real DLQ',
+            body: 'Deliveries retry for 24 hours, then land in a queue you can replay.',
+            visual: {
+              type: 'terminal',
+              windowTitle: 'acme webhooks',
+              command: 'acme webhooks replay --dlq billing',
+              lines: [
+                { kind: 'info', text: '14 events queued' },
+                { kind: 'ok', text: '14 delivered · 0 failed' },
+              ],
+            },
+          },
+          {
+            label: 'Observability',
+            icon: 'pixelarticons:chart',
+            title: 'Traces without an agent',
+            body: 'OpenTelemetry spans are emitted for every handler, query, and outbound call.',
+            cta: { variant: 'secondary', text: 'Read the guide', href: '/guides/observability' },
+          },
+        ],
+      },
+      // Showcase pointed at an explicit path list — one ungrouped grid
+      // instead of the default apps/packages grouping.
+      {
+        type: 'showcase',
+        columns: 3,
+        label: 'Start here',
+        title: 'The three pieces you touch first.',
+        source: ['/apps/dashboard', '/apps/edge', '/packages/sdk'],
+      },
+    ],
   },
 
   apps: [

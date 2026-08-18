@@ -9,7 +9,6 @@ import type {
   ButtonConfig,
   CiderpressConfig,
   HomeConfig,
-  HomeShowcaseConfig,
   ImageSource,
   LoaderConfig,
   Paths,
@@ -41,6 +40,7 @@ import { readJs } from './head/read.ts'
 import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
+import { toPlainText } from './theme/lib/rich-text-parse.ts'
 
 interface CreateRspressConfigOptions {
   readonly config: CiderpressConfig
@@ -233,8 +233,10 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     llms: true,
 
-    title: config.title ?? 'ciderpress',
-    description: config.description ?? 'Documentation',
+    // Markup is allowed in config copy, but these land in `<title>`
+    // and `<meta name="description">`, which take bare text.
+    title: toPlainText(config.title ?? 'ciderpress'),
+    description: toPlainText(config.description ?? 'Documentation'),
 
     icon: resolveFaviconPath(favicon),
     // `<HeaderLogo />` paints the visible brand inside `cp-header-logo`
@@ -979,25 +981,19 @@ function buildSiteBlock(params: {
 }
 
 /**
- * Resolve home page layout config with defaults.
- * Showcase defaults to 2 columns.
+ * Resolve home page config, defaulting to an empty hero when omitted.
+ * Per-block layout defaults (e.g. showcase columns) are applied at render
+ * time by the individual block components.
  *
  * @private
  * @param home - Raw home config from the user
- * @returns Resolved home config with showcase defaults applied
+ * @returns Resolved home config
  */
 function resolveHomeConfig(home: HomeConfig | undefined): HomeConfig {
-  const fallbackShowcase: HomeShowcaseConfig = { columns: 2 }
   if (home === undefined) {
-    return { hero: {}, showcase: fallbackShowcase }
+    return { hero: {} }
   }
-  return {
-    ...home,
-    showcase: {
-      columns: 2,
-      ...home.showcase,
-    },
-  }
+  return home
 }
 
 /**
