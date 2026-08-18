@@ -5,6 +5,13 @@ packages:
   - 'benchmarks'
   - 'e2e'
 
+# pnpm 11 prompts before recreating node_modules and aborts outright when
+# there is no TTY. The example-site builds shell out to pnpm from inside a
+# piped child process, so they hit that abort in CI even though the runner
+# sets CI=true. Nothing here is ever installed interactively, so skip the
+# prompt rather than depending on env detection surviving each spawn.
+confirmModulesPurge: false
+
 # pnpm 11 replaced `onlyBuiltDependencies` with this map, and `strictDepBuilds`
 # now defaults to true — so every package with an install script must be
 # explicitly reviewed here or the install errors. The `false` entries preserve
