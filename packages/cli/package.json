@@ -1,6 +1,6 @@
 {
   "name": "@ciderpress/cli",
-  "version": "1.0.0-rc.10",
+  "version": "1.0.0-rc.11",
   "description": "CLI for building and serving ciderpress documentation sites",
   "keywords": [
     "ciderpress",
