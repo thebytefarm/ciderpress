@@ -494,14 +494,22 @@ function scanForClose({
   tagName,
   from,
 }: ScanForCloseParams): { readonly start: number; readonly end: number } | null {
+  // Driven by `unfold`, for the same reason `parseInline` is. Recursing on
+  // each prefix miss costs one frame per `</tag` occurrence in the remainder
+  // — not per nesting level — so copy like `'</should'.repeat(30000)` could
+  // exhaust the stack during a build. Candidate offsets are produced
+  // iteratively instead, leaving depth constant.
   const needle = `</${tagName}`
-  const start = lower.indexOf(needle, from)
-  if (start === -1) {
+  const candidates = unfold<number, number>((offset) => {
+    const at = lower.indexOf(needle, offset)
+    if (at === -1) {
+      return false
+    }
+    return [at, at + needle.length]
+  }, from)
+  const start = candidates.find((at) => CLOSE_TAG_BOUNDARY.test(lower.charAt(at + needle.length)))
+  if (start === undefined) {
     return null
-  }
-  const boundary = lower.charAt(start + needle.length)
-  if (!CLOSE_TAG_BOUNDARY.test(boundary)) {
-    return scanForClose({ lower, tagName, from: start + needle.length })
   }
   const gt = lower.indexOf('>', start)
   if (gt === -1) {

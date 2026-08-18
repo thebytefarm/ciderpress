@@ -321,6 +321,13 @@ describe('long input', () => {
   it('should parse many tokens without exhausting the stack', () => {
     expect(() => renderRichText('*a* '.repeat(9000))).not.toThrow()
   })
+
+  // Closing-tag lookup had the same shape: it recursed once per `</tag`
+  // occurrence in the remainder rather than per nesting level, so a run of
+  // prefix hits overflowed the stack on markup only one level deep.
+  it('should scan past many close-tag prefixes without exhausting the stack', () => {
+    expect(() => renderRichText(`<s>${'</should'.repeat(30000)}`)).not.toThrow()
+  })
 })
 
 /**
