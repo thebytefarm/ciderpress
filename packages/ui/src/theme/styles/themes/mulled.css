@@ -97,7 +97,7 @@
   --cp-oas-deprecated: var(--cp-c-text-3);
   --cp-oas-required: #dc2626;
   --cp-button-brand-bg: #991b1b;
-  --cp-button-brand-hover-bg: #ef4444;
+  --cp-button-brand-hover-bg: #dc2626;
   --cp-button-brand-active-bg: #7f1d1d;
   --cp-button-brand-text: #ffffff;
   --cp-s-1: 1px;
@@ -384,7 +384,7 @@ html[data-cp-theme='mulled'][data-cp-variant='dark'] {
   --cp-oas-deprecated: var(--cp-c-text-3);
   --cp-oas-required: #dc2626;
   --cp-button-brand-bg: #991b1b;
-  --cp-button-brand-hover-bg: #ef4444;
+  --cp-button-brand-hover-bg: #dc2626;
   --cp-button-brand-active-bg: #7f1d1d;
   --cp-button-brand-text: #ffffff;
   --cp-s-1: 1px;

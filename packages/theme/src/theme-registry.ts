@@ -141,6 +141,14 @@ interface RawBrandPalette {
   readonly soft: string
   readonly light: string
   readonly lighter: string
+  /**
+   * Dark-variant brand button hover fill. Kept separate from `light` because
+   * the two answer different contrast questions: `light` carries accent text
+   * on the page background, while this sits *behind* white button text and so
+   * has to stay dark enough to clear 4.5:1 against it. Tuning one for legible
+   * accent copy would otherwise silently drag the other under the bar.
+   */
+  readonly buttonHover: string
 }
 
 /**
@@ -165,6 +173,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     // between `primary` and `lighter` on the ramp.
     light: '#ef4444',
     lighter: '#fca5a5',
+    buttonHover: '#ef4444',
   },
   grannysmith: {
     primary: '#65a30d',
@@ -174,6 +183,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(101, 163, 13, 0.14)',
     light: '#a3e635',
     lighter: '#bef264',
+    buttonHover: '#a3e635',
   },
   mulled: {
     primary: '#991b1b',
@@ -186,6 +196,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     // deep burgundy `primary`.
     light: '#ef4444',
     lighter: '#f87171',
+    buttonHover: '#dc2626',
   },
   amber: {
     primary: '#d97706',
@@ -195,6 +206,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(217, 119, 6, 0.14)',
     light: '#fbbf24',
     lighter: '#fcd34d',
+    buttonHover: '#fbbf24',
   },
   midnight: {
     primary: '#60a5fa',
@@ -204,6 +216,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(96, 165, 250, 0.14)',
     light: '#93c5fd',
     lighter: '#bfdbfe',
+    buttonHover: '#93c5fd',
   },
   arcade: {
     primary: '#00ff88',
@@ -213,6 +226,7 @@ const BRAND_PALETTES: Readonly<Record<BuiltInThemeName, RawBrandPalette>> = Obje
     soft: 'rgba(0, 255, 136, 0.14)',
     light: '#66ffbb',
     lighter: '#99ffcc',
+    buttonHover: '#66ffbb',
   },
 })
 
@@ -1455,7 +1469,7 @@ function buildHoneycrispDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1623,7 +1637,7 @@ function buildGrannysmithDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1793,7 +1807,7 @@ function buildMulledDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },
@@ -1962,7 +1976,7 @@ function buildAmberDarkTokens(): ParsedTokens {
       button: {
         brand: {
           bg: brand.primary,
-          hoverBg: brand.light,
+          hoverBg: brand.buttonHover,
           activeBg: brand.hover,
           text: '#ffffff',
         },

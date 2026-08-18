@@ -32,6 +32,10 @@ export function SidebarList(): React.ReactElement {
   return <ul />
 }
 
+/**
+ * Props for {@link Tag} — mirrors Rspress's own `Tag`, which takes a single
+ * optional tag string.
+ */
 export interface TagProps {
   readonly tag?: string
 }
