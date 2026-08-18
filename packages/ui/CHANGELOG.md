@@ -1,5 +1,231 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.11
+
+### Minor Changes
+
+- 583fecc: **Breaking:** reshape `home` into a hero + ordered `blocks[]` array, unify every page visual into one `HomeVisual` union, and add a selectable `tabs` block.
+
+  ### `home` is now hero + blocks
+
+  The named singleton section keys (`home.proof`, `home.features`, `home.showcase`, `home.split`, `home.cta`) and the `home.layout` render-order array are gone. `home` is a special-cased `hero` plus a `blocks` array. Array order is render order, and **any block type may repeat** — multiple splits, multiple tab bands, whatever the page needs.
+
+  ```ts
+  home: {
+    hero: { tagline: 'Ship faster.' },
+    blocks: [
+      { type: 'proof', lead: 'used by', names: ['acme'] },
+      { type: 'features', items: [/* ... */] },
+      { type: 'split', title: 'One config', visual: { type: 'code', code: '// ...', language: 'ts' } },
+      { type: 'split', title: 'See it live', reverse: true, visual: { type: 'image', src: '/demo.png' } },
+      { type: 'cta', title: 'Ready to ship?' },
+    ],
+  }
+  ```
+
+  Each block carries a flat `label` / `title` / `body` heading trio instead of a nested `heading` object. Omitting `home.blocks` still yields the framework default deck (auto features grid + workspace showcase); `blocks: []` renders nothing below the hero.
+
+  ### Proof strips take logos
+
+  A `proof` block's `names` accepts either a plain string or a `ProofLogo`, and the two mix in one strip:
+
+  ```ts
+  {
+    type: 'proof',
+    lead: 'used by',
+    names: [
+      { src: '/logos/acme.svg', alt: 'Acme', href: 'https://acme.dev', height: 22 },
+      'Globex',
+    ],
+  }
+  ```
+
+  `height` defaults to `20`. Set it per logo to optically balance marks whose aspect ratios differ, and trim each asset's `viewBox` to its artwork first: padding baked into the file shrinks the mark inside its box, so two logos set to the same height render at different sizes.
+
+  `mono: true` draws a logo as a silhouette in the current text colour instead of its own palette. Reach for it when a mark's baked colours only read against one background, since ciderpress ships a light variant for every theme.
+
+  ### Migration
+
+  Every mapping from the old shape to the new one. The `type` field on a visual is **required**, so an un-migrated `visual` or `demo` fails config load rather than degrading.
+
+  | Before                                | After                                                                   |
+  | ------------------------------------- | ----------------------------------------------------------------------- |
+  | `home.proof: { ... }`                 | `home.blocks: [{ type: 'proof', ... }]`                                 |
+  | `home.features: { ... }`              | `home.blocks: [{ type: 'features', ... }]`                              |
+  | `home.showcase: { ... }`              | `home.blocks: [{ type: 'showcase', ... }]`                              |
+  | `home.split: { ... }`                 | `home.blocks: [{ type: 'split', ... }]`                                 |
+  | `home.cta: { ... }`                   | `home.blocks: [{ type: 'cta', ... }]`                                   |
+  | `home.layout: ['proof', 'cta']`       | array order of `home.blocks`                                            |
+  | `home.split: false`                   | omit the block                                                          |
+  | `split.visual: { code, language }`    | `visual: { type: 'code', code, language }`                              |
+  | `hero.demo: { src, alt }`             | `demo: { type: 'image', src, alt }`                                     |
+  | `hero.demo: { command, lines }`       | `demo: { type: 'terminal', command, lines }`                            |
+  | `heading: { label, title, subtitle }` | flat `label` / `title` / `body` on the block (`subtitle` is now `body`) |
+
+  Hand-authored `index.md` files are not migrated for you — the sync engine skips block compilation when you ship your own home page, so update its frontmatter by hand. Unrecognised top-level home keys (`proof:`, `cta:`, `split:`) are ignored rather than rendered.
+
+  There is no replacement for `HomeLayoutEntry`'s `component` escape hatch — arbitrary React sections are no longer part of the home config. Use `beforeHero` / `afterHero` on `HomeLayout`, or a custom page.
+
+  ### One visual union
+
+  `hero.demo` and `split.visual` now take the same `HomeVisual` — a union discriminated on a **required** `type` field:
+
+  - `{ type: 'code', code, language? }` — rendered through Rspress's native Shiki `CodeBlockRuntime`, the same pipeline as markdown code fences, instead of a bare unstyled `<pre>`
+  - `{ type: 'image', src, alt?, width?, height? }` — screenshot or graphic
+  - `{ type: 'terminal', command, lines, windowTitle? }` — the framework terminal chrome with your own output
+
+  Split bands also gain `reverse`, which flips the columns (visual left, copy right).
+
+  ### New `tabs` block
+
+  A strip of selectable tabs driving one panel — click a tab, the panel's copy and visual swap. `orientation: 'vertical'` (default) puts the strip beside the panel; `'horizontal'` runs it above. Built on react-aria-components, so arrow-key navigation and tab/tabpanel ARIA wiring are handled.
+
+  A tab's `cta` renders where the axis puts it: horizontal closes the copy column, beside the visual; vertical renders it after the visual, so the button closes the panel instead of splitting the body copy from the visual.
+
+  ```ts
+  {
+    type: 'tabs',
+    label: 'Capabilities',
+    title: 'Pick a thread, follow it through.',
+    orientation: 'vertical',
+    items: [
+      {
+        label: 'Sync engine',
+        icon: 'pixelarticons:reload',
+        title: 'Your markdown, left where it is',
+        body: 'Ciderpress reads your repo in place.',
+        bullets: ['Glob discovery', 'Watch mode on every save'],
+        visual: { type: 'terminal', command: 'ciderpress dev', lines: [{ kind: 'ok', text: 'synced 128 pages' }] },
+      },
+      { label: 'OpenAPI', visual: { type: 'code', code: "openapi: { spec: 'openapi.yaml' }" } },
+    ],
+  }
+  ```
+
+  ### API changes
+
+  Removed from `@ciderpress/config`: `HomeSectionId`, `HomeLayoutEntry`, `DEFAULT_HOME_LAYOUT`, `HomeSectionHeading`, `HomeProofConfig`, `HomeFeaturesConfig`, `HomeShowcaseConfig`, `HomeSplitConfig`, `HomeCtaConfig`, `HomeSplitVisual`, `HomeHeroDemoConfig`, `HomeHeroDemoImage`, `HomeHeroDemoTerminal`, `HomeHeroDemoLine`.
+
+  Added to `@ciderpress/config`: `HomeBlock`, `HomeBlockType`, `HomeProofBlock`, `ProofLogo`, `ProofItem`, `HomeFeaturesBlock`, `HomeShowcaseBlock`, `HomeSplitBlock`, `HomeTabsBlock`, `HomeTabItem`, `HomeCtaBlock`, `HomeVisual`, `HomeVisualCode`, `HomeVisualImage`, `HomeVisualTerminal`, `HomeVisualLine`.
+
+  Added to `@ciderpress/ui`: `HomeTabs`, `HomeTabsProps`, `HomeTabEntry`, `TabsAction`. `CTA` gains an `eyebrow` prop, and `HomeSplit`'s `visual` prop is now optional — a copy-only split renders full width instead of painting an empty frame.
+
+  Hand-authored `index.md` files with `pageType: home` must migrate too: the layout reads `blocks` from frontmatter and no longer honours the old `features` / `featuresHeading` / `proof` / `split` / `cta` keys.
+
+- 583fecc: Config copy now accepts inline markup — always on, no flag.
+
+  Home-page display strings in `ciderpress.config.ts` can carry `**accent**`, `==highlight==`, `*italic*`, `` `code` ``, `[links](/href)`, `<br>`, and a whitelist of inline HTML tags (`a`, `b`, `strong`, `i`, `em`, `code`, `kbd`, `mark`, `sup`, `sub`, `span`, `small`, `u`, `s`, `del`, `ins`) keeping only their `class`, `title`, and `href` attributes. That covers the hero, every `home.blocks[]` band, and workspace cards; `footer`, `sidebar.promo`, sidebar link text, and `announcement` still render verbatim.
+
+  A backslash escapes any marker (`\*`, `` \` ``, `\=`, `\[`, `\<`, `\\`), and an asterisk only reads as italic when it hugs its text — so a glob or an expression like `2 * 3` survives untouched.
+
+  `**` is the accent — bold _and_ brand-coloured — because a heading is already bold, so weight alone would say nothing there. `==` is a highlight (tinted `<mark>`), matching Obsidian / Typora / markdown-it-mark rather than being redefined. Use `<strong>` for bold without the colour.
+
+  Since inline HTML is supported, `<span class="cp-accent">` and `<mark>` are equivalent long forms of the two markers.
+
+  ```ts
+  home: {
+    hero: { tagline: 'Point it at your `markdown`. <strong>No restructuring.</strong>' },
+    blocks: [{ type: 'split', title: 'One config, **validated at boot**' }],
+  }
+  ```
+
+  Markup is parsed into React elements rather than injected as HTML — `dangerouslySetInnerHTML` is never involved, so nothing in a config string can execute. `<script>`, `<style>`, `<iframe>` and friends are dropped with their contents; other unknown tags are unwrapped and their text kept; non-whitelisted attributes (`onclick`, `style`) and links with unsafe schemes are discarded.
+
+  The same string is stripped to bare text wherever markup cannot render — `<title>`, `<meta name="description">`, Open Graph tags, and `aria-label`s — so one value serves both surfaces.
+
+  Block markdown (lists, headings, blockquotes) is not supported; these fields are single-line display copy.
+
+  **Hero title accent.** The headline still auto-accents its trailing half, so existing sites are unchanged. Bold anything in the title and that positional guess steps aside:
+
+  ```ts
+  description: 'Beautiful Docs, Zero Effort',    // auto — trailing half
+  description: 'Beautiful **Docs**, Zero Effort', // explicit — only "Docs"
+  ```
+
+  Added exports: `RichText`, `renderRichText`, `toPlainText`, `hasAccentMarker`, and the `.cp-accent` class for theme overrides.
+
+- 583fecc: Custom theme fonts reach every surface, including the homepage hero
+
+  A theme's `fonts.family` now drives the whole site. Previously a custom
+  theme could set `sans` and `mono` and see them apply to documentation
+  pages while the hero, nav, and feature cards stayed on the built-in
+  stacks.
+
+  Two things caused that. Component CSS hardcoded font stacks (the feature
+  card title was pinned to `Geist Pixel Square`), and the canonical tokens
+  were derived _from_ the hardcoded compatibility variables rather than the
+  other way round, so a theme value could never win. The dependency is now
+  inverted: `--cp-font-family-*` and `--rp-font-family-*` all resolve
+  through `--cp-ff-sans`, `--cp-ff-mono`, and `--cp-ff-display`.
+
+  Rspress ships an unlayered `body { font-family: var(--rp-font-family-base) }`,
+  and an unlayered rule outranks anything in a cascade layer no matter how
+  specific. Rather than fight that, themes now set `--rp-font-family-base`,
+  so Rspress's own rule resolves to the theme's font.
+
+  The slots are:
+
+  - `sans` base UI and prose: body, nav, sidebar, hero headline
+  - `mono` code, terminal chrome, eyebrow labels
+  - `display` optional decorative face, falls back to `sans`
+
+  `display` is new and optional. Built-in themes keep their current
+  appearance: `sans` stays proportional and `mono` owns code.
+
+### Patch Changes
+
+- 583fecc: Stop brand accent copy washing out to pink on dark, and fix eyebrow contrast
+
+  `**emphasis**` in display copy resolves to `.cp-accent`, which on dark took
+  `--cp-c-brand-lighter` — the palest rung of the brand ramp. It cleared contrast
+  by a wide margin (10.43:1 on honeycrisp) but washed the hue out: a light red
+  reads as pink rather than as the brand.
+
+  Dark accents now take `--cp-c-brand-light`, the most saturated rung that still
+  clears 4.5:1. Every theme gets a more brand-coloured accent — amber `#fcd34d`
+  → `#fbbf24`, grannysmith `#bef264` → `#a3e635`, midnight `#bfdbfe` → `#93c5fd`,
+  arcade `#99ffcc` → `#66ffbb`. Light variants keep `--cp-c-brand-2` and are
+  unchanged.
+
+  Both red themes needed their `light` rung retuned, because red 400 was itself
+  the salmon being complained about and red 600 missed the bar:
+
+  - **honeycrisp** `brand.light` `#f87171` (red 400) → `#ef4444` (red 500)
+  - **mulled** `brand.light` `#dc2626` (red 600, 4.10:1 — under the bar) →
+    `#ef4444` (red 500, 5.26:1)
+
+  Both still sit between `primary` and `lighter`, so the ramp ordering holds, and
+  button hover states still lighten their base.
+
+  Separately, the three home eyebrows (`.cp-feature-section-head__eyebrow`,
+  `.cp-cta__eyebrow`, `.cp-split__eyebrow`) coloured themselves from
+  `--cp-c-brand-1`. That token is a **fill** colour — tuned to sit behind
+  `--cp-c-brand-fg`, not to be read as text. At the 11px eyebrow size the 4.5:1
+  bar applies and it missed in four theme/variant pairs: 2.38:1 on mulled dark,
+  4.10:1 on honeycrisp dark, 3.07:1 on amber light, 3.09:1 on grannysmith light.
+  They now follow the same pair as `.cp-accent`.
+
+  Every theme/variant pair now clears 4.5:1, the lowest being 4.83:1 on amber
+  light.
+
+- 583fecc: Render the hero eyebrow
+
+  `hero.label` never reached the page. The sync engine reads it from config
+  and emits it to frontmatter as `eyebrow`, but the theme read `label` back,
+  which the frontmatter never carries. The value was always `undefined`, so
+  the chip silently rendered nothing.
+
+  Blank copy now collapses to `undefined` rather than an empty node. An
+  empty-but-defined node slips past the "omit this element" checks and
+  paints a styled shell with no content in it, which surfaced as a stray
+  pill above the headline. The tagline had the same latent bug.
+
+- Updated dependencies [583fecc]
+- Updated dependencies [583fecc]
+- Updated dependencies [583fecc]
+  - @ciderpress/theme@1.0.0-rc.5
+  - @ciderpress/config@1.0.0-rc.8
+
 ## 1.0.0-rc.10
 
 ### Patch Changes
