@@ -39,11 +39,20 @@ import supersub from 'rspress-plugin-supersub'
 import { getThemeCss } from './css.ts'
 import { readJs } from './head/read.ts'
 import { ciderpressPlugin } from './plugin.ts'
+import { remarkIssueLinks } from './plugins/issue-links/remark-issue-links.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 import type { SeoThemeConfig } from './seo-theme-config.ts'
 import { toPlainText } from './theme/lib/rich-text-parse.ts'
 import { resolveSeoSiteUrl } from './theme/lib/seo-url.ts'
+
+const issueLinkIconPath = path.join(
+  import.meta.dirname,
+  'theme',
+  'components',
+  'shared',
+  'IssueLinkIcon.tsx'
+)
 
 interface CreateRspressConfigOptions {
   readonly config: CiderpressConfig
@@ -274,7 +283,8 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     ],
 
     markdown: {
-      remarkPlugins: [remarkMathToDiv],
+      remarkPlugins: [remarkMathToDiv, remarkIssueLinks],
+      globalComponents: [issueLinkIconPath],
       // Skip dead-link checks for `/examples/<name>/` URLs — those are
       // sub-mounted by the `scripts/build.lauf.ts` orchestrator (copied
       // from each example's own dist) and aren't routes in this Rspress

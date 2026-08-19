@@ -134,7 +134,7 @@
       }
     },
     {
-      "files": ["**/MermaidRenderer.tsx"],
+      "files": ["**/IssueLinkIcon.tsx", "**/MermaidRenderer.tsx"],
       "rules": {
         "unicorn/filename-case": "off",
         "prefer-destructuring": "off"

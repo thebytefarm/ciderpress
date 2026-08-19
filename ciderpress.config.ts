@@ -675,6 +675,12 @@ export default defineConfig({
               include: 'docs/references/built-ins/status-badge.mdx',
             },
             {
+              title: 'Link Badges',
+              description: 'Render recognized URLs as compact provider badges.',
+              path: '/reference/built-ins/link-badges',
+              include: 'docs/references/built-ins/issue-links.md',
+            },
+            {
               title: 'Color',
               description: 'Color swatch display with click-to-copy.',
               path: '/reference/built-ins/color',

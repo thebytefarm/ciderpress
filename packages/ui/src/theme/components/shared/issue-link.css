@@ -1,0 +1,74 @@
+/** URL-derived resource badges with provider-specific icons. */
+
+.rp-doc a.rp-link.cp-issue-link {
+  display: inline-flex;
+  gap: 0.35em;
+  align-items: center;
+  padding: 0.14em 0.55em;
+  border: 1px solid var(--cp-c-border);
+  border-radius: var(--cp-radius-pill);
+  background: var(--cp-c-bg-soft);
+  background-image: none;
+  color: var(--cp-c-text-2);
+  font-size: 0.82em;
+  font-weight: 600;
+  line-height: 1.35;
+  text-decoration: none;
+  text-shadow: none;
+  vertical-align: 0.08em;
+  white-space: nowrap;
+}
+
+.rp-doc a.rp-link.cp-issue-link:hover {
+  border-color: var(--cp-c-text-3);
+  background: color-mix(in srgb, var(--cp-c-bg-soft) 82%, var(--cp-c-text-1));
+  background-image: none;
+  color: var(--cp-c-text-1);
+  opacity: 1;
+  text-decoration: none;
+  text-shadow: none;
+}
+
+.rp-doc a.rp-link.cp-issue-link[target='_blank']::after {
+  content: none;
+}
+
+.rp-doc a.rp-link.cp-issue-link:focus-visible {
+  outline: 2px solid var(--cp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.cp-issue-link__icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  flex: none;
+}
+
+.cp-issue-link__reference {
+  color: var(--cp-c-text-3);
+  font-size: 0.92em;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.cp-issue-link--github .cp-issue-link__icon,
+.cp-issue-link--notion .cp-issue-link__icon,
+.cp-issue-link--sentry .cp-issue-link__icon {
+  color: var(--cp-c-text-1);
+}
+
+.cp-issue-link--google-docs .cp-issue-link__icon {
+  color: #4285f4;
+}
+
+.cp-issue-link--google-sheets .cp-issue-link__icon {
+  color: #0f9d58;
+}
+
+html[data-cp-variant='dark'] .cp-issue-link--linear .cp-issue-link__icon,
+html[data-cp-variant='dark'] .cp-issue-link--launchdarkly .cp-issue-link__icon,
+html[data-cp-variant='dark'] .cp-issue-link--vercel .cp-issue-link__icon {
+  color: #fff;
+  fill: #fff;
+}
