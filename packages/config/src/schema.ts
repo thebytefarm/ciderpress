@@ -169,16 +169,31 @@ const openGraphConfigSchema = z
   })
   .strict()
 
-const twitterHandleSchema = z.custom<`@${string}`>(isTwitterHandle)
-const socialImageSchema = z.string().min(1).refine(isHttpOrRelativeUrl, {
-  message: 'Must be an HTTP(S) URL or relative URL path',
+const twitterHandleSchema = z.custom<`@${string}`>(isTwitterHandle).meta({
+  type: 'string',
+  pattern: '^@[A-Za-z0-9_]{1,15}$',
 })
-const httpUrlSchema = z.url().refine(isHttpUrl, {
-  message: 'Must be an HTTP(S) URL',
-})
-const originSchema = httpUrlSchema.refine(isOriginUrl, {
-  message: 'Must contain only an HTTP(S) origin without a path, query, hash, or credentials',
-})
+const socialImageSchema = z
+  .string()
+  .min(1)
+  .refine(isHttpOrRelativeUrl, {
+    message: 'Must be an HTTP(S) URL or relative URL path',
+  })
+  .meta({
+    format: 'uri-reference',
+    pattern: '^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))',
+  })
+const httpUrlSchema = z
+  .url()
+  .refine(isHttpUrl, {
+    message: 'Must be an HTTP(S) URL',
+  })
+  .meta({ pattern: '^https?://' })
+const originSchema = httpUrlSchema
+  .refine(isOriginUrl, {
+    message: 'Must contain only an HTTP(S) origin without a path, query, hash, or credentials',
+  })
+  .meta({ pattern: '^https?://[^/?#@]+/?$' })
 
 const twitterConfigSchema = z
   .object({

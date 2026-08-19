@@ -16,7 +16,8 @@
       "properties": {
         "origin": {
           "type": "string",
-          "format": "uri"
+          "format": "uri",
+          "pattern": "^https?://[^/?#@]+/?$"
         },
         "titleTemplate": {
           "anyOf": [
@@ -32,7 +33,9 @@
         },
         "socialImage": {
           "type": "string",
-          "minLength": 1
+          "minLength": 1,
+          "format": "uri-reference",
+          "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
         },
         "openGraph": {
           "anyOf": [
@@ -70,8 +73,14 @@
                     "summary_large_image"
                   ]
                 },
-                "site": {},
-                "creator": {}
+                "site": {
+                  "type": "string",
+                  "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                },
+                "creator": {
+                  "type": "string",
+                  "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                }
               },
               "additionalProperties": false
             },
@@ -728,7 +737,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "pattern": "^https?://"
                       },
                       {
                         "type": "boolean",
@@ -738,7 +748,9 @@
                   },
                   "socialImage": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 1,
+                    "format": "uri-reference",
+                    "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                   },
                   "robots": {
                     "type": "object",
@@ -772,7 +784,9 @@
                           },
                           "image": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "format": "uri-reference",
+                            "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                           }
                         },
                         "additionalProperties": false
@@ -803,9 +817,14 @@
                           },
                           "image": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "format": "uri-reference",
+                            "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                           },
-                          "creator": {}
+                          "creator": {
+                            "type": "string",
+                            "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                          }
                         },
                         "additionalProperties": false
                       },
@@ -1208,7 +1227,8 @@
                     "anyOf": [
                       {
                         "type": "string",
-                        "format": "uri"
+                        "format": "uri",
+                        "pattern": "^https?://"
                       },
                       {
                         "type": "boolean",
@@ -1218,7 +1238,9 @@
                   },
                   "socialImage": {
                     "type": "string",
-                    "minLength": 1
+                    "minLength": 1,
+                    "format": "uri-reference",
+                    "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                   },
                   "robots": {
                     "type": "object",
@@ -1252,7 +1274,9 @@
                           },
                           "image": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "format": "uri-reference",
+                            "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                           }
                         },
                         "additionalProperties": false
@@ -1283,9 +1307,14 @@
                           },
                           "image": {
                             "type": "string",
-                            "minLength": 1
+                            "minLength": 1,
+                            "format": "uri-reference",
+                            "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                           },
-                          "creator": {}
+                          "creator": {
+                            "type": "string",
+                            "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                          }
                         },
                         "additionalProperties": false
                       },
@@ -1738,7 +1767,8 @@
                           "anyOf": [
                             {
                               "type": "string",
-                              "format": "uri"
+                              "format": "uri",
+                              "pattern": "^https?://"
                             },
                             {
                               "type": "boolean",
@@ -1748,7 +1778,9 @@
                         },
                         "socialImage": {
                           "type": "string",
-                          "minLength": 1
+                          "minLength": 1,
+                          "format": "uri-reference",
+                          "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                         },
                         "robots": {
                           "type": "object",
@@ -1782,7 +1814,9 @@
                                 },
                                 "image": {
                                   "type": "string",
-                                  "minLength": 1
+                                  "minLength": 1,
+                                  "format": "uri-reference",
+                                  "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                                 }
                               },
                               "additionalProperties": false
@@ -1813,9 +1847,14 @@
                                 },
                                 "image": {
                                   "type": "string",
-                                  "minLength": 1
+                                  "minLength": 1,
+                                  "format": "uri-reference",
+                                  "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                                 },
-                                "creator": {}
+                                "creator": {
+                                  "type": "string",
+                                  "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                                }
                               },
                               "additionalProperties": false
                             },
@@ -4225,7 +4264,8 @@
                   "anyOf": [
                     {
                       "type": "string",
-                      "format": "uri"
+                      "format": "uri",
+                      "pattern": "^https?://"
                     },
                     {
                       "type": "boolean",
@@ -4235,7 +4275,9 @@
                 },
                 "socialImage": {
                   "type": "string",
-                  "minLength": 1
+                  "minLength": 1,
+                  "format": "uri-reference",
+                  "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                 },
                 "robots": {
                   "type": "object",
@@ -4269,7 +4311,9 @@
                         },
                         "image": {
                           "type": "string",
-                          "minLength": 1
+                          "minLength": 1,
+                          "format": "uri-reference",
+                          "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                         }
                       },
                       "additionalProperties": false
@@ -4300,9 +4344,14 @@
                         },
                         "image": {
                           "type": "string",
-                          "minLength": 1
+                          "minLength": 1,
+                          "format": "uri-reference",
+                          "pattern": "^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))"
                         },
-                        "creator": {}
+                        "creator": {
+                          "type": "string",
+                          "pattern": "^@[A-Za-z0-9_]{1,15}$"
+                        }
                       },
                       "additionalProperties": false
                     },
