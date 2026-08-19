@@ -7,6 +7,8 @@ import type {
 } from '@ciderpress/config'
 import { pageSeoConfigSchema } from '@ciderpress/config'
 import { Head, useFrontmatter, useLocation, usePageData, useSite } from '@rspress/core/runtime'
+import { isMatching, P } from 'massaman/match'
+import { isNil, isNotNil } from 'massaman/predicate'
 
 interface SeoThemeConfig {
   readonly seo?: SeoConfig
@@ -25,7 +27,7 @@ export default function SeoHead(): React.ReactElement | null {
   const themeConfig = site.themeConfig as SeoThemeConfig
   const siteSeo = themeConfig.seo
 
-  if (siteSeo === undefined) {
+  if (isNil(siteSeo)) {
     return null
   }
 
@@ -44,25 +46,25 @@ export default function SeoHead(): React.ReactElement | null {
 
   return (
     <Head>
-      {(siteSeo.titleTemplate !== undefined || pageSeo.title !== undefined) && (
+      {(isNotNil(siteSeo.titleTemplate) || isNotNil(pageSeo.title)) && (
         <title>{documentTitle}</title>
       )}
-      {pageSeo.description !== undefined && <meta name="description" content={description} />}
-      {canonical !== undefined && <link rel="canonical" href={canonical} />}
-      {robots !== undefined && <meta name="robots" content={robots} />}
+      {isNotNil(pageSeo.description) && <meta name="description" content={description} />}
+      {isNotNil(canonical) && <link rel="canonical" href={canonical} />}
+      {isNotNil(robots) && <meta name="robots" content={robots} />}
       {openGraph !== false && <meta property="og:url" content={openGraphUrl} />}
       {openGraph !== false && <meta property="og:title" content={openGraph.title ?? title} />}
       {openGraph !== false && (
         <meta property="og:description" content={openGraph.description ?? description} />
       )}
       {openGraph !== false && <meta property="og:type" content={openGraph.type ?? 'website'} />}
-      {openGraph !== false && openGraph.siteName !== undefined && (
+      {openGraph !== false && isNotNil(openGraph.siteName) && (
         <meta property="og:site_name" content={openGraph.siteName} />
       )}
-      {openGraph !== false && openGraph.locale !== undefined && (
+      {openGraph !== false && isNotNil(openGraph.locale) && (
         <meta property="og:locale" content={openGraph.locale} />
       )}
-      {openGraph !== false && openGraphImage !== undefined && (
+      {openGraph !== false && isNotNil(openGraphImage) && (
         <meta property="og:image" content={openGraphImage} />
       )}
       {twitter !== false && <meta name="twitter:card" content={twitter.card} />}
@@ -70,13 +72,13 @@ export default function SeoHead(): React.ReactElement | null {
       {twitter !== false && (
         <meta name="twitter:description" content={twitter.description ?? description} />
       )}
-      {twitter !== false && twitter.site !== undefined && (
+      {twitter !== false && isNotNil(twitter.site) && (
         <meta name="twitter:site" content={twitter.site} />
       )}
-      {twitter !== false && twitter.creator !== undefined && (
+      {twitter !== false && isNotNil(twitter.creator) && (
         <meta name="twitter:creator" content={twitter.creator} />
       )}
-      {twitter !== false && twitterImage !== undefined && (
+      {twitter !== false && isNotNil(twitterImage) && (
         <meta name="twitter:image" content={twitterImage} />
       )}
     </Head>
@@ -113,7 +115,7 @@ function resolveCanonical(params: {
   if (params.pageSeo.canonical === false) {
     return undefined
   }
-  if (typeof params.pageSeo.canonical === 'string') {
+  if (isMatching(P.string, params.pageSeo.canonical)) {
     return params.pageSeo.canonical
   }
   return new URL(params.pathname, params.origin).href
