@@ -2,7 +2,7 @@ import type { PageSeoConfig, RobotsConfig, SeoConfig } from '@ciderpress/config'
 import { isMatching, P } from 'massaman/match'
 import { isBoolean, isNil, isPlainObject, isString, isUndefined } from 'massaman/predicate'
 
-import { resolveSeoPageUrl } from '../../seo-url'
+import { resolveSeoPageUrl } from '../lib/seo-url'
 
 const PAGE_SEO_KEYS = [
   'title',

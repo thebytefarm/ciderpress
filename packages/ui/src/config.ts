@@ -42,8 +42,8 @@ import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 import type { SeoThemeConfig } from './seo-theme-config.ts'
-import { resolveSeoSiteUrl } from './seo-url.ts'
 import { toPlainText } from './theme/lib/rich-text-parse.ts'
+import { resolveSeoSiteUrl } from './theme/lib/seo-url.ts'
 
 interface CreateRspressConfigOptions {
   readonly config: CiderpressConfig
