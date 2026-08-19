@@ -3,7 +3,7 @@ import { Head, useFrontmatter, useLocation, usePageData, useSite } from '@rspres
 import { isMatching, P } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
 
-import { resolveSeoHead } from './seo-head-resolver'
+import { resolveSeoHeadData } from './seo-head-data'
 
 interface SeoThemeConfig {
   readonly seo?: SeoConfig
@@ -26,7 +26,7 @@ export default function SeoHead(): React.ReactElement | null {
     return null
   }
 
-  const metadata = resolveSeoHead({
+  const metadata = resolveSeoHeadData({
     siteSeo,
     siteDescription: site.description,
     page,

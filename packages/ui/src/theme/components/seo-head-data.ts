@@ -3,8 +3,10 @@ import { pageSeoConfigSchema } from '@ciderpress/config'
 import { isMatching, P } from 'massaman/match'
 import { isNil } from 'massaman/predicate'
 
-/** Inputs needed to resolve route-aware SEO metadata. */
-export interface ResolveSeoHeadParams {
+/**
+ * Inputs needed to resolve route-aware SEO metadata.
+ */
+export interface ResolveSeoHeadDataParams {
   readonly siteSeo: SeoConfig
   readonly siteDescription: string
   readonly page: {
@@ -15,7 +17,9 @@ export interface ResolveSeoHeadParams {
   readonly frontmatter: Readonly<Record<string, unknown>>
 }
 
-/** Fully resolved Open Graph metadata, or `false` when disabled. */
+/**
+ * Fully resolved Open Graph metadata, or `false` when disabled.
+ */
 export interface ResolvedOpenGraphMetadata {
   readonly url: string
   readonly title: string
@@ -26,7 +30,9 @@ export interface ResolvedOpenGraphMetadata {
   readonly image?: string
 }
 
-/** Fully resolved Twitter card metadata, or `false` when disabled. */
+/**
+ * Fully resolved Twitter card metadata, or `false` when disabled.
+ */
 export interface ResolvedTwitterMetadata {
   readonly card: 'summary' | 'summary_large_image'
   readonly title: string
@@ -36,8 +42,10 @@ export interface ResolvedTwitterMetadata {
   readonly image?: string
 }
 
-/** Route-aware metadata consumed by the SEO head renderer. */
-export interface ResolvedSeoHead {
+/**
+ * Route-aware metadata consumed by the SEO head renderer.
+ */
+export interface ResolvedSeoHeadData {
   readonly title?: string
   readonly description?: string
   readonly canonical?: string
@@ -55,7 +63,7 @@ export interface ResolvedSeoHead {
  * @param params - Site defaults, page data, route, and raw frontmatter
  * @returns Immutable metadata for the React head renderer
  */
-export function resolveSeoHead(params: ResolveSeoHeadParams): ResolvedSeoHead {
+export function resolveSeoHeadData(params: ResolveSeoHeadDataParams): ResolvedSeoHeadData {
   const pageSeo = resolvePageSeo(params.frontmatter)
   const title = pageSeo.title ?? params.page.title
   const description = pageSeo.description ?? params.page.description ?? params.siteDescription
@@ -94,7 +102,11 @@ export function resolveSeoHead(params: ResolveSeoHeadParams): ResolvedSeoHead {
   }
 }
 
-/** @private Validates the nested SEO block from raw Markdown frontmatter. */
+/**
+ * Validates the nested SEO block from raw Markdown frontmatter.
+ *
+ * @private
+ */
 function resolvePageSeo(frontmatter: Readonly<Record<string, unknown>>): PageSeoConfig {
   const result = pageSeoConfigSchema.safeParse(frontmatter.seo)
   if (!result.success) {
@@ -103,7 +115,11 @@ function resolvePageSeo(frontmatter: Readonly<Record<string, unknown>>): PageSeo
   return result.data
 }
 
-/** @private Applies the site title template only when Ciderpress must override the document title. */
+/**
+ * Applies the site title template only when Ciderpress must override the document title.
+ *
+ * @private
+ */
 function resolveDocumentTitle(params: {
   readonly title: string
   readonly template: string | false | undefined
@@ -118,7 +134,11 @@ function resolveDocumentTitle(params: {
   return params.template.replaceAll('%s', params.title)
 }
 
-/** @private Emits a description only when page SEO explicitly overrides the framework default. */
+/**
+ * Emits a description only when page SEO explicitly overrides the framework default.
+ *
+ * @private
+ */
 function resolveDescription(params: {
   readonly description: string
   readonly pageSeo: PageSeoConfig
@@ -129,7 +149,11 @@ function resolveDescription(params: {
   return params.description
 }
 
-/** @private Resolves canonical overrides while honoring explicit suppression. */
+/**
+ * Resolves canonical overrides while honoring explicit suppression.
+ *
+ * @private
+ */
 function resolveCanonical(params: {
   readonly origin: string
   readonly pathname: string
@@ -144,7 +168,11 @@ function resolveCanonical(params: {
   return new URL(params.pathname, params.origin).href
 }
 
-/** @private Resolves the shared social image against the production origin. */
+/**
+ * Resolves the shared social image against the production origin.
+ *
+ * @private
+ */
 function resolveSocialImage(params: {
   readonly origin: string
   readonly siteSeo: SeoConfig
@@ -157,7 +185,11 @@ function resolveSocialImage(params: {
   return new URL(image, params.origin).href
 }
 
-/** @private Merges Open Graph defaults and page overrides into render-ready metadata. */
+/**
+ * Merges Open Graph defaults and page overrides into render-ready metadata.
+ *
+ * @private
+ */
 function resolveOpenGraph(params: {
   readonly origin: string
   readonly pathname: string
@@ -186,7 +218,11 @@ function resolveOpenGraph(params: {
   }
 }
 
-/** @private Merges Twitter defaults and page overrides into render-ready metadata. */
+/**
+ * Merges Twitter defaults and page overrides into render-ready metadata.
+ *
+ * @private
+ */
 function resolveTwitter(params: {
   readonly origin: string
   readonly siteSeo: SeoConfig
@@ -217,7 +253,11 @@ function resolveTwitter(params: {
   }
 }
 
-/** @private Applies a provider-specific image over the shared social image. */
+/**
+ * Applies a provider-specific image over the shared social image.
+ *
+ * @private
+ */
 function resolveProviderImage(params: {
   readonly origin: string
   readonly override: string | undefined
@@ -229,7 +269,11 @@ function resolveProviderImage(params: {
   return new URL(params.override, params.origin).href
 }
 
-/** @private Converts merged crawler flags into a robots directive. */
+/**
+ * Converts merged crawler flags into a robots directive.
+ *
+ * @private
+ */
 function resolveRobots(params: {
   readonly defaults: RobotsConfig | undefined
   readonly overrides: RobotsConfig | undefined
@@ -243,7 +287,11 @@ function resolveRobots(params: {
   return `${index}, ${follow}`
 }
 
-/** @private Maps the index flag to its robots directive. */
+/**
+ * Maps the index flag to its robots directive.
+ *
+ * @private
+ */
 function resolveIndexDirective(index: boolean): 'index' | 'noindex' {
   if (index) {
     return 'index'
@@ -251,7 +299,11 @@ function resolveIndexDirective(index: boolean): 'index' | 'noindex' {
   return 'noindex'
 }
 
-/** @private Maps the follow flag to its robots directive. */
+/**
+ * Maps the follow flag to its robots directive.
+ *
+ * @private
+ */
 function resolveFollowDirective(follow: boolean): 'follow' | 'nofollow' {
   if (follow) {
     return 'follow'

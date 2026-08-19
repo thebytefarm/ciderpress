@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import type { ResolveSeoHeadParams } from './seo-head-resolver'
-import { resolveSeoHead } from './seo-head-resolver'
+import type { ResolveSeoHeadDataParams } from './seo-head-data'
+import { resolveSeoHeadData } from './seo-head-data'
 
-const baseParams: ResolveSeoHeadParams = {
+const baseParams: ResolveSeoHeadDataParams = {
   siteSeo: { origin: 'https://docs.example.com' },
   siteDescription: 'Site description',
   page: { title: 'Authentication', description: 'Page description' },
@@ -11,9 +11,9 @@ const baseParams: ResolveSeoHeadParams = {
   frontmatter: {},
 }
 
-describe('resolveSeoHead()', () => {
+describe('resolveSeoHeadData()', () => {
   it('should resolve route metadata from site and page defaults', () => {
-    expect(resolveSeoHead(baseParams)).toStrictEqual({
+    expect(resolveSeoHeadData(baseParams)).toStrictEqual({
       title: undefined,
       description: undefined,
       canonical: 'https://docs.example.com/guides/authentication',
@@ -39,7 +39,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should apply site defaults and nested page overrides', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       siteSeo: {
         origin: 'https://docs.example.com',
@@ -81,7 +81,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should suppress only the canonical link when canonical is false', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       frontmatter: { seo: { canonical: false } },
     })
@@ -93,7 +93,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should honor an absolute canonical override', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       frontmatter: { seo: { canonical: 'https://canonical.example.com/auth' } },
     })
@@ -102,11 +102,11 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should disable provider metadata from site or page settings', () => {
-    const siteDisabled = resolveSeoHead({
+    const siteDisabled = resolveSeoHeadData({
       ...baseParams,
       siteSeo: { origin: 'https://docs.example.com', openGraph: false },
     })
-    const pageDisabled = resolveSeoHead({
+    const pageDisabled = resolveSeoHeadData({
       ...baseParams,
       frontmatter: { seo: { twitter: false } },
     })
@@ -116,7 +116,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should merge page robots directives over site defaults', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       siteSeo: {
         origin: 'https://docs.example.com',
@@ -129,7 +129,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should ignore the entire page SEO block when raw frontmatter is invalid', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       frontmatter: {
         seo: {
@@ -145,7 +145,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should fall back from provider images to the shared social image', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       siteSeo: {
         origin: 'https://docs.example.com',
@@ -162,7 +162,7 @@ describe('resolveSeoHead()', () => {
   })
 
   it('should emit an untemplated title when title templating is explicitly disabled', () => {
-    const result = resolveSeoHead({
+    const result = resolveSeoHeadData({
       ...baseParams,
       siteSeo: { origin: 'https://docs.example.com', titleTemplate: false },
     })
