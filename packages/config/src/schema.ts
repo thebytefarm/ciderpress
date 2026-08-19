@@ -65,11 +65,17 @@ import type {
   LogoFn,
   NavItem,
   OpenAPISpec,
+  OpenGraphConfig,
   Page,
+  PageOpenGraphConfig,
+  PageSeoConfig,
+  PageTwitterConfig,
   ReportLinkConfig,
   ResolvedPage,
   SidebarConfig,
   SidebarPromo,
+  SeoConfig,
+  SitemapConfig,
   SocialLink,
   SortStrategy,
   ThemeEntry,
@@ -77,6 +83,8 @@ import type {
   TitleConfig,
   TopbarConfig,
   TruncateConfig,
+  TwitterConfig,
+  RobotsConfig,
   Workspace,
   WorkspaceGroup,
 } from './types.ts'
@@ -146,6 +154,83 @@ const statusSchema = z
   })
   .strict()
 
+const robotsConfigSchema = z
+  .object({
+    index: z.boolean().optional(),
+    follow: z.boolean().optional(),
+  })
+  .strict()
+
+const openGraphConfigSchema = z
+  .object({
+    siteName: z.string().optional(),
+    type: z.literal('website').optional(),
+    locale: z.string().optional(),
+  })
+  .strict()
+
+const twitterConfigSchema = z
+  .object({
+    card: z.enum(['summary', 'summary_large_image']).optional(),
+    site: z.templateLiteral(['@', z.string()]).optional(),
+    creator: z.templateLiteral(['@', z.string()]).optional(),
+  })
+  .strict()
+
+const sitemapConfigSchema = z
+  .object({
+    changeFrequency: z
+      .enum(['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'])
+      .optional(),
+    priority: z
+      .enum(['0.0', '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9', '1.0'])
+      .optional(),
+  })
+  .strict()
+
+const seoConfigSchema = z
+  .object({
+    origin: z.url(),
+    titleTemplate: z.union([z.string(), z.literal(false)]).optional(),
+    socialImage: z.string().optional(),
+    openGraph: z.union([openGraphConfigSchema, z.literal(false)]).optional(),
+    twitter: z.union([twitterConfigSchema, z.literal(false)]).optional(),
+    robots: robotsConfigSchema.optional(),
+    sitemap: z.union([sitemapConfigSchema, z.boolean()]).optional(),
+  })
+  .strict()
+
+const pageOpenGraphConfigSchema = z
+  .object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    type: z.enum(['website', 'article']).optional(),
+    image: z.string().optional(),
+  })
+  .strict()
+
+const pageTwitterConfigSchema = z
+  .object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    card: z.enum(['summary', 'summary_large_image']).optional(),
+    image: z.string().optional(),
+    creator: z.templateLiteral(['@', z.string()]).optional(),
+  })
+  .strict()
+
+const pageSeoConfigSchema = z
+  .object({
+    title: z.string().optional(),
+    description: z.string().optional(),
+    canonical: z.union([z.url(), z.literal(false)]).optional(),
+    socialImage: z.string().optional(),
+    robots: robotsConfigSchema.optional(),
+    openGraph: z.union([pageOpenGraphConfigSchema, z.literal(false)]).optional(),
+    twitter: z.union([pageTwitterConfigSchema, z.literal(false)]).optional(),
+  })
+  .strict()
+
 const frontmatterSchema = z
   .object({
     title: z.string().optional(),
@@ -163,6 +248,7 @@ const frontmatterSchema = z
     footer: z.boolean().optional(),
     pageClass: z.string().optional(),
     head: z.array(z.tuple([z.string(), z.record(z.string(), z.string())])).optional(),
+    seo: pageSeoConfigSchema.optional(),
     badge: badgeInputSchema.optional(),
     status: statusRefSchema.optional(),
   })
@@ -760,6 +846,7 @@ export const ciderpressConfigSchema = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
+    seo: seoConfigSchema.optional(),
     base: z
       .string()
       .regex(/^\/.*\/$/, 'base must start and end with `/` (e.g. `/examples/simple/`)')
@@ -835,6 +922,22 @@ type SameKeys<A, B> = [Exclude<AllKeys<A>, AllKeys<B>> | Exclude<AllKeys<B>, All
 
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardFrontmatter: z.ZodType<Frontmatter> = frontmatterSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardSeoConfig: z.ZodType<SeoConfig> = seoConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardPageSeoConfig: z.ZodType<PageSeoConfig> = pageSeoConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardOpenGraphConfig: z.ZodType<OpenGraphConfig> = openGraphConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardPageOpenGraphConfig: z.ZodType<PageOpenGraphConfig> = pageOpenGraphConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardTwitterConfig: z.ZodType<TwitterConfig> = twitterConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardPageTwitterConfig: z.ZodType<PageTwitterConfig> = pageTwitterConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardRobotsConfig: z.ZodType<RobotsConfig> = robotsConfigSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardSitemapConfig: z.ZodType<SitemapConfig> = sitemapConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardCardConfig: z.ZodType<CardConfig> = cardConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

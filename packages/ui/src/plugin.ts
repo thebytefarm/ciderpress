@@ -22,6 +22,7 @@ export function ciderpressPlugin(): RspressPlugin {
     globalUIComponents: [
       path.resolve(componentsDir, 'theme-provider.tsx'),
       path.resolve(componentsDir, 'edit-source-button.tsx'),
+      path.resolve(componentsDir, 'seo-head.tsx'),
       // `nav-logo.tsx` is intentionally NOT registered here. It used to
       // portal a function-form logo into Rspress's `.rp-nav__title__link`,
       // but `<HeaderLogo />` now renders the visible logo directly inside

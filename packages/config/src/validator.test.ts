@@ -39,6 +39,60 @@ describe('validateConfig()', () => {
   })
 })
 
+describe('validateConfig() — SEO', () => {
+  it('should accept site SEO and nested page SEO defaults', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: {
+        origin: 'https://docs.example.com',
+        titleTemplate: '%s | Example',
+        socialImage: '/social.png',
+        openGraph: { siteName: 'Example', locale: 'en_US' },
+        twitter: { card: 'summary_large_image', site: '@example' },
+        robots: { index: true, follow: true },
+        sitemap: { changeFrequency: 'weekly', priority: '0.8' },
+      },
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: {
+            seo: {
+              canonical: 'https://docs.example.com/test',
+              openGraph: { type: 'article' },
+              robots: { index: false },
+            },
+          },
+        },
+      ],
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject an SEO origin without a protocol', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'docs.example.com' },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject page SEO fields outside the nested SEO block', () => {
+    const [error] = validateConfig({
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: { canonical: 'https://docs.example.com/test' },
+        },
+      ],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+})
+
 describe('validateConfig() — top-level page placement', () => {
   it('should reject a top-level leaf page with a nested path', () => {
     const [error, config] = validateConfig({

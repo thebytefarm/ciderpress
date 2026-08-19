@@ -35,6 +35,7 @@ See the [Content](/concepts/content#frontmatter-and-defaults) concept for inject
 | `footer`        | `boolean`                                 | `true`  | Show or hide the page footer                                                                               |
 | `pageClass`     | `string`                                  | —       | Custom CSS class added to the page container                                                               |
 | `head`          | `[string, Record<string, string>][]`      | —       | Extra elements injected into `<head>` (see below)                                                          |
+| `seo`           | `PageSeoConfig`                           | —       | Canonical, crawler, Open Graph, and Twitter overrides (see below)                                          |
 | `badge`         | `string \| BadgeConfig \| array`          | —       | Ad-hoc page badge(s) shown in the sidebar and breadcrumb (see [Badges](/reference/badges))                 |
 | `status`        | `string \| string[]`                      | —       | Named status id(s) from the registry (see [Badges](/reference/badges))                                     |
 
@@ -62,6 +63,39 @@ See the [Content](/concepts/content#frontmatter-and-defaults) concept for inject
 | `true`   | Show table of contents on the right (default) |
 | `'left'` | Show table of contents on the left            |
 | `false`  | Hide the table of contents                    |
+
+## SEO
+
+All page-specific search and social overrides are nested under `seo`:
+
+```yaml
+---
+title: Configuration
+description: Complete reference for configuring Ciderpress.
+seo:
+  title: Ciderpress Configuration Reference
+  canonical: https://ciderpress.dev/reference/configuration
+  socialImage: /social/configuration.png
+  robots:
+    index: true
+    follow: true
+  openGraph:
+    type: article
+  twitter:
+    card: summary_large_image
+    creator: '@ciderpress'
+---
+```
+
+| Field         | Type                           | Default                 | Description                                   |
+| ------------- | ------------------------------ | ----------------------- | --------------------------------------------- |
+| `title`       | `string`                       | page `title`            | Search and social title override              |
+| `description` | `string`                       | page `description`      | Search and social description override        |
+| `canonical`   | `string \| false`              | `seo.origin` plus route | Absolute canonical URL, or `false` to omit    |
+| `socialImage` | `string`                       | site default            | Open Graph and Twitter image override         |
+| `robots`      | `RobotsConfig`                 | site default            | Per-page `index` and `follow` directives      |
+| `openGraph`   | `PageOpenGraphConfig \| false` | site default            | Open Graph title, description, type, or image |
+| `twitter`     | `PageTwitterConfig \| false`   | site default            | Twitter title, description, card, or creator  |
 
 ## Head format
 

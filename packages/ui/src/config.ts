@@ -29,7 +29,8 @@ import {
   themeToCss,
 } from '@ciderpress/theme'
 import type { CiderpressTheme, CiderpressThemeInput, ThemeVariant } from '@ciderpress/theme'
-import type { UserConfig } from '@rspress/core'
+import type { RspressPlugin, UserConfig } from '@rspress/core'
+import { pluginSitemap } from '@rspress/plugin-sitemap'
 import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
 import katex from 'rspress-plugin-katex'
@@ -229,6 +230,12 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     outDir: paths.distDir,
 
     base: resolvedBase,
+    ...(() => {
+      if (config.seo === undefined) {
+        return {}
+      }
+      return { siteOrigin: config.seo.origin }
+    })(),
     route: { cleanUrls: true },
 
     llms: true,
@@ -257,6 +264,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     plugins: [
       ciderpressPlugin(),
+      ...resolveSitemapPlugins(config),
       mermaidPlugin(),
       fileTree({ initialExpandDepth: 1 }),
       supersub(),
@@ -375,6 +383,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Custom ciderpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces, standaloneScopePaths, pageBadges } as Record<string, unknown>),
+      ...({ seo: config.seo } as Record<string, unknown>),
       ...({
         socialLinks: serializeSocials(config.socials),
         sidebarAbove: resolveSidebarLinks({ config, position: 'top' }),
@@ -385,6 +394,42 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       } as Record<string, unknown>),
     },
   }
+}
+
+/**
+ * Enables Rspress's official sitemap generator whenever site SEO is configured.
+ *
+ * @private
+ * @param config - Validated Ciderpress configuration
+ * @returns The sitemap plugin, or an empty list when sitemap generation is disabled
+ */
+function resolveSitemapPlugins(config: CiderpressConfig): RspressPlugin[] {
+  if (config.seo === undefined || config.seo.sitemap === false) {
+    return []
+  }
+
+  const sitemap = config.seo.sitemap
+  if (sitemap === undefined || sitemap === true) {
+    return [pluginSitemap({ siteUrl: config.seo.origin })]
+  }
+
+  return [
+    pluginSitemap({
+      siteUrl: config.seo.origin,
+      ...(() => {
+        if (sitemap.changeFrequency === undefined) {
+          return {}
+        }
+        return { defaultChangeFreq: sitemap.changeFrequency }
+      })(),
+      ...(() => {
+        if (sitemap.priority === undefined) {
+          return {}
+        }
+        return { defaultPriority: sitemap.priority }
+      })(),
+    }),
+  ]
 }
 
 /**
