@@ -202,7 +202,9 @@ const sitemapConfigSchema = z
 const seoConfigSchema = z
   .object({
     origin: originSchema,
-    titleTemplate: z.union([z.string(), z.literal(false)]).optional(),
+    titleTemplate: z
+      .union([z.string().includes('%s', 'seo.titleTemplate must contain `%s`'), z.literal(false)])
+      .optional(),
     socialImage: socialImageSchema.optional(),
     openGraph: z.union([openGraphConfigSchema, z.literal(false)]).optional(),
     twitter: z.union([twitterConfigSchema, z.literal(false)]).optional(),

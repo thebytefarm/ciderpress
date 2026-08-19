@@ -2,6 +2,8 @@ import type { PageSeoConfig, RobotsConfig, SeoConfig } from '@ciderpress/config'
 import { isMatching, P } from 'massaman/match'
 import { isBoolean, isNil, isPlainObject, isString, isUndefined } from 'massaman/predicate'
 
+import { resolveSeoPageUrl } from '../../seo-url'
+
 const PAGE_SEO_KEYS = [
   'title',
   'description',
@@ -20,6 +22,7 @@ const TWITTER_KEYS = ['title', 'description', 'card', 'image', 'creator'] as con
  */
 export interface ResolveSeoHeadDataParams {
   readonly siteSeo: SeoConfig
+  readonly base: string
   readonly siteDescription: string
   readonly page: {
     readonly title: string
@@ -90,12 +93,14 @@ export function resolveSeoHeadData(params: ResolveSeoHeadDataParams): ResolvedSe
     description: resolveDescription({ description, pageSeo }),
     canonical: resolveCanonical({
       origin: params.siteSeo.origin,
+      base: params.base,
       pathname: params.pathname,
       pageSeo,
     }),
     robots: resolveRobots({ defaults: params.siteSeo.robots, overrides: pageSeo.robots }),
     openGraph: resolveOpenGraph({
       origin: params.siteSeo.origin,
+      base: params.base,
       pathname: params.pathname,
       siteSeo: params.siteSeo,
       pageSeo,
@@ -327,6 +332,7 @@ function resolveDescription(params: {
  */
 function resolveCanonical(params: {
   readonly origin: string
+  readonly base: string
   readonly pathname: string
   readonly pageSeo: PageSeoConfig
 }): string | undefined {
@@ -336,7 +342,7 @@ function resolveCanonical(params: {
   if (isMatching(P.string, params.pageSeo.canonical)) {
     return params.pageSeo.canonical
   }
-  return new URL(params.pathname, params.origin).href
+  return resolveSeoPageUrl(params)
 }
 
 /**
@@ -363,6 +369,7 @@ function resolveSocialImage(params: {
  */
 function resolveOpenGraph(params: {
   readonly origin: string
+  readonly base: string
   readonly pathname: string
   readonly siteSeo: SeoConfig
   readonly pageSeo: PageSeoConfig
@@ -375,7 +382,7 @@ function resolveOpenGraph(params: {
   }
   const openGraph = { ...params.siteSeo.openGraph, ...params.pageSeo.openGraph }
   return {
-    url: new URL(params.pathname, params.origin).href,
+    url: resolveSeoPageUrl(params),
     title: openGraph.title ?? params.title,
     description: openGraph.description ?? params.description,
     type: openGraph.type ?? 'website',

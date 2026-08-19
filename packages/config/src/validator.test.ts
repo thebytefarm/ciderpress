@@ -128,6 +128,14 @@ describe('validateConfig() — SEO', () => {
     expect(pageError).toMatchObject({ type: 'validation_failed' })
   })
 
+  it('should reject an SEO title template without a page-title placeholder', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', titleTemplate: 'Example Docs' },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
   it('should reject invalid nested SEO values from Markdown frontmatter', () => {
     const result = pageSeoConfigSchema.safeParse({ robots: { index: 'false' } })
     expect(result.success).toBe(false)

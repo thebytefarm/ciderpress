@@ -5,6 +5,7 @@ import { resolveSeoHeadData } from './seo-head-data'
 
 const baseParams: ResolveSeoHeadDataParams = {
   siteSeo: { origin: 'https://docs.example.com' },
+  base: '/',
   siteDescription: 'Site description',
   page: { title: 'Authentication', description: 'Page description' },
   pathname: '/guides/authentication',
@@ -35,6 +36,15 @@ describe('resolveSeoHeadData()', () => {
         creator: undefined,
         image: undefined,
       },
+    })
+  })
+
+  it('should preserve the deployment base in production page URLs', () => {
+    const result = resolveSeoHeadData({ ...baseParams, base: '/project/' })
+
+    expect(result.canonical).toBe('https://docs.example.com/project/guides/authentication')
+    expect(result.openGraph).toMatchObject({
+      url: 'https://docs.example.com/project/guides/authentication',
     })
   })
 

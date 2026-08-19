@@ -21,7 +21,8 @@
         "titleTemplate": {
           "anyOf": [
             {
-              "type": "string"
+              "type": "string",
+              "pattern": "%s"
             },
             {
               "type": "boolean",

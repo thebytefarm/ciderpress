@@ -21,13 +21,15 @@ export default function SeoHead(): React.ReactElement | null {
   const { pathname } = useLocation()
   const themeConfig = site.themeConfig as SeoThemeConfig
   const siteSeo = themeConfig.seo
+  const seoBase = themeConfig.seoBase
 
-  if (isNil(siteSeo)) {
+  if (isNil(siteSeo) || isNil(seoBase)) {
     return null
   }
 
   const metadata = resolveSeoHeadData({
     siteSeo,
+    base: seoBase,
     siteDescription: site.description,
     page,
     pathname,

@@ -5,4 +5,5 @@ import type { SeoConfig } from '@ciderpress/config'
  */
 export interface SeoThemeConfig {
   readonly seo?: SeoConfig
+  readonly seoBase?: string
 }

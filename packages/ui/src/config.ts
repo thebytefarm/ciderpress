@@ -42,6 +42,7 @@ import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 import type { SeoThemeConfig } from './seo-theme-config.ts'
+import { resolveSeoSiteUrl } from './seo-url.ts'
 import { toPlainText } from './theme/lib/rich-text-parse.ts'
 
 interface CreateRspressConfigOptions {
@@ -227,7 +228,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   })
   const seoThemeConfig: SeoThemeConfig = match(config.seo)
     .with(undefined, () => ({}))
-    .otherwise((seo) => ({ seo }))
+    .otherwise((seo) => ({ seo, seoBase: resolvedBase }))
 
   return {
     root: paths.contentDir,
@@ -265,7 +266,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     plugins: [
       ciderpressPlugin(),
-      ...resolveSitemapPlugins(config),
+      ...resolveSitemapPlugins({ config, base: resolvedBase }),
       mermaidPlugin(),
       fileTree({ initialExpandDepth: 1 }),
       supersub(),
@@ -398,22 +399,28 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
  * Enables Rspress's official sitemap generator whenever site SEO is configured.
  *
  * @private
- * @param config - Validated Ciderpress configuration
+ * @param params - Validated Ciderpress configuration and resolved base path
  * @returns The sitemap plugin, or an empty list when sitemap generation is disabled
  */
-function resolveSitemapPlugins(config: CiderpressConfig): RspressPlugin[] {
-  if (config.seo === undefined || config.seo.sitemap === false) {
+function resolveSitemapPlugins(params: {
+  readonly config: CiderpressConfig
+  readonly base: string
+}): RspressPlugin[] {
+  const { config } = params
+  const { seo } = config
+  if (seo === undefined || seo.sitemap === false) {
     return []
   }
 
-  const sitemap = config.seo.sitemap
+  const sitemap = seo.sitemap
+  const siteUrl = resolveSeoSiteUrl({ origin: seo.origin, base: params.base })
   if (sitemap === undefined || sitemap === true) {
-    return [pluginSitemap({ siteUrl: config.seo.origin })]
+    return [pluginSitemap({ siteUrl })]
   }
 
   return [
     pluginSitemap({
-      siteUrl: config.seo.origin,
+      siteUrl,
       ...match(sitemap.changeFrequency)
         .with(undefined, () => ({}))
         .otherwise((defaultChangeFreq) => ({ defaultChangeFreq })),
