@@ -79,12 +79,53 @@ describe('validateConfig() — SEO', () => {
     expect(error).toMatchObject({ type: 'validation_failed' })
   })
 
+  it('should reject non-HTTP and non-origin SEO URLs', () => {
+    const [schemeError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'mailto:docs@example.com' },
+    })
+    const [pathError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com/reference' },
+    })
+    expect(schemeError).toMatchObject({ type: 'validation_failed' })
+    expect(pathError).toMatchObject({ type: 'validation_failed' })
+  })
+
   it('should reject empty Twitter handles', () => {
     const [error] = validateConfig({
       ...validConfig,
       seo: { origin: 'https://docs.example.com', twitter: { site: '@' } },
     })
     expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject malformed Twitter handles', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', twitter: { site: '@foo bar' } },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject malformed social image URLs', () => {
+    const [siteError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', socialImage: 'http://[' },
+    })
+    const [pageError] = validateConfig({
+      ...validConfig,
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: { seo: { openGraph: { image: 'ftp://example.com/image.png' } } },
+        },
+      ],
+    })
+    expect(siteError).toMatchObject({ type: 'validation_failed' })
+    expect(pageError).toMatchObject({ type: 'validation_failed' })
   })
 
   it('should reject invalid nested SEO values from Markdown frontmatter', () => {

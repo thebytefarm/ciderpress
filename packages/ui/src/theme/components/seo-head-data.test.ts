@@ -144,6 +144,20 @@ describe('resolveSeoHeadData()', () => {
     expect(result.openGraph).toMatchObject({ title: 'Authentication' })
   })
 
+  it('should ignore malformed raw social URLs and Twitter handles', () => {
+    const malformedImage = resolveSeoHeadData({
+      ...baseParams,
+      frontmatter: { seo: { socialImage: 'http://[' } },
+    })
+    const malformedHandle = resolveSeoHeadData({
+      ...baseParams,
+      frontmatter: { seo: { twitter: { creator: '@foo bar' } } },
+    })
+
+    expect(malformedImage.openGraph).toMatchObject({ image: undefined })
+    expect(malformedHandle.twitter).toMatchObject({ creator: undefined })
+  })
+
   it('should fall back from provider images to the shared social image', () => {
     const result = resolveSeoHeadData({
       ...baseParams,

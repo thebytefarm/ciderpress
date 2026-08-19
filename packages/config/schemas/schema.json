@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.7/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.8/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -10,6 +10,134 @@
     },
     "description": {
       "type": "string"
+    },
+    "seo": {
+      "type": "object",
+      "properties": {
+        "origin": {
+          "type": "string",
+          "format": "uri"
+        },
+        "titleTemplate": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ]
+        },
+        "socialImage": {
+          "type": "string",
+          "minLength": 1
+        },
+        "openGraph": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "siteName": {
+                  "type": "string"
+                },
+                "type": {
+                  "type": "string",
+                  "const": "website"
+                },
+                "locale": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ]
+        },
+        "twitter": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "card": {
+                  "type": "string",
+                  "enum": [
+                    "summary",
+                    "summary_large_image"
+                  ]
+                },
+                "site": {},
+                "creator": {}
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ]
+        },
+        "robots": {
+          "type": "object",
+          "properties": {
+            "index": {
+              "type": "boolean"
+            },
+            "follow": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "sitemap": {
+          "anyOf": [
+            {
+              "type": "object",
+              "properties": {
+                "changeFrequency": {
+                  "type": "string",
+                  "enum": [
+                    "always",
+                    "hourly",
+                    "daily",
+                    "weekly",
+                    "monthly",
+                    "yearly",
+                    "never"
+                  ]
+                },
+                "priority": {
+                  "type": "string",
+                  "enum": [
+                    "0.0",
+                    "0.1",
+                    "0.2",
+                    "0.3",
+                    "0.4",
+                    "0.5",
+                    "0.6",
+                    "0.7",
+                    "0.8",
+                    "0.9",
+                    "1.0"
+                  ]
+                }
+              },
+              "additionalProperties": false
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      "required": [
+        "origin"
+      ],
+      "additionalProperties": false
     },
     "base": {
       "type": "string",
@@ -586,6 +714,109 @@
                   "maxItems": 2
                 }
               },
+              "seo": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "canonical": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  },
+                  "socialImage": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "robots": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "boolean"
+                      },
+                      "follow": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "openGraph": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "website",
+                              "article"
+                            ]
+                          },
+                          "image": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  },
+                  "twitter": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "card": {
+                            "type": "string",
+                            "enum": [
+                              "summary",
+                              "summary_large_image"
+                            ]
+                          },
+                          "image": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "creator": {}
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
+              },
               "badge": {
                 "anyOf": [
                   {
@@ -962,6 +1193,109 @@
                   "minItems": 2,
                   "maxItems": 2
                 }
+              },
+              "seo": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "canonical": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "format": "uri"
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  },
+                  "socialImage": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "robots": {
+                    "type": "object",
+                    "properties": {
+                      "index": {
+                        "type": "boolean"
+                      },
+                      "follow": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "openGraph": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "website",
+                              "article"
+                            ]
+                          },
+                          "image": {
+                            "type": "string",
+                            "minLength": 1
+                          }
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  },
+                  "twitter": {
+                    "anyOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "title": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "card": {
+                            "type": "string",
+                            "enum": [
+                              "summary",
+                              "summary_large_image"
+                            ]
+                          },
+                          "image": {
+                            "type": "string",
+                            "minLength": 1
+                          },
+                          "creator": {}
+                        },
+                        "additionalProperties": false
+                      },
+                      {
+                        "type": "boolean",
+                        "const": false
+                      }
+                    ]
+                  }
+                },
+                "additionalProperties": false
               },
               "badge": {
                 "anyOf": [
@@ -1389,6 +1723,109 @@
                         "minItems": 2,
                         "maxItems": 2
                       }
+                    },
+                    "seo": {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "canonical": {
+                          "anyOf": [
+                            {
+                              "type": "string",
+                              "format": "uri"
+                            },
+                            {
+                              "type": "boolean",
+                              "const": false
+                            }
+                          ]
+                        },
+                        "socialImage": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "robots": {
+                          "type": "object",
+                          "properties": {
+                            "index": {
+                              "type": "boolean"
+                            },
+                            "follow": {
+                              "type": "boolean"
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "openGraph": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "type": {
+                                  "type": "string",
+                                  "enum": [
+                                    "website",
+                                    "article"
+                                  ]
+                                },
+                                "image": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "boolean",
+                              "const": false
+                            }
+                          ]
+                        },
+                        "twitter": {
+                          "anyOf": [
+                            {
+                              "type": "object",
+                              "properties": {
+                                "title": {
+                                  "type": "string"
+                                },
+                                "description": {
+                                  "type": "string"
+                                },
+                                "card": {
+                                  "type": "string",
+                                  "enum": [
+                                    "summary",
+                                    "summary_large_image"
+                                  ]
+                                },
+                                "image": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "creator": {}
+                              },
+                              "additionalProperties": false
+                            },
+                            {
+                              "type": "boolean",
+                              "const": false
+                            }
+                          ]
+                        }
+                      },
+                      "additionalProperties": false
                     },
                     "badge": {
                       "anyOf": [
@@ -3773,6 +4210,109 @@
                 "minItems": 2,
                 "maxItems": 2
               }
+            },
+            "seo": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "canonical": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "format": "uri"
+                    },
+                    {
+                      "type": "boolean",
+                      "const": false
+                    }
+                  ]
+                },
+                "socialImage": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "robots": {
+                  "type": "object",
+                  "properties": {
+                    "index": {
+                      "type": "boolean"
+                    },
+                    "follow": {
+                      "type": "boolean"
+                    }
+                  },
+                  "additionalProperties": false
+                },
+                "openGraph": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "type": {
+                          "type": "string",
+                          "enum": [
+                            "website",
+                            "article"
+                          ]
+                        },
+                        "image": {
+                          "type": "string",
+                          "minLength": 1
+                        }
+                      },
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "boolean",
+                      "const": false
+                    }
+                  ]
+                },
+                "twitter": {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "title": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        },
+                        "card": {
+                          "type": "string",
+                          "enum": [
+                            "summary",
+                            "summary_large_image"
+                          ]
+                        },
+                        "image": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "creator": {}
+                      },
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "boolean",
+                      "const": false
+                    }
+                  ]
+                }
+              },
+              "additionalProperties": false
             },
             "badge": {
               "anyOf": [

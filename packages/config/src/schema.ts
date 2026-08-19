@@ -169,7 +169,16 @@ const openGraphConfigSchema = z
   })
   .strict()
 
-const twitterHandleSchema = z.templateLiteral(['@', z.string().min(1)])
+const twitterHandleSchema = z.custom<`@${string}`>(isTwitterHandle)
+const socialImageSchema = z.string().min(1).refine(isHttpOrRelativeUrl, {
+  message: 'Must be an HTTP(S) URL or relative URL path',
+})
+const httpUrlSchema = z.url().refine(isHttpUrl, {
+  message: 'Must be an HTTP(S) URL',
+})
+const originSchema = httpUrlSchema.refine(isOriginUrl, {
+  message: 'Must contain only an HTTP(S) origin without a path, query, hash, or credentials',
+})
 
 const twitterConfigSchema = z
   .object({
@@ -192,9 +201,9 @@ const sitemapConfigSchema = z
 
 const seoConfigSchema = z
   .object({
-    origin: z.url(),
+    origin: originSchema,
     titleTemplate: z.union([z.string(), z.literal(false)]).optional(),
-    socialImage: z.string().optional(),
+    socialImage: socialImageSchema.optional(),
     openGraph: z.union([openGraphConfigSchema, z.literal(false)]).optional(),
     twitter: z.union([twitterConfigSchema, z.literal(false)]).optional(),
     robots: robotsConfigSchema.optional(),
@@ -207,7 +216,7 @@ const pageOpenGraphConfigSchema = z
     title: z.string().optional(),
     description: z.string().optional(),
     type: z.enum(['website', 'article']).optional(),
-    image: z.string().optional(),
+    image: socialImageSchema.optional(),
   })
   .strict()
 
@@ -216,18 +225,20 @@ const pageTwitterConfigSchema = z
     title: z.string().optional(),
     description: z.string().optional(),
     card: z.enum(['summary', 'summary_large_image']).optional(),
-    image: z.string().optional(),
+    image: socialImageSchema.optional(),
     creator: twitterHandleSchema.optional(),
   })
   .strict()
 
-/** Schema for validating nested SEO metadata from config defaults or Markdown frontmatter. */
+/**
+ * Schema for validating nested SEO metadata from config defaults or Markdown frontmatter.
+ */
 export const pageSeoConfigSchema: z.ZodType<PageSeoConfig> = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),
-    canonical: z.union([z.url(), z.literal(false)]).optional(),
-    socialImage: z.string().optional(),
+    canonical: z.union([httpUrlSchema, z.literal(false)]).optional(),
+    socialImage: socialImageSchema.optional(),
     robots: robotsConfigSchema.optional(),
     openGraph: z.union([pageOpenGraphConfigSchema, z.literal(false)]).optional(),
     twitter: z.union([pageTwitterConfigSchema, z.literal(false)]).optional(),
@@ -1083,4 +1094,57 @@ function loaderTimingRule(cfg: {
   const min = cfg.minDisplayMs ?? 150
   const max = cfg.maxDisplayMs ?? 5000
   return max >= min + 200
+}
+
+/**
+ * Checks that an account handle uses Twitter's supported username shape.
+ *
+ * @private
+ */
+function isTwitterHandle(value: unknown): value is `@${string}` {
+  return typeof value === 'string' && /^@[A-Za-z0-9_]{1,15}$/u.test(value)
+}
+
+/**
+ * Checks that a parsed URL uses an HTTP transport.
+ *
+ * @private
+ */
+function isHttpUrl(value: string): boolean {
+  if (!URL.canParse(value)) {
+    return false
+  }
+  const url = new URL(value)
+  return url.protocol === 'https:' || url.protocol === 'http:'
+}
+
+/**
+ * Checks that a URL is a bare production origin.
+ *
+ * @private
+ */
+function isOriginUrl(value: string): boolean {
+  if (!URL.canParse(value)) {
+    return false
+  }
+  const url = new URL(value)
+  return (
+    url.pathname === '/' &&
+    url.search === '' &&
+    url.hash === '' &&
+    url.username === '' &&
+    url.password === ''
+  )
+}
+
+/**
+ * Accepts HTTP(S) image URLs and paths that resolve against an HTTP(S) origin.
+ *
+ * @private
+ */
+function isHttpOrRelativeUrl(value: string): boolean {
+  if (!URL.canParse(value, 'https://ciderpress.invalid')) {
+    return false
+  }
+  return isHttpUrl(new URL(value, 'https://ciderpress.invalid').href)
 }

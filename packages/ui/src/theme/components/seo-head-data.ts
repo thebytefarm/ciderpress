@@ -1,7 +1,19 @@
 import type { PageSeoConfig, RobotsConfig, SeoConfig } from '@ciderpress/config'
-import { pageSeoConfigSchema } from '@ciderpress/config'
 import { isMatching, P } from 'massaman/match'
-import { isNil } from 'massaman/predicate'
+import { isBoolean, isNil, isPlainObject, isString, isUndefined } from 'massaman/predicate'
+
+const PAGE_SEO_KEYS = [
+  'title',
+  'description',
+  'canonical',
+  'socialImage',
+  'robots',
+  'openGraph',
+  'twitter',
+] as const
+const ROBOTS_KEYS = ['index', 'follow'] as const
+const OPEN_GRAPH_KEYS = ['title', 'description', 'type', 'image'] as const
+const TWITTER_KEYS = ['title', 'description', 'card', 'image', 'creator'] as const
 
 /**
  * Inputs needed to resolve route-aware SEO metadata.
@@ -108,11 +120,170 @@ export function resolveSeoHeadData(params: ResolveSeoHeadDataParams): ResolvedSe
  * @private
  */
 function resolvePageSeo(frontmatter: Readonly<Record<string, unknown>>): PageSeoConfig {
-  const result = pageSeoConfigSchema.safeParse(frontmatter.seo)
-  if (!result.success) {
+  if (!isPageSeoConfig(frontmatter.seo)) {
     return {}
   }
-  return result.data
+  return frontmatter.seo
+}
+
+/**
+ * Validates the small page SEO shape without shipping Zod to the browser.
+ *
+ * @private
+ */
+function isPageSeoConfig(value: unknown): value is PageSeoConfig {
+  if (!isPlainObject(value) || !hasOnlyKeys(value, PAGE_SEO_KEYS)) {
+    return false
+  }
+  return (
+    isOptionalString(value['title']) &&
+    isOptionalString(value['description']) &&
+    isCanonical(value['canonical']) &&
+    isOptionalImageUrl(value['socialImage']) &&
+    isRobotsConfig(value['robots']) &&
+    isOpenGraphConfig(value['openGraph']) &&
+    isTwitterConfig(value['twitter'])
+  )
+}
+
+/**
+ * Validates optional crawler directives.
+ *
+ * @private
+ */
+function isRobotsConfig(value: unknown): boolean {
+  if (isUndefined(value)) {
+    return true
+  }
+  if (!isPlainObject(value) || !hasOnlyKeys(value, ROBOTS_KEYS)) {
+    return false
+  }
+  return isOptionalBoolean(value['index']) && isOptionalBoolean(value['follow'])
+}
+
+/**
+ * Validates optional Open Graph overrides.
+ *
+ * @private
+ */
+function isOpenGraphConfig(value: unknown): boolean {
+  if (isUndefined(value) || value === false) {
+    return true
+  }
+  if (!isPlainObject(value) || !hasOnlyKeys(value, OPEN_GRAPH_KEYS)) {
+    return false
+  }
+  return (
+    isOptionalString(value['title']) &&
+    isOptionalString(value['description']) &&
+    (isUndefined(value['type']) || value['type'] === 'website' || value['type'] === 'article') &&
+    isOptionalImageUrl(value['image'])
+  )
+}
+
+/**
+ * Validates optional Twitter card overrides.
+ *
+ * @private
+ */
+function isTwitterConfig(value: unknown): boolean {
+  if (isUndefined(value) || value === false) {
+    return true
+  }
+  if (!isPlainObject(value) || !hasOnlyKeys(value, TWITTER_KEYS)) {
+    return false
+  }
+  return (
+    isOptionalString(value['title']) &&
+    isOptionalString(value['description']) &&
+    (isUndefined(value['card']) ||
+      value['card'] === 'summary' ||
+      value['card'] === 'summary_large_image') &&
+    isOptionalImageUrl(value['image']) &&
+    (isUndefined(value['creator']) || isTwitterHandle(value['creator']))
+  )
+}
+
+/**
+ * Checks that a record contains no fields outside its supported schema.
+ *
+ * @private
+ */
+function hasOnlyKeys(
+  value: Readonly<Record<PropertyKey, unknown>>,
+  keys: readonly string[]
+): boolean {
+  return Object.keys(value).every((key) => keys.includes(key))
+}
+
+/**
+ * Validates an optional string field.
+ *
+ * @private
+ */
+function isOptionalString(value: unknown): boolean {
+  return isUndefined(value) || isString(value)
+}
+
+/**
+ * Validates an optional boolean field.
+ *
+ * @private
+ */
+function isOptionalBoolean(value: unknown): boolean {
+  return isUndefined(value) || isBoolean(value)
+}
+
+/**
+ * Validates an optional canonical URL or explicit suppression.
+ *
+ * @private
+ */
+function isCanonical(value: unknown): boolean {
+  return isUndefined(value) || value === false || (isString(value) && isHttpUrl(value))
+}
+
+/**
+ * Validates an optional social image URL.
+ *
+ * @private
+ */
+function isOptionalImageUrl(value: unknown): boolean {
+  return isUndefined(value) || (isString(value) && value.length > 0 && isHttpOrRelativeUrl(value))
+}
+
+/**
+ * Checks that an account handle uses Twitter's supported username shape.
+ *
+ * @private
+ */
+function isTwitterHandle(value: string): boolean {
+  return /^@[A-Za-z0-9_]{1,15}$/u.test(value)
+}
+
+/**
+ * Checks that a URL is absolute and uses HTTP(S).
+ *
+ * @private
+ */
+function isHttpUrl(value: string): boolean {
+  if (!URL.canParse(value)) {
+    return false
+  }
+  const protocol = new URL(value).protocol
+  return protocol === 'https:' || protocol === 'http:'
+}
+
+/**
+ * Checks that an image is an HTTP(S) URL or relative URL path.
+ *
+ * @private
+ */
+function isHttpOrRelativeUrl(value: string): boolean {
+  if (!URL.canParse(value, 'https://ciderpress.invalid')) {
+    return false
+  }
+  return isHttpUrl(new URL(value, 'https://ciderpress.invalid').href)
 }
 
 /**

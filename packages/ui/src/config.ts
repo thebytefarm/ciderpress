@@ -41,6 +41,7 @@ import { readJs } from './head/read.ts'
 import { ciderpressPlugin } from './plugin.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
+import type { SeoThemeConfig } from './seo-theme-config.ts'
 import { toPlainText } from './theme/lib/rich-text-parse.ts'
 
 interface CreateRspressConfigOptions {
@@ -224,6 +225,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     sidebar,
     footer,
   })
+  const seoThemeConfig: SeoThemeConfig = match(config.seo)
+    .with(undefined, () => ({}))
+    .otherwise((seo) => ({ seo }))
 
   return {
     root: paths.contentDir,
@@ -377,7 +381,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       // Custom ciderpress data injected alongside standard Rspress themeConfig.
       // Accessed at runtime via useSite().site.themeConfig cast to unknown.
       ...({ workspaces, standaloneScopePaths, pageBadges } as Record<string, unknown>),
-      ...({ seo: config.seo } as Record<string, unknown>),
+      ...seoThemeConfig,
       ...({
         socialLinks: serializeSocials(config.socials),
         sidebarAbove: resolveSidebarLinks({ config, position: 'top' }),

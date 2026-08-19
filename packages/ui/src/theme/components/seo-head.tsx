@@ -1,14 +1,10 @@
-import type { SeoConfig } from '@ciderpress/config'
 import { Head, useFrontmatter, useLocation, usePageData, useSite } from '@rspress/core/runtime'
 import { match } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
 
+import type { SeoThemeConfig } from '../../seo-theme-config'
 import type { ResolvedSeoHeadData } from './seo-head-data'
 import { resolveSeoHeadData } from './seo-head-data'
-
-interface SeoThemeConfig {
-  readonly seo?: SeoConfig
-}
 
 type SeoMetaEntry = readonly ['name' | 'property', string, string | undefined]
 type ResolvedSeoMetaEntry = readonly ['name' | 'property', string, string]
