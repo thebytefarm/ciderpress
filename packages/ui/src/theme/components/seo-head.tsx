@@ -1,13 +1,17 @@
 import type { SeoConfig } from '@ciderpress/config'
 import { Head, useFrontmatter, useLocation, usePageData, useSite } from '@rspress/core/runtime'
-import { isMatching, P } from 'massaman/match'
+import { match } from 'massaman/match'
 import { isNil, isNotNil } from 'massaman/predicate'
 
+import type { ResolvedSeoHeadData } from './seo-head-data'
 import { resolveSeoHeadData } from './seo-head-data'
 
 interface SeoThemeConfig {
   readonly seo?: SeoConfig
 }
+
+type SeoMetaEntry = readonly ['name' | 'property', string, string | undefined]
+type ResolvedSeoMetaEntry = readonly ['name' | 'property', string, string]
 
 /**
  * Adds canonical, robots, Open Graph, and Twitter metadata on top of Rspress defaults.
@@ -33,52 +37,68 @@ export default function SeoHead(): React.ReactElement | null {
     pathname,
     frontmatter,
   })
+  const metaTags = resolveMetaTags(metadata)
 
   return (
     <Head>
       {isNotNil(metadata.title) && <title>{metadata.title}</title>}
-      {isNotNil(metadata.description) && <meta name="description" content={metadata.description} />}
       {isNotNil(metadata.canonical) && <link rel="canonical" href={metadata.canonical} />}
-      {isNotNil(metadata.robots) && <meta name="robots" content={metadata.robots} />}
-      {isMatching(P.not(false), metadata.openGraph) && (
-        <meta property="og:url" content={metadata.openGraph.url} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && (
-        <meta property="og:title" content={metadata.openGraph.title} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && (
-        <meta property="og:description" content={metadata.openGraph.description} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && (
-        <meta property="og:type" content={metadata.openGraph.type} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && isNotNil(metadata.openGraph.siteName) && (
-        <meta property="og:site_name" content={metadata.openGraph.siteName} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && isNotNil(metadata.openGraph.locale) && (
-        <meta property="og:locale" content={metadata.openGraph.locale} />
-      )}
-      {isMatching(P.not(false), metadata.openGraph) && isNotNil(metadata.openGraph.image) && (
-        <meta property="og:image" content={metadata.openGraph.image} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && (
-        <meta name="twitter:card" content={metadata.twitter.card} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && (
-        <meta name="twitter:title" content={metadata.twitter.title} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && (
-        <meta name="twitter:description" content={metadata.twitter.description} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && isNotNil(metadata.twitter.site) && (
-        <meta name="twitter:site" content={metadata.twitter.site} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && isNotNil(metadata.twitter.creator) && (
-        <meta name="twitter:creator" content={metadata.twitter.creator} />
-      )}
-      {isMatching(P.not(false), metadata.twitter) && isNotNil(metadata.twitter.image) && (
-        <meta name="twitter:image" content={metadata.twitter.image} />
-      )}
+      {metaTags.map(renderMetaTag)}
     </Head>
   )
+}
+
+/**
+ * Converts resolved SEO data into typed HTML meta-tag attributes.
+ *
+ * @private
+ */
+function resolveMetaTags(metadata: ResolvedSeoHeadData): readonly ResolvedSeoMetaEntry[] {
+  const entries: readonly SeoMetaEntry[] = [
+    ['name', 'description', metadata.description],
+    ['name', 'robots', metadata.robots],
+    ...match(metadata.openGraph)
+      .with(false, () => [])
+      .otherwise((openGraph): readonly SeoMetaEntry[] => [
+        ['property', 'og:url', openGraph.url],
+        ['property', 'og:title', openGraph.title],
+        ['property', 'og:description', openGraph.description],
+        ['property', 'og:type', openGraph.type],
+        ['property', 'og:site_name', openGraph.siteName],
+        ['property', 'og:locale', openGraph.locale],
+        ['property', 'og:image', openGraph.image],
+      ]),
+    ...match(metadata.twitter)
+      .with(false, () => [])
+      .otherwise((twitter): readonly SeoMetaEntry[] => [
+        ['name', 'twitter:card', twitter.card],
+        ['name', 'twitter:title', twitter.title],
+        ['name', 'twitter:description', twitter.description],
+        ['name', 'twitter:site', twitter.site],
+        ['name', 'twitter:creator', twitter.creator],
+        ['name', 'twitter:image', twitter.image],
+      ]),
+  ]
+  return entries.filter(isResolvedMetaEntry)
+}
+
+/**
+ * Narrows a meta entry after missing content is filtered out.
+ *
+ * @private
+ */
+function isResolvedMetaEntry(entry: SeoMetaEntry): entry is ResolvedSeoMetaEntry {
+  return isNotNil(entry[2])
+}
+
+/**
+ * Renders one typed meta-tag descriptor.
+ *
+ * @private
+ */
+function renderMetaTag([attribute, key, content]: ResolvedSeoMetaEntry): React.ReactElement {
+  return match(attribute)
+    .with('name', () => <meta key={key} name={key} content={content} />)
+    .with('property', () => <meta key={key} property={key} content={content} />)
+    .exhaustive()
 }
