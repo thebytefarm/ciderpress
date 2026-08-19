@@ -14,6 +14,13 @@ import pkg from './packages/ciderpress/package.json'
 export default defineConfig({
   title: 'ciderpress',
   description: 'Beautiful Docs, **Zero Effort**',
+  seo: {
+    origin: 'https://ciderpress.dev',
+    titleTemplate: '%s | ciderpress',
+    openGraph: { siteName: 'ciderpress', type: 'website', locale: 'en_US' },
+    twitter: { card: 'summary_large_image' },
+    sitemap: true,
+  },
   version: `v${pkg.version}`,
   theme: {
     themes: ['honeycrisp'],
@@ -436,6 +443,12 @@ export default defineConfig({
           description: 'Built-in themes, color modes, and color token overrides.',
           path: '/concepts/themes',
           include: 'docs/concepts/themes.mdx',
+        },
+        {
+          title: 'Publishing',
+          description: 'SEO, social previews, sitemaps, and AI discovery for deployed sites.',
+          path: '/concepts/publishing',
+          include: 'docs/concepts/publishing.md',
         },
         {
           title: 'LLM Output',

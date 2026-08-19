@@ -124,6 +124,49 @@ defineConfig({
 })
 ```
 
+## `seo`
+
+Set the production origin once; Ciderpress derives canonical URLs, absolute social metadata,
+and `sitemap.xml` from it. Rspress continues to provide the page title, description, and base
+Open Graph tags.
+
+```ts
+seo: {
+  origin: 'https://docs.acme.com',
+  titleTemplate: '%s | Acme',
+  socialImage: '/social.png',
+  openGraph: {
+    siteName: 'Acme',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@acme',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  sitemap: {
+    changeFrequency: 'weekly',
+    priority: '0.5',
+  },
+}
+```
+
+| Field           | Type                       | Default                        | Description                                      |
+| --------------- | -------------------------- | ------------------------------ | ------------------------------------------------ |
+| `origin`        | `string`                   | required                       | Production origin for canonical and sitemap URLs |
+| `titleTemplate` | `string \| false`          | Rspress default                | `%s` is replaced by the page title               |
+| `socialImage`   | `string`                   | —                              | Default Open Graph and Twitter image             |
+| `openGraph`     | `OpenGraphConfig \| false` | enabled                        | Site name, type, and locale defaults             |
+| `twitter`       | `TwitterConfig \| false`   | `summary_large_image`          | Twitter card and account defaults                |
+| `robots`        | `RobotsConfig`             | browser/search-engine defaults | Default `index` and `follow` directives          |
+| `sitemap`       | `boolean \| SitemapConfig` | `true`                         | Generate `sitemap.xml` with the Rspress plugin   |
+
+Rspress also generates `llms.txt`, `llms-full.txt`, and per-page Markdown automatically. These
+are root-level discovery files and do not require an HTML `<head>` tag.
+
 ## `brand`
 
 Brand chrome — icon, wordmark, hero background, favicon, and the inline FOUC loader. Defaults to invisible: omit any field to render nothing in that slot.
@@ -1405,7 +1448,8 @@ Used by `Page.discover.sort` and `Workspace.discover.sort`.
 
 ### Frontmatter
 
-`Page.defaults` (and `Workspace.defaults`) take a `Frontmatter` value. Same type as before — carries the page metadata fields Rspress understands (`title`, `description`, `aside`, `editLink`, `pageType`, …) plus any custom keys you want injected.
+`Page.defaults` (and `Workspace.defaults`) take a `Frontmatter` value. It carries the page
+metadata fields Rspress understands plus Ciderpress's nested `seo` overrides.
 
 ```ts
 {

@@ -330,6 +330,10 @@ export interface Frontmatter {
    */
   readonly head?: readonly [string, Record<string, string>][]
   /**
+   * Search and social metadata overrides for this page.
+   */
+  readonly seo?: PageSeoConfig
+  /**
    * Page badge(s) — a label like `ALPHA` or `WIP`, or a
    * {@link BadgeConfig} with variant/color/tooltip. Renders in both the
    * sidebar and the breadcrumb. Set on a file's own frontmatter or on a
@@ -341,6 +345,122 @@ export interface Frontmatter {
    * Resolves to a badge chip using the status's title/color/description.
    */
   readonly status?: string | readonly string[]
+}
+
+/** Search crawler directives shared by site defaults and page overrides. */
+export interface RobotsConfig {
+  /** Allow search engines to index the page. Defaults to `true`. */
+  readonly index?: boolean
+  /** Allow search engines to follow links on the page. Defaults to `true`. */
+  readonly follow?: boolean
+}
+
+/** Open Graph defaults shared by every page. */
+export interface OpenGraphConfig {
+  /** Site name emitted as `og:site_name`. */
+  readonly siteName?: string
+  /** Default Open Graph content type. */
+  readonly type?: 'website'
+  /** Site locale emitted as `og:locale`, such as `en_US`. */
+  readonly locale?: string
+}
+
+/** Twitter card defaults shared by every page. */
+export interface TwitterConfig {
+  /** Twitter card layout. Defaults to `summary_large_image`. */
+  readonly card?: 'summary' | 'summary_large_image'
+  /** Site account, including the leading `@`. */
+  readonly site?: `@${string}`
+  /** Default content creator, including the leading `@`. */
+  readonly creator?: `@${string}`
+}
+
+/** Sitemap generation options forwarded to Rspress's official sitemap plugin. */
+export interface SitemapConfig {
+  /** Default change frequency for generated sitemap entries. */
+  readonly changeFrequency?:
+    | 'always'
+    | 'hourly'
+    | 'daily'
+    | 'weekly'
+    | 'monthly'
+    | 'yearly'
+    | 'never'
+  /** Default priority for generated sitemap entries. */
+  readonly priority?:
+    | '0.0'
+    | '0.1'
+    | '0.2'
+    | '0.3'
+    | '0.4'
+    | '0.5'
+    | '0.6'
+    | '0.7'
+    | '0.8'
+    | '0.9'
+    | '1.0'
+}
+
+/** Site-wide search and social metadata defaults. */
+export interface SeoConfig {
+  /** Production origin used for canonical URLs, sitemap entries, and social URLs. */
+  readonly origin: string
+  /** `%s` page-title template. Set to `false` to use the page title unchanged. */
+  readonly titleTemplate?: string | false
+  /** Default Open Graph and Twitter image. */
+  readonly socialImage?: string
+  /** Open Graph defaults. Set to `false` to disable Open Graph additions. */
+  readonly openGraph?: OpenGraphConfig | false
+  /** Twitter card defaults. Set to `false` to disable Twitter metadata. */
+  readonly twitter?: TwitterConfig | false
+  /** Default search crawler directives. */
+  readonly robots?: RobotsConfig
+  /** Sitemap generation. Defaults to `true` when `seo` is configured. */
+  readonly sitemap?: SitemapConfig | boolean
+}
+
+/** Per-page Open Graph overrides. */
+export interface PageOpenGraphConfig {
+  /** Open Graph title override. */
+  readonly title?: string
+  /** Open Graph description override. */
+  readonly description?: string
+  /** Open Graph content type. */
+  readonly type?: 'website' | 'article'
+  /** Open Graph image override. */
+  readonly image?: string
+}
+
+/** Per-page Twitter card overrides. */
+export interface PageTwitterConfig {
+  /** Twitter title override. */
+  readonly title?: string
+  /** Twitter description override. */
+  readonly description?: string
+  /** Twitter card layout override. */
+  readonly card?: 'summary' | 'summary_large_image'
+  /** Twitter image override. */
+  readonly image?: string
+  /** Content creator, including the leading `@`. */
+  readonly creator?: `@${string}`
+}
+
+/** Per-page search and social metadata overrides nested under `seo`. */
+export interface PageSeoConfig {
+  /** Search-only title override. */
+  readonly title?: string
+  /** Search-only description override. */
+  readonly description?: string
+  /** Absolute canonical URL. Set to `false` to omit only the canonical link tag. */
+  readonly canonical?: string | false
+  /** Default image override for Open Graph and Twitter. */
+  readonly socialImage?: string
+  /** Search crawler directives for this page. */
+  readonly robots?: RobotsConfig
+  /** Open Graph overrides. Set to `false` to disable Open Graph additions. */
+  readonly openGraph?: PageOpenGraphConfig | false
+  /** Twitter card overrides. Set to `false` to disable Twitter metadata. */
+  readonly twitter?: PageTwitterConfig | false
 }
 
 /**
@@ -1846,6 +1966,10 @@ export interface CiderpressConfig {
    * and as the fallback OpenGraph description.
    */
   readonly description?: string
+  /**
+   * Search, canonical, social-card, robots, and sitemap configuration.
+   */
+  readonly seo?: SeoConfig
   /**
    * Deployment base path. Must start and end with `/` (e.g.
    * `/examples/simple/`). Defaults to `/`. `CIDERPRESS_BASE` env var

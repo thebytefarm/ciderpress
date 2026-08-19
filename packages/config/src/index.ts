@@ -18,6 +18,14 @@ export type {
   ThemeEntry,
   CiderpressThemeInput,
   Frontmatter,
+  SeoConfig,
+  PageSeoConfig,
+  OpenGraphConfig,
+  PageOpenGraphConfig,
+  TwitterConfig,
+  PageTwitterConfig,
+  RobotsConfig,
+  SitemapConfig,
   Badge,
   BadgeConfig,
   BadgeInput,
@@ -82,7 +90,7 @@ export type {
 
 export { defineConfig } from './define-config.ts'
 export { validateConfig } from './validator.ts'
-export { ciderpressConfigSchema, pathsSchema } from './schema.ts'
+export { ciderpressConfigSchema, pageSeoConfigSchema, pathsSchema } from './schema.ts'
 
 export { configError, configErrorFromZod, configWarning } from './errors.ts'
 export type {

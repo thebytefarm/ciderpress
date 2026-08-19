@@ -2,6 +2,7 @@ import { match, P } from 'massaman/match'
 import { describe, it, expect } from 'vitest'
 
 import { defineConfig } from './define-config.ts'
+import { pageSeoConfigSchema } from './schema.ts'
 import { validateConfig } from './validator.ts'
 
 const validConfig = {
@@ -35,6 +36,122 @@ describe('validateConfig()', () => {
 
   it('should return error when pages array is empty', () => {
     const [error] = validateConfig({ pages: [] })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+})
+
+describe('validateConfig() — SEO', () => {
+  it('should accept site SEO and nested page SEO defaults', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: {
+        origin: 'https://docs.example.com',
+        titleTemplate: '%s | Example',
+        socialImage: '/social.png',
+        openGraph: { siteName: 'Example', locale: 'en_US' },
+        twitter: { card: 'summary_large_image', site: '@example' },
+        robots: { index: true, follow: true },
+        sitemap: { changeFrequency: 'weekly', priority: '0.8' },
+      },
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: {
+            seo: {
+              canonical: 'https://docs.example.com/test',
+              openGraph: { type: 'article' },
+              robots: { index: false },
+            },
+          },
+        },
+      ],
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject an SEO origin without a protocol', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'docs.example.com' },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject non-HTTP and non-origin SEO URLs', () => {
+    const [schemeError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'mailto:docs@example.com' },
+    })
+    const [pathError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com/reference' },
+    })
+    expect(schemeError).toMatchObject({ type: 'validation_failed' })
+    expect(pathError).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject empty Twitter handles', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', twitter: { site: '@' } },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject malformed Twitter handles', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', twitter: { site: '@foo bar' } },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject malformed social image URLs', () => {
+    const [siteError] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', socialImage: 'http://[' },
+    })
+    const [pageError] = validateConfig({
+      ...validConfig,
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: { seo: { openGraph: { image: 'ftp://example.com/image.png' } } },
+        },
+      ],
+    })
+    expect(siteError).toMatchObject({ type: 'validation_failed' })
+    expect(pageError).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject an SEO title template without a page-title placeholder', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', titleTemplate: 'Example Docs' },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject invalid nested SEO values from Markdown frontmatter', () => {
+    const result = pageSeoConfigSchema.safeParse({ robots: { index: 'false' } })
+    expect(result.success).toBe(false)
+  })
+
+  it('should reject page SEO fields outside the nested SEO block', () => {
+    const [error] = validateConfig({
+      pages: [
+        {
+          title: 'Test',
+          path: '/test',
+          content: '# Test',
+          defaults: { canonical: 'https://docs.example.com/test' },
+        },
+      ],
+    })
     expect(error).toMatchObject({ type: 'validation_failed' })
   })
 })
