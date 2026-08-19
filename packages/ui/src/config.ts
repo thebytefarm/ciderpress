@@ -230,12 +230,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     outDir: paths.distDir,
 
     base: resolvedBase,
-    ...(() => {
-      if (config.seo === undefined) {
-        return {}
-      }
-      return { siteOrigin: config.seo.origin }
-    })(),
+    ...match(config.seo)
+      .with(undefined, () => ({}))
+      .otherwise((seo) => ({ siteOrigin: seo.origin })),
     route: { cleanUrls: true },
 
     llms: true,
@@ -287,12 +284,9 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
     },
 
     builderConfig: {
-      ...(() => {
-        if (logLevel) {
-          return { logLevel }
-        }
-        return {}
-      })(),
+      ...match(logLevel)
+        .with(undefined, () => ({}))
+        .otherwise((resolvedLogLevel) => ({ logLevel: resolvedLogLevel })),
       html: {
         tags: [
           ...resolveFaviconLinkTags(favicon),
@@ -416,18 +410,12 @@ function resolveSitemapPlugins(config: CiderpressConfig): RspressPlugin[] {
   return [
     pluginSitemap({
       siteUrl: config.seo.origin,
-      ...(() => {
-        if (sitemap.changeFrequency === undefined) {
-          return {}
-        }
-        return { defaultChangeFreq: sitemap.changeFrequency }
-      })(),
-      ...(() => {
-        if (sitemap.priority === undefined) {
-          return {}
-        }
-        return { defaultPriority: sitemap.priority }
-      })(),
+      ...match(sitemap.changeFrequency)
+        .with(undefined, () => ({}))
+        .otherwise((defaultChangeFreq) => ({ defaultChangeFreq })),
+      ...match(sitemap.priority)
+        .with(undefined, () => ({}))
+        .otherwise((defaultPriority) => ({ defaultPriority })),
     }),
   ]
 }
@@ -1106,12 +1094,9 @@ function buildHeadScriptBody(options: HeadScriptOptions): string {
     try { localStorage.setItem('rspress-theme-appearance', variant); } catch (_) {}
   })()`
 
-  const vscodeJs: string = (() => {
-    if (options.vscode) {
-      return [VSCODE_SET_JS, VSCODE_NAV_JS].join(';')
-    }
-    return ''
-  })()
+  const vscodeJs = match(options.vscode)
+    .with(true, () => [VSCODE_SET_JS, VSCODE_NAV_JS].join(';'))
+    .otherwise(() => '')
 
   // Forced-dismiss fallback. The React bundle's `ThemeProvider` is the
   // primary dismissal path; this timer is a belt-and-suspenders cover
