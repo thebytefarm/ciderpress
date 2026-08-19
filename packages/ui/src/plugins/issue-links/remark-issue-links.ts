@@ -282,11 +282,13 @@ function parsePostHogLink(segments: readonly string[]): IssueLink | null {
     return null
   }
   return match(resource)
-    .with('insights', () =>
-      opaqueLink({ provider: 'posthog', kind: 'insight', label: 'PostHog insight' })
+    .when(
+      (value) => value === 'insights' && identifier !== undefined,
+      () => opaqueLink({ provider: 'posthog', kind: 'insight', label: 'PostHog insight' })
     )
-    .with('replay', () =>
-      opaqueLink({ provider: 'posthog', kind: 'recording', label: 'PostHog recording' })
+    .when(
+      (value) => value === 'replay' && identifier !== undefined,
+      () => opaqueLink({ provider: 'posthog', kind: 'recording', label: 'PostHog recording' })
     )
     .when(
       (value) => value === 'feature_flags' && identifier !== undefined,
@@ -428,8 +430,14 @@ function parseGitLabLink(segments: readonly string[]): IssueLink | null {
     return null
   }
   return match(resource)
-    .with('issues', () => numberedLink({ provider: 'gitlab', kind: 'issue', identifier }))
-    .with('merge_requests', () => numberedLink({ provider: 'gitlab', kind: 'merge', identifier }))
+    .when(
+      (value) => value === 'issues' && isNumericIdentifier(identifier),
+      () => numberedLink({ provider: 'gitlab', kind: 'issue', identifier })
+    )
+    .when(
+      (value) => value === 'merge_requests' && isNumericIdentifier(identifier),
+      () => numberedLink({ provider: 'gitlab', kind: 'merge', identifier })
+    )
     .with('commit', () => commitLink({ provider: 'gitlab', owner: '', repo: '', identifier }))
     .with('releases', () => ({
       provider: 'gitlab' as const,
@@ -448,8 +456,14 @@ function parseBitbucketLink(segments: readonly string[]): IssueLink | null {
     return null
   }
   return match(resource)
-    .with('issues', () => numberedLink({ provider: 'bitbucket', kind: 'issue', identifier }))
-    .with('pull-requests', () => numberedLink({ provider: 'bitbucket', kind: 'pull', identifier }))
+    .when(
+      (value) => value === 'issues' && isNumericIdentifier(identifier),
+      () => numberedLink({ provider: 'bitbucket', kind: 'issue', identifier })
+    )
+    .when(
+      (value) => value === 'pull-requests' && isNumericIdentifier(identifier),
+      () => numberedLink({ provider: 'bitbucket', kind: 'pull', identifier })
+    )
     .with('commits', () => commitLink({ provider: 'bitbucket', owner, repo, identifier }))
     .otherwise(() => null)
 }
@@ -700,6 +714,9 @@ function parseAtlassianLink(segments: readonly string[]): IssueLink | null {
 /** Parse a Confluence Cloud page path. @private */
 function parseConfluenceLink(segments: readonly string[]): IssueLink {
   const pagesIndex = segments.indexOf('pages')
+  if (pagesIndex === -1) {
+    return opaqueLink({ provider: 'confluence', kind: 'page', label: 'Confluence page' })
+  }
   const identifier = segments.at(pagesIndex + 1)
   return match(identifier)
     .when(

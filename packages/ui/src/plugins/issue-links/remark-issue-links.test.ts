@@ -49,15 +49,27 @@ describe('parseIssueLink()', () => {
     'http://github.com/thebytefarm/ciderpress/issues/73',
     'https://github.com/thebytefarm/ciderpress/wiki',
     'https://github.com/thebytefarm/ciderpress/issues/new',
+    'https://gitlab.com/acme/docs/-/issues/new',
+    'https://bitbucket.org/acme/docs/issues/new',
     'https://linear.app/acme/project/ENG-123',
     'https://example.com/browse/ENG-123',
     'https://www.notion.so/',
     'https://www.figma.com/community',
     'https://example.com/acme/docs/-/issues/7',
     'https://vercel.com/templates/next.js',
+    'https://app.posthog.com/project/123/insights',
+    'https://app.posthog.com/project/123/replay',
     'not-a-url',
   ])('should ignore unsupported URL %s', (url) => {
     expect(parseIssueLink(url)).toBeNull()
+  })
+
+  it('should use an opaque label for Confluence routes without a page identifier', () => {
+    expect(parseIssueLink('https://acme.atlassian.net/wiki/spaces/DOCS/overview')).toMatchObject({
+      provider: 'confluence',
+      label: 'Confluence page',
+      reference: null,
+    })
   })
 })
 
