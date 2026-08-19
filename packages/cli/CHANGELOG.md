@@ -1,5 +1,14 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.12
+
+### Patch Changes
+
+- Updated dependencies [96aa946]
+- Updated dependencies [1615c8c]
+  - @ciderpress/config@1.0.0-rc.9
+  - @ciderpress/ui@1.0.0-rc.12
+
 ## 1.0.0-rc.11
 
 ### Minor Changes
