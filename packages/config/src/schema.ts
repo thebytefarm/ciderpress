@@ -169,11 +169,13 @@ const openGraphConfigSchema = z
   })
   .strict()
 
+const twitterHandleSchema = z.templateLiteral(['@', z.string().min(1)])
+
 const twitterConfigSchema = z
   .object({
     card: z.enum(['summary', 'summary_large_image']).optional(),
-    site: z.templateLiteral(['@', z.string()]).optional(),
-    creator: z.templateLiteral(['@', z.string()]).optional(),
+    site: twitterHandleSchema.optional(),
+    creator: twitterHandleSchema.optional(),
   })
   .strict()
 
@@ -215,11 +217,12 @@ const pageTwitterConfigSchema = z
     description: z.string().optional(),
     card: z.enum(['summary', 'summary_large_image']).optional(),
     image: z.string().optional(),
-    creator: z.templateLiteral(['@', z.string()]).optional(),
+    creator: twitterHandleSchema.optional(),
   })
   .strict()
 
-const pageSeoConfigSchema = z
+/** Schema for validating nested SEO metadata from config defaults or Markdown frontmatter. */
+export const pageSeoConfigSchema: z.ZodType<PageSeoConfig> = z
   .object({
     title: z.string().optional(),
     description: z.string().optional(),

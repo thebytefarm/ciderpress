@@ -2,6 +2,7 @@ import { match, P } from 'massaman/match'
 import { describe, it, expect } from 'vitest'
 
 import { defineConfig } from './define-config.ts'
+import { pageSeoConfigSchema } from './schema.ts'
 import { validateConfig } from './validator.ts'
 
 const validConfig = {
@@ -76,6 +77,19 @@ describe('validateConfig() — SEO', () => {
       seo: { origin: 'docs.example.com' },
     })
     expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject empty Twitter handles', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      seo: { origin: 'https://docs.example.com', twitter: { site: '@' } },
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject invalid nested SEO values from Markdown frontmatter', () => {
+    const result = pageSeoConfigSchema.safeParse({ robots: { index: 'false' } })
+    expect(result.success).toBe(false)
   })
 
   it('should reject page SEO fields outside the nested SEO block', () => {

@@ -5,6 +5,7 @@ import type {
   RobotsConfig,
   SeoConfig,
 } from '@ciderpress/config'
+import { pageSeoConfigSchema } from '@ciderpress/config'
 import { Head, useFrontmatter, useLocation, usePageData, useSite } from '@rspress/core/runtime'
 
 interface SeoThemeConfig {
@@ -32,6 +33,7 @@ export default function SeoHead(): React.ReactElement | null {
   const title = pageSeo.title ?? page.title
   const description = pageSeo.description ?? page.description ?? site.description
   const canonical = resolveCanonical({ origin: siteSeo.origin, pathname, pageSeo })
+  const openGraphUrl = new URL(pathname, siteSeo.origin).href
   const socialImage = resolveSocialImage({ origin: siteSeo.origin, siteSeo, pageSeo })
   const openGraph = resolveOpenGraph({ siteSeo, pageSeo })
   const twitter = resolveTwitter({ siteSeo, pageSeo })
@@ -48,7 +50,7 @@ export default function SeoHead(): React.ReactElement | null {
       {pageSeo.description !== undefined && <meta name="description" content={description} />}
       {canonical !== undefined && <link rel="canonical" href={canonical} />}
       {robots !== undefined && <meta name="robots" content={robots} />}
-      {openGraph !== false && <meta property="og:url" content={canonical ?? siteSeo.origin} />}
+      {openGraph !== false && <meta property="og:url" content={openGraphUrl} />}
       {openGraph !== false && <meta property="og:title" content={openGraph.title ?? title} />}
       {openGraph !== false && (
         <meta property="og:description" content={openGraph.description ?? description} />
@@ -89,11 +91,11 @@ export default function SeoHead(): React.ReactElement | null {
  * @returns The page SEO block or an empty override object
  */
 function resolvePageSeo(frontmatter: Readonly<Record<string, unknown>>): PageSeoConfig {
-  const value = frontmatter.seo
-  if (typeof value !== 'object' || value === null || Array.isArray(value)) {
+  const result = pageSeoConfigSchema.safeParse(frontmatter.seo)
+  if (!result.success) {
     return {}
   }
-  return value as PageSeoConfig
+  return result.data
 }
 
 /**

@@ -451,7 +451,7 @@ export interface PageSeoConfig {
   readonly title?: string
   /** Search-only description override. */
   readonly description?: string
-  /** Absolute canonical URL. Set to `false` to omit the canonical tag. */
+  /** Absolute canonical URL. Set to `false` to omit only the canonical link tag. */
   readonly canonical?: string | false
   /** Default image override for Open Graph and Twitter. */
   readonly socialImage?: string
