@@ -334,7 +334,7 @@ function globToRegExp(pattern: string): RegExp {
     .replaceAll('*', '[^/]*')
     .replaceAll(' ', '.*')
     .replaceAll('?', '[^/]')
-  // oxlint-disable-next-line security/detect-non-literal-regexp -- pattern is compiled from trusted config-authored globs, not user input
+  // oxlint-disable-next-line ciderpress/no-dynamic-regexp -- pattern is compiled from trusted config-authored globs, not user input
   return new RegExp(`^${body}$`)
 }
 

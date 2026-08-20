@@ -262,12 +262,12 @@ function sectionTitle(key: string): string {
 
 function readSidebarJson(workspaceRoot: string): SidebarJson | null {
   const filePath = path.join(workspaceRoot, SIDEBAR_RELATIVE)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path
   if (!fs.existsSync(filePath)) {
     return null
   }
   try {
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename
+    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path
     return JSON.parse(fs.readFileSync(filePath, 'utf8')) as SidebarJson
   } catch {
     return null

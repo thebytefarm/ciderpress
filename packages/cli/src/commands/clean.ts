@@ -18,10 +18,10 @@ import type { Paths } from '../lib/paths.ts'
 export async function clean(paths: Paths): Promise<readonly string[]> {
   const results = await Promise.all(
     cleanTargets(paths).map(async ({ dir, label }) => {
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: removing known ciderpress output directories
+      // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: removing known ciderpress output directories
       const exists = await fs.stat(dir).catch(() => null)
       if (exists) {
-        // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: removing known ciderpress output directories
+        // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: removing known ciderpress output directories
         await fs.rm(dir, { recursive: true, force: true })
         return label
       }

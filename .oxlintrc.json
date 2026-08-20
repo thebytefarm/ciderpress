@@ -1,14 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "import", "vitest", "promise", "node", "oxc"],
-  "jsPlugins": [
-    "eslint-plugin-security",
-    "eslint-plugin-functional",
-    {
-      "name": "jsdoc-js",
-      "specifier": "eslint-plugin-jsdoc"
-    }
-  ],
+  "jsPlugins": ["./oxlint-plugin-ciderpress.mjs"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -20,12 +13,7 @@
     "typescript/no-explicit-any": "error",
     "typescript/no-non-null-assertion": "error",
     "typescript/no-non-null-asserted-optional-chain": "error",
-    "security/detect-child-process": "error",
-    "security/detect-eval-with-expression": "error",
-    "security/detect-non-literal-fs-filename": "error",
-    "security/detect-non-literal-regexp": "error",
-    "security/detect-possible-timing-attacks": "warn",
-    "security/detect-unsafe-regex": "error",
+    "no-eval": "error",
     "prefer-const": "error",
     "no-var": "error",
     "no-ternary": "error",
@@ -35,11 +23,13 @@
     "curly": "error",
     "eqeqeq": "error",
     "func-style": ["error", "declaration"],
-    "functional/no-let": "error",
-    "functional/no-classes": "error",
-    "functional/no-this-expressions": "error",
-    "functional/no-throw-statements": "error",
-    "functional/no-loop-statements": "error",
+    "ciderpress/no-let": "error",
+    "ciderpress/no-classes": "error",
+    "ciderpress/no-this-expressions": "error",
+    "ciderpress/no-throw-statements": "error",
+    "ciderpress/no-loop-statements": "error",
+    "ciderpress/no-dynamic-filesystem-path": "error",
+    "ciderpress/no-dynamic-regexp": "error",
     "unicorn/no-null": "off",
     "unicorn/prefer-node-protocol": "error",
     "unicorn/no-unreadable-iife": "error",
@@ -59,12 +49,6 @@
       "error",
       {
         "message": "Use explicit null checks (if/else or ts-pattern match) instead of optional chaining."
-      }
-    ],
-    "jsdoc-js/multiline-blocks": [
-      "error",
-      {
-        "noSingleLineBlocks": false
       }
     ],
     "vitest/prefer-called-times": "off",
@@ -87,19 +71,17 @@
     "import/prefer-default-export": "off",
     "import/max-dependencies": "off",
     "promise/prefer-await-to-then": "off",
-    "promise/avoid-new": "off",
-    "security/detect-object-injection": "off"
+    "promise/avoid-new": "off"
   },
   "overrides": [
     {
       "files": ["*.test.ts", "*.spec.ts", "**/__tests__/**"],
       "rules": {
         "no-unused-vars": "off",
-        "functional/no-let": "off",
-        "functional/no-throw-statements": "off",
-        "functional/no-classes": "off",
-        "security/detect-object-injection": "off",
-        "security/detect-non-literal-fs-filename": "off",
+        "ciderpress/no-let": "off",
+        "ciderpress/no-throw-statements": "off",
+        "ciderpress/no-classes": "off",
+        "ciderpress/no-dynamic-filesystem-path": "off",
         "vitest/no-importing-vitest-globals": "off",
         "typescript/no-non-null-assertion": "off",
         "jest/no-hooks": "off",
@@ -124,13 +106,13 @@
     {
       "files": ["packages/core/src/sync/**", "packages/cli/src/**"],
       "rules": {
-        "security/detect-non-literal-fs-filename": "off"
+        "ciderpress/no-dynamic-filesystem-path": "off"
       }
     },
     {
       "files": ["scripts/**", "**/scripts/**"],
       "rules": {
-        "security/detect-non-literal-fs-filename": "off"
+        "ciderpress/no-dynamic-filesystem-path": "off"
       }
     },
     {

@@ -74,7 +74,7 @@ function resolveAsset(relativePath: string): string {
 function readAsset(relativePath: string): AssetResult {
   const fullPath = resolveAsset(relativePath)
   try {
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: relative to known asset directory
+    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: relative to known asset directory
     const content = readFileSync(fullPath, 'utf8').trim()
     return [null, content]
   } catch {

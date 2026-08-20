@@ -178,7 +178,6 @@ async function syncOpenAPI(config: OpenAPISpec, ctx: SyncContext): Promise<Singl
     .with(P.nonNullable, (mt) => ({ [specRelPath]: mt }))
     .otherwise(() => ({}))
 
-  // oxlint-disable-next-line security/detect-possible-timing-attacks -- not a security comparison
   if (api === null) {
     return { sidebar: [], pages: [], specMtimes }
   }
