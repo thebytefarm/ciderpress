@@ -121,7 +121,6 @@ export function DevScreen(props: DevScreenProps): React.ReactElement {
     if (copiedTimer.current) {
       clearTimeout(copiedTimer.current)
     }
-    // oxlint-disable-next-line functional/immutable-data -- timer ref for auto-clear
     copiedTimer.current = setTimeout(() => {
       setCopied(false)
     }, 2000)

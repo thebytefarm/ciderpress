@@ -47,16 +47,16 @@ export function createWatcher(params: {
   const { initialConfig, paths, callbacks, onConfigReload, openapiCache } = params
   const { repoRoot } = paths
   const configFileNames = new Set(CONFIG_EXTENSIONS.map((ext) => `ciderpress.config${ext}`))
-  // oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
+  // oxlint-disable-next-line ciderpress/no-let -- mutable config reloaded on file changes
   let config = initialConfig
 
   callbacks.onStatusChange('idle')
 
-  // oxlint-disable-next-line functional/no-let -- mutable sync state for debounced watcher
+  // oxlint-disable-next-line ciderpress/no-let -- mutable sync state for debounced watcher
   let syncing = false
-  // oxlint-disable-next-line functional/no-let -- tracks whether a pending resync needs config reload
+  // oxlint-disable-next-line ciderpress/no-let -- tracks whether a pending resync needs config reload
   let pendingReloadConfig: boolean | null = null
-  // oxlint-disable-next-line functional/no-let -- bounded retry counter to prevent unbounded recursive sync
+  // oxlint-disable-next-line ciderpress/no-let -- bounded retry counter to prevent unbounded recursive sync
   let consecutiveFailures = 0
   const MAX_CONSECUTIVE_FAILURES = 5
 
@@ -67,7 +67,7 @@ export function createWatcher(params: {
     }
     syncing = true
     callbacks.onStatusChange('syncing')
-    // oxlint-disable-next-line functional/no-let -- tracks whether this sync included a config reload
+    // oxlint-disable-next-line ciderpress/no-let -- tracks whether this sync included a config reload
     let didReloadConfig = false
     const previousConfig = config
     try {

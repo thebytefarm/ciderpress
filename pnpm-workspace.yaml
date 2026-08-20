@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
+  - 'tools/*'
   - 'examples/*'
   - 'extensions/*'
   - 'benchmarks'
@@ -26,7 +27,6 @@ allowBuilds:
   sharp: false
 
 overrides:
-  '@rsbuild/core': 2.0.0-rc.1
   # vite reaches this repo only through vitest and Ladle — Rspress builds on
   # Rspack and pulls no vite at all. @codspeed/vitest-plugin and Ladle's react
   # plugins still cap their vite range at ^7, which left a second vite major in
@@ -40,18 +40,17 @@ packageExtensions:
       react: '*'
 
 catalog:
-  # Pinned: 0.23.2 regressed esm output.filename (.mjs -> .js) and dts emit. Revisit on next rslib release.
-  '@rslib/core': 0.23.1
+  '@rslib/core': ^0.23.2
   '@rspress/core': ^2.0.19
   '@rspress/plugin-sitemap': ^2.0.19
-  '@types/react': ^19.2.17
+  '@types/react': ^19.2.18
   '@typescript/native-preview': 7.0.0-dev.20260707.2
   es-toolkit: ^1.47.0
-  massaman: ^0.3.0
-  react: ^19.2.7
-  react-dom: ^19.2.7
+  massaman: ^0.5.0
+  react: ^19.2.8
+  react-dom: ^19.2.8
   ts-pattern: ^5.9.0
   type-fest: ^5.8.0
-  typescript: ^6.0.3
+  typescript: ^7.0.2
   vitest: ^4.1.10
   zod: ^4.4.3

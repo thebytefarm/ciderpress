@@ -47,7 +47,7 @@ export function discoverExamples(): readonly ExampleMeta[] {
       if (scripts === undefined || scripts['docs:build'] === undefined) {
         return []
       }
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- configPath is derived from our own example dirs, not user input
+      // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- configPath is derived from our own example dirs, not user input
       const source = readFileSync(configPath, 'utf8')
       return [
         {
@@ -72,7 +72,7 @@ function findConfigPath(dir: string): string | null {
   const extensions = ['ts', 'mts', 'cts', 'js', 'mjs', 'cjs', 'json', 'jsonc', 'yml', 'yaml']
   const found = extensions
     .map((ext) => join(dir, `ciderpress.config.${ext}`))
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- candidate is derived from a fixed extension list + our own example dirs
+    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- candidate is derived from a fixed extension list + our own example dirs
     .find((candidate) => existsSync(candidate))
   return found ?? null
 }
@@ -88,13 +88,13 @@ function findConfigPath(dir: string): string | null {
 function readPackageJson(
   path: string
 ): { readonly scripts?: Readonly<Record<string, string>> } | null {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is derived from our own example dirs, not user input
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is derived from our own example dirs, not user input
   if (!existsSync(path)) {
     return null
   }
   try {
     return JSON.parse(
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- same as above
+      // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- same as above
       readFileSync(path, 'utf8')
     ) as {
       readonly scripts?: Readonly<Record<string, string>>

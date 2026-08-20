@@ -72,7 +72,7 @@ function resolveFile(requestPath: string): string | null {
 
   return (
     candidates.find(
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constrained to safePath built from rootDir + a sanitized request URL
+      // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constrained to safePath built from rootDir + a sanitized request URL
       (path) => existsSync(path) && statSync(path).isFile()
     ) ?? null
   )
@@ -93,7 +93,7 @@ const server = createServer((req, res) => {
   res.statusCode = 200
   res.setHeader('content-type', mime)
   res.setHeader('cache-control', 'no-cache')
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- filePath is constrained to DIST_DIR by resolveFile
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- filePath is constrained to DIST_DIR by resolveFile
   createReadStream(filePath).pipe(res)
 })
 

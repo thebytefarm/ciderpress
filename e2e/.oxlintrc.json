@@ -4,8 +4,9 @@
   "rules": {
     "no-ternary": "off",
     "oxc/no-optional-chaining": "off",
-    "functional/no-loop-statements": "off",
-    "functional/no-let": "off",
+    "ciderpress/no-loop-statements": "off",
+    "ciderpress/no-let": "off",
+    "ciderpress/no-dynamic-filesystem-path": "off",
     "func-style": "off",
     "curly": "off",
     "vitest/consistent-test-filename": "off",

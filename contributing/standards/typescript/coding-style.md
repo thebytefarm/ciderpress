@@ -379,21 +379,21 @@ Use `// oxlint-disable-next-line <rule> -- <reason>` to opt a single line out of
 
 Acceptable cases:
 
-- Stateful factory internals where `functional/no-let` blocks a closure-held mutable binding.
+- Stateful factory internals where `ciderpress/no-let` blocks a closure-held mutable binding.
 - Boundary code that must call into an external API with a banned shape (e.g., a `process.exit` wrapper, raw event emitters).
 - Generated code where rewriting the rule violation isn't practical.
 
 #### Correct
 
 ```ts
-// oxlint-disable-next-line functional/no-let -- mutable config reloaded on file changes
+// oxlint-disable-next-line ciderpress/no-let -- mutable config reloaded on file changes
 let config = initialConfig
 ```
 
 #### Incorrect
 
 ```ts
-// oxlint-disable-next-line functional/no-let
+// oxlint-disable-next-line ciderpress/no-let
 let config = initialConfig
 ```
 

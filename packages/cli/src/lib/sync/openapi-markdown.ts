@@ -153,11 +153,11 @@ function loadTemplate(filename: string): string {
   // when neither exists so readFileSync surfaces a clear ENOENT.
   const bundled = join(import.meta.dirname, '..', 'templates', filename)
   const source = join(import.meta.dirname, '..', '..', '..', 'templates', filename)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- candidates derived from package-relative paths
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- candidates derived from package-relative paths
   const resolved = match(existsSync(source))
     .with(true, () => source)
     .otherwise(() => bundled)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path resolved above from trusted candidates
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path resolved above from trusted candidates
   return readFileSync(resolved, 'utf8')
 }
 

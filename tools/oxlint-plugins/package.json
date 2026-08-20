@@ -1,0 +1,30 @@
+{
+  "name": "@ciderpress/oxlint-plugins",
+  "version": "0.0.0",
+  "private": true,
+  "files": [
+    "bundle"
+  ],
+  "type": "module",
+  "exports": {
+    ".": "./bundle/index.mjs",
+    "./no-classes": "./bundle/no-classes.mjs",
+    "./no-dynamic-filesystem-path": "./bundle/no-dynamic-filesystem-path.mjs",
+    "./no-dynamic-regexp": "./bundle/no-dynamic-regexp.mjs",
+    "./no-let": "./bundle/no-let.mjs",
+    "./no-loop-statements": "./bundle/no-loop-statements.mjs",
+    "./no-this-expressions": "./bundle/no-this-expressions.mjs",
+    "./no-throw-statements": "./bundle/no-throw-statements.mjs"
+  },
+  "scripts": {
+    "build": "rslib build",
+    "bundle": "rslib build",
+    "test": "node --test src/*.test.mjs"
+  },
+  "devDependencies": {
+    "@rslib/core": "catalog:"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

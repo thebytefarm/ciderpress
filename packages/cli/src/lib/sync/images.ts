@@ -39,7 +39,6 @@ const PLACEHOLDER_RE = /<!--CIDERPRESS_IMG_CB_(\d+)-->/g
 /**
  * Regex matching markdown image syntax: `![alt](path)` or `![alt](path "title")`.
  */
-// oxlint-disable-next-line security/detect-unsafe-regex -- pattern is bounded by non-overlapping character classes; no ReDoS risk
 const IMAGE_RE = /!\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
 
 /**
@@ -113,7 +112,7 @@ export async function rewriteImages(params: {
         return [imagePath, `/images/${filename}`] as const
       }
 
-      // oxlint-disable-next-line security/detect-non-literal-fs-filename -- paths are constructed from trusted repo root + user source paths
+      // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- paths are constructed from trusted repo root + user source paths
       await fs.copyFile(absoluteImagePath, destPath)
 
       return [imagePath, `/images/${filename}`] as const

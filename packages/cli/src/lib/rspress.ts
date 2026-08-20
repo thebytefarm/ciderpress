@@ -114,7 +114,7 @@ export async function startDevServer(options: ServerOptions): Promise<DevServerR
   const host = options.host ?? devServerHost ?? DEFAULT_DEV_HOST
   const port = await getPort({ port: portNumbers(preferred, preferred + DEV_PORT_RANGE) })
   const url = resolveDevUrl({ override: options.url, config: devServerUrl, host, port })
-  // oxlint-disable-next-line functional/no-let -- mutable server instance for restart capability
+  // oxlint-disable-next-line ciderpress/no-let -- mutable server instance for restart capability
   let serverInstance: ServerInstance | null = null
 
   async function startServer(

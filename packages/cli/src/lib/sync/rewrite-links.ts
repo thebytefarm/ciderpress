@@ -23,7 +23,6 @@ const CODE_BLOCK_RE = /```[\s\S]*?```/g
  * Regex matching markdown links: `[text](url)` or `[text](url "title")`.
  * Uses a negative lookbehind to exclude image links (prefixed with `!`).
  */
-// oxlint-disable-next-line security/detect-unsafe-regex -- pattern is bounded by non-overlapping character classes; no ReDoS risk
 const LINK_RE = /(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
 
 /**

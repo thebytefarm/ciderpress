@@ -344,7 +344,6 @@ function createInterceptor(chunks: string[]): typeof process.stdout.write {
     maybeCb?: any
   ): boolean {
     const text = chunkToString(chunk)
-    // oxlint-disable-next-line functional/immutable-data -- accumulating captured output
     chunks.push(text)
     if (typeof encodingOrCb === 'function') {
       // oxlint-disable-next-line eslint-plugin-promise/prefer-await-to-callbacks -- invoking Node's write callback, not an async pattern
@@ -375,9 +374,7 @@ async function captureOutput<T>(fn: () => Promise<T>): Promise<CaptureResult<T>>
   const originalStdoutWrite = process.stdout.write
   const originalStderrWrite = process.stderr.write
 
-  // oxlint-disable-next-line functional/immutable-data -- boundary mutation: intercepting stdout for build output capture
   process.stdout.write = createInterceptor(chunks)
-  // oxlint-disable-next-line functional/immutable-data -- boundary mutation: intercepting stderr for build output capture
   process.stderr.write = createInterceptor(chunks)
 
   try {
@@ -386,9 +383,7 @@ async function captureOutput<T>(fn: () => Promise<T>): Promise<CaptureResult<T>>
   } catch (error) {
     return { result: null, error: toError(error), captured: chunks.join('') }
   } finally {
-    // oxlint-disable-next-line functional/immutable-data -- restoring original stdout.write
     process.stdout.write = originalStdoutWrite
-    // oxlint-disable-next-line functional/immutable-data -- restoring original stderr.write
     process.stderr.write = originalStderrWrite
   }
 }
