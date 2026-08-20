@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "import", "vitest", "promise", "node", "oxc"],
-  "jsPlugins": ["./tools/oxlint-plugins/dist/index.mjs"],
+  "jsPlugins": ["./tools/oxlint-plugins/bundle/index.mjs"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
@@ -126,6 +126,7 @@
   "ignorePatterns": [
     "node_modules",
     "dist",
+    "tools/*/bundle",
     "build",
     "coverage",
     ".agents",

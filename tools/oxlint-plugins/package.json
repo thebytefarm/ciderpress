@@ -3,18 +3,18 @@
   "version": "0.0.0",
   "private": true,
   "files": [
-    "dist"
+    "bundle"
   ],
   "type": "module",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./no-classes": "./dist/no-classes.mjs",
-    "./no-dynamic-filesystem-path": "./dist/no-dynamic-filesystem-path.mjs",
-    "./no-dynamic-regexp": "./dist/no-dynamic-regexp.mjs",
-    "./no-let": "./dist/no-let.mjs",
-    "./no-loop-statements": "./dist/no-loop-statements.mjs",
-    "./no-this-expressions": "./dist/no-this-expressions.mjs",
-    "./no-throw-statements": "./dist/no-throw-statements.mjs"
+    ".": "./bundle/index.mjs",
+    "./no-classes": "./bundle/no-classes.mjs",
+    "./no-dynamic-filesystem-path": "./bundle/no-dynamic-filesystem-path.mjs",
+    "./no-dynamic-regexp": "./bundle/no-dynamic-regexp.mjs",
+    "./no-let": "./bundle/no-let.mjs",
+    "./no-loop-statements": "./bundle/no-loop-statements.mjs",
+    "./no-this-expressions": "./bundle/no-this-expressions.mjs",
+    "./no-throw-statements": "./bundle/no-throw-statements.mjs"
   },
   "scripts": {
     "build": "rslib build",

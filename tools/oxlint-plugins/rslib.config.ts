@@ -27,6 +27,7 @@ export default defineConfig({
   ],
   output: {
     target: 'node',
+    distPath: { root: 'bundle' },
     cleanDistPath: true,
   },
 })

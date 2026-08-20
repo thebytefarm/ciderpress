@@ -32,7 +32,7 @@ Point OXLint at the committed bundle:
 
 ```json
 {
-  "jsPlugins": ["./tools/oxlint-plugins/dist/index.mjs"],
+  "jsPlugins": ["./tools/oxlint-plugins/bundle/index.mjs"],
   "rules": {
     "ciderpress/no-classes": "error",
     "ciderpress/no-let": "error"
@@ -76,7 +76,7 @@ Rebuild every entry from the repository root:
 pnpm bundle
 ```
 
-Commit the resulting `tools/oxlint-plugins/dist/` changes with the source changes. CI and local
+Commit the resulting `tools/oxlint-plugins/bundle/` changes with the source changes. CI and local
 linting consume that committed output.
 
 ## License
