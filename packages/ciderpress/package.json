@@ -1,6 +1,6 @@
 {
   "name": "ciderpress",
-  "version": "1.0.0-rc.11",
+  "version": "1.0.0-rc.12",
   "description": "Documentation framework powered by Rspress with a config-driven information architecture",
   "keywords": [
     "ciderpress",

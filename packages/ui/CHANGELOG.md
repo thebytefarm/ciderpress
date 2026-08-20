@@ -1,5 +1,29 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.12
+
+### Minor Changes
+
+- 96aa946: Add first-class SEO configuration with nested per-page overrides.
+
+  - Configure the production origin, title template, social image, Open Graph defaults, Twitter
+    cards, robots directives, and sitemap generation under top-level `seo`.
+  - Override canonical, search, Open Graph, Twitter, and robots metadata under page frontmatter
+    `seo`.
+  - Generate absolute canonical URLs and `sitemap.xml` while preserving Rspress's built-in page
+    title, description, Open Graph, and `llms.txt` generation.
+  - Upgrade Rspress to 2.0.19 and use its official sitemap plugin.
+
+- 1615c8c: Render canonical engineering-tool URLs as compact provider badges in Markdown.
+
+  Badges are derived entirely from public URL structure, preserve authored link labels and existing
+  link attributes, and never fetch provider metadata or require authentication.
+
+### Patch Changes
+
+- Updated dependencies [96aa946]
+  - @ciderpress/config@1.0.0-rc.9
+
 ## 1.0.0-rc.11
 
 ### Minor Changes
