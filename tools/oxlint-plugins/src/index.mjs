@@ -6,6 +6,7 @@ import noLoopStatements from './no-loop-statements.mjs'
 import noThisExpressions from './no-this-expressions.mjs'
 import noThrowStatements from './no-throw-statements.mjs'
 
+/** Aggregate Ciderpress OXLint plugin. */
 const plugin = {
   meta: { name: 'ciderpress' },
   rules: {

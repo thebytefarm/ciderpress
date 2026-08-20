@@ -2,7 +2,7 @@ import { isStaticString } from './is-static-string.mjs'
 
 const FILESYSTEM_MODULES = new Set(['fs', 'node:fs', 'fs/promises', 'node:fs/promises'])
 
-const FILESYSTEM_METHODS = new Set([
+const SINGLE_PATH_METHODS = [
   'access',
   'accessSync',
   'appendFile',
@@ -11,10 +11,6 @@ const FILESYSTEM_METHODS = new Set([
   'chmodSync',
   'chown',
   'chownSync',
-  'copyFile',
-  'copyFileSync',
-  'cp',
-  'cpSync',
   'createReadStream',
   'createWriteStream',
   'exists',
@@ -37,8 +33,6 @@ const FILESYSTEM_METHODS = new Set([
   'readlinkSync',
   'realpath',
   'realpathSync',
-  'rename',
-  'renameSync',
   'rm',
   'rmSync',
   'rmdir',
@@ -47,8 +41,6 @@ const FILESYSTEM_METHODS = new Set([
   'statSync',
   'statfs',
   'statfsSync',
-  'symlink',
-  'symlinkSync',
   'truncate',
   'truncateSync',
   'unlink',
@@ -59,8 +51,25 @@ const FILESYSTEM_METHODS = new Set([
   'watchFile',
   'writeFile',
   'writeFileSync',
+]
+
+const MULTI_PATH_METHODS = [
+  'copyFile',
+  'copyFileSync',
+  'cp',
+  'cpSync',
+  'rename',
+  'renameSync',
+  'symlink',
+  'symlinkSync',
+]
+
+const FILESYSTEM_PATH_ARGUMENTS = new Map([
+  ...SINGLE_PATH_METHODS.map((method) => [method, [0]]),
+  ...MULTI_PATH_METHODS.map((method) => [method, [0, 1]]),
 ])
 
+/** Reports dynamic filesystem paths passed to tracked Node.js filesystem methods. */
 const noDynamicFilesystemPath = {
   meta: {
     messages: {
@@ -70,7 +79,7 @@ const noDynamicFilesystemPath = {
   },
   create(context) {
     const namespaces = new Set()
-    const methods = new Set()
+    const methods = new Map()
     return {
       ImportDeclaration(node) {
         if (!FILESYSTEM_MODULES.has(node.source.value)) {
@@ -78,8 +87,8 @@ const noDynamicFilesystemPath = {
         }
         return node.specifiers.map((specifier) => {
           if (specifier.type === 'ImportSpecifier') {
-            if (FILESYSTEM_METHODS.has(specifier.imported.name)) {
-              methods.add(specifier.local.name)
+            if (FILESYSTEM_PATH_ARGUMENTS.has(specifier.imported.name)) {
+              methods.set(specifier.local.name, specifier.imported.name)
             }
             return
           }
@@ -87,19 +96,12 @@ const noDynamicFilesystemPath = {
         })
       },
       CallExpression(node) {
-        const [path] = node.arguments
-        if (path === undefined || isStaticString(path)) {
+        const method = resolveMethod({ callee: node.callee, methods, namespaces })
+        if (method === null) {
           return
         }
-        const isNamedMethod = node.callee.type === 'Identifier' && methods.has(node.callee.name)
-        const isNamespaceMethod =
-          node.callee.type === 'MemberExpression' &&
-          !node.callee.computed &&
-          node.callee.object.type === 'Identifier' &&
-          namespaces.has(node.callee.object.name) &&
-          node.callee.property.type === 'Identifier' &&
-          FILESYSTEM_METHODS.has(node.callee.property.name)
-        if (isNamedMethod || isNamespaceMethod) {
+        const positions = FILESYSTEM_PATH_ARGUMENTS.get(method)
+        if (positions !== undefined && hasDynamicPath({ arguments: node.arguments, positions })) {
           context.report({ messageId: 'forbidden', node })
         }
       },
@@ -108,3 +110,41 @@ const noDynamicFilesystemPath = {
 }
 
 export default noDynamicFilesystemPath
+
+/**
+ * Resolves a tracked filesystem method from a named or namespace call.
+ *
+ * @param {{ callee: object, methods: Map<string, string>, namespaces: Set<string> }} params
+ * @returns {string | null} The canonical filesystem method name.
+ * @private
+ */
+function resolveMethod({ callee, methods, namespaces }) {
+  if (callee.type === 'Identifier') {
+    return methods.get(callee.name) ?? null
+  }
+  if (
+    callee.type === 'MemberExpression' &&
+    !callee.computed &&
+    callee.object.type === 'Identifier' &&
+    namespaces.has(callee.object.name) &&
+    callee.property.type === 'Identifier' &&
+    FILESYSTEM_PATH_ARGUMENTS.has(callee.property.name)
+  ) {
+    return callee.property.name
+  }
+  return null
+}
+
+/**
+ * Determines whether any filesystem-path argument is dynamic.
+ *
+ * @param {{ arguments: readonly object[], positions: readonly number[] }} params
+ * @returns {boolean} Whether a tracked path argument is dynamic.
+ * @private
+ */
+function hasDynamicPath({ arguments: args, positions }) {
+  return positions.some((position) => {
+    const argument = args[position]
+    return argument !== undefined && !isStaticString(argument)
+  })
+}

@@ -1,3 +1,4 @@
+/** Requires immutable variable bindings. */
 const noLet = {
   meta: {
     messages: { forbidden: 'Use const instead of let; model changes as new immutable values.' },

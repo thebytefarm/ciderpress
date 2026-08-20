@@ -1,5 +1,6 @@
 import { isStaticString } from './is-static-string.mjs'
 
+/** Requires regular-expression patterns to be statically defined. */
 const noDynamicRegExp = {
   meta: {
     messages: {
