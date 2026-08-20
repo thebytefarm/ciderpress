@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo run build",
+    "bundle": "pnpm --filter @ciderpress/oxlint-plugins bundle",
     "typecheck": "turbo run typecheck",
     "clean": "lauf run clean",
     "clean:build": "lauf run clean",

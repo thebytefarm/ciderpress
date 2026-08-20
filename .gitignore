@@ -6,6 +6,8 @@ node_modules/
 
 # Build output
 dist/
+!tools/oxlint-plugins/dist/
+!tools/oxlint-plugins/dist/**
 *.tsbuildinfo
 
 # Turbo
@@ -81,5 +83,4 @@ packages/*/.ciderpress-dev-headless.mjs
 
 # Ladle cache (component playground for @ciderpress/ui)
 packages/ui/node_modules/.ladle/
-
 

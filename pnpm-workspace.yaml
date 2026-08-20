@@ -1,5 +1,6 @@
 packages:
   - 'packages/*'
+  - 'tools/*'
   - 'examples/*'
   - 'extensions/*'
   - 'benchmarks'

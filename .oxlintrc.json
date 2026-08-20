@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
   "plugins": ["typescript", "unicorn", "import", "vitest", "promise", "node", "oxc"],
-  "jsPlugins": ["./oxlint-plugin-ciderpress.mjs"],
+  "jsPlugins": ["./tools/oxlint-plugins/dist/index.mjs"],
   "categories": {
     "correctness": "error",
     "suspicious": "error",
