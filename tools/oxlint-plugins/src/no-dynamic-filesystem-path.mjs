@@ -132,6 +132,20 @@ function resolveMethod({ callee, methods, namespaces }) {
   ) {
     return callee.property.name
   }
+  if (
+    callee.type === 'MemberExpression' &&
+    !callee.computed &&
+    callee.object.type === 'MemberExpression' &&
+    !callee.object.computed &&
+    callee.object.object.type === 'Identifier' &&
+    namespaces.has(callee.object.object.name) &&
+    callee.object.property.type === 'Identifier' &&
+    callee.object.property.name === 'promises' &&
+    callee.property.type === 'Identifier' &&
+    FILESYSTEM_PATH_ARGUMENTS.has(callee.property.name)
+  ) {
+    return callee.property.name
+  }
   return null
 }
 

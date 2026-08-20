@@ -33,6 +33,14 @@ describe('no-dynamic-filesystem-path', () => {
     assert.equal(reports.length, 1)
   })
 
+  it('should report a dynamic path through a namespace promises property', () => {
+    const reports = inspectNamespacePromisesCall({
+      method: 'readFile',
+      arguments: [DYNAMIC_PATH],
+    })
+    assert.equal(reports.length, 1)
+  })
+
   it('should allow calls whose filesystem paths are static', () => {
     const reports = inspectNamedCall({
       method: 'copyFile',
@@ -96,6 +104,36 @@ function inspectNamespaceCall({ method, arguments: args }) {
       type: 'MemberExpression',
       computed: false,
       object: { type: 'Identifier', name: 'fs' },
+      property: { type: 'Identifier', name: method },
+    },
+    arguments: args,
+  })
+  return reports
+}
+
+/**
+ * Inspects a filesystem call through a namespace's `promises` property.
+ *
+ * @param {{ method: string, arguments: readonly object[] }} params
+ * @returns {readonly object[]} Reported violations.
+ * @private
+ */
+function inspectNamespacePromisesCall({ method, arguments: args }) {
+  const { reports, visitors } = createHarness()
+  visitors.ImportDeclaration({
+    source: { value: 'node:fs' },
+    specifiers: [{ type: 'ImportNamespaceSpecifier', local: { name: 'fs' } }],
+  })
+  visitors.CallExpression({
+    callee: {
+      type: 'MemberExpression',
+      computed: false,
+      object: {
+        type: 'MemberExpression',
+        computed: false,
+        object: { type: 'Identifier', name: 'fs' },
+        property: { type: 'Identifier', name: 'promises' },
+      },
       property: { type: 'Identifier', name: method },
     },
     arguments: args,

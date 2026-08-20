@@ -32,7 +32,7 @@ function findBinary(
   workspaceRoot: string
 ): { readonly cmd: string; readonly args: readonly string[] } | null {
   const localBin = path.join(workspaceRoot, 'node_modules', '.bin', 'ciderpress')
-  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constrained to the workspace-local ciderpress binary
   if (fs.existsSync(localBin)) {
     const config = workspace.getConfiguration('ciderpress')
     const baseArgs: string[] = ['dev', '--vscode']

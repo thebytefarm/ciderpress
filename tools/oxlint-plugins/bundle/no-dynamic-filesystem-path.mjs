@@ -124,6 +124,7 @@ const no_dynamic_filesystem_path = noDynamicFilesystemPath;
 function resolveMethod({ callee, methods, namespaces }) {
     if ('Identifier' === callee.type) return methods.get(callee.name) ?? null;
     if ('MemberExpression' === callee.type && !callee.computed && 'Identifier' === callee.object.type && namespaces.has(callee.object.name) && 'Identifier' === callee.property.type && FILESYSTEM_PATH_ARGUMENTS.has(callee.property.name)) return callee.property.name;
+    if ('MemberExpression' === callee.type && !callee.computed && 'MemberExpression' === callee.object.type && !callee.object.computed && 'Identifier' === callee.object.object.type && namespaces.has(callee.object.object.name) && 'Identifier' === callee.object.property.type && 'promises' === callee.object.property.name && 'Identifier' === callee.property.type && FILESYSTEM_PATH_ARGUMENTS.has(callee.property.name)) return callee.property.name;
     return null;
 }
 function hasDynamicPath({ arguments: args, positions }) {

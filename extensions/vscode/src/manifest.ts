@@ -43,12 +43,12 @@ const MANIFEST_RELATIVE = path.join('.ciderpress', 'content', '.generated', 'man
 
 function readManifest(workspaceRoot: string): Manifest | null {
   const manifestPath = path.join(workspaceRoot, MANIFEST_RELATIVE)
-  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constrained to Ciderpress's generated manifest within the workspace
   if (!fs.existsSync(manifestPath)) {
     return null
   }
   try {
-    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path
+    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constrained to Ciderpress's generated manifest within the workspace
     const raw = fs.readFileSync(manifestPath, 'utf8')
     return JSON.parse(raw) as Manifest
   } catch {
