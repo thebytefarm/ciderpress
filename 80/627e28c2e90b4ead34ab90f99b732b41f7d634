@@ -1,0 +1,19 @@
+.changeset/hero-background-image.md
+  s_29ec5760e2fa3a::t_6a8f58fedced94 1-8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "80627e28c2e90b4ead34ab90f99b732b41f7d634",
+  "prompts": {},
+  "sessions": {
+    "s_29ec5760e2fa3a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc3afb6b0ffe1BeItEUFUq2VYz",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
