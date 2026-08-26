@@ -1,0 +1,56 @@
+packages/cli/src/lib/sync/home.test.ts
+  s_29ec5760e2fa3a::t_c3bd51aef8adc9 207-270
+packages/config/src/types.ts
+  s_29ec5760e2fa3a::t_e594c11d6a6db5 1019
+  s_29ec5760e2fa3a::t_8ff6559083e5de 1020-1021,1023-1027
+  s_29ec5760e2fa3a::t_eb7fa0c2303341 1022,1028-1048,1066,1069-1073
+packages/ui/src/theme/index.tsx
+  s_29ec5760e2fa3a::t_04e10baa249ebf 105
+packages/ciderpress/src/index.ts
+  s_29ec5760e2fa3a::t_79bec5dbe9f667 42
+packages/ui/src/theme/components/home/hero.css
+  s_29ec5760e2fa3a::t_556f2f841c9b47 9-25,31-32
+  s_29ec5760e2fa3a::t_19a13993a23899 7-8,26-30
+packages/config/src/index.ts
+  s_29ec5760e2fa3a::t_e47afb0f9c25e7 63
+packages/ui/src/theme/components/home/hero.tsx
+  s_29ec5760e2fa3a::t_cf71ad2bbc0e73 6
+  s_29ec5760e2fa3a::t_0fbb7aff6e20e7 153
+  s_29ec5760e2fa3a::t_d145594a00279e 116-128
+  s_29ec5760e2fa3a::t_306d113738cc07 25-44,67-71,76-78,84,129-139,143-152
+  s_29ec5760e2fa3a::t_969da35256249e 88
+  s_29ec5760e2fa3a::t_547dc04a52cad0 140-142
+packages/config/src/validator.test.ts
+  s_29ec5760e2fa3a::t_f1c6ab01a10a4f 306-329
+docs/references/configuration.md
+  s_29ec5760e2fa3a::t_6f7d003898fbf6 996,1010-1012,1016-1017,1023-1024
+  s_29ec5760e2fa3a::t_c994e3a753d856 209,1013-1015,1025
+  s_29ec5760e2fa3a::t_d253112f1fd377 210
+  s_29ec5760e2fa3a::t_547dc04a52cad0 1000-1006,1018-1022
+  s_29ec5760e2fa3a::t_cb14974d85c7a3 1026
+packages/ui/src/theme/components/home/layout.tsx
+  s_29ec5760e2fa3a::t_af3246f210a88a 12,154,174
+packages/config/src/schema.ts
+  s_29ec5760e2fa3a::t_f9d43c7c5f9ebf 75,1031-1037
+  s_29ec5760e2fa3a::t_547dc04a52cad0 583-586
+  s_29ec5760e2fa3a::t_32bf2ae073ccba 567-575,582,587
+packages/cli/src/lib/sync/home.ts
+  s_29ec5760e2fa3a::t_547dc04a52cad0 131-137
+  s_29ec5760e2fa3a::t_98b410a0dc429a 139-141,144-150,181-186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "4ddf6b66b4f77465a808727849ca5622258dc160",
+  "prompts": {},
+  "sessions": {
+    "s_29ec5760e2fa3a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc3afb6b0ffe1BeItEUFUq2VYz",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": null
+    }
+  }
+}
