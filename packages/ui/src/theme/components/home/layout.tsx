@@ -9,7 +9,7 @@ import { CTA } from './cta'
 import { HomeFeature } from './feature'
 import type { FeatureItem } from './feature-card'
 import { Hero } from './hero'
-import type { HeroAction } from './hero'
+import type { HeroAction, HeroBackground } from './hero'
 import { HeroDemo } from './hero-demo'
 import { HomeVisualView } from './home-visual'
 import { PageRail } from './page-rail'
@@ -151,6 +151,12 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   //   false     → suppress entirely
   //   object    → render the user-supplied custom variant
   const heroDemoFm = fm.heroDemo as false | HomeVisual | undefined
+  // heroBackground frontmatter arrives as an unvalidated object (or `null`
+  // when hand-authored with a blank `heroBackground:` line). Treat anything
+  // without a string `src` as absent — `Hero` reads `.length` on that field.
+  const heroBackground = match(fm.heroBackground)
+    .with({ src: P.string }, (b) => b as HeroBackground)
+    .otherwise(() => undefined)
   const blocks = (fm.blocks as readonly FrontmatterBlock[] | undefined) ?? []
 
   // `P.nullish`, not `undefined`: a blank `heroDemo:` in a hand-authored
@@ -170,6 +176,7 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         tagline={renderOptionalRichText(h.tagline)}
         actions={mapButtonsToHeroActions(h.actions)}
         demo={heroDemoEl}
+        background={heroBackground}
       />
     ))
 

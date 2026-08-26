@@ -303,6 +303,30 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
+  it('should accept home.hero.background as a plain string', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: '/hero.jpg' } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.hero.background as an object with position and size', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: { src: '/hero.jpg', position: '50% 25%', size: 'cover' } } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject home.hero.background with an empty src', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: { src: '' } } },
+    })
+    expect(error).not.toBeNull()
+  })
+
   it('should accept a split block with a code visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,

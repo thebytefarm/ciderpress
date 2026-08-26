@@ -128,14 +128,26 @@ export async function generateDefaultHomePage(
   // `Record<string, unknown>` casts. Destructure with a defaulted empty
   // object so optional fields surface as `undefined` cleanly.
   const { hero } = home ?? {}
-  const { label, tagline, actions: heroActions, demo: heroDemo } = hero ?? {}
+  const {
+    label,
+    tagline,
+    actions: heroActions,
+    demo: heroDemo,
+    background: heroBackground,
+  } = hero ?? {}
   const { banner: brandBanner } = config.brand ?? {}
-  // `BannerConfig` is `string | BannerFn`, so this stays a `P.string`
-  // guard rather than a `??` default — a function banner must fall back to
-  // the static path, not be serialized into the frontmatter.
+  // `BannerConfig` is `string | BannerFn`, so this stays a `P.string` guard:
+  // a function banner is render-time React and cannot be serialized into
+  // the generated frontmatter — it is ignored for the hero background.
   const bannerSrc = match(brandBanner)
     .with(P.string, (s) => s)
-    .otherwise(() => '/banner.svg')
+    .otherwise(() => undefined)
+  // `home.hero.background` wins; a plain-string `brand.banner` is the
+  // fallback. String shorthand normalizes to `{ src }`.
+  const heroBackgroundSrc = match(heroBackground)
+    .with(P.string, (s) => s)
+    .with({ src: P.string }, (b) => b.src)
+    .otherwise(() => bannerSrc)
 
   const defaultActions = [{ variant: 'primary', text: 'Get Started', href: firstLink }]
   const heroConfig: Record<string, unknown> = {
@@ -150,10 +162,6 @@ export async function generateDefaultHomePage(
     actions: match(heroActions)
       .with(P.nonNullable, (a) => a)
       .otherwise(() => defaultActions),
-    image: {
-      src: bannerSrc,
-      alt: title,
-    },
   }
 
   // Landing bands compile to an ordered `blocks` array. `heroDemo` still
@@ -170,6 +178,12 @@ export async function generateDefaultHomePage(
   const frontmatterData: Record<string, unknown> = {
     pageType: 'home',
     hero: heroConfig,
+    ...match(heroBackgroundSrc)
+      .with(P.string, (src) => ({ heroBackground: { src } }))
+      .otherwise(() => ({})),
+    ...match(heroBackground)
+      .with({ src: P.string }, (b) => ({ heroBackground: b }))
+      .otherwise(() => ({})),
     ...match(heroDemo)
       .with(P.nonNullable, (h) => ({ heroDemo: h }))
       .otherwise(() => ({})),

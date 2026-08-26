@@ -4,6 +4,32 @@
   text-align: center;
 }
 
+/* Background image sits behind the copy, dimmed by a theme-aware scrim so
+ * the headline stays readable in both variants. */
+.cp-hero--has-background {
+  background-color: var(--cp-c-home-bg);
+  background-image: var(--cp-hero-background-image);
+  background-position: var(--cp-hero-background-position, center);
+  background-size: var(--cp-hero-background-size, cover);
+  background-repeat: var(--cp-hero-background-repeat, no-repeat);
+}
+
+.cp-hero--has-background .cp-hero__inner {
+  position: relative;
+  z-index: 1;
+}
+
+.cp-hero--has-background::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: brightness(0.5);
+}
+
+:where([data-cp-variant='light']) .cp-hero--has-background::before {
+  backdrop-filter: brightness(0.8);
+}
+
 .cp-hero__inner {
   max-width: 1100px;
   margin: 0 auto;

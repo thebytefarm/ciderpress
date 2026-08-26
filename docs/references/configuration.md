@@ -206,6 +206,8 @@ brand: {
 }
 ```
 
+A plain-string `brand.banner` becomes the hero background when [`home.hero.background`](#homeheroconfig) is not set. The function form is ignored for the background.
+
 ### LoaderConfig
 
 ```ts
@@ -991,17 +993,36 @@ interface HomeHeroConfig {
   tagline?: string
   actions?: ButtonConfig[]
   demo?: false | HomeVisual
+  background?: string | HomeHeroBackground
 }
 ```
 
-| Field     | Type                  | Description                                          |
-| --------- | --------------------- | ---------------------------------------------------- |
-| `label`   | `string`              | Small label above the title (renamed from `eyebrow`) |
-| `tagline` | `string`              | Marketing line under the title                       |
-| `actions` | `ButtonConfig[]`      | CTA buttons (typically up to 2)                      |
-| `demo`    | `false \| HomeVisual` | Visual next to the hero copy. `false` hides it       |
+| Field        | Type                           | Description                                                                             |
+| ------------ | ------------------------------ | --------------------------------------------------------------------------------------- |
+| `label`      | `string`                       | Small label above the title (renamed from `eyebrow`)                                    |
+| `tagline`    | `string`                       | Marketing line under the title                                                          |
+| `actions`    | `ButtonConfig[]`               | CTA buttons (typically up to 2)                                                         |
+| `demo`       | `false \| HomeVisual`          | Visual rendered below the hero copy. `false` hides it                                   |
+| `background` | `string \| HomeHeroBackground` | Background image behind the hero copy. Falls back to a string `brand.banner` when unset |
 
 Omit `demo` entirely to keep the framework's built-in terminal animation.
+
+### HomeHeroBackground
+
+```ts
+background: '/hero.jpg'
+// shorthand for:
+background: { src: '/hero.jpg' }
+```
+
+| Field      | Type     | Default       | Description                                  |
+| ---------- | -------- | ------------- | -------------------------------------------- |
+| `src`      | `string` | —             | Image URL or path, base-prefixed at render   |
+| `position` | `string` | `'center'`    | CSS `background-position` (e.g. `'50% 25%'`) |
+| `size`     | `string` | `'cover'`     | CSS `background-size`                        |
+| `repeat`   | `string` | `'no-repeat'` | CSS `background-repeat`                      |
+
+The image sits behind the hero copy, dimmed by a theme-aware scrim.
 
 ### HomeVisual
 

@@ -60,6 +60,7 @@ export type {
   OpenAPISpec,
   HomeConfig,
   HomeHeroConfig,
+  HomeHeroBackground,
   HomeVisual,
   HomeVisualCode,
   HomeVisualImage,

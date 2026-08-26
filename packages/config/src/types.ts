@@ -1017,6 +1017,36 @@ export interface HomeVisualTerminal {
 export type HomeVisual = HomeVisualCode | HomeVisualImage | HomeVisualTerminal
 
 /**
+ * Hero background image, dimmed by a theme-aware scrim so the headline
+ * stays readable in both variants.
+ *
+ * The plain-string shorthand is equivalent to `{ src: value }`. When
+ * omitted, a plain-string `brand.banner` is used instead; function-valued
+ * banners are render-time React and cannot be serialized into the
+ * generated home page, so they are ignored here — set
+ * `home.hero.background` explicitly.
+ */
+export interface HomeHeroBackground {
+  /**
+   * Image URL or path. Base-prefixed at render time when the site is
+   * mounted under a `base`.
+   */
+  readonly src: string
+  /**
+   * CSS `background-position` value (e.g. `'center'`). Default `'center'`.
+   */
+  readonly position?: string
+  /**
+   * CSS `background-size` value. Default `'cover'`.
+   */
+  readonly size?: string
+  /**
+   * CSS `background-repeat` value. Default `'no-repeat'`.
+   */
+  readonly repeat?: string
+}
+
+/**
  * Home hero block — label, tagline, actions, and optional demo visual.
  */
 export interface HomeHeroConfig {
@@ -1033,9 +1063,14 @@ export interface HomeHeroConfig {
    */
   readonly actions?: readonly ButtonConfig[]
   /**
-   * Visual rendered next to the hero copy. Pass `false` to hide it.
+   * Visual rendered below the hero copy. Pass `false` to hide it.
    */
   readonly demo?: false | HomeVisual
+  /**
+   * Background image behind the hero. Falls back to `brand.banner` when
+   * that field is a plain string and no background is set here.
+   */
+  readonly background?: string | HomeHeroBackground
 }
 
 /**

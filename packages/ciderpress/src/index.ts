@@ -39,6 +39,7 @@ export type {
   SortStrategy,
   HomeConfig,
   HomeHeroConfig,
+  HomeHeroBackground,
   HomeVisual,
   HomeVisualCode,
   HomeVisualImage,
