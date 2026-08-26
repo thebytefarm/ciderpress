@@ -455,7 +455,7 @@ function loadGenerated<T>(params: {
   readonly fallback: T
 }): T {
   const p = path.resolve(params.contentDir, '.generated', params.name)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: derived from known output directory
   if (!existsSync(p)) {
     process.stderr.write(
       `[ciderpress] Generated file not found: ${params.name} — run "ciderpress sync" first\n`
@@ -463,7 +463,7 @@ function loadGenerated<T>(params: {
     return params.fallback
   }
   try {
-    // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: derived from known output directory
+    // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: derived from known output directory
     return JSON.parse(readFileSync(p, 'utf8')) as T
   } catch {
     process.stderr.write(`[ciderpress] Failed to parse ${params.name} — returning fallback\n`)
@@ -1377,7 +1377,7 @@ function resolveUserConfigAlias(repoRoot: string): string {
   const candidates = USER_CONFIG_EXTENSIONS.map((ext) =>
     path.resolve(repoRoot, `ciderpress.config${ext}`)
   )
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- candidates derived from trusted repoRoot + known extension list
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- candidates derived from trusted repoRoot + known extension list
   const found = candidates.find((p) => existsSync(p))
   if (found !== undefined) {
     return found

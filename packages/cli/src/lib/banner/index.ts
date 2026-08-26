@@ -97,7 +97,7 @@ interface GenerateAssetsParams {
 export async function generateAssets(
   params: GenerateAssetsParams
 ): Promise<AssetResult<readonly string[]>> {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- publicDir comes from trusted Paths config
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- publicDir comes from trusted Paths config
   const mkdirResult = await fs
     .mkdir(params.publicDir, { recursive: true })
     .then(() => null)
@@ -157,7 +157,7 @@ export async function generateAssets(
  * @returns Whether the file should be (re)generated
  */
 async function shouldGenerate(filePath: string, newContent: string): Promise<boolean> {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constructed from trusted publicDir + known filenames
   const existing = await fs.readFile(filePath, 'utf8').catch(() => null)
   if (existing === null) {
     return true
@@ -187,7 +187,7 @@ interface WriteAssetParams {
  */
 async function writeAsset(params: WriteAssetParams): Promise<AssetResult<string>> {
   const filePath = path.resolve(params.publicDir, params.asset.filename)
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- path is constructed from trusted publicDir + known filenames
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constructed from trusted publicDir + known filenames
   const writeResult = await fs
     .writeFile(filePath, params.asset.content, 'utf8')
     .then(() => null)

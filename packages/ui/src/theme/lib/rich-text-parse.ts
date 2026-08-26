@@ -82,10 +82,8 @@ export const MARK_CLASS = 'cp-mark'
 // to 128k chars (0.19ms -> 0.45ms) across tag-name runs, attribute runs,
 // quote runs, unbalanced parens, and unterminated quotes. The pattern this
 // replaced *was* quadratic (2ms -> 427ms over the same range).
-/* oxlint-disable security/detect-unsafe-regex -- disjoint alternations, measured linear */
 const TOKEN_PATTERN =
   /(?:\\([*=`[\]<\\]))|(?:`([^`]+)`)|(?:\*\*([\s\S]+?)\*\*)|(?:==([\s\S]+?)==)|(?:(?<!\*)\*(?=[^\s*])([^*\n]+?)(?<=[^\s*])\*(?!\*))|(?:\[([^\]]*)\]\(((?:[^()\s]|\([^()\s]*\))+)\))|(?:<(\/?)\s*([a-zA-Z][a-zA-Z0-9-]*)(?=[\s/>])((?:"[^"]*"|'[^']*'|[^>"'])*)>)/
-/* oxlint-enable security/detect-unsafe-regex */
 
 const ATTR_PATTERN = /([a-zA-Z-]+)\s*=\s*(?:"([^"]*)"|'([^']*)')/g
 

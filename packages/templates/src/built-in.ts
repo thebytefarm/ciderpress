@@ -83,6 +83,6 @@ export function getBuiltInTemplates(): Record<TemplateType, Template> {
  * @returns The raw template string
  */
 function readTemplate(filename: string): string {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename -- safe: reads from known templates directory
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- safe: reads from known templates directory
   return readFileSync(join(import.meta.dirname, '..', 'templates', filename), 'utf8')
 }

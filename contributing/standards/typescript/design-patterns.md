@@ -20,7 +20,7 @@ interface Runner {
 }
 
 function createRunner(config: RunnerConfig): Runner {
-  // oxlint-disable-next-line functional/no-let -- mutable run-state held by the factory closure
+  // oxlint-disable-next-line ciderpress/no-let -- mutable run-state held by the factory closure
   let running = false
 
   return {

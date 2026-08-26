@@ -78,7 +78,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
   }, [])
 
   const close = useCallback(async () => {
-    // oxlint-disable-next-line functional/immutable-data -- mark disposed to cancel in-flight init
     disposed.current = true
     if (watcher.current) {
       watcher.current.close()
@@ -162,7 +161,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
       }
       const server = serverOutcome.value
 
-      // oxlint-disable-next-line functional/immutable-data -- ref assignment for cleanup
       serverClose.current = server.close
       set.port(server.port)
       set.url(server.url)
@@ -189,7 +187,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
           }
         },
         onFileChange: (filename) => {
-          // oxlint-disable-next-line functional/immutable-data -- tracks file for log attribution
           pendingFile.current = filename
         },
         onConfigReloaded: () => {
@@ -202,7 +199,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
         },
       }
 
-      // oxlint-disable-next-line functional/immutable-data -- ref assignment for teardown
       watcher.current = createWatcher({
         initialConfig: config,
         paths,
@@ -234,7 +230,6 @@ export function useDevServer(props: UseDevServerProps): UseDevServerResult {
     })
 
     return () => {
-      // oxlint-disable-next-line functional/immutable-data -- mark disposed on unmount
       disposed.current = true
       if (watcher.current) {
         watcher.current.close()

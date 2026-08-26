@@ -112,7 +112,7 @@ function findConfigPath(dir: string): string | null {
  * @private
  */
 function extractStringField(source: string, field: string): string | null {
-  // oxlint-disable-next-line security/detect-non-literal-regexp -- field is a caller-controlled identifier, not user input
+  // oxlint-disable-next-line ciderpress/no-dynamic-regexp -- field is a caller-controlled identifier, not user input
   const pattern = new RegExp(`\\b${field}\\s*:\\s*(['"\`])((?:\\\\.|(?!\\1).)*)\\1`, 's')
   const match = pattern.exec(source)
   if (match === null) {
