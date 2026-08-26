@@ -1,0 +1,65 @@
+packages/ui/src/theme/components/home/hero.css
+  s_29ec5760e2fa3a::t_556f2f841c9b47 7-35
+packages/config/src/types.ts
+  s_29ec5760e2fa3a::t_eb7fa0c2303341 1020-1048,1066,1069-1073
+  s_29ec5760e2fa3a::t_e594c11d6a6db5 1019
+packages/config/src/index.ts
+  s_29ec5760e2fa3a::t_e47afb0f9c25e7 63
+.serena/project.yml
+  s_29ec5760e2fa3a::t_547dc04a52cad0 1-169
+packages/cli/src/lib/sync/home.ts
+  s_29ec5760e2fa3a::t_98b410a0dc429a 139-141,144-150,181-186
+  s_29ec5760e2fa3a::t_547dc04a52cad0 131-137
+packages/cli/src/lib/sync/home.test.ts
+  s_29ec5760e2fa3a::t_c3bd51aef8adc9 207-270
+packages/ui/src/theme/index.tsx
+  s_29ec5760e2fa3a::t_04e10baa249ebf 105
+packages/config/src/validator.test.ts
+  s_29ec5760e2fa3a::t_f1c6ab01a10a4f 306-329
+packages/ui/src/theme/components/home/hero.tsx
+  s_29ec5760e2fa3a::t_547dc04a52cad0 140-142
+  s_29ec5760e2fa3a::t_969da35256249e 88
+  s_29ec5760e2fa3a::t_d145594a00279e 116-128
+  s_29ec5760e2fa3a::t_cf71ad2bbc0e73 6
+  s_29ec5760e2fa3a::t_306d113738cc07 25-44,67-71,76-78,84,129-139,143-152
+  s_29ec5760e2fa3a::t_0fbb7aff6e20e7 153
+docs/references/configuration.md
+  s_29ec5760e2fa3a::t_6f7d003898fbf6 996,1010-1022,1028-1039
+  s_29ec5760e2fa3a::t_d253112f1fd377 209-210
+  s_29ec5760e2fa3a::t_547dc04a52cad0 1000-1006,1023-1027
+  s_29ec5760e2fa3a::t_cb14974d85c7a3 1040
+packages/ui/src/theme/components/home/layout.tsx
+  s_29ec5760e2fa3a::t_af3246f210a88a 12,154,174
+packages/ciderpress/src/index.ts
+  s_29ec5760e2fa3a::t_79bec5dbe9f667 42
+packages/config/src/schema.ts
+  s_29ec5760e2fa3a::t_547dc04a52cad0 583-586
+  s_29ec5760e2fa3a::t_32bf2ae073ccba 567-575,582,587
+  s_29ec5760e2fa3a::t_f9d43c7c5f9ebf 75,1031-1037
+.serena/.gitignore
+  s_4038f3f3c1fa03::t_c03b618dfb0a73 1-2
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.24",
+  "base_commit_sha": "3bbaf81864fa5b3ec2e475f74f61b3844d987332",
+  "prompts": {},
+  "sessions": {
+    "s_29ec5760e2fa3a": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc3afb6b0ffe1BeItEUFUq2VYz",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_4038f3f3c1fa03": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a03c37-5142-7ec2-a980-55191ba6adac",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
