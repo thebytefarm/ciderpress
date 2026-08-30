@@ -43,6 +43,22 @@ const groupWithoutLink: SidebarData[number] = {
   items: [{ text: 'Deep Page', link: '/packages/deep/page' }],
 }
 
+const launchpad: SidebarData[number] = {
+  text: 'Launchpad',
+  link: '/launchpad',
+  collapsible: true,
+  collapsed: true,
+  items: [
+    {
+      text: 'Concepts',
+      collapsible: true,
+      collapsed: false,
+      items: [{ text: 'Architecture', link: '/launchpad/concepts/architecture' }],
+    },
+    { text: 'Getting Started', link: '/launchpad/getting-started' },
+  ],
+}
+
 const fullSidebar: SidebarData = [gettingStarted, packages, contributing]
 const scopes: readonly string[] = ['/packages', '/contributing']
 
@@ -60,25 +76,49 @@ describe('resolveScopedSidebar()', () => {
     expect(result[0]).toMatchObject({ text: 'Getting Started' })
   })
 
-  it('should show only the matching standalone section on an exact scope path', () => {
+  it('should flatten the matching standalone section on an exact scope path', () => {
     const result = resolveScopedSidebar(fullSidebar, '/packages', scopes)
 
-    expect(result).toHaveLength(1)
-    expect(result[0]).toMatchObject({ text: 'Packages' })
+    expect(result).toStrictEqual([
+      { text: 'Packages', link: '/packages' },
+      { text: 'CLI', link: '/packages/cli' },
+      { text: 'Core', link: '/packages/core' },
+    ])
   })
 
-  it('should show only the matching standalone section on a nested scope path', () => {
+  it('should flatten the matching standalone section on a nested scope path', () => {
     const result = resolveScopedSidebar(fullSidebar, '/packages/cli', scopes)
 
-    expect(result).toHaveLength(1)
-    expect(result[0]).toMatchObject({ text: 'Packages' })
+    expect(result).toStrictEqual([
+      { text: 'Packages', link: '/packages' },
+      { text: 'CLI', link: '/packages/cli' },
+      { text: 'Core', link: '/packages/core' },
+    ])
   })
 
-  it('should show only contributing items on the contributing scope', () => {
+  it('should flatten contributing items on the contributing scope', () => {
     const result = resolveScopedSidebar(fullSidebar, '/contributing/guides', scopes)
 
-    expect(result).toHaveLength(1)
-    expect(result[0]).toMatchObject({ text: 'Contributing' })
+    expect(result).toStrictEqual([
+      { text: 'Contributing', link: '/contributing' },
+      { text: 'Guides', link: '/contributing/guides' },
+      { text: 'Standards', link: '/contributing/standards' },
+    ])
+  })
+
+  it('should promote a mapped island page into a normal sidebar page', () => {
+    const result = resolveScopedSidebar([launchpad], '/launchpad', ['/launchpad'])
+
+    expect(result[0]).toStrictEqual({ text: 'Launchpad', link: '/launchpad' })
+  })
+
+  it('should preserve nested groups inside a flattened standalone section', () => {
+    const result = resolveScopedSidebar([launchpad], '/launchpad', ['/launchpad'])
+
+    expect(result[1]).toMatchObject({
+      text: 'Concepts',
+      items: [{ text: 'Architecture', link: '/launchpad/concepts/architecture' }],
+    })
   })
 
   it('should not mutate the original sidebar data', () => {
