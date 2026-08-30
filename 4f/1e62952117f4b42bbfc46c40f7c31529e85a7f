@@ -1,0 +1,35 @@
+packages/ui/src/theme/components/sidebar/sidebar-filter.ts
+  s_0022f5bdf7caf5::t_ae6cf075ae6183 47
+  s_0022f5bdf7caf5::t_911cc9998991d9 82-83,87,92-95
+  s_0022f5bdf7caf5::t_1d83c0a1f4e14c 22-24,80-81,84-86,88-91,96-98
+  s_129dfd577a0af1::t_7b92abaf81db5c 99
+.changeset/flatten-sidebar-islands.md
+  s_0022f5bdf7caf5::t_3e90f7849e4696 1-6
+packages/ui/src/theme/components/sidebar/sidebar-filter.test.ts
+  s_0022f5bdf7caf5::t_1d83c0a1f4e14c 46-61,79,82,84-86,89,92,94-96,99,102,104-108,115-117,119-121
+  s_0022f5bdf7caf5::t_911cc9998991d9 83,93,103,109-114,118
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "4f1e62952117f4b42bbfc46c40f7c31529e85a7f",
+  "prompts": {},
+  "sessions": {
+    "s_0022f5bdf7caf5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fab0836eaffeLGo6lCguG8XYVH",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_129dfd577a0af1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb5d73866ffehCvm2gDWKCV82G",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
