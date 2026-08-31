@@ -1,0 +1,23 @@
+.changeset/flatten-sidebar-islands.md
+  s_0022f5bdf7caf5::t_2220e10dbf2fc9 5-6
+packages/ui/src/theme/components/sidebar/sidebar-filter.ts
+  s_0022f5bdf7caf5::t_2220e10dbf2fc9 22-24
+packages/ui/src/theme/components/sidebar/sidebar-filter.test.ts
+  s_0022f5bdf7caf5::t_2220e10dbf2fc9 109,112-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "9c1fb895bfd93539f0aba97e7930c6c615d7739a",
+  "prompts": {},
+  "sessions": {
+    "s_0022f5bdf7caf5": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fab0836eaffeLGo6lCguG8XYVH",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
