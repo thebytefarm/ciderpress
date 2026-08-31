@@ -2,5 +2,5 @@
 '@ciderpress/ui': patch
 ---
 
-Flatten isolated sidebar sections instead of rendering their root as a dropdown. A mapped island
-page now appears as a normal sidebar link before the island's nested pages and groups.
+Flatten standalone sidebar sections instead of rendering their root as a dropdown. Standalone
+sections with a page now show its link before their nested pages and groups.

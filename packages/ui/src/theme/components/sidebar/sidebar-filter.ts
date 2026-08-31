@@ -19,9 +19,9 @@ type SidebarDataItem = SidebarData[number]
  * Resolve the sidebar items visible for the current scope.
  *
  * When the current pathname matches a standalone scope (e.g. `/packages`),
- * that section's children are returned as sidebar roots. For all other
- * paths, standalone sections are excluded and the remaining sections form
- * a unified sidebar.
+ * a linked section is promoted to a sidebar root before its children. An
+ * unlinked section returns only its children. For all other paths, standalone
+ * sections are excluded and the remaining sections form a unified sidebar.
  *
  * @param items - Full unified sidebar items
  * @param pathname - Current decoded URL pathname

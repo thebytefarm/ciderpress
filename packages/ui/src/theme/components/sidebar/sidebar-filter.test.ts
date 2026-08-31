@@ -106,19 +106,19 @@ describe('resolveScopedSidebar()', () => {
     ])
   })
 
-  it('should promote a mapped island page into a normal sidebar page', () => {
+  it('should promote an island page before its preserved nested groups', () => {
     const result = resolveScopedSidebar([launchpad], '/launchpad', ['/launchpad'])
 
-    expect(result[0]).toStrictEqual({ text: 'Launchpad', link: '/launchpad' })
-  })
-
-  it('should preserve nested groups inside a flattened standalone section', () => {
-    const result = resolveScopedSidebar([launchpad], '/launchpad', ['/launchpad'])
-
-    expect(result[1]).toMatchObject({
-      text: 'Concepts',
-      items: [{ text: 'Architecture', link: '/launchpad/concepts/architecture' }],
-    })
+    expect(result).toStrictEqual([
+      { text: 'Launchpad', link: '/launchpad' },
+      {
+        text: 'Concepts',
+        collapsible: true,
+        collapsed: false,
+        items: [{ text: 'Architecture', link: '/launchpad/concepts/architecture' }],
+      },
+      { text: 'Getting Started', link: '/launchpad/getting-started' },
+    ])
   })
 
   it('should not mutate the original sidebar data', () => {
