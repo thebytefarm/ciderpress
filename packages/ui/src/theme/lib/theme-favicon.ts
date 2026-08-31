@@ -23,9 +23,7 @@ export function syncThemeFavicon(html: HTMLElement): void {
   const surface = resolveSurfaceColor(html)
   const dataUri = buildIconDataUri(brand, shadow, surface)
   const link = ensureFaviconLink()
-  // oxlint-disable-next-line functional/immutable-data -- boundary mutation: updating link element href
   link.type = 'image/svg+xml'
-  // oxlint-disable-next-line functional/immutable-data -- boundary mutation: updating link element href
   link.href = dataUri
 }
 
@@ -118,7 +116,6 @@ function ensureFaviconLink(): HTMLLinkElement {
     return existing
   }
   const link = globalThis.document.createElement('link')
-  // oxlint-disable-next-line functional/immutable-data -- boundary mutation: initialising newly created link element
   link.rel = 'icon'
   globalThis.document.head.append(link)
   return link

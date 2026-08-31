@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { scanMarkers } from './markers'
 
-// oxlint-disable-next-line functional/no-let -- per-test temp dir, reassigned in beforeEach
+// oxlint-disable-next-line ciderpress/no-let -- per-test temp dir, reassigned in beforeEach
 let dir: string
 
 beforeEach(() => {

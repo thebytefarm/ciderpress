@@ -55,7 +55,7 @@ function isServerUrl(url: string, baseUrl: string): boolean {
 }
 
 function isCiderpressProject(workspaceRoot: string): boolean {
-  // oxlint-disable-next-line security/detect-non-literal-fs-filename
+  // oxlint-disable-next-line ciderpress/no-dynamic-filesystem-path -- path is constrained to known config filenames within the VS Code workspace
   return CONFIG_FILES.some((file) => fs.existsSync(path.join(workspaceRoot, file)))
 }
 

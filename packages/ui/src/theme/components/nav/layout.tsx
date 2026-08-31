@@ -272,22 +272,18 @@ function collectMetaActions(params: {
   const { edit, report, pagePath } = params
   const editAction = match(edit)
     .with(undefined, () => null)
-    .otherwise(
-      (e): MetaAction => ({
-        label: e.label ?? 'Edit this page on GitHub',
-        href: buildEditUrl(e, pagePath),
-        icon: <EditIcon />,
-      })
-    )
+    .otherwise((e): MetaAction => ({
+      label: e.label ?? 'Edit this page on GitHub',
+      href: buildEditUrl(e, pagePath),
+      icon: <EditIcon />,
+    }))
   const reportAction = match(report)
     .with(undefined, () => null)
-    .otherwise(
-      (r): MetaAction => ({
-        label: r.label ?? 'Report an issue',
-        href: buildReportUrl(r),
-        icon: <AlertIcon />,
-      })
-    )
+    .otherwise((r): MetaAction => ({
+      label: r.label ?? 'Report an issue',
+      href: buildReportUrl(r),
+      icon: <AlertIcon />,
+    }))
   return [editAction, reportAction].filter((a): a is MetaAction => a !== null)
 }
 

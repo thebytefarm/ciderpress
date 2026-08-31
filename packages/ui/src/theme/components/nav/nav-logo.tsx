@@ -74,9 +74,9 @@ export function NavLogo(): React.ReactElement | null {
     // so a single querySelector at effect time misses the element. We
     // belt-and-suspenders with both rAF polling AND MutationObserver in
     // case the polling stops before the nav appears (e.g. tab inactive).
-    // oxlint-disable-next-line functional/no-let -- raf id retained for cleanup
+    // oxlint-disable-next-line ciderpress/no-let -- raf id retained for cleanup
     let rafId: number | null = null
-    // oxlint-disable-next-line functional/no-let -- captured below for closure equality
+    // oxlint-disable-next-line ciderpress/no-let -- captured below for closure equality
     let resolved = false
 
     function tryResolve() {
@@ -85,7 +85,6 @@ export function NavLogo(): React.ReactElement | null {
       }
       const link = findTarget()
       if (link !== null) {
-        // oxlint-disable-next-line functional/immutable-data -- flag flip to stop polling
         resolved = true
         setTarget(link)
         return

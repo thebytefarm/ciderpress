@@ -128,12 +128,10 @@ function resolveChildren(entry: ResolvedEntry): readonly RspressNavItem[] | unde
   if ((entry.standalone || entry.root) && entry.items && entry.items.length > 0) {
     return entry.items
       .filter((child) => !child.hidden)
-      .map(
-        (child): RspressNavItem => ({
-          text: child.title,
-          link: resolveChildLink(child),
-        })
-      )
+      .map((child): RspressNavItem => ({
+        text: child.title,
+        link: resolveChildLink(child),
+      }))
       .filter((child) => child.link !== undefined)
   }
   return undefined

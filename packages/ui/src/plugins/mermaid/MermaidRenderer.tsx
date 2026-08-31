@@ -137,7 +137,7 @@ const MERMAID_KEYWORDS = [
   'LR',
 ]
 
-// oxlint-disable-next-line security/detect-non-literal-regexp -- constructed from hardcoded keyword array
+// oxlint-disable-next-line ciderpress/no-dynamic-regexp -- constructed from hardcoded keyword array
 const KEYWORD_PATTERN = new RegExp(`\\b(${MERMAID_KEYWORDS.join('|')})\\b`, 'g')
 
 const COMMENT_PATTERN = /%%.*$/gm
@@ -147,7 +147,7 @@ const STRING_PATTERN = /"[^"]*"|'[^']*'/g
 // Placeholder sentinel — uses a Unicode private-use-area character to avoid
 // triggering the no-control-regex lint rule.
 const PLACEHOLDER = '\uE000'
-const PLACEHOLDER_PATTERN = new RegExp(`${PLACEHOLDER}(\\d+)${PLACEHOLDER}`, 'g')
+const PLACEHOLDER_PATTERN = /\uE000(\d+)\uE000/g
 
 /**
  * Detect the mermaid diagram type from the first line of code.
