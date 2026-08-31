@@ -19,9 +19,9 @@ type SidebarDataItem = SidebarData[number]
  * Resolve the sidebar items visible for the current scope.
  *
  * When the current pathname matches a standalone scope (e.g. `/packages`),
- * only that section's sidebar items are returned. For all other paths,
- * standalone sections are excluded and the remaining sections form a
- * unified sidebar.
+ * a linked section is promoted to a sidebar root before its children. An
+ * unlinked section returns only its children. For all other paths, standalone
+ * sections are excluded and the remaining sections form a unified sidebar.
  *
  * @param items - Full unified sidebar items
  * @param pathname - Current decoded URL pathname
@@ -44,7 +44,7 @@ export function resolveScopedSidebar(
   const all = [...items]
 
   if (standaloneMatch) {
-    return all.filter((item) => belongsToScope(item, standaloneMatch))
+    return all.filter((item) => belongsToScope(item, standaloneMatch)).flatMap(flattenScopeRoot)
   }
 
   return all.filter((item) => !scopes.some((scope) => belongsToScope(item, scope)))
@@ -76,4 +76,24 @@ export function belongsToScope(item: SidebarDataItem, scope: string): boolean {
     return items.some((child) => belongsToScope(child, scope))
   }
   return false
+}
+
+/**
+ * Convert a standalone section wrapper into a normal root page followed by
+ * its nested sidebar structure.
+ *
+ * @private
+ * @param item - Matching standalone sidebar root
+ * @returns The root page and children, or the root itself when it has no children
+ */
+function flattenScopeRoot(item: SidebarDataItem): readonly SidebarDataItem[] {
+  if (Object.hasOwn(item, 'items')) {
+    const { items } = item as { readonly items: readonly SidebarDataItem[] }
+    if (Object.hasOwn(item, 'text') && Object.hasOwn(item, 'link')) {
+      const { text, link } = item as { readonly text: string; readonly link: string }
+      return [{ text, link }, ...items]
+    }
+    return items
+  }
+  return [item]
 }
