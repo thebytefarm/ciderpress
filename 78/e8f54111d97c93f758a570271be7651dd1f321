@@ -1,0 +1,112 @@
+packages/config/schemas/schema.json
+  s_7889409376a0ec::t_6ef08fb19da303 3,3055-3191,3222-3245
+packages/ui/src/theme/components/home/home-visual.test.tsx
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 11,23
+packages/ui/src/theme/components/home/hero-demo.tsx
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 104-108,111-115
+hero-background.tsx
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 46-88,92-93,95-99,102-113,186,210,396
+  s_cbfabc12603ddb::t_733c2cdfc9dd34 90,94,101
+  s_cbfabc12603ddb::t_17137cb87c1b5f 43-45
+  s_cbfabc12603ddb::t_eb60a6570d6666 89
+  s_cbfabc12603ddb::t_2c315c1267c654 91
+  s_cbfabc12603ddb::t_ec0bbaa170b808 100
+  s_cbfabc12603ddb::t_b46df9ebdcc57c 114-116,183-185
+  s_cbfabc12603ddb::t_dce63563619e12 187-189,207-209
+  s_cbfabc12603ddb::t_60d4e6c65cdd27 211-213,393-395
+  s_cbfabc12603ddb::t_da3757ea4bcfc0 397-399
+packages/ui/src/theme/components/home/layout.tsx
+  s_cbfabc12603ddb::t_733c2cdfc9dd34 231-234,248-251
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 12-19,163-164,185-187,204-230,235-247,252-311
+  s_cbfabc12603ddb::t_8e2d8ecb64afc7 312
+packages/ui/src/theme/components/home/home-visual.tsx
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 161
+packages/ui/src/theme/components/home/hero-banner.tsx
+  s_cbfabc12603ddb::t_ac3f93bf97ce20 15,24-125
+  s_cbfabc12603ddb::t_19261eeb02ed98 12-14
+  s_cbfabc12603ddb::t_b0078163841aed 16-18,21-23
+  s_cbfabc12603ddb::t_c5ff5fac20a7ef 126-128
+packages/ui/src/theme/components/home/hero-demo.test.tsx
+  s_cbfabc12603ddb::t_1119bf12e22964 127,139,154
+  s_cbfabc12603ddb::t_72309276d30f5d 1-6,11-20,22-23,28,31,33-42,45,47-48,53,56-70,73-126,128-138,140-153,155
+packages/ui/src/head/css/themes/honeycrisp.css
+  s_7889409376a0ec::t_6ef08fb19da303 304-309,311-312,538-542,558-560
+packages/ui/package.json
+  s_cbfabc12603ddb::t_657bd8e919e02f 89
+packages/ui/src/theme/styles/themes/honeycrisp.css
+  s_7889409376a0ec::t_6ef08fb19da303 304-309,311-312,538-542,558-560
+ciderpress.config.ts
+  s_7889409376a0ec::t_8b34ce05a14978 4,36,90,96,102,108
+packages/cli/src/lib/sync/home.ts
+  s_79accae5492060::t_b4e3f4c9d5ffad 186
+packages/config/src/validator.test.ts
+  s_089f83c1b0b8f7::t_5b6034cd40e198 314,317-327,340-370,449-452,470-479
+packages/ui/src/theme/components/home/hero.css
+  s_8633b9dcba37ae::t_948713ec3b2324 3,8-23,34,41,49-92,94-95,106,108,111,123,135,154,156,164-165,185-229
+packages/ui/src/theme/components/home/hero.test.tsx
+  s_8633b9dcba37ae::t_c187cbe6c8266c 19-25,51-89,96-100
+packages/ui/src/theme/components/home/hero.tsx
+  s_8633b9dcba37ae::t_8b109f644529e3 25-26,32-39,54-73,97,100-104,117,122-128,147,167-179,194,197-218,220-225,229-285
+pnpm-lock.yaml
+  s_cbfabc12603ddb::t_b2633734b90c3a 139,149,152,259,302,311,351,370,395,490-492,516,3065-3070,3526-3529,4424-4427,6652-6655,7328,7333,7875,7879,7927,7947,9201-9206,9624-9627,10538-10550,13409,13434,13444-13445
+.ciderpress/public/logos/maltty-light.svg
+  s_089f83c1b0b8f7::t_d96e926ca013a4 1-13
+.ciderpress/public/logos/viteval-light.svg
+  s_089f83c1b0b8f7::t_8b42f88989e295 1-21
+packages/ciderpress/src/index.ts
+  s_7889409376a0ec::t_91801d0b2bfece 43-45
+packages/config/src/index.ts
+  s_7889409376a0ec::t_f09c1d0a8d1e12 64-66
+packages/ui/src/theme/components/home/trust-strip.test.tsx
+  s_089f83c1b0b8f7::t_06a2dddae35ac5 1-33
+packages/ui/src/theme/index.tsx
+  s_7889409376a0ec::t_96fe8b9bdc38c4 105-112
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "78e8f54111d97c93f758a570271be7651dd1f321",
+  "prompts": {},
+  "sessions": {
+    "s_089f83c1b0b8f7": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fac71db24ffeyiaoPBfmX303gQ",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_7889409376a0ec": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fc3377bfeffelI9o5FprNIE9Tw",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_79accae5492060": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fb6b997f7ffehipfeoeHhBfP8S",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_8633b9dcba37ae": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fab10baa3ffeHG7ab01cSk9gAy",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_cbfabc12603ddb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa4efdd80ffeEG0qBe5lS6jrMF",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
