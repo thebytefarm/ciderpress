@@ -72,6 +72,10 @@ import type {
   PageTwitterConfig,
   ReportLinkConfig,
   ResolvedPage,
+  HomeHeroBackground,
+  HomeHeroBackgroundImage,
+  HomeHeroBackgroundSource,
+  HomeHeroBackgroundVariants,
   SidebarConfig,
   SidebarPromo,
   SeoConfig,
@@ -563,12 +567,56 @@ const homeVisualSchema = z.discriminatedUnion('type', [
   homeVisualTerminalSchema,
 ])
 
+const homeHeroBackgroundSourceSchema = z
+  .object({
+    src: z.string().min(1, 'hero.background.src must be a non-empty string'),
+    sources: z
+      .object({
+        tablet: z
+          .string()
+          .min(1, 'hero.background.sources.tablet must be a non-empty string')
+          .optional(),
+        mobile: z
+          .string()
+          .min(1, 'hero.background.sources.mobile must be a non-empty string')
+          .optional(),
+      })
+      .strict()
+      .optional(),
+    position: z.string().optional(),
+    size: z.string().optional(),
+    repeat: z.string().optional(),
+  })
+  .strict()
+
+const homeHeroBackgroundImageSchema = homeHeroBackgroundSourceSchema.extend({
+  mode: z.enum(['dark', 'light']).optional(),
+})
+
+const homeHeroBackgroundVariantsSchema = z
+  .object({
+    dark: homeHeroBackgroundSourceSchema,
+    light: homeHeroBackgroundSourceSchema,
+  })
+  .strict()
+
+const homeHeroBackgroundSchema = z.union([
+  homeHeroBackgroundImageSchema,
+  homeHeroBackgroundVariantsSchema,
+])
+
 const homeHeroConfigSchema = z
   .object({
     label: z.string().optional(),
     tagline: z.string().optional(),
     actions: z.array(buttonConfigSchema).optional(),
     demo: z.union([z.literal(false), homeVisualSchema]).optional(),
+    background: z
+      .union([
+        z.string().min(1, 'hero.background must be a non-empty string'),
+        homeHeroBackgroundSchema,
+      ])
+      .optional(),
   })
   .strict()
 
@@ -576,7 +624,15 @@ const homeColumnsSchema = z.union([z.literal(1), z.literal(2), z.literal(3), z.l
 
 const proofLogoSchema = z
   .object({
-    src: z.string().min(1, 'proof.names[].src must be a non-empty string'),
+    src: z.union([
+      z.string().min(1, 'proof.names[].src must be a non-empty string'),
+      z
+        .object({
+          dark: z.string().min(1, 'proof.names[].src.dark must be a non-empty string'),
+          light: z.string().min(1, 'proof.names[].src.light must be a non-empty string'),
+        })
+        .strict(),
+    ]),
     alt: z.string().min(1, 'proof.names[].alt must be a non-empty string'),
     href: z.string().min(1, 'proof.names[].href must be a non-empty string').optional(),
     // Integer: the value is written straight into `style="height: Npx"`, so a
@@ -1011,6 +1067,32 @@ const _guardSortStrategy: z.ZodType<SortStrategy> = sortStrategySchema
 const _guardHomeHeroConfig: z.ZodType<HomeHeroConfig> = homeHeroConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _keysHomeHeroConfig: SameKeys<z.infer<typeof homeHeroConfigSchema>, HomeHeroConfig> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeHeroBackground: z.ZodType<HomeHeroBackground> = homeHeroBackgroundSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeHeroBackgroundSource: z.ZodType<HomeHeroBackgroundSource> =
+  homeHeroBackgroundSourceSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeHeroBackgroundSource: SameKeys<
+  z.infer<typeof homeHeroBackgroundSourceSchema>,
+  HomeHeroBackgroundSource
+> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeHeroBackgroundImage: z.ZodType<HomeHeroBackgroundImage> =
+  homeHeroBackgroundImageSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeHeroBackgroundImage: SameKeys<
+  z.infer<typeof homeHeroBackgroundImageSchema>,
+  HomeHeroBackgroundImage
+> = true
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardHomeHeroBackgroundVariants: z.ZodType<HomeHeroBackgroundVariants> =
+  homeHeroBackgroundVariantsSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _keysHomeHeroBackgroundVariants: SameKeys<
+  z.infer<typeof homeHeroBackgroundVariantsSchema>,
+  HomeHeroBackgroundVariants
+> = true
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardHomeVisual: z.ZodType<HomeVisual> = homeVisualSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard

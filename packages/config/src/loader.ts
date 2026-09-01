@@ -58,8 +58,21 @@ async function loadAndValidateConfig(
       cwd,
       configFile,
       name: 'ciderpress',
-      // Supported extensions (c12 handles these automatically)
-      // .ts, .mts, .js, .mjs, .json, .jsonc, .yml, .yaml
+      jitiOptions: {
+        extensions: [
+          '.js',
+          '.mjs',
+          '.cjs',
+          '.ts',
+          '.tsx',
+          '.mts',
+          '.cts',
+          '.mtsx',
+          '.ctsx',
+          '.json',
+        ],
+        jsx: true,
+      },
       rcFile: false,
       packageJson: false,
       globalRc: false,

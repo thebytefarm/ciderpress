@@ -38,6 +38,18 @@
   vertical-align: middle;
 }
 
+.cp-trust__logo--light {
+  display: none;
+}
+
+html[data-cp-variant='light'] .cp-trust__logo--dark {
+  display: none;
+}
+
+html[data-cp-variant='light'] .cp-trust__logo--light {
+  display: inline-block;
+}
+
 /*
  * Mono variant: paint a solid block of the current text color, clipped
  * to the asset's alpha channel. One file then tracks every theme and

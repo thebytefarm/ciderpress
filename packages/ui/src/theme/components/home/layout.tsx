@@ -9,7 +9,14 @@ import { CTA } from './cta'
 import { HomeFeature } from './feature'
 import type { FeatureItem } from './feature-card'
 import { Hero } from './hero'
-import type { HeroAction } from './hero'
+import type {
+  HeroAction,
+  HeroBackground,
+  HeroBackgroundImage,
+  HeroBackgroundSource,
+  HeroBackgroundVariants,
+} from './hero'
+import { HeroBanner } from './hero-banner'
 import { HeroDemo } from './hero-demo'
 import { HomeVisualView } from './home-visual'
 import { PageRail } from './page-rail'
@@ -151,6 +158,10 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
   //   false     → suppress entirely
   //   object    → render the user-supplied custom variant
   const heroDemoFm = fm.heroDemo as false | HomeVisual | undefined
+  // heroBackground frontmatter arrives as an unvalidated object (or `null`
+  // when hand-authored with a blank `heroBackground:` line). Treat anything
+  // without a string `src` or valid dark/light sources as absent.
+  const heroBackground = parseHeroBackground(fm.heroBackground)
   const blocks = (fm.blocks as readonly FrontmatterBlock[] | undefined) ?? []
 
   // `P.nullish`, not `undefined`: a blank `heroDemo:` in a hand-authored
@@ -170,6 +181,10 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
         tagline={renderOptionalRichText(h.tagline)}
         actions={mapButtonsToHeroActions(h.actions)}
         demo={heroDemoEl}
+        background={heroBackground}
+        backgroundContent={match(heroBackground)
+          .with(undefined, () => <HeroBanner />)
+          .otherwise(() => undefined)}
       />
     ))
 
@@ -184,6 +199,115 @@ export function HomeLayout(props: HomeLayoutProps): React.ReactElement {
       <SiteFooter />
     </PageRail>
   )
+}
+
+/**
+ * Validate untrusted hero background frontmatter before rendering it as CSS.
+ *
+ * @private
+ * @param value - Raw frontmatter value.
+ * @returns A renderable background, or undefined for malformed input.
+ */
+function parseHeroBackground(value: unknown): HeroBackground | undefined {
+  if (!isRecord(value)) {
+    return undefined
+  }
+  if (isHeroBackgroundImage(value)) {
+    return value
+  }
+  if (isHeroBackgroundVariants(value)) {
+    return value
+  }
+  return undefined
+}
+
+/**
+ * Validate one fixed-mode background image.
+ *
+ * @private
+ * @param value - Raw background record.
+ * @returns Whether the record is a valid fixed-mode image.
+ */
+function isHeroBackgroundImage(value: unknown): value is HeroBackgroundImage {
+  if (!isRecord(value)) {
+    return false
+  }
+  return (
+    isHeroBackgroundSource(value) &&
+    (value.mode === undefined || value.mode === 'dark' || value.mode === 'light')
+  )
+}
+
+/**
+ * Validate dark and light background source variants.
+ *
+ * @private
+ * @param value - Raw background record.
+ * @returns Whether both variants are valid sources.
+ */
+function isHeroBackgroundVariants(value: unknown): value is HeroBackgroundVariants {
+  if (!isRecord(value)) {
+    return false
+  }
+  return isHeroBackgroundSource(value.dark) && isHeroBackgroundSource(value.light)
+}
+
+/**
+ * Validate a background source and every optional CSS field.
+ *
+ * @private
+ * @param value - Raw source value.
+ * @returns Whether the value is safe to pass into inline styles.
+ */
+function isHeroBackgroundSource(value: unknown): value is HeroBackgroundSource {
+  if (!isRecord(value) || typeof value.src !== 'string') {
+    return false
+  }
+  return (
+    isOptionalString(value.position) &&
+    isOptionalString(value.size) &&
+    isOptionalString(value.repeat) &&
+    isResponsiveSources(value.sources)
+  )
+}
+
+/**
+ * Validate optional tablet and mobile source overrides.
+ *
+ * @private
+ * @param value - Raw responsive sources value.
+ * @returns Whether the value is absent or contains only valid source strings.
+ */
+function isResponsiveSources(value: unknown): boolean {
+  if (value === undefined) {
+    return true
+  }
+  if (!isRecord(value)) {
+    return false
+  }
+  return isOptionalString(value.tablet) && isOptionalString(value.mobile)
+}
+
+/**
+ * Test whether an unknown value is absent or a string.
+ *
+ * @private
+ * @param value - Unknown optional field.
+ * @returns Whether the value is safe for a string-valued option.
+ */
+function isOptionalString(value: unknown): value is string | undefined {
+  return value === undefined || typeof value === 'string'
+}
+
+/**
+ * Narrow an unknown value to an object record.
+ *
+ * @private
+ * @param value - Unknown value.
+ * @returns Whether the value is a non-null, non-array object.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value)
 }
 
 /**

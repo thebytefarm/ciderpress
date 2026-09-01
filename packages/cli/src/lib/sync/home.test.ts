@@ -27,6 +27,32 @@ describe('generateDefaultHomePage()', () => {
     expect(blocks.map((b) => b.type)).toEqual(['cta', 'proof', 'features'])
   })
 
+  it('should preserve proof logo source variants', async () => {
+    const blocks = await blocksFor({
+      home: {
+        blocks: [
+          {
+            type: 'proof',
+            names: [
+              {
+                src: { dark: '/logos/acme-dark.svg', light: '/logos/acme-light.svg' },
+                alt: 'Acme',
+              },
+            ],
+          },
+        ],
+      },
+    })
+    expect(blocks[0]).toMatchObject({
+      names: [
+        {
+          src: { dark: '/logos/acme-dark.svg', light: '/logos/acme-light.svg' },
+          alt: 'Acme',
+        },
+      ],
+    })
+  })
+
   it('should keep every repeated split block', async () => {
     const configured: readonly HomeBlock[] = [
       { type: 'split', title: 'One', visual: { type: 'code', code: 'a' } },
@@ -203,6 +229,91 @@ describe('generateDefaultHomePage()', () => {
     )
     const { data } = parseFrontmatter(result.content)
     expect(data.heroDemo).toMatchObject({ type: 'terminal', command: 'acme dev' })
+  })
+
+  it('should emit heroBackground from a home.hero.background object verbatim', async () => {
+    const result = await generateDefaultHomePage(
+      config({
+        home: {
+          hero: {
+            background: {
+              src: '/hero.jpg',
+              mode: 'dark',
+              sources: { tablet: '/hero-tablet.jpg', mobile: '/hero-mobile.jpg' },
+              position: '50% 25%',
+              size: 'cover',
+            },
+          },
+        },
+      }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toMatchObject({
+      src: '/hero.jpg',
+      mode: 'dark',
+      sources: { tablet: '/hero-tablet.jpg', mobile: '/hero-mobile.jpg' },
+      position: '50% 25%',
+      size: 'cover',
+    })
+  })
+
+  it('should normalize a string home.hero.background to { src }', async () => {
+    const result = await generateDefaultHomePage(
+      config({ home: { hero: { background: '/hero.svg' } } }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toEqual({ src: '/hero.svg' })
+  })
+
+  it('should emit heroBackground color variants verbatim', async () => {
+    const background = {
+      dark: { src: '/hero-dark.svg', sources: { mobile: '/hero-dark-mobile.svg' } },
+      light: { src: '/hero-light.svg', sources: { mobile: '/hero-light-mobile.svg' } },
+    }
+    const result = await generateDefaultHomePage(
+      config({ home: { hero: { background } } }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toEqual(background)
+  })
+
+  it('should fall back to a string brand.banner when home.hero.background is unset', async () => {
+    const result = await generateDefaultHomePage(
+      config({ brand: { banner: '/brand-banner.svg' } }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toEqual({ src: '/brand-banner.svg' })
+  })
+
+  it('should prefer home.hero.background over brand.banner', async () => {
+    const result = await generateDefaultHomePage(
+      config({
+        brand: { banner: '/brand-banner.svg' },
+        home: { hero: { background: { src: '/hero.jpg' } } },
+      }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toEqual({ src: '/hero.jpg' })
+  })
+
+  it('should omit heroBackground when neither hero.background nor a string banner is set', async () => {
+    const result = await generateDefaultHomePage(config({}), REPO_ROOT)
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toBeUndefined()
+  })
+
+  it('should omit heroBackground when brand.banner is a function', async () => {
+    const result = await generateDefaultHomePage(
+      config({ brand: { banner: () => '/computed.svg' } }),
+      REPO_ROOT
+    )
+    const { data } = parseFrontmatter(result.content)
+    expect(data.heroBackground).toBeUndefined()
   })
 })
 

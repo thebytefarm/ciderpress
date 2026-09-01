@@ -6,6 +6,7 @@ import type React from 'react'
 import { withMountBase } from '../../lib/with-mount-base.ts'
 
 import './hero-demo.css'
+import './home-visual.css'
 
 /**
  * Surface a {@link HomeVisual} is rendered into.
@@ -47,7 +48,7 @@ export function HomeVisualView(props: HomeVisualViewProps): React.ReactElement |
   return match(visual)
     .with({ type: 'code' }, (v) => renderCode(v.code, v.language, context))
     .with({ type: 'image' }, (v) => renderImage(v, context))
-    .with({ type: 'terminal' }, (v) => <VisualTerminal config={v} />)
+    .with({ type: 'terminal' }, (v) => <VisualTerminal config={v} context={context} />)
     .otherwise(() => null)
 }
 
@@ -122,6 +123,7 @@ function renderImage(image: VisualImageFields, context: HomeVisualContext): Reac
 
 interface VisualTerminalProps {
   readonly config: HomeVisualTerminal
+  readonly context: HomeVisualContext
 }
 
 /**
@@ -135,6 +137,9 @@ interface VisualTerminalProps {
  */
 function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
   const { windowTitle, command, lines } = props.config
+  const className = match(props.context)
+    .with('hero', () => 'cp-home-terminal cp-home-terminal--framed')
+    .otherwise(() => 'cp-home-terminal')
   // Hand-authored frontmatter bypasses the schema; a non-string here
   // reaches React as a child and throws mid-render.
   const commandText = match(command)
@@ -153,17 +158,19 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
     )
     .otherwise(() => [])
   return (
-    <div className="cp-hero-demo">
-      <div className="cp-hero-demo__bar">
-        <span className="cp-hero-demo__dot" />
-        <span className="cp-hero-demo__dot" />
-        <span className="cp-hero-demo__dot" />
+    <div className={className} role="group" aria-label="Terminal output">
+      <div className="cp-home-terminal__bar">
+        <span className="cp-home-terminal__dots" aria-hidden="true">
+          <span className="cp-home-terminal__dot cp-home-terminal__dot--close" />
+          <span className="cp-home-terminal__dot cp-home-terminal__dot--minimize" />
+          <span className="cp-home-terminal__dot cp-home-terminal__dot--maximize" />
+        </span>
         {match(title)
-          .with(P.string, (w) => <span className="cp-hero-demo__title">{w}</span>)
+          .with(P.string, (w) => <span className="cp-home-terminal__title">{w}</span>)
           .otherwise(() => null)}
       </div>
-      <pre className="cp-hero-demo__body">
-        <span className="cp-hero-demo__prompt">$ </span>
+      <pre className="cp-home-terminal__body">
+        <span className="cp-home-terminal__prompt">$ </span>
         {commandText}
         {'\n\n'}
         {output.map((line, i) => (
@@ -208,10 +215,10 @@ function TerminalLine(props: TerminalLineProps): React.ReactElement {
   // hand-authored frontmatter — fall back to the neutral marker rather
   // than throwing on an unknown value.
   const className = match(props.line.kind)
-    .with('ok', () => 'cp-hero-demo__ok')
-    .with('cmt', () => 'cp-hero-demo__cmt')
-    .with('err', () => 'cp-hero-demo__err')
-    .otherwise(() => 'cp-hero-demo__info')
+    .with('ok', () => 'cp-home-terminal__ok')
+    .with('cmt', () => 'cp-home-terminal__cmt')
+    .with('err', () => 'cp-home-terminal__err')
+    .otherwise(() => 'cp-home-terminal__info')
   const glyph = match(props.line.kind)
     .with('ok', () => ' ✓')
     .with('cmt', () => ' ↻')

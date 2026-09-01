@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 760" width="1600" height="760">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080506"/>
+      <stop offset="0.48" stop-color="#140607"/>
+      <stop offset="1" stop-color="#050303"/>
+    </linearGradient>
+    <radialGradient id="red-bloom" cx="78%" cy="44%" r="58%">
+      <stop offset="0" stop-color="#dc2626" stop-opacity="0.62"/>
+      <stop offset="0.38" stop-color="#991b1b" stop-opacity="0.3"/>
+      <stop offset="1" stop-color="#450a0a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amber-bloom" cx="15%" cy="28%" r="52%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.2"/>
+      <stop offset="0.42" stop-color="#b45309" stop-opacity="0.08"/>
+      <stop offset="1" stop-color="#451a03" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="apple-ink" x1="0" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#f87171"/>
+      <stop offset="0.42" stop-color="#dc2626"/>
+      <stop offset="1" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <linearGradient id="leaf-ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bef264"/>
+      <stop offset="1" stop-color="#4d7c0f"/>
+    </linearGradient>
+    <pattern id="micro-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#fecaca" stroke-opacity="0.055" stroke-width="1"/>
+      <circle cx="0" cy="0" r="1.5" fill="#fca5a5" fill-opacity="0.2"/>
+    </pattern>
+    <pattern id="press-dots" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="3.2" fill="url(#apple-ink)"/>
+      <circle cx="13" cy="13" r="1.35" fill="#fb7185" fill-opacity="0.72"/>
+    </pattern>
+    <pattern id="fine-dots" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.1" fill="#fbbf24" fill-opacity="0.32"/>
+      <circle cx="9" cy="9" r="0.7" fill="#ef4444" fill-opacity="0.28"/>
+    </pattern>
+    <g id="pixel-apple">
+      <path fill="currentColor" d="M8 5h4V3h8v2h4v3h4v4h3v12h-3v4h-4v3h-6v-2h-4v2H8v-3H4v-4H1V12h3V8h4z"/>
+      <path fill="#fff" fill-opacity="0.2" d="M5 12h4v8H5z"/>
+      <path fill="#71340f" d="M14 0h4v5h-4z"/>
+      <path fill="#84a82f" d="M18 1h7v2h3v4h-10z"/>
+    </g>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" seed="6174"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.14"/>
+      </feComponentTransfer>
+    </filter>
+    <filter id="soft-glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="20"/>
+    </filter>
+    <clipPath id="apple-shape">
+      <path transform="translate(100)" d="M1060 204h48v-30h84v30h48v24h48v48h24v144h-24v48h-48v36h-60v-24h-48v24h-60v-36h-48v-48h-24V276h24v-48h36v-24z"/>
+    </clipPath>
+    <clipPath id="ghost-apple-shape">
+      <path d="M-168 390h54v-27h96v27h54v27h54v54h27v162H90v54H36v41h-68v-27h-54v27h-68v-41h-54v-54h-27V471h27v-54h54z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="1600" height="760" fill="url(#canvas)"/>
+  <rect width="1600" height="760" fill="url(#amber-bloom)"/>
+  <rect width="1600" height="760" fill="url(#red-bloom)"/>
+  <rect width="1600" height="760" fill="url(#micro-grid)"/>
+
+  <g opacity="0.34">
+    <path d="M0 118h1600M0 380h1600M0 642h1600" stroke="#fca5a5" stroke-opacity="0.22"/>
+    <path d="M264 0v760M800 0v760M1336 0v760" stroke="#fca5a5" stroke-opacity="0.14"/>
+    <path d="M0 100l1600 560M0 660L1600 100" stroke="#f87171" stroke-opacity="0.08"/>
+  </g>
+
+  <ellipse cx="1280" cy="340" rx="250" ry="230" fill="#ef4444" fill-opacity="0.15" filter="url(#soft-glow)"/>
+
+  <g clip-path="url(#apple-shape)" opacity="0.78">
+    <rect x="1060" y="150" width="390" height="390" fill="#991b1b" fill-opacity="0.2"/>
+    <rect x="1060" y="150" width="390" height="390" fill="url(#press-dots)"/>
+    <path d="M1060 276h390M1060 348h390M1060 420h390" stroke="#fecaca" stroke-opacity="0.16" stroke-width="2"/>
+    <path d="M1160 150v390M1268 150v390M1376 150v390" stroke="#450a0a" stroke-opacity="0.34" stroke-width="6"/>
+  </g>
+
+  <path transform="translate(100)" d="M1060 204h48v-30h84v30h48v24h48v48h24v144h-24v48h-48v36h-60v-24h-48v24h-60v-36h-48v-48h-24V276h24v-48h36v-24z" fill="none" stroke="#fb7185" stroke-opacity="0.52" stroke-width="3"/>
+
+  <path transform="translate(100)" d="M1150 124h32v52h-32z" fill="#78350f"/>
+  <path transform="translate(100)" d="M1180 126h72v20h28v32h-80v-20h-20z" fill="url(#leaf-ink)"/>
+  <path transform="translate(100)" d="M1198 145h56" stroke="#ecfccb" stroke-opacity="0.42" stroke-width="3"/>
+
+  <g clip-path="url(#ghost-apple-shape)" opacity="0.4">
+    <rect x="-250" y="330" width="420" height="430" fill="url(#fine-dots)"/>
+    <path d="M-260 470h460M-260 578h460M-152 320v440M-44 320v440M64 320v440" stroke="#f59e0b" stroke-opacity="0.18" stroke-width="2"/>
+  </g>
+
+  <g>
+    <use href="#pixel-apple" transform="translate(70 330) scale(10)" color="#d9912b" opacity="0.38"/>
+    <use href="#pixel-apple" transform="translate(470 -90) scale(8)" color="#7fa52d" opacity="0.24"/>
+    <use href="#pixel-apple" transform="translate(730 550) scale(8)" color="#a93625" opacity="0.28"/>
+  </g>
+
+  <g fill="none" stroke="#fca5a5" stroke-opacity="0.18">
+    <rect x="80" y="72" width="208" height="132" rx="8"/>
+    <path d="M80 112h208M112 142h120M112 166h82"/>
+    <rect x="292" y="524" width="238" height="146" rx="8"/>
+    <path d="M292 564h238M326 594h138M326 620h94"/>
+  </g>
+
+  <g fill="#fca5a5" opacity="0.35">
+    <rect x="80" y="72" width="8" height="8"/>
+    <rect x="280" y="72" width="8" height="8"/>
+    <rect x="292" y="662" width="8" height="8"/>
+    <rect x="522" y="662" width="8" height="8"/>
+  </g>
+
+  <rect width="1600" height="760" filter="url(#grain)" opacity="0.72"/>
+  <rect x="0.5" y="0.5" width="1599" height="759" fill="none" stroke="#fca5a5" stroke-opacity="0.13"/>
+</svg>

@@ -303,6 +303,71 @@ describe('validateConfig() — white-label acceptance config', () => {
     expect(error).toBeNull()
   })
 
+  it('should accept home.hero.background as a plain string', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: '/hero.jpg' } },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should accept home.hero.background as an object with mode, position, and size', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        hero: {
+          background: {
+            src: '/hero.jpg',
+            mode: 'dark',
+            sources: { tablet: '/hero-tablet.jpg', mobile: '/hero-mobile.jpg' },
+            position: '50% 25%',
+            size: 'cover',
+          },
+        },
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject home.hero.background with an empty src', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: { src: '' } } },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should reject home.hero.background with an invalid mode', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: { src: '/hero.jpg', mode: 'sepia' } } },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should accept home.hero.background with dark and light variants', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        hero: {
+          background: {
+            dark: { src: '/hero-dark.jpg', sources: { mobile: '/hero-dark-mobile.jpg' } },
+            light: { src: '/hero-light.jpg', sources: { mobile: '/hero-light-mobile.jpg' } },
+          },
+        },
+      },
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject home.hero.background with a missing light variant', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: { hero: { background: { dark: { src: '/hero-dark.jpg' } } } },
+    })
+    expect(error).not.toBeNull()
+  })
+
   it('should accept a split block with a code visual', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
@@ -381,6 +446,10 @@ describe('validateConfig() — white-label acceptance config', () => {
             names: [
               'Acme',
               { src: '/logos/acme.svg', alt: 'Acme' },
+              {
+                src: { dark: '/logos/beta-dark.svg', light: '/logos/beta-light.svg' },
+                alt: 'Beta',
+              },
               { src: '/logos/beta.svg', alt: 'Beta', href: '/beta', height: 24, mono: true },
             ],
           },
@@ -394,6 +463,16 @@ describe('validateConfig() — white-label acceptance config', () => {
     const [error] = validateConfig({
       ...whiteLabelConfig,
       home: { blocks: [{ type: 'proof', names: [{ src: '/logos/acme.svg' }] }] },
+    })
+    expect(error).not.toBeNull()
+  })
+
+  it('should reject a proof logo with an incomplete source variant', () => {
+    const [error] = validateConfig({
+      ...whiteLabelConfig,
+      home: {
+        blocks: [{ type: 'proof', names: [{ src: { dark: '/logos/acme.svg' }, alt: 'Acme' }] }],
+      },
     })
     expect(error).not.toBeNull()
   })

@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 1080" width="640" height="1080">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#f7efdc"/><stop offset="0.52" stop-color="#f2dfc2"/><stop offset="1" stop-color="#ead4b5"/></linearGradient>
+    <radialGradient id="red-bloom" cx="78%" cy="60%" r="55%"><stop offset="0" stop-color="#e2a72e" stop-opacity="0.52"/><stop offset="0.5" stop-color="#c47b21" stop-opacity="0.2"/><stop offset="1" stop-color="#a45b1c" stop-opacity="0"/></radialGradient>
+    <radialGradient id="amber-bloom" cx="6%" cy="82%" r="42%"><stop offset="0" stop-color="#f3bd45" stop-opacity="0.2"/><stop offset="1" stop-color="#b56621" stop-opacity="0"/></radialGradient>
+    <linearGradient id="apple-ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f06a3a"/><stop offset="0.5" stop-color="#ef5a2f"/><stop offset="1" stop-color="#a83a24"/></linearGradient>
+    <linearGradient id="leaf-ink" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aaa3f"/><stop offset="1" stop-color="#556b2f"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#6f5f2f" stroke-opacity="0.05"/><circle r="1.5" fill="#5f5730" fill-opacity="0.16"/></pattern>
+    <pattern id="press-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="4" cy="4" r="2.8" fill="url(#apple-ink)"/><circle cx="12" cy="12" r="1.1" fill="#f06a3a" fill-opacity="0.65"/></pattern>
+    <pattern id="cider-dots" width="12" height="12" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.3" fill="#d89c2b" fill-opacity="0.52"/><circle cx="9" cy="9" r="0.8" fill="#cf552d" fill-opacity="0.3"/></pattern>
+    <g id="pixel-apple">
+      <path fill="currentColor" d="M8 5h4V3h8v2h4v3h4v4h3v12h-3v4h-4v3h-6v-2h-4v2H8v-3H4v-4H1V12h3V8h4z"/>
+      <path fill="#fff7df" fill-opacity="0.2" d="M5 12h4v8H5z"/>
+      <path fill="#6b3b20" d="M14 0h4v5h-4z"/>
+      <path fill="#687a32" d="M18 1h7v2h3v4h-10z"/>
+    </g>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%"><feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" seed="6174"/><feColorMatrix type="saturate" values="0"/><feComponentTransfer><feFuncA type="table" tableValues="0 0.13"/></feComponentTransfer></filter>
+    <clipPath id="apple"><path transform="translate(40 130)" d="M430 530h30v-20h52v20h30v16h30v30h16v92h-16v30h-30v24h-40v-16h-30v16h-40v-24h-30v-30h-16v-92h16v-30h28v-16z"/></clipPath>
+  </defs>
+  <rect width="640" height="1080" fill="url(#canvas)"/><rect width="640" height="1080" fill="url(#red-bloom)"/><rect width="640" height="1080" fill="url(#amber-bloom)"/><rect width="640" height="1080" fill="url(#grid)"/>
+  <g fill="none" stroke="#5f5730" stroke-opacity="0.12"><path d="M0 128h640M0 416h640M0 824h640M160 0v1080M480 0v1080"/><rect x="34" y="54" width="156" height="98" rx="8"/><path d="M34 88h156M62 114h88M62 134h56"/></g>
+  <g clip-path="url(#apple)" opacity="0.82"><rect x="400" y="620" width="240" height="260" fill="url(#press-dots)"/><path d="M400 706h240M400 754h240M400 802h240" stroke="#6f5f2f" stroke-opacity="0.16" stroke-width="2"/></g>
+  <path transform="translate(40 130)" d="M430 530h30v-20h52v20h30v16h30v30h16v92h-16v30h-30v24h-40v-16h-30v16h-40v-24h-30v-30h-16v-92h16v-30h28v-16z" fill="none" stroke="#f06a3a" stroke-opacity="0.5" stroke-width="3"/><path transform="translate(40 130)" d="M484 478h22v32h-22z" fill="#6b3b20"/><path transform="translate(40 130)" d="M504 480h48v14h20v22h-54v-14h-14z" fill="url(#leaf-ink)"/>
+  <g>
+    <use href="#pixel-apple" transform="translate(-65 700) scale(9)" color="#e78d2f" opacity="0.42"/>
+    <use href="#pixel-apple" transform="translate(435 100) scale(6)" color="#718534" opacity="0.28"/>
+    <use href="#pixel-apple" transform="translate(60 310) scale(5)" color="#c54c2f" opacity="0.2"/>
+  </g>
+  <rect width="640" height="1080" filter="url(#grain)" opacity="0.72"/><rect x="0.5" y="0.5" width="639" height="1079" fill="none" stroke="#5f5730" stroke-opacity="0.12"/>
+</svg>

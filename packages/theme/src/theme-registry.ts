@@ -1338,7 +1338,7 @@ function freezeChildThenReturnParent<T>(parent: T, child: unknown): T {
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
 function buildHoneycrispLightTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.honeycrisp
+  const brand = { ...BRAND_PALETTES.honeycrisp, primary: '#d02020' }
   return {
     colors: {
       brand: {
@@ -1353,15 +1353,15 @@ function buildHoneycrispLightTokens(): ParsedTokens {
       },
       semantic: { ...SHARED_SEMANTIC_COLORS },
       surface: {
-        bg: '#ffffff',
-        bgAlt: '#f9f9f9',
-        bgElv: '#f5f5f5',
-        bgSoft: '#f0f0f0',
-        bgIcon: '#cccccc',
-        homeBg: '#ffffff',
+        bg: '#f7f5f0',
+        bgAlt: '#f1eee7',
+        bgElv: '#fffdf8',
+        bgSoft: '#ebe7dc',
+        bgIcon: '#d5cebe',
+        homeBg: '#f7f5f0',
         overlayFaint: 'rgba(0, 0, 0, 0.1)',
-        gutter: '#f5f5f5',
-        codeBlockBg: '#f5f5f5',
+        gutter: '#f1eee7',
+        codeBlockBg: '#f1eee7',
       },
       text: {
         text1: '#1a1a1a',

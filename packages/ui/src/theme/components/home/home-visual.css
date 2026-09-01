@@ -1,0 +1,98 @@
+.cp-home-terminal {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--cp-c-term-bg);
+  color: var(--cp-c-term-text);
+}
+
+.cp-home-terminal--framed {
+  width: min(920px, 100%);
+  margin: 0 auto;
+  border: 1px solid var(--cp-c-term-border);
+  border-radius: var(--cp-radius-lg);
+}
+
+.cp-home-terminal__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: var(--cp-size-titlebar);
+  padding: var(--cp-s-8) var(--cp-s-12);
+  border-bottom: 1px solid var(--cp-c-term-border);
+  background: var(--cp-c-term-titlebar-bg);
+}
+
+.cp-home-terminal__dots {
+  display: flex;
+  gap: var(--cp-s-6);
+  justify-self: start;
+}
+
+.cp-home-terminal__dot {
+  width: var(--cp-size-window-dot);
+  height: var(--cp-size-window-dot);
+  border-radius: 50%;
+}
+
+.cp-home-terminal__dot--close {
+  background: var(--cp-c-window-dot-close);
+}
+
+.cp-home-terminal__dot--minimize {
+  background: var(--cp-c-window-dot-minimize);
+}
+
+.cp-home-terminal__dot--maximize {
+  background: var(--cp-c-window-dot-maximize);
+}
+
+.cp-home-terminal__title {
+  overflow: hidden;
+  color: var(--cp-c-term-title);
+  font-family: var(--rp-font-family-mono);
+  font-size: var(--cp-fs-window-title);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cp-home-terminal__body {
+  min-height: 220px;
+  margin: 0;
+  overflow-x: auto;
+  padding: var(--cp-s-20) var(--cp-s-24);
+  color: var(--cp-c-term-text);
+  font-family: var(--rp-font-family-mono);
+  font-size: clamp(11px, 1.2vw, var(--cp-fs-term-body));
+  line-height: var(--cp-lh-relaxed);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.cp-home-terminal__prompt {
+  color: var(--cp-c-term-prompt-prefix);
+}
+
+.cp-home-terminal__ok {
+  color: var(--cp-c-term-green);
+}
+
+.cp-home-terminal__info {
+  color: var(--cp-c-term-cyan);
+}
+
+.cp-home-terminal__cmt {
+  color: var(--cp-c-term-muted);
+}
+
+.cp-home-terminal__err {
+  color: var(--cp-c-term-red);
+}
+
+@media (max-width: 640px) {
+  .cp-home-terminal__body {
+    min-height: 190px;
+    padding: var(--cp-s-16);
+    font-size: 11px;
+  }
+}
