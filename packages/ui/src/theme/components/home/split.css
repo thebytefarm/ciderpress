@@ -158,9 +158,9 @@ html[data-cp-variant='dark'] .cp-split__eyebrow {
   overflow-x: auto;
 }
 
-/* Terminal visual reuses the hero demo chrome; the split frame already
+/* Terminal visual supplies its own chrome; the split frame already
    owns the border, radius, and shadow, so flatten the inner shell. */
-.cp-split__visual .cp-hero-demo {
+.cp-split__visual .cp-home-terminal {
   max-width: none;
   border: 0;
   border-radius: 0;
