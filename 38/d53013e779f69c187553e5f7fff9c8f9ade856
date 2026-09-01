@@ -1,0 +1,19 @@
+packages/config/src/loader.ts
+  s_cbfabc12603ddb::t_3e1c7851e090ee 62-73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "38d53013e779f69c187553e5f7fff9c8f9ade856",
+  "prompts": {},
+  "sessions": {
+    "s_cbfabc12603ddb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa4efdd80ffeEG0qBe5lS6jrMF",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
