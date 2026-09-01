@@ -1338,7 +1338,7 @@ function freezeChildThenReturnParent<T>(parent: T, child: unknown): T {
  * @returns Untyped token object suitable for `tokensSchema.parse`
  */
 function buildHoneycrispLightTokens(): ParsedTokens {
-  const brand = BRAND_PALETTES.honeycrisp
+  const brand = { ...BRAND_PALETTES.honeycrisp, primary: '#d02020' }
   return {
     colors: {
       brand: {

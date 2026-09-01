@@ -7,6 +7,7 @@ const FLICKER_FADE_IN_MS = 600
 const FLICKER_FRAME_MS = 100
 const FLICKER_TARGET_MS = 420
 
+/** Props provided to the runtime Ciderpress hero background. */
 export interface CiderpressHeroBackgroundProps {
   /** Active site color variant. */
   readonly variant: 'light' | 'dark'

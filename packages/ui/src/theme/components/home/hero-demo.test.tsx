@@ -31,14 +31,14 @@ describe('hero demo', () => {
   it('should switch previews through keyboard-focusable tab controls', async () => {
     expect.assertions(4)
     const rendered = await renderHeroDemo()
-    const cli = getButton(rendered.container, 'CLI')
-    const docs = getButton(rendered.container, 'View docs')
+    const cli = getButton({ container: rendered.container, label: 'CLI' })
+    const docs = getButton({ container: rendered.container, label: 'View docs' })
     docs.focus()
     expect(document.activeElement).toBe(docs)
     await click(docs)
     expect(docs.getAttribute('aria-selected')).toBe('true')
     expect(cli.getAttribute('aria-selected')).toBe('false')
-    expect(getButton(rendered.container, 'rerun').tabIndex).toBe(0)
+    expect(getButton({ container: rendered.container, label: 'rerun' }).tabIndex).toBe(0)
     await unmountHeroDemo(rendered)
   })
 
@@ -57,15 +57,15 @@ describe('hero demo', () => {
     expect.assertions(6)
     const rendered = await renderHeroDemo()
     const log = getLog(rendered.container)
-    const starting = getTextElement(rendered.container, '◒ Starting')
-    const ready = getTextElement(rendered.container, '● Ready')
+    const starting = getTextElement({ container: rendered.container, text: '◒ Starting' })
+    const ready = getTextElement({ container: rendered.container, text: '● Ready' })
     expect(log.getAttribute('aria-busy')).toBe('true')
     expect(starting.getAttribute('aria-hidden')).toBe('false')
     expect(ready.getAttribute('aria-hidden')).toBe('true')
     await act(() => vi.advanceTimersByTime(4_100))
     expect(log.getAttribute('aria-busy')).toBe('false')
     expect(ready.getAttribute('aria-hidden')).toBe('false')
-    await click(getButton(rendered.container, 'rerun'))
+    await click(getButton({ container: rendered.container, label: 'rerun' }))
     expect(log.getAttribute('aria-busy')).toBe('true')
     await unmountHeroDemo(rendered)
   })
@@ -116,13 +116,15 @@ async function click(button: HTMLButtonElement): Promise<void> {
  * Find a button by its accessible text.
  *
  * @private
- * @param container - Rendered component container.
- * @param label - Visible button label.
+ * @param params - Rendered component container and visible button label.
  * @returns Matching button.
  */
-function getButton(container: HTMLElement, label: string): HTMLButtonElement {
-  const button = Array.from(container.querySelectorAll('button')).find(
-    (candidate) => candidate.textContent.trim() === label
+function getButton(params: {
+  readonly container: HTMLElement
+  readonly label: string
+}): HTMLButtonElement {
+  const button = Array.from(params.container.querySelectorAll('button')).find(
+    (candidate) => candidate.textContent.trim() === params.label
   )
   return button as HTMLButtonElement
 }
@@ -143,13 +145,15 @@ function getLog(container: HTMLElement): HTMLElement {
  * Find an element by exact text content.
  *
  * @private
- * @param container - Rendered component container.
- * @param text - Exact visible text.
+ * @param params - Rendered component container and exact visible text.
  * @returns Matching element.
  */
-function getTextElement(container: HTMLElement, text: string): HTMLElement {
-  const element = Array.from(container.querySelectorAll<HTMLElement>('*')).find(
-    (candidate) => candidate.children.length === 0 && candidate.textContent.trim() === text
+function getTextElement(params: {
+  readonly container: HTMLElement
+  readonly text: string
+}): HTMLElement {
+  const element = Array.from(params.container.querySelectorAll<HTMLElement>('*')).find(
+    (candidate) => candidate.children.length === 0 && candidate.textContent.trim() === params.text
   )
   return element as HTMLElement
 }
