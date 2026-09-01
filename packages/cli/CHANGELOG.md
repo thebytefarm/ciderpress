@@ -1,5 +1,18 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.14
+
+### Minor Changes
+
+- 45204fb: Add `home.hero.background` with string, fixed-contrast, and light/dark variant forms plus responsive image sources. When it is not set, `brand.banner` supports both static image paths and runtime React backgrounds such as canvas, WebGL, and inline SVG components.
+
+### Patch Changes
+
+- Updated dependencies [45204fb]
+- Updated dependencies [45204fb]
+  - @ciderpress/config@1.0.0-rc.11
+  - @ciderpress/ui@1.0.0-rc.14
+
 ## 1.0.0-rc.13
 
 ### Major Changes
