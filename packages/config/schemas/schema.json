@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.10/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.11/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -233,23 +233,15 @@
                   "type": "string"
                 },
                 "width": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    }
+                  "type": [
+                    "number",
+                    "string"
                   ]
                 },
                 "height": {
-                  "anyOf": [
-                    {
-                      "type": "number"
-                    },
-                    {
-                      "type": "string"
-                    }
+                  "type": [
+                    "number",
+                    "string"
                   ]
                 }
               },
@@ -630,13 +622,9 @@
                 "type": "string"
               },
               "titleTemplate": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "boolean"
-                  }
+                "type": [
+                  "string",
+                  "boolean"
                 ]
               },
               "description": {
@@ -678,6 +666,7 @@
                         "type": "number"
                       }
                     ],
+                    "additionalItems": false,
                     "minItems": 2,
                     "maxItems": 2
                   },
@@ -720,6 +709,7 @@
                       }
                     }
                   ],
+                  "additionalItems": false,
                   "minItems": 2,
                   "maxItems": 2
                 }
@@ -1120,13 +1110,9 @@
                 "type": "string"
               },
               "titleTemplate": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "boolean"
-                  }
+                "type": [
+                  "string",
+                  "boolean"
                 ]
               },
               "description": {
@@ -1168,6 +1154,7 @@
                         "type": "number"
                       }
                     ],
+                    "additionalItems": false,
                     "minItems": 2,
                     "maxItems": 2
                   },
@@ -1210,6 +1197,7 @@
                       }
                     }
                   ],
+                  "additionalItems": false,
                   "minItems": 2,
                   "maxItems": 2
                 }
@@ -1660,13 +1648,9 @@
                       "type": "string"
                     },
                     "titleTemplate": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "boolean"
-                        }
+                      "type": [
+                        "string",
+                        "boolean"
                       ]
                     },
                     "description": {
@@ -1708,6 +1692,7 @@
                               "type": "number"
                             }
                           ],
+                          "additionalItems": false,
                           "minItems": 2,
                           "maxItems": 2
                         },
@@ -1750,6 +1735,7 @@
                             }
                           }
                         ],
+                        "additionalItems": false,
                         "minItems": 2,
                         "maxItems": 2
                       }
@@ -2976,23 +2962,15 @@
                           "type": "string"
                         },
                         "width": {
-                          "anyOf": [
-                            {
-                              "type": "number"
-                            },
-                            {
-                              "type": "string"
-                            }
+                          "type": [
+                            "number",
+                            "string"
                           ]
                         },
                         "height": {
-                          "anyOf": [
-                            {
-                              "type": "number"
-                            },
-                            {
-                              "type": "string"
-                            }
+                          "type": [
+                            "number",
+                            "string"
                           ]
                         }
                       },
@@ -3597,23 +3575,15 @@
                             "type": "string"
                           },
                           "width": {
-                            "anyOf": [
-                              {
-                                "type": "number"
-                              },
-                              {
-                                "type": "string"
-                              }
+                            "type": [
+                              "number",
+                              "string"
                             ]
                           },
                           "height": {
-                            "anyOf": [
-                              {
-                                "type": "number"
-                              },
-                              {
-                                "type": "string"
-                              }
+                            "type": [
+                              "number",
+                              "string"
                             ]
                           }
                         },
@@ -3875,23 +3845,15 @@
                                   "type": "string"
                                 },
                                 "width": {
-                                  "anyOf": [
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "type": "string"
-                                    }
+                                  "type": [
+                                    "number",
+                                    "string"
                                   ]
                                 },
                                 "height": {
-                                  "anyOf": [
-                                    {
-                                      "type": "number"
-                                    },
-                                    {
-                                      "type": "string"
-                                    }
+                                  "type": [
+                                    "number",
+                                    "string"
                                   ]
                                 }
                               },
@@ -4316,13 +4278,9 @@
               "type": "string"
             },
             "titleTemplate": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "type": "boolean"
-                }
+              "type": [
+                "string",
+                "boolean"
               ]
             },
             "description": {
@@ -4364,6 +4322,7 @@
                       "type": "number"
                     }
                   ],
+                  "additionalItems": false,
                   "minItems": 2,
                   "maxItems": 2
                 },
@@ -4406,6 +4365,7 @@
                     }
                   }
                 ],
+                "additionalItems": false,
                 "minItems": 2,
                 "maxItems": 2
               }
