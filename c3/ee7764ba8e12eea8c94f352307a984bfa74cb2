@@ -1,0 +1,29 @@
+hero-background.tsx
+  s_cbfabc12603ddb::t_e6fee231f8f67b 10
+packages/theme/src/theme-registry.ts
+  s_cbfabc12603ddb::t_e6fee231f8f67b 1341
+packages/ui/src/head/css/themes/honeycrisp.css
+  s_cbfabc12603ddb::t_8eb1193d79a6c1 291,387,543,552
+.github/workflows/release.yml
+  s_cbfabc12603ddb::t_e6fee231f8f67b 33
+packages/ui/src/theme/styles/themes/honeycrisp.css
+  s_cbfabc12603ddb::t_8eb1193d79a6c1 291,387,543,552
+packages/ui/src/theme/components/home/hero-demo.test.tsx
+  s_cbfabc12603ddb::t_e6fee231f8f67b 34-35,41,60-61,68,119,122-127,148,151-156
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "c3ee7764ba8e12eea8c94f352307a984bfa74cb2",
+  "prompts": {},
+  "sessions": {
+    "s_cbfabc12603ddb": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa4efdd80ffeEG0qBe5lS6jrMF",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
