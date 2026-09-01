@@ -59,6 +59,18 @@ async function loadAndValidateConfig(
       configFile,
       name: 'ciderpress',
       jitiOptions: {
+        extensions: [
+          '.js',
+          '.mjs',
+          '.cjs',
+          '.ts',
+          '.tsx',
+          '.mts',
+          '.cts',
+          '.mtsx',
+          '.ctsx',
+          '.json',
+        ],
         jsx: true,
       },
       rcFile: false,
