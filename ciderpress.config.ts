@@ -1,6 +1,7 @@
 import { CiderpressLogo, defineConfig } from 'ciderpress'
 import { createElement } from 'react'
 
+import { CiderpressHeroBackground } from './hero-background.tsx'
 // Single source of truth for every version string on the site: the
 // published package's own manifest. Typing them by hand let the hero badge
 // (v0.5), the version selector (v1.0), and the actual release drift apart.
@@ -32,6 +33,7 @@ export default defineConfig({
     // auto-generated `/logo.svg`, which bakes a single brand hex at sync
     // time and can't read the live CSS context once loaded via `<img>`.
     logo: () => createElement(CiderpressLogo),
+    banner: ({ theme }) => createElement(CiderpressHeroBackground, { variant: theme.variant }),
   },
   editLink: { repo: 'thebytefarm/ciderpress', branch: 'main', directory: 'docs' },
   reportLink: { repo: 'thebytefarm/ciderpress' },
@@ -85,25 +87,25 @@ export default defineConfig({
         // dominate the row.
         names: [
           {
-            src: '/logos/maltty.svg',
+            src: { dark: '/logos/maltty.svg', light: '/logos/maltty-light.svg' },
             alt: 'maltty',
             href: 'https://github.com/thebytefarm/maltty',
             height: 22,
           },
           {
-            src: '/logos/massaman.svg',
+            src: { dark: '/logos/massaman.svg', light: '/logos/massaman-light.svg' },
             alt: 'massaman',
             href: 'https://github.com/zrosenbauer/massaman',
             height: 22,
           },
           {
-            src: '/logos/marxml.png',
+            src: { dark: '/logos/marxml.png', light: '/logos/marxml-light.svg' },
             alt: 'marxml',
             href: 'https://github.com/thebytefarm/marxml',
             height: 15,
           },
           {
-            src: '/logos/viteval.svg',
+            src: { dark: '/logos/viteval.svg', light: '/logos/viteval-light.svg' },
             alt: 'viteval',
             href: 'https://github.com/viteval/viteval',
             height: 22,

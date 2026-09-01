@@ -22,16 +22,21 @@ export interface HeroAction {
   readonly theme?: 'brand' | 'alt'
 }
 
-/**
- * Background image painted behind the hero copy, dimmed by a theme-aware
- * scrim so the headline stays readable in both variants.
- */
-export interface HeroBackground {
+/** Background image source and responsive rendering controls. */
+export interface HeroBackgroundSource {
   /**
    * Image URL or path. Runs through {@link withMountBase} so paths on a
    * mounted `base` still resolve.
    */
   readonly src: string
+  /**
+   * Optional image overrides for the 880px tablet and 640px mobile
+   * breakpoints.
+   */
+  readonly sources?: {
+    readonly tablet?: string
+    readonly mobile?: string
+  }
   /**
    * CSS `background-position` value (e.g. `'center'`). Default `'center'`.
    */
@@ -45,6 +50,26 @@ export interface HeroBackground {
    */
   readonly repeat?: string
 }
+
+/** A single hero background image with fixed foreground contrast. */
+export interface HeroBackgroundImage extends HeroBackgroundSource {
+  /**
+   * Color mode used for the hero foreground and scrim. When omitted, the
+   * active site variant is used.
+   */
+  readonly mode?: 'dark' | 'light'
+}
+
+/** Hero background sources selected from the active site variant. */
+export interface HeroBackgroundVariants {
+  /** Artwork displayed in dark mode. */
+  readonly dark: HeroBackgroundSource
+  /** Artwork displayed in light mode. */
+  readonly light: HeroBackgroundSource
+}
+
+/** Background image painted behind the hero copy. */
+export type HeroBackground = HeroBackgroundImage | HeroBackgroundVariants
 
 export interface HeroProps {
   /**
@@ -69,10 +94,14 @@ export interface HeroProps {
    */
   readonly demo?: React.ReactNode
   /**
-   * Optional background image painted behind the hero copy, dimmed by a
-   * theme-aware scrim so the headline stays readable in both variants.
+   * Optional background image painted behind the hero copy.
    */
   readonly background?: HeroBackground
+  /**
+   * Optional React content painted behind the hero copy. Intended for
+   * procedural canvas, WebGL, or inline SVG backgrounds.
+   */
+  readonly backgroundContent?: React.ReactNode
 }
 
 /**
@@ -85,11 +114,18 @@ export interface HeroProps {
  * @returns React element.
  */
 export function Hero(props: HeroProps): React.ReactElement {
-  const { eyebrow, title, tagline, actions, demo, background } = props
+  const { eyebrow, title, tagline, actions, demo, background, backgroundContent } = props
   const list = actions ?? []
 
   return (
     <section className={heroClassName(background)} style={heroBackgroundStyle(background)}>
+      {match(backgroundContent)
+        .with(undefined, () => null)
+        .otherwise((content) => (
+          <div className="cp-hero__background" aria-hidden="true">
+            {content}
+          </div>
+        ))}
       <div className="cp-hero__inner">
         {match(eyebrow)
           .with(undefined, () => null)
@@ -108,6 +144,7 @@ export function Hero(props: HeroProps): React.ReactElement {
             <div className="cp-hero__cta">{list.map(renderAction)}</div>
           ))}
         {match(demo)
+          .with(null, () => null)
           .with(undefined, () => null)
           .otherwise((d) => (
             <div className="cp-hero__demo">{d}</div>
@@ -127,9 +164,19 @@ export function Hero(props: HeroProps): React.ReactElement {
  * @returns ClassName string
  */
 function heroClassName(background: HeroBackground | undefined): string {
-  return match(background !== undefined && background.src.length > 0)
-    .with(true, () => 'cp-hero cp-hero--has-background')
-    .otherwise(() => 'cp-hero')
+  if (background === undefined) {
+    return 'cp-hero'
+  }
+  if (isVariantBackground(background)) {
+    return 'cp-hero cp-hero--has-background cp-hero--background-variants'
+  }
+  if (background.src.length === 0) {
+    return 'cp-hero'
+  }
+  if (background.mode === undefined) {
+    return 'cp-hero cp-hero--has-background'
+  }
+  return `cp-hero cp-hero--has-background cp-hero--background-${background.mode}`
 }
 
 /**
@@ -144,15 +191,96 @@ function heroClassName(background: HeroBackground | undefined): string {
 function heroBackgroundStyle(
   background: HeroBackground | undefined
 ): React.CSSProperties | undefined {
-  if (background === undefined || background.src.length === 0) {
+  if (background === undefined) {
     return undefined
   }
+  if (isVariantBackground(background)) {
+    const dark = heroBackgroundSourceStyle(background.dark)
+    const light = heroBackgroundSourceStyle(background.light)
+    return {
+      '--cp-hero-background-image': dark.image,
+      '--cp-hero-background-position': dark.position,
+      '--cp-hero-background-size': dark.size,
+      '--cp-hero-background-repeat': dark.repeat,
+      '--cp-hero-background-tablet-image': dark.tabletImage,
+      '--cp-hero-background-mobile-image': dark.mobileImage,
+      '--cp-hero-background-light-image': light.image,
+      '--cp-hero-background-light-position': light.position,
+      '--cp-hero-background-light-size': light.size,
+      '--cp-hero-background-light-repeat': light.repeat,
+      '--cp-hero-background-light-tablet-image': light.tabletImage,
+      '--cp-hero-background-light-mobile-image': light.mobileImage,
+    } as React.CSSProperties
+  }
+  if (background.src.length === 0) {
+    return undefined
+  }
+  const style = heroBackgroundSourceStyle(background)
   return {
-    '--cp-hero-background-image': `url("${withMountBase(background.src)}")`,
-    '--cp-hero-background-position': background.position ?? 'center',
-    '--cp-hero-background-size': background.size ?? 'cover',
-    '--cp-hero-background-repeat': background.repeat ?? 'no-repeat',
+    '--cp-hero-background-image': style.image,
+    '--cp-hero-background-position': style.position,
+    '--cp-hero-background-size': style.size,
+    '--cp-hero-background-repeat': style.repeat,
+    '--cp-hero-background-tablet-image': style.tabletImage,
+    '--cp-hero-background-mobile-image': style.mobileImage,
   } as React.CSSProperties
+}
+
+interface HeroBackgroundStyleValues {
+  readonly image: string
+  readonly position: string
+  readonly size: string
+  readonly repeat: string
+  readonly tabletImage: string | undefined
+  readonly mobileImage: string | undefined
+}
+
+/**
+ * Build normalized CSS values for one background source.
+ *
+ * @private
+ * @param source - Background source and rendering controls.
+ * @returns Normalized CSS values.
+ */
+function heroBackgroundSourceStyle(source: HeroBackgroundSource): HeroBackgroundStyleValues {
+  const sources = source.sources
+  return {
+    image: `url("${withMountBase(source.src)}")`,
+    position: source.position ?? 'center',
+    size: source.size ?? 'cover',
+    repeat: source.repeat ?? 'no-repeat',
+    tabletImage: match(sources)
+      .with(undefined, () => undefined)
+      .otherwise((responsive) => heroSourceImage(responsive.tablet)),
+    mobileImage: match(sources)
+      .with(undefined, () => undefined)
+      .otherwise((responsive) => heroSourceImage(responsive.mobile)),
+  }
+}
+
+/**
+ * Test whether a background provides site-variant sources.
+ *
+ * @private
+ * @param background - Hero background configuration.
+ * @returns Whether the background contains dark and light sources.
+ */
+function isVariantBackground(background: HeroBackground): background is HeroBackgroundVariants {
+  return 'dark' in background
+}
+
+/**
+ * Convert an optional responsive source into a base-aware CSS image value.
+ *
+ * @private
+ * @param src - Optional image URL or path.
+ * @returns CSS `url()` value, or `undefined` when no override is configured.
+ */
+function heroSourceImage(src: string | undefined): string | undefined {
+  if (src === undefined) {
+    return undefined
+  }
+  return `url("${withMountBase(src)}")`
 }
 
 /**

@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.8/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.10/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -3052,6 +3052,143 @@
                   ]
                 }
               ]
+            },
+            "background": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "anyOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "src": {
+                          "type": "string",
+                          "minLength": 1
+                        },
+                        "sources": {
+                          "type": "object",
+                          "properties": {
+                            "tablet": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "mobile": {
+                              "type": "string",
+                              "minLength": 1
+                            }
+                          },
+                          "additionalProperties": false
+                        },
+                        "position": {
+                          "type": "string"
+                        },
+                        "size": {
+                          "type": "string"
+                        },
+                        "repeat": {
+                          "type": "string"
+                        },
+                        "mode": {
+                          "type": "string",
+                          "enum": [
+                            "dark",
+                            "light"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "src"
+                      ],
+                      "additionalProperties": false
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "dark": {
+                          "type": "object",
+                          "properties": {
+                            "src": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sources": {
+                              "type": "object",
+                              "properties": {
+                                "tablet": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "mobile": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "position": {
+                              "type": "string"
+                            },
+                            "size": {
+                              "type": "string"
+                            },
+                            "repeat": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "src"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "light": {
+                          "type": "object",
+                          "properties": {
+                            "src": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sources": {
+                              "type": "object",
+                              "properties": {
+                                "tablet": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "mobile": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              },
+                              "additionalProperties": false
+                            },
+                            "position": {
+                              "type": "string"
+                            },
+                            "size": {
+                              "type": "string"
+                            },
+                            "repeat": {
+                              "type": "string"
+                            }
+                          },
+                          "required": [
+                            "src"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "dark",
+                        "light"
+                      ],
+                      "additionalProperties": false
+                    }
+                  ]
+                }
+              ]
             }
           },
           "additionalProperties": false
@@ -3082,8 +3219,30 @@
                           "type": "object",
                           "properties": {
                             "src": {
-                              "type": "string",
-                              "minLength": 1
+                              "anyOf": [
+                                {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                {
+                                  "type": "object",
+                                  "properties": {
+                                    "dark": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    },
+                                    "light": {
+                                      "type": "string",
+                                      "minLength": 1
+                                    }
+                                  },
+                                  "required": [
+                                    "dark",
+                                    "light"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              ]
                             },
                             "alt": {
                               "type": "string",

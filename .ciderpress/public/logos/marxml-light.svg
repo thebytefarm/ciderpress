@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="131" viewBox="0 0 800 131" role="img" aria-labelledby="title description">
+  <title id="title">marxml</title>
+  <desc id="description">Marxml pixel wordmark</desc>
+  <g fill="#392D24">
+    <path d="M0 0h41l41 41 42-41v124H82V75L62 96 41 75v49H0z" />
+    <path d="M142 34 177 0h78v124h-41v-20h-31v20h-41zm41 28h31V41h-12z" />
+    <path d="M274 0h116v83l-22 21 22 20h-51l-24-29v29h-41zm41 41v21h30l-15-21z" />
+    <path d="M406 0h42l31 31 31-31h42v33l-31 31 31 31v29h-42l-31-31-31 31h-42V95l31-31-31-31z" />
+    <path d="M568 0h41l41 41 42-41v124h-42V75l-20 21-21-21v49h-41z" />
+    <path d="M710 0h42v83h42v41h-84z" />
+  </g>
+</svg>

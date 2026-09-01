@@ -8,7 +8,7 @@ vi.mock('@rspress/core/runtime', () => ({ withBase: (value: string): string => v
 
 describe('home visual', () => {
   it('should render terminal visuals with dedicated compact chrome', () => {
-    expect.assertions(5)
+    expect.assertions(3)
     const output = renderToStaticMarkup(
       <HomeVisualView
         context="tabs"
@@ -20,9 +20,7 @@ describe('home visual', () => {
         }}
       />
     )
-    expect(output).toContain('class="cp-home-terminal"')
-    expect(output).toContain('cp-home-terminal__bar')
-    expect(output).toContain('cp-home-terminal__body')
+    expect(output).toContain('role="group" aria-label="Terminal output"')
     expect(output).toContain('ciderpress dev')
     expect(output).toContain('ready')
   })

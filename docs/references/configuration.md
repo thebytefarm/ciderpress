@@ -195,18 +195,17 @@ brand: {
 type BannerFn = (params: { theme: LogoContext }) => ImageSource | React.ReactNode
 ```
 
-The function receives the active theme context and returns either an image source or a React node. Use the React-node variant for SVG-defined hero art that needs to respond to theme tokens.
+The function receives the active theme context and returns either an image source or a React node. Use the React-node variant for procedural canvas, WebGL, or inline SVG backgrounds that respond to theme tokens.
 
 ```ts
 brand: {
-  banner: ({ theme }) => ({
-    src: theme.variant === 'dark' ? '/banner-dark.svg' : '/banner-light.svg',
-    alt: 'Acme banner',
-  }),
+  banner: ({ theme }) => <HeroCanvas variant={theme.variant} />,
 }
 ```
 
-A plain-string `brand.banner` becomes the hero background when [`home.hero.background`](#homeheroconfig) is not set. The function form is ignored for the background.
+Put component JSX in a `.tsx` module, import it from `ciderpress.config.ts`, and return `createElement(HeroCanvas, props)`. Components run in the browser, so keep module initialization browser-safe and access DOM APIs from effects.
+
+`home.hero.background` takes precedence when set. Otherwise, a plain-string banner is serialized as an image background and a function banner renders at runtime.
 
 ### LoaderConfig
 
@@ -997,13 +996,13 @@ interface HomeHeroConfig {
 }
 ```
 
-| Field        | Type                           | Description                                                                             |
-| ------------ | ------------------------------ | --------------------------------------------------------------------------------------- |
-| `label`      | `string`                       | Small label above the title (renamed from `eyebrow`)                                    |
-| `tagline`    | `string`                       | Marketing line under the title                                                          |
-| `actions`    | `ButtonConfig[]`               | CTA buttons (typically up to 2)                                                         |
-| `demo`       | `false \| HomeVisual`          | Visual rendered below the hero copy. `false` hides it                                   |
-| `background` | `string \| HomeHeroBackground` | Background image behind the hero copy. Falls back to a string `brand.banner` when unset |
+| Field        | Type                           | Description                                                                          |
+| ------------ | ------------------------------ | ------------------------------------------------------------------------------------ |
+| `label`      | `string`                       | Small label above the title (renamed from `eyebrow`)                                 |
+| `tagline`    | `string`                       | Marketing line under the title                                                       |
+| `actions`    | `ButtonConfig[]`               | CTA buttons (typically up to 2)                                                      |
+| `demo`       | `false \| HomeVisual`          | Visual rendered below the hero copy. `false` hides it                                |
+| `background` | `string \| HomeHeroBackground` | Background image behind the hero copy. Takes precedence over `brand.banner` when set |
 
 Omit `demo` entirely to keep the framework's built-in terminal animation.
 
@@ -1013,16 +1012,37 @@ Omit `demo` entirely to keep the framework's built-in terminal animation.
 background: '/hero.jpg'
 // shorthand for:
 background: { src: '/hero.jpg' }
+// lock foreground contrast to dark artwork:
+background: { src: '/hero.jpg', mode: 'dark' }
+// optional responsive crops:
+background: {
+  src: '/hero.jpg',
+  sources: { tablet: '/hero-tablet.jpg', mobile: '/hero-mobile.jpg' },
+}
+// switch artwork with the active site variant:
+background: {
+  dark: {
+    src: '/hero-dark.jpg',
+    sources: { tablet: '/hero-dark-tablet.jpg', mobile: '/hero-dark-mobile.jpg' },
+  },
+  light: {
+    src: '/hero-light.jpg',
+    sources: { tablet: '/hero-light-tablet.jpg', mobile: '/hero-light-mobile.jpg' },
+  },
+}
 ```
 
-| Field      | Type     | Default       | Description                                  |
-| ---------- | -------- | ------------- | -------------------------------------------- |
-| `src`      | `string` | —             | Image URL or path, base-prefixed at render   |
-| `position` | `string` | `'center'`    | CSS `background-position` (e.g. `'50% 25%'`) |
-| `size`     | `string` | `'cover'`     | CSS `background-size`                        |
-| `repeat`   | `string` | `'no-repeat'` | CSS `background-repeat`                      |
+| Field      | Type                | Default       | Description                                                      |
+| ---------- | ------------------- | ------------- | ---------------------------------------------------------------- |
+| `src`      | `string`            | —             | Image URL or path, base-prefixed at render                       |
+| `mode`     | `'dark' \| 'light'` | Site variant  | Foreground and scrim mode; set this to match the image           |
+| `sources`  | `object`            | —             | Optional `tablet` (≤880px) and `mobile` (≤640px) image overrides |
+| `position` | `string`            | `'center'`    | CSS `background-position` (e.g. `'50% 25%'`)                     |
+| `size`     | `string`            | `'cover'`     | CSS `background-size`                                            |
+| `repeat`   | `string`            | `'no-repeat'` | CSS `background-repeat`                                          |
 
-The image sits behind the hero copy, dimmed by a theme-aware scrim.
+Set `mode` for artwork designed for one color mode. Omit it for artwork that adapts to both site variants.
+Use `{ dark, light }` to switch the image and foreground contrast with the active site variant. Each variant accepts the same `src`, `sources`, `position`, `size`, and `repeat` fields.
 
 ### HomeVisual
 
@@ -1087,20 +1107,23 @@ An entry may be a bare string or a logo object. Mix both in one strip.
   names: [
     'Acme',
     { src: '/logos/beta.svg', alt: 'Beta' },
+    { src: { dark: '/logos/gamma-dark.svg', light: '/logos/gamma-light.svg' }, alt: 'Gamma' },
     { src: '/logos/gamma.svg', alt: 'Gamma', href: 'https://gamma.dev', height: 24, mono: true },
   ],
 }
 ```
 
-| Field    | Type      | Default | Description                                                                                                   |
-| -------- | --------- | ------- | ------------------------------------------------------------------------------------------------------------- |
-| `src`    | `string`  | —       | Required. Public path to the asset, base-prefixed on a mounted `base`                                         |
-| `alt`    | `string`  | —       | Required. Accessible name for the logo                                                                        |
-| `href`   | `string`  | —       | Makes the logo a link. Validated like any other href; rejected schemes drop the link and keep the mark        |
-| `height` | `integer` | `20`    | Rendered height in pixels; width follows the asset's aspect ratio                                             |
-| `mono`   | `boolean` | `false` | Draw the asset as a silhouette in the current text colour, so one file works on every theme and both variants |
+| Field    | Type                                        | Default | Description                                                                                                      |
+| -------- | ------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------- |
+| `src`    | `string \| { dark: string, light: string }` | —       | Required. Public path, or paths selected from the active site variant; each is base-prefixed on a mounted `base` |
+| `alt`    | `string`                                    | —       | Required. Accessible name for the logo                                                                           |
+| `href`   | `string`                                    | —       | Makes the logo a link. Validated like any other href; rejected schemes drop the link and keep the mark           |
+| `height` | `integer`                                   | `20`    | Rendered height in pixels; width follows the asset's aspect ratio                                                |
+| `mono`   | `boolean`                                   | `false` | Draw the asset as a silhouette in the current text colour, so one file works on every theme and both variants    |
 
 `mono` reads only the asset's alpha channel, so trim the artwork's `viewBox` to the mark itself — surrounding padding becomes part of the silhouette.
+
+Use `{ dark, light }` when a full-colour mark needs separate artwork for contrast. A string keeps the same asset in both variants.
 
 ### HomeFeaturesBlock
 

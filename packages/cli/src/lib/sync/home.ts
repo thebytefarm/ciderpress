@@ -183,6 +183,7 @@ export async function generateDefaultHomePage(
       .otherwise(() => ({})),
     ...match(heroBackground)
       .with({ src: P.string }, (b) => ({ heroBackground: b }))
+      .with({ dark: { src: P.string }, light: { src: P.string } }, (b) => ({ heroBackground: b }))
       .otherwise(() => ({})),
     ...match(heroDemo)
       .with(P.nonNullable, (h) => ({ heroDemo: h }))

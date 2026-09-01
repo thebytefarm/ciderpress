@@ -16,6 +16,13 @@ vi.mock('@rspress/core/runtime', async () => {
 })
 
 describe('Hero — background', () => {
+  it('should render React content in the background layer', () => {
+    const out = renderToStaticMarkup(
+      <Hero title="Docs" backgroundContent={<canvas data-testid="field" />} />
+    )
+    expect(out).toContain('<div class="cp-hero__background" aria-hidden="true"><canvas')
+  })
+
   it('should add the modifier class when a background is configured', () => {
     const out = renderToStaticMarkup(<Hero title="Docs" background={{ src: '/hero.jpg' }} />)
     expect(out).toContain('cp-hero cp-hero--has-background')
@@ -41,10 +48,54 @@ describe('Hero — background', () => {
     expect(out).toContain('--cp-hero-background-size:contain')
   })
 
+  it('should add the configured background mode class', () => {
+    const out = renderToStaticMarkup(
+      <Hero title="Docs" background={{ src: '/hero.jpg', mode: 'dark' }} />
+    )
+    expect(out).toContain('cp-hero--background-dark')
+  })
+
+  it('should paint responsive sources into CSS custom properties', () => {
+    const out = renderToStaticMarkup(
+      <Hero
+        title="Docs"
+        background={{
+          src: '/hero.jpg',
+          sources: { tablet: '/hero-tablet.jpg', mobile: '/hero-mobile.jpg' },
+        }}
+      />
+    )
+    expect(out).toContain('--cp-hero-background-tablet-image:url(&quot;/hero-tablet.jpg&quot;)')
+    expect(out).toContain('--cp-hero-background-mobile-image:url(&quot;/hero-mobile.jpg&quot;)')
+  })
+
+  it('should paint dark and light variant sources into CSS custom properties', () => {
+    const out = renderToStaticMarkup(
+      <Hero
+        title="Docs"
+        background={{
+          dark: { src: '/hero-dark.jpg', sources: { mobile: '/hero-dark-mobile.jpg' } },
+          light: { src: '/hero-light.jpg', sources: { mobile: '/hero-light-mobile.jpg' } },
+        }}
+      />
+    )
+    expect(out).toContain('cp-hero--background-variants')
+    expect(out).toContain('--cp-hero-background-image:url(&quot;/hero-dark.jpg&quot;)')
+    expect(out).toContain('--cp-hero-background-light-image:url(&quot;/hero-light.jpg&quot;)')
+    expect(out).toContain(
+      '--cp-hero-background-light-mobile-image:url(&quot;/hero-light-mobile.jpg&quot;)'
+    )
+  })
+
   it('should not add the modifier when background is absent', () => {
     const out = renderToStaticMarkup(<Hero title="Docs" />)
     expect(out).not.toContain('cp-hero--has-background')
     expect(out).not.toContain('--cp-hero-background-image')
+  })
+
+  it('should not render an empty demo wrapper when the demo is suppressed', () => {
+    const out = renderToStaticMarkup(<Hero title="Docs" demo={null} />)
+    expect(out).not.toContain('cp-hero__demo')
   })
 
   it('should not paint a background when src is an empty string', () => {

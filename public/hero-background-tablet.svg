@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 900" width="1000" height="900">
+  <defs>
+    <linearGradient id="canvas" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#080506"/>
+      <stop offset="0.55" stop-color="#170708"/>
+      <stop offset="1" stop-color="#050303"/>
+    </linearGradient>
+    <radialGradient id="red-bloom" cx="78%" cy="58%" r="58%">
+      <stop offset="0" stop-color="#dc2626" stop-opacity="0.58"/>
+      <stop offset="0.48" stop-color="#7f1d1d" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#450a0a" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="amber-bloom" cx="8%" cy="78%" r="44%">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#451a03" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="apple-ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#fb7185"/>
+      <stop offset="0.5" stop-color="#dc2626"/>
+      <stop offset="1" stop-color="#7f1d1d"/>
+    </linearGradient>
+    <linearGradient id="leaf-ink" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#bef264"/>
+      <stop offset="1" stop-color="#4d7c0f"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#fecaca" stroke-opacity="0.055"/>
+      <circle r="1.5" fill="#fca5a5" fill-opacity="0.18"/>
+    </pattern>
+    <pattern id="press-dots" width="18" height="18" patternUnits="userSpaceOnUse">
+      <circle cx="4" cy="4" r="3.2" fill="url(#apple-ink)"/>
+      <circle cx="13" cy="13" r="1.3" fill="#fb7185" fill-opacity="0.68"/>
+    </pattern>
+    <pattern id="cider-dots" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1.3" fill="#fbbf24" fill-opacity="0.52"/>
+      <circle cx="9" cy="9" r="0.8" fill="#ef4444" fill-opacity="0.3"/>
+    </pattern>
+    <g id="pixel-apple">
+      <path fill="currentColor" d="M8 5h4V3h8v2h4v3h4v4h3v12h-3v4h-4v3h-6v-2h-4v2H8v-3H4v-4H1V12h3V8h4z"/>
+      <path fill="#fff" fill-opacity="0.2" d="M5 12h4v8H5z"/>
+      <path fill="#71340f" d="M14 0h4v5h-4z"/>
+      <path fill="#84a82f" d="M18 1h7v2h3v4h-10z"/>
+    </g>
+    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.82" numOctaves="3" seed="6174"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.13"/></feComponentTransfer>
+    </filter>
+    <clipPath id="apple">
+      <path transform="translate(80)" d="M720 410h36v-24h64v24h36v20h36v36h20v112h-20v36h-36v28h-48v-18h-36v18h-48v-28h-36v-36h-20V466h20v-36h32v-20z"/>
+    </clipPath>
+  </defs>
+  <rect width="1000" height="900" fill="url(#canvas)"/>
+  <rect width="1000" height="900" fill="url(#red-bloom)"/>
+  <rect width="1000" height="900" fill="url(#amber-bloom)"/>
+  <rect width="1000" height="900" fill="url(#grid)"/>
+  <g fill="none" stroke="#fca5a5" stroke-opacity="0.14">
+    <rect x="52" y="70" width="190" height="120" rx="8"/>
+    <path d="M52 108h190M84 138h112M84 162h72"/>
+    <path d="M0 310h1000M0 710h1000M300 0v900M700 0v900"/>
+  </g>
+  <g clip-path="url(#apple)" opacity="0.8">
+    <rect x="720" y="360" width="280" height="320" fill="url(#press-dots)"/>
+    <path d="M720 466h280M720 520h280M720 574h280" stroke="#fecaca" stroke-opacity="0.16" stroke-width="2"/>
+  </g>
+  <path transform="translate(80)" d="M720 410h36v-24h64v24h36v20h36v36h20v112h-20v36h-36v28h-48v-18h-36v18h-48v-28h-36v-36h-20V466h20v-36h32v-20z" fill="none" stroke="#fb7185" stroke-opacity="0.5" stroke-width="3"/>
+  <path transform="translate(80)" d="M786 346h26v40h-26z" fill="#78350f"/>
+  <path transform="translate(80)" d="M810 348h58v16h24v26h-66v-16h-16z" fill="url(#leaf-ink)"/>
+  <g>
+    <use href="#pixel-apple" transform="translate(-35 430) scale(9)" color="#d9912b" opacity="0.4"/>
+    <use href="#pixel-apple" transform="translate(360 -50) scale(7)" color="#a93625" opacity="0.24"/>
+    <use href="#pixel-apple" transform="translate(420 710) scale(7)" color="#7fa52d" opacity="0.3"/>
+  </g>
+  <rect width="1000" height="900" filter="url(#grain)" opacity="0.72"/>
+  <rect x="0.5" y="0.5" width="999" height="899" fill="none" stroke="#fca5a5" stroke-opacity="0.12"/>
+</svg>

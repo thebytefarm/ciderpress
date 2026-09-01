@@ -13,14 +13,19 @@ import './trust-strip.css'
 const DEFAULT_LOGO_HEIGHT = 20
 
 /**
- * A logo entry in the trust strip. Drawn as a mask filled with the
- * current text color, so one asset covers every theme and both variants.
+ * A logo entry in the trust strip. Supports shared, variant-specific,
+ * full-color, and monochrome artwork.
  */
 export interface TrustLogo {
   /**
    * Public URL of the logo asset.
    */
-  readonly src: string
+  readonly src:
+    | string
+    | {
+        readonly dark: string
+        readonly light: string
+      }
   /**
    * Accessible name for the logo.
    */
@@ -99,7 +104,11 @@ export function TrustStrip(props: TrustStripProps): React.ReactElement | null {
 function itemKey(item: TrustItem): string {
   return match(item)
     .with(P.string, (name) => name)
-    .otherwise((logo) => logo.src)
+    .otherwise((logo) =>
+      match(logo.src)
+        .with(P.string, (src) => src)
+        .otherwise((src) => `${src.dark}:${src.light}`)
+    )
 }
 
 /**
@@ -153,14 +162,14 @@ function renderLogo(logo: TrustLogo): React.ReactNode {
  */
 function renderColorMark(logo: TrustLogo): React.ReactNode {
   const { src, alt, height = DEFAULT_LOGO_HEIGHT } = logo
-  return (
-    <img
-      alt={alt}
-      className="cp-trust__logo"
-      src={withMountBase(src)}
-      style={{ height: `${height}px` }}
-    />
-  )
+  return match(src)
+    .with(P.string, (source) => renderColorSource({ source, alt, height }))
+    .otherwise((sources) => (
+      <>
+        {renderColorSource({ source: sources.dark, alt, height, variant: 'dark' })}
+        {renderColorSource({ source: sources.light, alt, height, variant: 'light' })}
+      </>
+    ))
 }
 
 /**
@@ -175,18 +184,70 @@ function renderColorMark(logo: TrustLogo): React.ReactNode {
  */
 function renderMonoMark(logo: TrustLogo): React.ReactNode {
   const { src, alt, height = DEFAULT_LOGO_HEIGHT } = logo
+  return match(src)
+    .with(P.string, (source) => renderMonoSource({ source, alt, height }))
+    .otherwise((sources) => (
+      <>
+        {renderMonoSource({ source: sources.dark, alt, height, variant: 'dark' })}
+        {renderMonoSource({ source: sources.light, alt, height, variant: 'light' })}
+      </>
+    ))
+}
+
+interface RenderLogoSourceParams {
+  readonly source: string
+  readonly alt: string
+  readonly height: number
+  readonly variant?: 'dark' | 'light'
+}
+
+/**
+ * Render one color logo source.
+ *
+ * @private
+ * @param params - Source, accessible name, height, and optional site variant
+ * @returns Image element for the source
+ */
+function renderColorSource(params: RenderLogoSourceParams): React.ReactNode {
+  const { source, alt, height, variant } = params
+  const className = match(variant)
+    .with(P.string, (value) => `cp-trust__logo cp-trust__logo--${value}`)
+    .otherwise(() => 'cp-trust__logo')
+  return (
+    <img
+      alt={alt}
+      className={className}
+      src={withMountBase(source)}
+      style={{ height: `${height}px` }}
+    />
+  )
+}
+
+/**
+ * Render one monochrome logo source.
+ *
+ * @private
+ * @param params - Source, accessible name, height, and optional site variant
+ * @returns Masked logo element for the source
+ */
+function renderMonoSource(params: RenderLogoSourceParams): React.ReactNode {
+  const { source, alt, height, variant } = params
   // `encodeURI` so a `"` or `)` in the filename cannot terminate the
   // `url()` token — the CSSOM would reject the whole declaration, and a
   // mask that fails to load leaves the fill unclipped, painting a solid
   // text-coloured rectangle where the logo should be.
-  const mask = `url("${encodeURI(withMountBase(src))}")`
+  const resolvedSource = withMountBase(source)
+  const mask = `url("${encodeURI(resolvedSource)}")`
+  const className = match(variant)
+    .with(P.string, (value) => `cp-trust__logo cp-trust__logo--mono cp-trust__logo--${value}`)
+    .otherwise(() => 'cp-trust__logo cp-trust__logo--mono')
   // The inner image is hidden but still laid out, so the masked wrapper
   // inherits the asset's intrinsic aspect ratio. A mask alone has no
   // intrinsic size, so without it every logo would collapse to zero width.
   return (
     <span
       aria-label={alt}
-      className="cp-trust__logo cp-trust__logo--mono"
+      className={className}
       role="img"
       style={{
         height: `${height}px`,
@@ -194,7 +255,7 @@ function renderMonoMark(logo: TrustLogo): React.ReactNode {
         WebkitMaskImage: mask,
       }}
     >
-      <img alt="" aria-hidden="true" src={withMountBase(src)} />
+      <img alt="" aria-hidden="true" src={resolvedSource} />
     </span>
   )
 }

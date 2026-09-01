@@ -158,7 +158,7 @@ function VisualTerminal(props: VisualTerminalProps): React.ReactElement {
     )
     .otherwise(() => [])
   return (
-    <div className={className}>
+    <div className={className} role="group" aria-label="Terminal output">
       <div className="cp-home-terminal__bar">
         <span className="cp-home-terminal__dots" aria-hidden="true">
           <span className="cp-home-terminal__dot cp-home-terminal__dot--close" />

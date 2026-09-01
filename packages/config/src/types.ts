@@ -1016,22 +1016,21 @@ export interface HomeVisualTerminal {
  */
 export type HomeVisual = HomeVisualCode | HomeVisualImage | HomeVisualTerminal
 
-/**
- * Hero background image, dimmed by a theme-aware scrim so the headline
- * stays readable in both variants.
- *
- * The plain-string shorthand is equivalent to `{ src: value }`. When
- * omitted, a plain-string `brand.banner` is used instead; function-valued
- * banners are render-time React and cannot be serialized into the
- * generated home page, so they are ignored here — set
- * `home.hero.background` explicitly.
- */
-export interface HomeHeroBackground {
+/** Hero background image source and responsive rendering controls. */
+export interface HomeHeroBackgroundSource {
   /**
    * Image URL or path. Base-prefixed at render time when the site is
    * mounted under a `base`.
    */
   readonly src: string
+  /**
+   * Optional image overrides for Ciderpress's responsive home breakpoints.
+   * `tablet` applies at 880px and below; `mobile` applies at 640px and below.
+   */
+  readonly sources?: {
+    readonly tablet?: string
+    readonly mobile?: string
+  }
   /**
    * CSS `background-position` value (e.g. `'center'`). Default `'center'`.
    */
@@ -1045,6 +1044,35 @@ export interface HomeHeroBackground {
    */
   readonly repeat?: string
 }
+
+/** A single hero background image with fixed foreground contrast. */
+export interface HomeHeroBackgroundImage extends HomeHeroBackgroundSource {
+  /**
+   * Color mode used for the hero foreground and scrim. Set this to match
+   * the image so copy stays readable when the site theme changes. When
+   * omitted, the active site variant is used.
+   */
+  readonly mode?: 'dark' | 'light'
+}
+
+/** Hero background sources selected from the active site variant. */
+export interface HomeHeroBackgroundVariants {
+  /** Artwork displayed in dark mode. */
+  readonly dark: HomeHeroBackgroundSource
+  /** Artwork displayed in light mode. */
+  readonly light: HomeHeroBackgroundSource
+}
+
+/**
+ * Hero background image with responsive and color-variant sources.
+ *
+ * The plain-string shorthand is equivalent to `{ src: value }`. When
+ * omitted, a plain-string `brand.banner` is used instead; function-valued
+ * banners are render-time React and cannot be serialized into the
+ * generated home page, so they are ignored here — set
+ * `home.hero.background` explicitly.
+ */
+export type HomeHeroBackground = HomeHeroBackgroundImage | HomeHeroBackgroundVariants
 
 /**
  * Home hero block — label, tagline, actions, and optional demo visual.
@@ -1078,10 +1106,16 @@ export interface HomeHeroConfig {
  */
 export interface ProofLogo {
   /**
-   * Public URL of the logo asset (e.g. `'/logos/acme.svg'`). SVG and
-   * PNG both work; the file needs a transparent background.
+   * Public URL of the logo asset (e.g. `'/logos/acme.svg'`), or dark and
+   * light URLs selected from the active site variant. SVG and PNG both
+   * work; each file needs a transparent background.
    */
-  readonly src: string
+  readonly src:
+    | string
+    | {
+        readonly dark: string
+        readonly light: string
+      }
   /**
    * Accessible name for the logo, used as the image's alt text.
    */

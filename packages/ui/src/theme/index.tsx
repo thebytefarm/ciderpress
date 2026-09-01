@@ -102,7 +102,14 @@ export type { FeatureCardProps, FeatureItem } from './components/home/feature-ca
 export { PageRail } from './components/home/page-rail'
 export type { PageRailProps } from './components/home/page-rail'
 export { Hero } from './components/home/hero'
-export type { HeroProps, HeroAction, HeroBackground } from './components/home/hero'
+export type {
+  HeroProps,
+  HeroAction,
+  HeroBackground,
+  HeroBackgroundImage,
+  HeroBackgroundSource,
+  HeroBackgroundVariants,
+} from './components/home/hero'
 export { HeroDemo } from './components/home/hero-demo'
 export { TrustStrip } from './components/home/trust-strip'
 export type { TrustStripProps } from './components/home/trust-strip'

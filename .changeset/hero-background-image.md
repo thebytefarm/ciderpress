@@ -5,4 +5,4 @@
 '@ciderpress/ui': minor
 ---
 
-Add `home.hero.background` with string and object forms for configurable hero background images. A plain-string `brand.banner` remains the fallback when the hero background is not set.
+Add `home.hero.background` with string, fixed-contrast, and light/dark variant forms plus responsive image sources. When it is not set, `brand.banner` supports both static image paths and runtime React backgrounds such as canvas, WebGL, and inline SVG components.

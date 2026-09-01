@@ -101,10 +101,18 @@ export function HeroDemo(): React.ReactElement {
               <div className="cp-hero-demo__status-row">
                 <span className="cp-term-text--cyan">http://localhost:6174</span>
                 <span className="cp-hero-demo__status">
-                  <span className="cp-term-text--yellow" data-visible={runStep < FINAL_RUN_STEP}>
+                  <span
+                    className="cp-term-text--yellow"
+                    data-visible={runStep < FINAL_RUN_STEP}
+                    aria-hidden={runStep >= FINAL_RUN_STEP}
+                  >
                     ◒ Starting
                   </span>
-                  <span className="cp-term-text--green" data-visible={runStep >= FINAL_RUN_STEP}>
+                  <span
+                    className="cp-term-text--green"
+                    data-visible={runStep >= FINAL_RUN_STEP}
+                    aria-hidden={runStep < FINAL_RUN_STEP}
+                  >
                     ● Ready
                   </span>
                 </span>
