@@ -25,7 +25,7 @@ describe('hero demo', () => {
   it('should include the generated Acme Corp documentation preview', () => {
     expect.assertions(4)
     const output = renderToStaticMarkup(<HeroDemo />)
-    expect(output).toContain('docs.acme.internal')
+    expect(output).toContain('http://localhost:6174')
     expect(output).toContain('Acme Docs')
     expect(output).toContain('Getting Started')
     expect(output).toContain('On this page')

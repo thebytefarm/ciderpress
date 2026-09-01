@@ -137,11 +137,11 @@
 }
 
 .cp-hero-demo__loading[data-visible='true'] {
-  animation: cp-hero-demo-show-loading 0ms linear 700ms forwards;
+  animation: cp-hero-demo-show-loading 0ms linear 900ms forwards;
 }
 
 .cp-hero-demo__loading[data-initial-run='true'][data-visible='true'] {
-  animation-delay: 1.5s;
+  animation-delay: 1.7s;
 }
 
 .cp-hero-demo__run-output {
@@ -159,6 +159,7 @@
 
 .cp-hero-demo__cli-banner {
   margin: 10px 0 4px;
+  padding-bottom: 4px;
   overflow: hidden;
   color: var(--cp-c-brand-1);
   font-family: var(--rp-font-family-mono);

@@ -8,7 +8,7 @@ type DemoView = 'cli' | 'docs'
 
 const FINAL_RUN_STEP = 5
 const INITIAL_RUN_DELAY = 800
-const RUN_DELAYS = [1000, 1550, 2000, 2400, 3000] as const
+const RUN_DELAYS = [1300, 1850, 2300, 2700, 3300] as const
 const activity = [
   ['23:18:04', 'synced', 'docs/getting-started/introduction.md', '12ms', 3],
   ['23:18:04', 'synced', 'packages/api/docs/authentication.md', '8ms', 4],
@@ -194,7 +194,7 @@ export function HeroDemo(): React.ReactElement {
         </div>
         <div className="cp-browser__url-bar">
           <BrowserNav />
-          <span className="cp-browser__url">docs.acme.internal/getting-started/introduction</span>
+          <span className="cp-browser__url">http://localhost:6174</span>
           <svg className="cp-browser__menu-icon" viewBox="0 0 16 16" fill="currentColor">
             <circle cx="8" cy="3" r="1.2" />
             <circle cx="8" cy="8" r="1.2" />
