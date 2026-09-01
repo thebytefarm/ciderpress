@@ -1,0 +1,25 @@
+pnpm-workspace.yaml
+  s_6de479dcd93a5e::t_f19870599ac49e 42,44-45
+  s_6de479dcd93a5e::t_01fa7a27c51662 43
+patches/@kidd-cli__core@0.24.0.patch
+  s_6de479dcd93a5e::t_f19870599ac49e 1-4,6-14
+  s_6de479dcd93a5e::t_1a5a52e92be2a4 5
+pnpm-lock.yaml
+  s_6de479dcd93a5e::t_d894816113d2ca 54-56,262,8015,8063
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ac8ce4056525be138aece7145be6655fdce07f08",
+  "prompts": {},
+  "sessions": {
+    "s_6de479dcd93a5e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2252ae8ffecwUJM881BGtObg",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
