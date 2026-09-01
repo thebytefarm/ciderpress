@@ -51,6 +51,9 @@ overrides:
 
 packageExtensionsChecksum: sha256-AtLTWj5GUGjE/8XmRjVD0esu4eXUBb2n03YuDPG87h8=
 
+patchedDependencies:
+  '@kidd-cli/core@0.24.0': 7ab56dcb054854b7106e4fb5be2ba8da7456fd61031a07c18f43f2c3d6a9d3bd
+
 importers:
 
   .:
@@ -256,7 +259,7 @@ importers:
         version: 1.7.0
       '@kidd-cli/core':
         specifier: ^0.24.0
-        version: 0.24.0(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))
+        version: 0.24.0(patch_hash=7ab56dcb054854b7106e4fb5be2ba8da7456fd61031a07c18f43f2c3d6a9d3bd)(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))
       '@rspress/core':
         specifier: 'catalog:'
         version: 2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2(supports-color@9.4.0))(supports-color@9.4.0)
@@ -8009,7 +8012,7 @@ snapshots:
     dependencies:
       '@kidd-cli/bundler': 0.9.1(@typescript/native-preview@7.0.0-dev.20260707.2)(chokidar@5.0.0)(dotenv@17.4.2)(jiti@2.7.0)(typescript@7.0.2)
       '@kidd-cli/config': 0.4.1(chokidar@5.0.0)(dotenv@17.4.2)(jiti@2.7.0)
-      '@kidd-cli/core': 0.24.0(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))
+      '@kidd-cli/core': 0.24.0(patch_hash=7ab56dcb054854b7106e4fb5be2ba8da7456fd61031a07c18f43f2c3d6a9d3bd)(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))
       '@kidd-cli/utils': 0.4.2
       fs-extra: 11.4.0
       ink: 7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8)
@@ -8057,7 +8060,7 @@ snapshots:
       - jiti
       - magicast
 
-  '@kidd-cli/core@0.24.0(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))':
+  '@kidd-cli/core@0.24.0(patch_hash=7ab56dcb054854b7106e4fb5be2ba8da7456fd61031a07c18f43f2c3d6a9d3bd)(chokidar@5.0.0)(ink@7.1.1(@types/react@19.2.18)(react-devtools-core@7.0.1)(react@19.2.8))(jiti@2.7.0)(react@19.2.8)(vitest@4.1.11(@opentelemetry/api@1.9.0)(@types/node@26.4.0)(happy-dom@20.12.0)(msw@2.15.0(@types/node@26.4.0)(typescript@7.0.2))(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))':
     dependencies:
       '@clack/prompts': 1.7.0
       '@kidd-cli/config': 0.4.1(chokidar@5.0.0)(dotenv@17.4.2)(jiti@2.7.0)

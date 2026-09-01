@@ -1,0 +1,14 @@
+diff --git a/dist/cli-9sfQca7V.js b/dist/cli-9sfQca7V.js
+index b15d33f..efcf99e 100644
+--- a/dist/cli-9sfQca7V.js
++++ b/dist/cli-9sfQca7V.js
+@@ -390,7 +390,8 @@ function isCommandsConfig(value) {
+ * @returns True when args is a ZodObject.
+ */
+ function isZodSchema(args) {
+-	return typeof args === "object" && args !== null && Object.hasOwn(args, "_def") && typeof args._def === "object" && args._def !== null && args._def.type === "object";
++	const def = args?._def ?? args?.def;
++	return typeof args === "object" && args !== null && typeof def === "object" && def !== null && def.type === "object";
+ }
+ /**
+ * Convert an entire zod object schema into a record of yargs options.
