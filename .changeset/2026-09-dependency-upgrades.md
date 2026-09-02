@@ -7,5 +7,5 @@
 '@ciderpress/ui': patch
 ---
 
-Upgrade workspace dependencies, including Rslib, Rspress, Vitest, Zod, and pnpm,
-to their latest compatible releases.
+Keep Ciderpress compatible with current documentation tooling while preserving CLI
+option discovery and parsing across commands.
