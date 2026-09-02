@@ -1,5 +1,12 @@
 # @ciderpress/theme
 
+## 1.0.0-rc.7
+
+### Patch Changes
+
+- c65bb52: Keep Ciderpress compatible with current documentation tooling while preserving CLI
+  option discovery and parsing across commands.
+
 ## 1.0.0-rc.6
 
 ### Major Changes
