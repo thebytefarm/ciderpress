@@ -1,5 +1,14 @@
 # @ciderpress/config
 
+## 1.0.0-rc.12
+
+### Patch Changes
+
+- c65bb52: Keep Ciderpress compatible with current documentation tooling while preserving CLI
+  option discovery and parsing across commands.
+- Updated dependencies [c65bb52]
+  - @ciderpress/theme@1.0.0-rc.7
+
 ## 1.0.0-rc.11
 
 ### Minor Changes
