@@ -1,0 +1,19 @@
+.changeset/2026-09-dependency-upgrades.md
+  s_6de479dcd93a5e::t_82da7606122e2a 10-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "ac6d9f57437b9531b51112d33f8cdb52884c2055",
+  "prompts": {},
+  "sessions": {
+    "s_6de479dcd93a5e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2252ae8ffecwUJM881BGtObg",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
