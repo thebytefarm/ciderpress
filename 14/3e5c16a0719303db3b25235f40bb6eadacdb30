@@ -1,0 +1,19 @@
+pnpm-workspace.yaml
+  s_6de479dcd93a5e::t_6d72855f27cb17 44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "143e5c16a0719303db3b25235f40bb6eadacdb30",
+  "prompts": {},
+  "sessions": {
+    "s_6de479dcd93a5e": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_fa2252ae8ffecwUJM881BGtObg",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
