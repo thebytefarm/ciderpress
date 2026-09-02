@@ -41,7 +41,7 @@ packageExtensions:
 
 patchedDependencies:
   # Zod 4.5 moved object metadata from `_def` to `def`; accept both until Kidd ships support.
-  '@kidd-cli/core@0.24.0': patches/@kidd-cli__core@0.24.0.patch
+  '@kidd-cli/core@0.24.0': patches/kidd-cli-core-0-24-0.patch
 
 catalog:
   '@rslib/core': ^0.23.2
