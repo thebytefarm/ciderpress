@@ -36,6 +36,7 @@
     "//#format": {
       "dependsOn": ["^typecheck"]
     },
+    "//#knip": {},
     "//#docs:generate": {
       "dependsOn": ["^build"],
       "cache": false

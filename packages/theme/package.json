@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "massaman": "catalog:",
-    "ts-pattern": "catalog:",
     "type-fest": "catalog:",
     "zod": "catalog:"
   },

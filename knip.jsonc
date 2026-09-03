@@ -1,0 +1,34 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+  "workspaces": {
+    ".": {
+      "entry": [
+        "ciderpress.config.ts",
+        "hero-background.tsx",
+        "lauf.config.ts",
+        "scripts/*.lauf.ts",
+        "vitest.workspace.ts",
+      ],
+      "project": ["*.{ts,tsx}", "scripts/**/*.{ts,tsx,mjs}"],
+      // Vitest 4 removed defineWorkspace; package-level configs remain auto-discovered.
+      "vitest": false,
+      // Rslib loads API Extractor through its declaration-bundling plugin.
+      "ignoreDependencies": ["@microsoft/api-extractor"],
+      // `pnpm package` invokes the VS Code workspace's package.json script in CI.
+      "ignoreBinaries": ["package"],
+    },
+    "packages/ui": {
+      "entry": [
+        "src/plugins/mermaid/MermaidRenderer.tsx",
+        "src/head/js/*.js",
+        "scripts/*.mjs",
+        ".ladle/*.{mjs,ts,tsx}",
+      ],
+      "project": ["src/**/*.{js,ts,tsx}", "scripts/*.mjs", ".ladle/**/*.{mjs,ts,tsx}"],
+    },
+    "packages/config": {
+      // React appears only in public types; runtime config loading remains React-free.
+      "ignoreDependencies": ["react"],
+    },
+  },
+}

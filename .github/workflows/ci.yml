@@ -24,6 +24,7 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm format
+      - run: pnpm knip
 
   changeset:
     if: github.event_name == 'pull_request'
