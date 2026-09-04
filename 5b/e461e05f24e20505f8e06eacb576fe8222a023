@@ -1,0 +1,19 @@
+.github/workflows/dependabot-automerge.yml
+  s_5ee09d89c521bc::t_6e86a8c4833a03 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "5be461e05f24e20505f8e06eacb576fe8222a023",
+  "prompts": {},
+  "sessions": {
+    "s_5ee09d89c521bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9cbdd3e0ffe9WOcIi8pX0ptVc",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
