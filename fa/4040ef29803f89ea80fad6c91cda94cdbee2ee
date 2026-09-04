@@ -1,0 +1,21 @@
+.github/scripts/generate-dependabot-changeset.sh
+  s_5ee09d89c521bc::t_2efef6b42f96ad 17,23-27
+.github/workflows/ci.yml
+  s_5ee09d89c521bc::t_2efef6b42f96ad 9-11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "fa4040ef29803f89ea80fad6c91cda94cdbee2ee",
+  "prompts": {},
+  "sessions": {
+    "s_5ee09d89c521bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9cbdd3e0ffe9WOcIi8pX0ptVc",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
