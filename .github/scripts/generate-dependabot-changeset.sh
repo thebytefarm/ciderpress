@@ -14,15 +14,17 @@ if [[ -z "${pr_number}" ]]; then
 fi
 
 changed_files=()
-while IFS= read -r file; do
-  changed_files+=("${file}")
-done < <(
+changed_files_output="$(
   gh api \
     --header 'Accept: application/vnd.github+json' \
     --paginate \
     "repos/${REPOSITORY}/pulls/${pr_number}/files" \
     --jq '.[].filename'
-)
+)"
+
+while IFS= read -r file; do
+  changed_files+=("${file}")
+done <<< "${changed_files_output}"
 
 if printf '%s\n' "${changed_files[@]}" | grep -Eq '^\.changeset/.+\.md$'; then
   exit 0
