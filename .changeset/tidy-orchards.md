@@ -5,4 +5,4 @@
 '@ciderpress/ui': patch
 ---
 
-Remove stale dependency declarations discovered by Knip.
+Reduce install size by removing unused dependencies from the CLI, config, theme, and UI packages.

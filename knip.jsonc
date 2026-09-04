@@ -25,6 +25,8 @@
         ".ladle/*.{mjs,ts,tsx}",
       ],
       "project": ["src/**/*.{js,ts,tsx}", "scripts/*.mjs", ".ladle/**/*.{mjs,ts,tsx}"],
+      // Rslib externalizes ts-morph from the bundled plugin dependency.
+      "ignoreDependencies": ["ts-morph"],
     },
     "packages/config": {
       // React appears only in public types; runtime config loading remains React-free.
