@@ -5,7 +5,7 @@ Set up your local environment to contribute to ciderpress.
 ## Prerequisites
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
-- [pnpm](https://pnpm.io/) 11.x (any recent pnpm will do — the `packageManager` field pins the exact version and pnpm switches to it automatically)
+- [pnpm](https://pnpm.io/) 10.x (any recent pnpm will do — the `packageManager` field pins the exact version and pnpm switches to it automatically)
 - [Git](https://git-scm.com/)
 - [Claude Code CLI](https://docs.anthropic.com/en/docs/claude-code) (optional but recommended)
 

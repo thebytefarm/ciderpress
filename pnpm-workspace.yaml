@@ -6,17 +6,16 @@ packages:
   - 'benchmarks'
   - 'e2e'
 
-# pnpm 11 prompts before recreating node_modules and aborts outright when
+# pnpm prompts before recreating node_modules and aborts outright when
 # there is no TTY. The example-site builds shell out to pnpm from inside a
 # piped child process, so they hit that abort in CI even though the runner
 # sets CI=true. Nothing here is ever installed interactively, so skip the
 # prompt rather than depending on env detection surviving each spawn.
 confirmModulesPurge: false
 
-# pnpm 11 replaced `onlyBuiltDependencies` with this map, and `strictDepBuilds`
-# now defaults to true — so every package with an install script must be
-# explicitly reviewed here or the install errors. The `false` entries preserve
-# the pnpm 10 behaviour, where esbuild was the only dependency allowed to build.
+# Every package with an install script is explicitly reviewed here. The `false`
+# entries preserve the policy where esbuild is the only dependency allowed to
+# build.
 allowBuilds:
   esbuild: true
   '@swc/core': false
@@ -30,7 +29,7 @@ overrides:
   # vite reaches this repo only through vitest and Ladle — Rspress builds on
   # Rspack and pulls no vite at all. @codspeed/vitest-plugin and Ladle's react
   # plugins still cap their vite range at ^7, which left a second vite major in
-  # the tree under pnpm 11. Both are verified working on 8.x (ladle build and
+  # the tree under pnpm. Both are verified working on 8.x (ladle build and
   # the full bench suite pass), so pin one vite for the whole workspace.
   vite: ^8.2.1
 
