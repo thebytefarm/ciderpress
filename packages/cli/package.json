@@ -52,7 +52,6 @@
     "@rspress/core": "catalog:",
     "fast-glob": "^3.3.3",
     "get-port": "^7.2.0",
-    "gray-matter": "^4.0.3",
     "ink": "^7.1.1",
     "ink-big-text": "^2.0.0",
     "ink-gradient": "^4.0.1",

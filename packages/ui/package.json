@@ -70,10 +70,8 @@
     "@mermaid-js/layout-elk": "^0.2.3",
     "@rspress/plugin-sitemap": "catalog:",
     "clsx": "^2.1.1",
-    "katex": "^0.18.5",
     "massaman": "catalog:",
     "mermaid": "^11.17.2",
-    "openapi-sampler": "^1.7.4",
     "react-aria-components": "^1.20.0",
     "ts-morph": "^28.0.0",
     "unist-util-visit": "^5.1.0"
@@ -85,7 +83,6 @@
     "@types/react": "catalog:",
     "@types/react-dom": "^19.2.5",
     "esbuild": "^0.28.2",
-    "geist": "^1.7.2",
     "happy-dom": "^20.12.0",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -94,6 +91,7 @@
     "rspress-plugin-katex": "^1.0.1",
     "rspress-plugin-supersub": "^1.0.0",
     "typescript": "catalog:",
+    "vite": "^8.2.2",
     "vitest": "catalog:"
   },
   "peerDependencies": {
