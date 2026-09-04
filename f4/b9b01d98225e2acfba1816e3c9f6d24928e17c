@@ -1,0 +1,45 @@
+.github/workflows/ci.yml
+  s_5ee09d89c521bc::t_e3f8b09515f68c 27
+  s_5ee09d89c521bc::t_24c85f7d3ac36d 30
+.changeset/tidy-orchards.md
+  s_5ee09d89c521bc::t_1b9d047325fb27 1-7
+knip.jsonc
+  s_5ee09d89c521bc::t_e3f8b09515f68c 1-9,11-15,19-24,26,36
+  s_5ee09d89c521bc::t_cdcc5410f37786 10,17-18
+  s_5ee09d89c521bc::t_577ae7543769bf 16,25,27,30,35
+  s_5ee09d89c521bc::t_d84a5639bb8304 31-34
+packages/config/package.json
+  s_5ee09d89c521bc::t_e3f8b09515f68c 60
+turbo.json
+  s_5ee09d89c521bc::t_e3f8b09515f68c 39
+packages/ui/package.json
+  s_5ee09d89c521bc::t_f648d90510e3dd 94
+package.json
+  s_5ee09d89c521bc::t_e3f8b09515f68c 18,20-21
+  s_5ee09d89c521bc::t_b07f7cabbb229b 55
+pnpm-lock.yaml
+  s_5ee09d89c521bc::t_89296d12092fae 79-81,274,468-470,899-901,911-913,923-925,1621-1623,1625-1663,1667-1669,1673-1693,1698-1700,1705-1735,1740-1742,1747-1755,1759-1767,1771-1772,1774-1775,1777-1778,1780-1783,1785-1788,1790-1793,1795-1798,1800-1803,1805-1808,1810-1813,1815-1819,1821-1881,4354-4356,4403-4407,4869-4872,5459-5465,6107-6110,6211-6213,6445-6448,6668-6671,7368-7373,7391-7395,7411-7415,7794,7800,7821,7823,7832,8099-8105,8113-8132,8134-8136,8139,8142,8145,8148,8151,8154,8157,8160-8161,8163-8164,8166-8167,8169-8170,8172-8173,8175-8176,8178-8179,8181-8182,8184-8193,8202-8262,10261-10263,10486-10489,10523-10527,11128-11142,12029-12074,12642,12650,12956-12957,13048,13187,13198,13284-13285,13485-13486
+.github/dependabot.yml
+  s_5ee09d89c521bc::t_9cff3c76c891b5 1-69
+.github/scripts/generate-dependabot-changeset.sh
+  s_5ee09d89c521bc::t_24c85f7d3ac36d 1-15,20-39,41-43,45-48,55-58,60-67,69-76
+  s_5ee09d89c521bc::t_0c1a598c5675f2 16-19,40,44,49-54,59,68
+.github/workflows/release.yml
+  s_5ee09d89c521bc::t_24c85f7d3ac36d 31-37
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "f4b9b01d98225e2acfba1816e3c9f6d24928e17c",
+  "prompts": {},
+  "sessions": {
+    "s_5ee09d89c521bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9cbdd3e0ffe9WOcIi8pX0ptVc",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
