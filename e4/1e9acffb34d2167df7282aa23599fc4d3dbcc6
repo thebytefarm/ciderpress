@@ -1,0 +1,25 @@
+.changeset/tidy-orchards.md
+  s_5ee09d89c521bc::t_e330f483a54d0e 8
+knip.jsonc
+  s_5ee09d89c521bc::t_e330f483a54d0e 28-29
+packages/ui/package.json
+  s_5ee09d89c521bc::t_e330f483a54d0e 76
+pnpm-lock.yaml
+  s_5ee09d89c521bc::t_22f8acd44999fc 417-419,2926-2928,6347-6349,9054-9059,13178-13182
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "e41e9acffb34d2167df7282aa23599fc4d3dbcc6",
+  "prompts": {},
+  "sessions": {
+    "s_5ee09d89c521bc": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f9cbdd3e0ffe9WOcIi8pX0ptVc",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
