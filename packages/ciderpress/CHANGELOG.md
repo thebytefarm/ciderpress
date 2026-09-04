@@ -1,5 +1,15 @@
 # ciderpress
 
+## 1.0.0-rc.16
+
+### Patch Changes
+
+- Updated dependencies [f76385d]
+  - @ciderpress/cli@1.0.0-rc.16
+  - @ciderpress/config@1.0.0-rc.13
+  - @ciderpress/theme@1.0.0-rc.8
+  - @ciderpress/ui@1.0.0-rc.16
+
 ## 1.0.0-rc.15
 
 ### Patch Changes

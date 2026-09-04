@@ -1,5 +1,15 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.16
+
+### Patch Changes
+
+- f76385d: Reduce install size by removing unused dependencies from the CLI, config, theme, and UI packages.
+- Updated dependencies [f76385d]
+  - @ciderpress/config@1.0.0-rc.13
+  - @ciderpress/theme@1.0.0-rc.8
+  - @ciderpress/ui@1.0.0-rc.16
+
 ## 1.0.0-rc.15
 
 ### Patch Changes
