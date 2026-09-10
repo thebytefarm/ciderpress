@@ -167,6 +167,34 @@ seo: {
 Rspress also generates `llms.txt`, `llms-full.txt`, and per-page Markdown automatically. These
 are root-level discovery files and do not require an HTML `<head>` tag.
 
+## `redirects`
+
+Redirect moved documentation routes after the Ciderpress app loads:
+
+```ts
+redirects: [
+  { from: '^/old-guide$', to: '/guides/new-guide' },
+  { from: ['^/v1/install$', '^/v2/install$'], to: '/getting-started/install' },
+  { from: '^/legacy/(.*)$', to: '/archive/$1' },
+]
+```
+
+| Field  | Type                 | Description                                 |
+| ------ | -------------------- | ------------------------------------------- |
+| `from` | `string \| string[]` | Path or regular-expression pattern to match |
+| `to`   | `string`             | Internal path or absolute HTTP(S) URL       |
+
+Rules run in order, and each `from` value is compiled as a regular expression. Anchor a path with
+`^` and `$` when it should match exactly.
+
+These are client-side redirects. The app loads before the browser replaces its URL, and the server
+does not return a real `301` or `308`. This is usually sufficient for internal documentation. For
+public documentation, prefer redirects configured in the hosting platform: they run before page
+load, avoid a visible flash, and preserve search-engine signals.
+
+The host must serve Ciderpress's generated `404.html` for unmatched routes. Netlify, Vercel, and
+GitHub Pages do this by default. If a host does not, configure its fallback route to `404.html`.
+
 ## `brand`
 
 Brand chrome — icon, wordmark, hero background, favicon, and the inline FOUC loader. Defaults to invisible: omit any field to render nothing in that slot.

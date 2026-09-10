@@ -30,6 +30,7 @@ import {
 } from '@ciderpress/theme'
 import type { CiderpressTheme, CiderpressThemeInput, ThemeVariant } from '@ciderpress/theme'
 import type { RspressPlugin, UserConfig } from '@rspress/core'
+import { pluginClientRedirects } from '@rspress/plugin-client-redirects'
 import { pluginSitemap } from '@rspress/plugin-sitemap'
 import { match, P } from 'massaman/match'
 import fileTree from 'rspress-plugin-file-tree'
@@ -275,6 +276,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
 
     plugins: [
       ciderpressPlugin(),
+      ...resolveRedirectPlugins(config),
       ...resolveSitemapPlugins({ config, base: resolvedBase }),
       mermaidPlugin(),
       fileTree({ initialExpandDepth: 1 }),
@@ -403,6 +405,31 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       } as Record<string, unknown>),
     },
   }
+}
+
+/**
+ * Register client redirects only when the user configured at least one rule.
+ *
+ * @private
+ * @param config - Validated ciderpress configuration
+ * @returns Redirect plugin list for the Rspress config
+ */
+function resolveRedirectPlugins(config: CiderpressConfig): RspressPlugin[] {
+  const { redirects } = config
+  if (redirects === undefined || redirects.length === 0) {
+    return []
+  }
+
+  return [
+    pluginClientRedirects({
+      redirects: redirects.map((rule) => ({
+        from: match(rule.from)
+          .with(P.string, (from) => from)
+          .otherwise((from) => [...from]),
+        to: rule.to,
+      })),
+    }),
+  ]
 }
 
 /**
