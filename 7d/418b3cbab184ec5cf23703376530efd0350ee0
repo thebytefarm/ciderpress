@@ -1,0 +1,52 @@
+packages/config/src/types.ts
+  s_03a6bc5cb67489::t_624464a3375ddd 422-429,2056-2060
+packages/config/src/schema.ts
+  s_03a6bc5cb67489::t_4d97a926028a99 27,843-846,849-852,1268-1274,1276
+  s_03a6bc5cb67489::t_83659fbc7053ae 1275
+  s_03a6bc5cb67489::t_624464a3375ddd 74,847-848,853-855,956,1176
+  s_03a6bc5cb67489::t_6dd423dcc1db93 1177
+  s_03a6bc5cb67489::t_302912145c5a07 1277
+packages/config/src/index.ts
+  s_03a6bc5cb67489::t_624464a3375ddd 5
+pnpm-workspace.yaml
+  s_03a6bc5cb67489::t_624464a3375ddd 48
+.changeset/kind-apples-redirect.md
+  s_03a6bc5cb67489::t_624464a3375ddd 1-7
+packages/config/schemas/schema.json
+  s_03a6bc5cb67489::t_1eae9b65a07480 3,156-187
+  s_03a6bc5cb67489::t_1c6c81f0507405 188
+packages/ui/package.json
+  s_03a6bc5cb67489::t_624464a3375ddd 71
+packages/ciderpress/src/index.ts
+  s_03a6bc5cb67489::t_624464a3375ddd 34
+packages/config/src/validator.test.ts
+  s_03a6bc5cb67489::t_4d97a926028a99 178-193
+  s_03a6bc5cb67489::t_624464a3375ddd 159-177,194-195
+docs/references/configuration.md
+  s_03a6bc5cb67489::t_ba5e1a3aaa6a90 176-177,187-193
+  s_03a6bc5cb67489::t_145dbbffbc5d4d 170-175,178-186,194-197
+packages/ui/src/config.ts
+  s_03a6bc5cb67489::t_145dbbffbc5d4d 33,279,410-418,420-432
+  s_03a6bc5cb67489::t_baa39fe83ae875 419
+  s_03a6bc5cb67489::t_69a242f5b3925e 433-434
+docs/guides/deploying-to-vercel.md
+  s_03a6bc5cb67489::t_145dbbffbc5d4d 65-82
+pnpm-lock.yaml
+  s_03a6bc5cb67489::t_4abecb7670112f 15-17,407-409,2690-2695,8787-8790
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7d418b3cbab184ec5cf23703376530efd0350ee0",
+  "prompts": {},
+  "sessions": {
+    "s_03a6bc5cb67489": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f73964d1effeUz1lGGsG0xL590",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
