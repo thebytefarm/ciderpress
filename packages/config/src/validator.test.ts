@@ -191,6 +191,17 @@ describe('validateConfig() — redirects', () => {
     })
     expect(error).toMatchObject({ type: 'validation_failed' })
   })
+
+  it('should reject duplicate redirect sources across rules', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      redirects: [
+        { from: ['/old', '/legacy'], to: '/new' },
+        { from: '/old', to: '/other' },
+      ],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
 })
 
 describe('validateConfig() — top-level page placement', () => {

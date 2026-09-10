@@ -35,7 +35,14 @@ If your project has a `pnpm-lock.yaml`, skip to the pnpm snippet below.
   "buildCommand": "npx ciderpress build",
   "outputDirectory": ".ciderpress/dist",
   "framework": null,
-  "installCommand": "npm install"
+  "installCommand": "npm install",
+  "redirects": [
+    {
+      "source": "/old-guide",
+      "destination": "/guides/new-guide",
+      "permanent": true
+    }
+  ]
 }
 ```
 
@@ -56,20 +63,7 @@ Then update `vercel.json` accordingly:
   "buildCommand": "pnpm exec ciderpress build",
   "outputDirectory": ".ciderpress/dist",
   "framework": null,
-  "installCommand": "pnpm install --frozen-lockfile"
-}
-```
-
-Again, `framework: null` keeps Vercel from overriding `buildCommand` with its own detected default.
-
-### Prefer Vercel redirects for public docs
-
-Ciderpress supports client-side [`redirects`](/reference/configuration#redirects), which are often
-enough for internal documentation. Public sites should use Vercel redirects instead so the old URL
-returns a real HTTP redirect before any page loads:
-
-```json
-{
+  "installCommand": "pnpm install --frozen-lockfile",
   "redirects": [
     {
       "source": "/old-guide",
@@ -79,6 +73,14 @@ returns a real HTTP redirect before any page loads:
   ]
 }
 ```
+
+Again, `framework: null` keeps Vercel from overriding `buildCommand` with its own detected default.
+
+### Prefer Vercel redirects for public docs
+
+Ciderpress supports client-side `redirects` when you cannot configure redirects at the hosting
+layer. Public sites should use the Vercel `redirects` configuration shown above instead so the old
+URL returns a real HTTP redirect before any page loads.
 
 ### 3. Import your project in Vercel
 
@@ -120,4 +122,5 @@ Add a custom domain from the Vercel dashboard under **Settings > Domains**. Verc
 
 - [CLI reference — build](/reference/cli#build)
 - [CLI reference — sync](/reference/cli#sync)
+- [Configuration reference — redirects](/reference/configuration#redirects)
 - [Content](/concepts/content) — how pages and groups are defined

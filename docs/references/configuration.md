@@ -182,7 +182,7 @@ redirects: [
 | Field  | Type                 | Description                                 |
 | ------ | -------------------- | ------------------------------------------- |
 | `from` | `string \| string[]` | Path or regular-expression pattern to match |
-| `to`   | `string`             | Internal path or absolute destination URL   |
+| `to`   | `string`             | Internal path or absolute HTTP(S) URL       |
 
 Rules run in order, and each `from` value is compiled as a regular expression. Anchor a path with
 `^` and `$` when it should match exactly.

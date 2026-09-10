@@ -847,11 +847,22 @@ const redirectPatternSchema = z.string().min(1).refine(isValidRegex, {
 const redirectRuleSchema = z
   .object({
     from: z.union([redirectPatternSchema, z.array(redirectPatternSchema).min(1)]),
-    to: z.string().min(1).refine(isHttpOrRelativeUrl, {
-      message: 'Redirect destination must be an HTTP(S) URL or relative path',
-    }),
+    to: z
+      .string()
+      .min(1)
+      .refine(isHttpOrRelativeUrl, {
+        message: 'Redirect destination must be an HTTP(S) URL or relative path',
+      })
+      .meta({
+        format: 'uri-reference',
+        pattern: '^(?:https?://|(?!(?:[A-Za-z][A-Za-z0-9+.-]*:)))',
+      }),
   })
   .strict()
+
+const redirectsSchema = z.array(redirectRuleSchema).refine(hasUniqueRedirectSources, {
+  message: 'Redirect sources must be unique across all rules',
+})
 
 const brandConfigSchema = z
   .object({
@@ -953,7 +964,7 @@ export const ciderpressConfigSchema = z
       .string()
       .regex(/^\/.*\/$/, 'base must start and end with `/` (e.g. `/examples/simple/`)')
       .optional(),
-    redirects: z.array(redirectRuleSchema).optional(),
+    redirects: redirectsSchema.optional(),
     version: z.string().optional(),
     brand: brandConfigSchema.optional(),
     theme: themeSettingsSchema.optional(),
@@ -1274,4 +1285,19 @@ function isHttpOrRelativeUrl(value: string): boolean {
 function isValidRegex(value: string): boolean {
   // oxlint-disable-next-line ciderpress/no-dynamic-regexp -- validating a user-supplied redirect pattern requires compiling that pattern
   return attempt(() => new RegExp(value)).ok
+}
+
+/**
+ * Ensures each redirect source belongs to exactly one rule.
+ *
+ * @private
+ */
+function hasUniqueRedirectSources(rules: readonly RedirectRule[]): boolean {
+  const sources = rules.flatMap((rule) => {
+    if (typeof rule.from === 'string') {
+      return [rule.from]
+    }
+    return rule.from
+  })
+  return new Set(sources).size === sources.length
 }
