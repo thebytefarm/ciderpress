@@ -1,5 +1,19 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.16
+
+### Minor Changes
+
+- 601f2d2: Add validated client-side redirects for moved documentation routes.
+
+### Patch Changes
+
+- f76385d: Reduce install size by removing unused dependencies from the CLI, config, theme, and UI packages.
+- Updated dependencies [601f2d2]
+- Updated dependencies [f76385d]
+  - @ciderpress/config@1.0.0-rc.13
+  - @ciderpress/theme@1.0.0-rc.8
+
 ## 1.0.0-rc.15
 
 ### Patch Changes
