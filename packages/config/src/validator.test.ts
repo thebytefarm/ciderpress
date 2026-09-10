@@ -156,6 +156,43 @@ describe('validateConfig() — SEO', () => {
   })
 })
 
+describe('validateConfig() — redirects', () => {
+  it('should accept string and array redirect sources', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      redirects: [
+        { from: '/old', to: '/new' },
+        { from: ['/v1', '/v2'], to: '/latest' },
+      ],
+    })
+    expect(error).toBeNull()
+  })
+
+  it('should reject empty redirect values', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      redirects: [{ from: [], to: '' }],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject invalid redirect patterns', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      redirects: [{ from: '[', to: '/new' }],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it('should reject unsafe redirect destinations', () => {
+    const [error] = validateConfig({
+      ...validConfig,
+      redirects: [{ from: '/old', to: 'javascript:alert(1)' }],
+    })
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+})
+
 describe('validateConfig() — top-level page placement', () => {
   it('should reject a top-level leaf page with a nested path', () => {
     const [error, config] = validateConfig({

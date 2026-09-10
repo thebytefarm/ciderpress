@@ -68,6 +68,7 @@
     "@iconify-json/vscode-icons": "^1.2.76",
     "@iconify/react": "^6.0.2",
     "@mermaid-js/layout-elk": "^0.2.3",
+    "@rspress/plugin-client-redirects": "catalog:",
     "@rspress/plugin-sitemap": "catalog:",
     "clsx": "^2.1.1",
     "massaman": "catalog:",

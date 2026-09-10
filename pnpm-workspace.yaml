@@ -45,6 +45,7 @@ patchedDependencies:
 catalog:
   '@rslib/core': ^0.23.2
   '@rspress/core': ^2.0.21
+  '@rspress/plugin-client-redirects': ^2.0.21
   '@rspress/plugin-sitemap': ^2.0.21
   '@types/react': ^19.2.18
   '@typescript/native-preview': 7.0.0-dev.20260707.2

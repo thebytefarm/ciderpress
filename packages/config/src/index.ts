@@ -2,6 +2,7 @@ export { SOCIAL_LINK_ICONS } from './types.ts'
 
 export type {
   CiderpressConfig,
+  RedirectRule,
   ThemeName,
   ColorMode,
   IconColor,

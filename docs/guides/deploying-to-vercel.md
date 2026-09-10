@@ -62,6 +62,24 @@ Then update `vercel.json` accordingly:
 
 Again, `framework: null` keeps Vercel from overriding `buildCommand` with its own detected default.
 
+### Prefer Vercel redirects for public docs
+
+Ciderpress supports client-side [`redirects`](/reference/configuration#redirects), which are often
+enough for internal documentation. Public sites should use Vercel redirects instead so the old URL
+returns a real HTTP redirect before any page loads:
+
+```json
+{
+  "redirects": [
+    {
+      "source": "/old-guide",
+      "destination": "/guides/new-guide",
+      "permanent": true
+    }
+  ]
+}
+```
+
 ### 3. Import your project in Vercel
 
 Go to the [Vercel dashboard](https://vercel.com/new) and import your Git repository.

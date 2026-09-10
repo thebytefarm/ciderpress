@@ -419,6 +419,14 @@ export interface SeoConfig {
   readonly sitemap?: SitemapConfig | boolean
 }
 
+/** Client-side redirect applied after the documentation app loads. */
+export interface RedirectRule {
+  /** Path or regular-expression pattern to match against the current URL. */
+  readonly from: string | readonly string[]
+  /** Internal path or absolute URL that replaces the matched path. */
+  readonly to: string
+}
+
 /** Per-page Open Graph overrides. */
 export interface PageOpenGraphConfig {
   /** Open Graph title override. */
@@ -2045,6 +2053,11 @@ export interface CiderpressConfig {
    * wins over this field.
    */
   readonly base?: string
+  /**
+   * Client-side redirects for moved documentation routes. Host-level
+   * redirects are preferred when real HTTP redirect responses are available.
+   */
+  readonly redirects?: readonly RedirectRule[]
   /**
    * Version label rendered next to the brand in the topbar (e.g. `'v1.0'`).
    */

@@ -24,6 +24,7 @@ import {
   themeInputEnvelopeSchema,
 } from '@ciderpress/theme'
 import type { BuiltInThemeName } from '@ciderpress/theme'
+import { attempt } from 'massaman/control'
 import type { ComponentType } from 'react'
 import { z } from 'zod'
 
@@ -70,6 +71,7 @@ import type {
   PageOpenGraphConfig,
   PageSeoConfig,
   PageTwitterConfig,
+  RedirectRule,
   ReportLinkConfig,
   ResolvedPage,
   HomeHeroBackground,
@@ -838,6 +840,19 @@ const devServerConfigSchema = z
   })
   .strict()
 
+const redirectPatternSchema = z.string().min(1).refine(isValidRegex, {
+  message: 'Redirect source must be a valid regular expression',
+})
+
+const redirectRuleSchema = z
+  .object({
+    from: z.union([redirectPatternSchema, z.array(redirectPatternSchema).min(1)]),
+    to: z.string().min(1).refine(isHttpOrRelativeUrl, {
+      message: 'Redirect destination must be an HTTP(S) URL or relative path',
+    }),
+  })
+  .strict()
+
 const brandConfigSchema = z
   .object({
     icon: iconConfigSchema.optional(),
@@ -938,6 +953,7 @@ export const ciderpressConfigSchema = z
       .string()
       .regex(/^\/.*\/$/, 'base must start and end with `/` (e.g. `/examples/simple/`)')
       .optional(),
+    redirects: z.array(redirectRuleSchema).optional(),
     version: z.string().optional(),
     brand: brandConfigSchema.optional(),
     theme: themeSettingsSchema.optional(),
@@ -1157,6 +1173,8 @@ const _guardDevServerConfig: z.ZodType<DevServerConfig> = devServerConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardFeedbackConfig: z.ZodType<FeedbackConfig> = feedbackConfigSchema
 // oxlint-disable-next-line no-unused-vars -- compile-time type guard
+const _guardRedirectRule: z.ZodType<RedirectRule> = redirectRuleSchema
+// oxlint-disable-next-line no-unused-vars -- compile-time type guard
 const _guardTruncateConfig: z.ZodType<TruncateConfig> = truncateConfigSchema
 
 // Re-export theme schemas so they remain reachable via this module for
@@ -1246,4 +1264,14 @@ function isHttpOrRelativeUrl(value: string): boolean {
     return false
   }
   return isHttpUrl(new URL(value, 'https://ciderpress.invalid').href)
+}
+
+/**
+ * Checks redirect patterns before they reach the browser plugin.
+ *
+ * @private
+ */
+function isValidRegex(value: string): boolean {
+  // oxlint-disable-next-line ciderpress/no-dynamic-regexp -- validating a user-supplied redirect pattern requires compiling that pattern
+  return attempt(() => new RegExp(value)).ok
 }

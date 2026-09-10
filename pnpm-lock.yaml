@@ -12,6 +12,9 @@ catalogs:
     '@rspress/core':
       specifier: ^2.0.21
       version: 2.0.21
+    '@rspress/plugin-client-redirects':
+      specifier: ^2.0.21
+      version: 2.0.21
     '@rspress/plugin-sitemap':
       specifier: ^2.0.21
       version: 2.0.21
@@ -401,6 +404,9 @@ importers:
       '@mermaid-js/layout-elk':
         specifier: ^0.2.3
         version: 0.2.3(mermaid@11.17.2)
+      '@rspress/plugin-client-redirects':
+        specifier: 'catalog:'
+        version: 2.0.21(@rspress/core@2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
       '@rspress/plugin-sitemap':
         specifier: 'catalog:'
         version: 2.0.21(@rspress/core@2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))
@@ -2680,6 +2686,12 @@ packages:
     resolution: {integrity: sha512-QxhVqhHhN4guA24MlvlsFTb96pE/X8gBd5RBfp4j1kn5tAu1nJ7A9itKcRAuEw0WYJHcsWtI+WUnd7JPioHtlw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
+
+  '@rspress/plugin-client-redirects@2.0.21':
+    resolution: {integrity: sha512-21giX10Blom+dOJBJOxXZUS+pjez1Tb9iNA7L7km8uUkn5L45KfdQvYqbBHY6Nv6L46zaDdz0Mt97eAqBPgNoA==}
+    engines: {node: ^20.19.0 || >=22.12.0}
+    peerDependencies:
+      '@rspress/core': ^2.0.10
 
   '@rspress/plugin-sitemap@2.0.21':
     resolution: {integrity: sha512-PldjjLDFqtQZ3yPHHsWxmxGNlmoNH7nSx76ww7QkPzkO9rPrlr71sBLZR3MMc1s6cd5Csyd+gHjfIJiP7o77XQ==}
@@ -8771,6 +8783,10 @@ snapshots:
       - micromark
       - micromark-util-types
       - supports-color
+
+  '@rspress/plugin-client-redirects@2.0.21(@rspress/core@2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))':
+    dependencies:
+      '@rspress/core': 2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2)
 
   '@rspress/plugin-sitemap@2.0.21(@rspress/core@2.0.21(@rspack/core@2.2.1(@swc/helpers@0.5.23))(core-js@3.47.0)(micromark-util-types@2.0.2)(micromark@4.0.2))':
     dependencies:
