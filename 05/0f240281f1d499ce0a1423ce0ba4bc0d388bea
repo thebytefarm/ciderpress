@@ -1,0 +1,19 @@
+.github/workflows/ci.yml
+  s_03a6bc5cb67489::t_8eeec66a5b7779 33-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "050f240281f1d499ce0a1423ce0ba4bc0d388bea",
+  "prompts": {},
+  "sessions": {
+    "s_03a6bc5cb67489": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f73964d1effeUz1lGGsG0xL590",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
