@@ -1,0 +1,50 @@
+.changeset/calm-apples-layout.md
+  s_11e2791e627937::t_4965f0b488b0d4 3,6
+  s_11e2791e627937::t_8a90c66d9b26ba 1-2,4-5
+  s_11e2791e627937::t_78ad3fb9cd3410 7-8
+packages/ui/src/theme/components/openapi/response-list.tsx
+  s_11e2791e627937::t_8dce3d3bd3f94a 29
+packages/ui/src/theme/components/openapi/security-badges.tsx
+  s_11e2791e627937::t_dd0b502bd4930e 29
+packages/ui/package.json
+  s_11e2791e627937::t_5cea2521f0c2a9 74
+packages/ui/src/theme/components/openapi/parameters-table.tsx
+  s_11e2791e627937::t_d1ac4a32aa275c 135-148
+  s_11e2791e627937::t_8dce3d3bd3f94a 32
+  s_11e2791e627937::t_dd0b502bd4930e 134
+knip.jsonc
+  s_11e2791e627937::t_b25a60260260dc 28-29
+packages/cli/src/lib/sync/sidebar/write-meta.ts
+  s_11e2791e627937::t_f4e516891957da 161
+  s_11e2791e627937::t_dd0b502bd4930e 144-160,162-184,187-205
+packages/ui/src/theme/components/openapi/request-body.tsx
+  s_11e2791e627937::t_8dce3d3bd3f94a 57
+packages/ui/src/theme/components/openapi/openapi.css
+  s_11e2791e627937::t_2b1145fb8d173b 202,207
+  s_11e2791e627937::t_c2505f8d457d7f 11,204,234
+  s_11e2791e627937::t_d1ac4a32aa275c 27,208-217
+  s_11e2791e627937::t_aa97b5b4820ae3 122-126
+packages/cli/src/lib/sync/sidebar/write-meta.test.ts
+  s_11e2791e627937::t_4965f0b488b0d4 9,11-12
+  s_11e2791e627937::t_870e3f1867f126 1-8,10,13-53
+packages/ui/src/theme/components/openapi/overview.tsx
+  s_11e2791e627937::t_dd0b502bd4930e 116,156,183
+pnpm-lock.yaml
+  s_11e2791e627937::t_0069cf621ec5b3 416-418,3846-3849,4874-4877,9950-9951,11141-11144
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "ba3ba01b28866f9e202d82b6d326f94eb42dc36d",
+  "prompts": {},
+  "sessions": {
+    "s_11e2791e627937": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3092fa5dffeMGfFWd66NmTvOE",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
