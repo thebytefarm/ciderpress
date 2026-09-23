@@ -8,7 +8,7 @@
 /* ── Two-column operation layout ───────────────────────────── */
 .cp-oas-operation {
   display: grid;
-  grid-template-columns: 55% 45%;
+  grid-template-columns: minmax(0, 11fr) minmax(0, 9fr);
   gap: 2rem;
   padding: 1rem 0;
 }
@@ -24,7 +24,7 @@
   min-width: 0;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1280px) {
   .cp-oas-operation {
     grid-template-columns: 1fr;
   }
@@ -119,6 +119,11 @@
 }
 
 /* ── Sidebar method badge + path ───────────────────────────── */
+.rp-sidebar-item__left:has(.cp-oas-sidebar-badge) {
+  /* Preserve the active row while tightening Rspress's depth-2 inline indent. */
+  margin-left: -12px;
+}
+
 .cp-oas-sidebar-badge {
   display: inline-block;
   padding: 1px 6px;
@@ -194,10 +199,22 @@
   margin: 1rem 0 0.5rem;
 }
 
-.cp-oas-parameters__table {
+.rp-doc .cp-oas-parameters__table {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.875rem;
+  margin: 0;
+}
+
+.cp-oas-parameters__table-scroll {
+  overflow-x: auto;
+}
+
+@media (max-width: 640px) {
+  .rp-doc .cp-oas-parameters__table {
+    min-width: 36rem;
+  }
 }
 
 .cp-oas-parameters__table th {
@@ -214,6 +231,7 @@
   color: var(--cp-c-text-1);
   border-bottom: 1px solid var(--cp-c-divider);
   vertical-align: top;
+  overflow-wrap: anywhere;
 }
 
 .cp-oas-parameters__name {

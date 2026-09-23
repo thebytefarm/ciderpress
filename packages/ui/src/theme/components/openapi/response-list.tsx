@@ -26,7 +26,7 @@ export function ResponseList({ responses }: ResponseListProps): React.ReactEleme
 
   return (
     <div className="cp-oas-responses">
-      <div className="cp-oas-responses__title">Responses</div>
+      <h2 className="cp-oas-responses__title">Responses</h2>
       {entries.map(renderResponseItem)}
     </div>
   )

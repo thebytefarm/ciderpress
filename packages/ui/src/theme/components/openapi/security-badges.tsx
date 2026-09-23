@@ -26,7 +26,7 @@ export function SecurityBadges({ securities }: SecurityBadgesProps): React.React
       P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
       (s) => (
         <div className="cp-oas-security">
-          <div className="cp-oas-security__title">Authentication</div>
+          <h2 className="cp-oas-security__title">Authentication</h2>
           <div className="cp-oas-security__list">
             {s.map((requirement, idx) => (
               <span key={String(idx)} className="cp-oas-security__badge">

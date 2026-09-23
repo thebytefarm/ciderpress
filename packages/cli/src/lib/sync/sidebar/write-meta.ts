@@ -141,31 +141,68 @@ function mergeOpenapiParentEntries(
     return [...directories]
   }
 
-  const dirMap = new Map<string, MetaItem[]>(
-    directories.map((dir) => [dir.dirPath, [...dir.items]])
+  const initial = Object.fromEntries(
+    directories.map((dir) => [dir.dirPath, dir.items])
+  ) as Readonly<Record<string, readonly MetaItem[]>>
+
+  const merged = workspaceEntries.reduce<Readonly<Record<string, readonly MetaItem[]>>>(
+    (directoryItems, entry) => {
+      const cleanPrefix = stripLeadingSlash(entry.prefix)
+      if (cleanPrefix === '' || !cleanPrefix.includes('/')) {
+        return directoryItems
+      }
+      const segments = cleanPrefix.split('/')
+      const childName = segments.at(-1) as string
+      const parentSegments = segments.slice(0, -1)
+      const parentDir = parentSegments.join('/')
+      const label = resolveOpenapiLabel(entry)
+      const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+      const withChild = {
+        // oxlint-disable-next-line no-accumulating-spread -- bounded by OpenAPI entries
+        ...directoryItems,
+        [parentDir]: [...(directoryItems[parentDir] ?? []), dirItem],
+      }
+
+      if (parentSegments.length < 2) {
+        return withChild
+      }
+
+      const parentName = parentSegments.at(-1) as string
+      const grandparentDir = parentSegments.slice(0, -1).join('/')
+      const grandparentItems = withChild[grandparentDir]
+      if (grandparentItems === undefined) {
+        return withChild
+      }
+
+      return {
+        ...withChild,
+        [grandparentDir]: grandparentItems.map((item) =>
+          promoteOpenapiParent({ item, parentName })
+        ),
+      }
+    },
+    initial
   )
 
-  workspaceEntries.reduce<null>((_, entry) => {
-    const cleanPrefix = stripLeadingSlash(entry.prefix)
-    if (cleanPrefix === '' || !cleanPrefix.includes('/')) {
-      return null
-    }
-    const segments = cleanPrefix.split('/')
-    const childName = segments.at(-1) as string
-    const parentDir = segments.slice(0, -1).join('/')
-    const label = resolveOpenapiLabel(entry)
-    const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+  return Object.entries(merged).map(([dirPath, items]) => ({ dirPath, items }))
+}
 
-    const existing = dirMap.get(parentDir)
-    if (existing) {
-      existing.push(dirItem)
-    } else {
-      dirMap.set(parentDir, [dirItem])
-    }
-    return null
-  }, null)
-
-  return [...dirMap.entries()].map(([dirPath, items]) => ({ dirPath, items }))
+/**
+ * Promote a workspace landing file to a directory when OpenAPI pages are nested beneath it.
+ *
+ * @private
+ * @param params - Meta item and workspace directory name
+ * @returns A directory item for the matching workspace, otherwise the original item
+ */
+function promoteOpenapiParent(params: {
+  readonly item: MetaItem
+  readonly parentName: string
+}): MetaItem {
+  const { item, parentName } = params
+  if (typeof item === 'string' || item.type !== 'file' || item.name !== parentName) {
+    return item
+  }
+  return { ...item, type: 'dir' }
 }
 
 /**

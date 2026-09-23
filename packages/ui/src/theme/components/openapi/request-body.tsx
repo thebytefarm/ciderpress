@@ -54,7 +54,7 @@ export function RequestBody({ requestBody }: RequestBodyProps): React.ReactEleme
 
   return (
     <div className="cp-oas-request-body">
-      <div className="cp-oas-request-body__title">Request Body</div>
+      <h2 className="cp-oas-request-body__title">Request Body</h2>
       {descEl}
       {bodyEl}
       {exampleEl}
