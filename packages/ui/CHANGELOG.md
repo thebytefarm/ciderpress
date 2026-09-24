@@ -1,5 +1,13 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.17
+
+### Patch Changes
+
+- 9b42d82: Prevent OpenAPI parameter tables from overlapping code examples and preserve nested OpenAPI
+  navigation beneath workspace landing pages. Ensure the bundled KaTeX plugin can resolve its
+  runtime stylesheet.
+
 ## 1.0.0-rc.16
 
 ### Minor Changes
