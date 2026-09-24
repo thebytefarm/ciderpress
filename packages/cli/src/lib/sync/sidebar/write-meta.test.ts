@@ -72,4 +72,41 @@ describe('writeMetaFiles()', () => {
       { type: 'dir', name: 'reference', label: 'API Reference' },
     ])
   })
+
+  it('should promote a root workspace file when OpenAPI pages are nested beneath it', async () => {
+    const rootEntries: readonly ResolvedEntry[] = [
+      {
+        title: 'API',
+        link: '/api',
+        page: { outputPath: 'api.md', frontmatter: {} },
+      },
+    ]
+    const rootOpenapiEntries: readonly OpenAPISidebarEntry[] = [
+      {
+        prefix: '/api/reference',
+        rootLevel: false,
+        sidebar: [{ text: 'API Reference', link: '/api/reference', items: [] }],
+      },
+    ]
+
+    await writeMetaFiles({
+      contentDir: '/content',
+      entries: rootEntries,
+      nav: [],
+      openapiEntries: rootOpenapiEntries,
+    })
+
+    const rootMetaCall = vi
+      .mocked(fs.writeFile)
+      .mock.calls.find(([filePath]) => filePath === path.resolve('/content', '_meta.json'))
+    expect(rootMetaCall).toBeDefined()
+    if (rootMetaCall === undefined) {
+      return
+    }
+    expect(JSON.parse(String(rootMetaCall[1]))).toContainEqual({
+      type: 'dir',
+      name: 'api',
+      label: 'API',
+    })
+  })
 })

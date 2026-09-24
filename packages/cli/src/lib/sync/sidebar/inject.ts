@@ -207,6 +207,9 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
  */
 function resolveWorkspaceLandingOutputPath(workspace: Workspace): string {
   const outputPath = linkToOutputPath(workspace.path)
+  if (workspace.path === '/') {
+    return outputPath
+  }
   if (isNotNil(workspace.openapi)) {
     return outputPath.replace(/\.md$/, '/index.md')
   }

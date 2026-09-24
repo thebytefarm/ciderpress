@@ -63,7 +63,10 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
   const openapiRootItems = buildOpenapiRootMetaItems(openapiEntries)
   const mergedSectionDirectories = mergeOpenapiParentEntries(sectionDirectories, openapiEntries)
 
-  const mergedRootMeta = [...rootMeta, ...openapiRootItems]
+  const mergedRootMeta = mergeOpenapiRootParentEntries(
+    [...rootMeta, ...openapiRootItems],
+    openapiEntries
+  )
 
   const allDirectories = [...mergedSectionDirectories, ...openapiDirectories]
 
@@ -117,6 +120,33 @@ function buildOpenapiRootMetaItems(
       const label = resolveOpenapiLabel(entry)
       return [{ type: 'dir' as const, name: dirName, label }]
     })
+}
+
+/**
+ * Promote root workspace landing files when OpenAPI pages are nested beneath them.
+ *
+ * @private
+ * @param items - Existing root metadata items
+ * @param openapiEntries - All OpenAPI sidebar entries
+ * @returns Root metadata with one-segment workspace parents represented as directories
+ */
+function mergeOpenapiRootParentEntries(
+  items: readonly MetaItem[],
+  openapiEntries: readonly OpenAPISidebarEntry[]
+): readonly MetaItem[] {
+  return openapiEntries
+    .filter((entry) => !entry.rootLevel)
+    .reduce<readonly MetaItem[]>((rootItems, entry) => {
+      const segments = stripLeadingSlash(entry.prefix).split('/')
+      if (segments.length !== 2) {
+        return rootItems
+      }
+      const [parentName] = segments
+      if (parentName === undefined || parentName === '') {
+        return rootItems
+      }
+      return rootItems.map((item) => promoteOpenapiParent({ item, parentName }))
+    }, items)
 }
 
 /**

@@ -92,6 +92,20 @@ describe('buildRootMeta()', () => {
     ])
   })
 
+  it('should render a top-level directory index as a directory', () => {
+    const entries: readonly ResolvedEntry[] = [
+      {
+        title: 'API',
+        link: '/api',
+        page: { outputPath: 'api/index.md', frontmatter: {} },
+      },
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toStrictEqual([{ type: 'dir', name: 'api', label: 'API' }])
+  })
+
   it('should exclude hidden sections', () => {
     const entries: readonly ResolvedEntry[] = [
       { title: 'Visible', link: '/visible', items: [] },
