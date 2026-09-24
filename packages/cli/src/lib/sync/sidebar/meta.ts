@@ -127,7 +127,9 @@ function entryToRootMetaItems(entry: ResolvedEntry): readonly (MetaDirItem | Met
   if (entry.page && basename(entry.page.outputPath, extname(entry.page.outputPath)) === 'index') {
     const name = resolveDirName(entry)
     if (name === null) {
-      return []
+      return [
+        { type: 'file' as const, name: 'index', label: entry.title, ...maybeTag(entry.badgeTag) },
+      ]
     }
     return [{ type: 'dir' as const, name, label: entry.title, ...maybeTag(entry.badgeTag) }]
   }

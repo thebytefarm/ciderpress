@@ -106,6 +106,20 @@ describe('buildRootMeta()', () => {
     expect(result).toStrictEqual([{ type: 'dir', name: 'api', label: 'API' }])
   })
 
+  it('should retain the root index as a file', () => {
+    const entries: readonly ResolvedEntry[] = [
+      {
+        title: 'Home',
+        link: '/',
+        page: { outputPath: 'index.md', frontmatter: {} },
+      },
+    ]
+
+    const result = buildRootMeta(entries)
+
+    expect(result).toStrictEqual([{ type: 'file', name: 'index', label: 'Home' }])
+  })
+
   it('should exclude hidden sections', () => {
     const entries: readonly ResolvedEntry[] = [
       { title: 'Visible', link: '/visible', items: [] },
