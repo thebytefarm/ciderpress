@@ -1,4 +1,5 @@
 import fs from 'node:fs/promises'
+import path from 'node:path'
 
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -17,7 +18,14 @@ const entries: readonly ResolvedEntry[] = [
   {
     title: 'Apps',
     link: '/apps',
-    items: [{ title: 'API', link: '/apps/api', items: [] }],
+    items: [
+      {
+        title: 'API',
+        link: '/apps/api',
+        items: [],
+        page: { outputPath: 'apps/api/index.md', frontmatter: {} },
+      },
+    ],
   },
 ]
 
@@ -39,7 +47,7 @@ describe('writeMetaFiles()', () => {
 
     const appsMetaCall = vi
       .mocked(fs.writeFile)
-      .mock.calls.find(([filePath]) => filePath === '/content/apps/_meta.json')
+      .mock.calls.find(([filePath]) => filePath === path.resolve('/content', 'apps', '_meta.json'))
     expect(appsMetaCall).toBeDefined()
     if (appsMetaCall === undefined) {
       return
@@ -49,5 +57,19 @@ describe('writeMetaFiles()', () => {
       name: 'api',
       label: 'API',
     })
+
+    const apiMetaCall = vi
+      .mocked(fs.writeFile)
+      .mock.calls.find(
+        ([filePath]) => filePath === path.resolve('/content', 'apps', 'api', '_meta.json')
+      )
+    expect(apiMetaCall).toBeDefined()
+    if (apiMetaCall === undefined) {
+      return
+    }
+    expect(JSON.parse(String(apiMetaCall[1]))).toStrictEqual([
+      { type: 'file', name: 'index', label: 'Overview' },
+      { type: 'dir', name: 'reference', label: 'API Reference' },
+    ])
   })
 })

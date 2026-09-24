@@ -157,10 +157,15 @@ function mergeOpenapiParentEntries(
       const parentDir = parentSegments.join('/')
       const label = resolveOpenapiLabel(entry)
       const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+      const existingParentItems = directoryItems[parentDir] ?? []
+      const parentLabel = resolveOpenapiParentLabel({
+        items: existingParentItems,
+        parentName: parentSegments.at(-1) as string,
+      })
       const withChild = {
         // oxlint-disable-next-line no-accumulating-spread -- bounded by OpenAPI entries
         ...directoryItems,
-        [parentDir]: [...(directoryItems[parentDir] ?? []), dirItem],
+        [parentDir]: [...existingParentItems.map(relabelOpenapiOverview), dirItem],
       }
 
       if (parentSegments.length < 2) {
@@ -169,16 +174,15 @@ function mergeOpenapiParentEntries(
 
       const parentName = parentSegments.at(-1) as string
       const grandparentDir = parentSegments.slice(0, -1).join('/')
-      const grandparentItems = withChild[grandparentDir]
-      if (grandparentItems === undefined) {
-        return withChild
-      }
+      const grandparentItems = withChild[grandparentDir] ?? []
 
       return {
         ...withChild,
-        [grandparentDir]: grandparentItems.map((item) =>
-          promoteOpenapiParent({ item, parentName })
-        ),
+        [grandparentDir]: ensureOpenapiParent({
+          items: grandparentItems,
+          parentName,
+          parentLabel,
+        }),
       }
     },
     initial
@@ -203,6 +207,63 @@ function promoteOpenapiParent(params: {
     return item
   }
   return { ...item, type: 'dir' }
+}
+
+/**
+ * Ensure the workspace containing nested OpenAPI pages is represented as a directory.
+ *
+ * @private
+ * @param params - Existing grandparent items and workspace metadata
+ * @returns Items containing a directory entry for the workspace
+ */
+function ensureOpenapiParent(params: {
+  readonly items: readonly MetaItem[]
+  readonly parentName: string
+  readonly parentLabel: string
+}): readonly MetaItem[] {
+  const { items, parentName, parentLabel } = params
+  const hasParent = items.some(
+    (item) => typeof item !== 'string' && 'name' in item && item.name === parentName
+  )
+  if (!hasParent) {
+    return [...items, { type: 'dir', name: parentName, label: parentLabel }]
+  }
+  return items.map((item) => promoteOpenapiParent({ item, parentName }))
+}
+
+/**
+ * Resolve the workspace label from its generated index item.
+ *
+ * @private
+ * @param params - Parent directory items and fallback directory name
+ * @returns Workspace label for the grandparent directory entry
+ */
+function resolveOpenapiParentLabel(params: {
+  readonly items: readonly MetaItem[]
+  readonly parentName: string
+}): string {
+  const { items, parentName } = params
+  const overview = items.find(
+    (item) => typeof item !== 'string' && item.type === 'file' && item.name === 'index'
+  )
+  if (overview === undefined || typeof overview === 'string' || !('label' in overview)) {
+    return parentName
+  }
+  return overview.label
+}
+
+/**
+ * Label a generated workspace index consistently inside its promoted directory.
+ *
+ * @private
+ * @param item - Parent directory metadata item
+ * @returns The item with an Overview label when it targets the workspace index
+ */
+function relabelOpenapiOverview(item: MetaItem): MetaItem {
+  if (typeof item === 'string' || item.type !== 'file' || item.name !== 'index') {
+    return item
+  }
+  return { ...item, label: 'Overview' }
 }
 
 /**
