@@ -1,0 +1,39 @@
+packages/cli/src/lib/sync/sidebar/write-meta.test.ts
+  s_11e2791e627937::t_f9602a169dee34 75-111
+packages/cli/src/lib/sync/sidebar/write-meta.ts
+  s_11e2791e627937::t_f9602a169dee34 66-69,125-149
+  s_4041a82567ae27::t_e344c293f58244 150-151
+packages/cli/src/lib/sync/sidebar/inject.ts
+  s_11e2791e627937::t_f9602a169dee34 210-212
+packages/cli/src/lib/sync/sidebar/meta.test.ts
+  s_11e2791e627937::t_f9602a169dee34 95-108
+packages/cli/src/lib/sync/sidebar/meta.ts
+  s_11e2791e627937::t_461ccd08a67a8a 127
+  s_11e2791e627937::t_f9602a169dee34 128-134
+packages/cli/src/lib/sync/sidebar/sidebar.test.ts
+  s_11e2791e627937::t_f9602a169dee34 104-125
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "7a99db2f02b5df12c659df7f3e7fee4bb3fabdfe",
+  "prompts": {},
+  "sessions": {
+    "s_11e2791e627937": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f3092fa5dffeMGfFWd66NmTvOE",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_4041a82567ae27": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f2fc4d4c1ffeugtkqFxYay5Xqq",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
