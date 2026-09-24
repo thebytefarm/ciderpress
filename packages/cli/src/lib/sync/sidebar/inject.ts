@@ -185,7 +185,7 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
         .otherwise(String)
       const page: ResolvedEntry['page'] = {
         content: () => `# ${titleStr}\n\n${exact.description}\n`,
-        outputPath: linkToOutputPath(link),
+        outputPath: resolveWorkspaceLandingOutputPath(exact),
         frontmatter: {},
       }
       return { entry: { ...baseEntry, page }, nextColorIndex: childResult.nextColorIndex }
@@ -193,6 +193,27 @@ function injectOne(frame: InjectOneFrame): InjectOneResult {
   }
 
   return { entry: baseEntry, nextColorIndex: childResult.nextColorIndex }
+}
+
+/**
+ * Resolve a workspace landing page path.
+ *
+ * OpenAPI workspaces use a directory index so their nested reference pages remain reachable
+ * without replacing the workspace overview route.
+ *
+ * @private
+ * @param workspace - Workspace that owns the generated landing page
+ * @returns Content-relative markdown output path
+ */
+function resolveWorkspaceLandingOutputPath(workspace: Workspace): string {
+  const outputPath = linkToOutputPath(workspace.path)
+  if (workspace.path === '/') {
+    return outputPath
+  }
+  if (isNotNil(workspace.openapi)) {
+    return outputPath.replace(/\.md$/, '/index.md')
+  }
+  return outputPath
 }
 
 /**

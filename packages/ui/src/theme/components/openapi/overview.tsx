@@ -113,7 +113,7 @@ function ServerList({
       P.when((s): s is readonly Record<string, unknown>[] => s.length > 0),
       (s) => (
         <div className="cp-oas-servers">
-          <div className="cp-oas-overview__section-title">Servers</div>
+          <h2 className="cp-oas-overview__section-title">Servers</h2>
           {s.map((server) => {
             const url = String(server['url'] ?? '')
             const description = server['description'] as string | undefined
@@ -153,7 +153,7 @@ function AuthSchemes({
       P.when((e): e is [string, Record<string, unknown>][] => e.length > 0),
       (e) => (
         <div className="cp-oas-auth-schemes">
-          <div className="cp-oas-overview__section-title">Authentication</div>
+          <h2 className="cp-oas-overview__section-title">Authentication</h2>
           {e.map(([name, scheme]) => (
             <div key={name} className="cp-oas-auth-scheme">
               <LockIcon />
@@ -180,7 +180,7 @@ function TagGroups({ tags }: { readonly tags: readonly TagInfo[] }): React.React
       P.when((t): t is readonly TagInfo[] => t.length > 0),
       (t) => (
         <div className="cp-oas-tags">
-          <div className="cp-oas-overview__section-title">Operations</div>
+          <h2 className="cp-oas-overview__section-title">Operations</h2>
           {t.map((tag) => {
             const descEl = match(tag.description)
               .with(

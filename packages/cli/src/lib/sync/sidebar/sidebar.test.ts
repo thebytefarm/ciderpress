@@ -79,4 +79,48 @@ describe('injectLandingPages()', () => {
     expect(rebuiltNested.page!.outputPath).toMatch(/\.mdx$/)
     expect(nested.page).toBeUndefined()
   })
+
+  it('should place an OpenAPI workspace landing page at the directory index', () => {
+    const entry: ResolvedEntry = {
+      title: 'API',
+      link: '/apps/api',
+      items: [],
+    }
+    const [result] = injectLandingPages(
+      [entry],
+      [],
+      [
+        {
+          title: 'API',
+          path: '/apps/api',
+          description: 'REST API',
+          openapi: { spec: 'apps/api/openapi.json', path: '/apps/api/reference' },
+        },
+      ]
+    )
+
+    expect(result.page).toMatchObject({ outputPath: 'apps/api/index.md' })
+  })
+
+  it('should keep a root OpenAPI workspace landing page at the root index', () => {
+    const entry: ResolvedEntry = {
+      title: 'API',
+      link: '/',
+      items: [],
+    }
+    const [result] = injectLandingPages(
+      [entry],
+      [],
+      [
+        {
+          title: 'API',
+          path: '/',
+          description: 'REST API',
+          openapi: { spec: 'openapi.json', path: '/reference' },
+        },
+      ]
+    )
+
+    expect(result.page).toMatchObject({ outputPath: 'index.md' })
+  })
 })

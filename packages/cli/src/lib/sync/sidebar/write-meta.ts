@@ -63,7 +63,10 @@ export async function writeMetaFiles(options: WriteMetaOptions): Promise<void> {
   const openapiRootItems = buildOpenapiRootMetaItems(openapiEntries)
   const mergedSectionDirectories = mergeOpenapiParentEntries(sectionDirectories, openapiEntries)
 
-  const mergedRootMeta = [...rootMeta, ...openapiRootItems]
+  const mergedRootMeta = mergeOpenapiRootParentEntries(
+    [...rootMeta, ...openapiRootItems],
+    openapiEntries
+  )
 
   const allDirectories = [...mergedSectionDirectories, ...openapiDirectories]
 
@@ -120,6 +123,33 @@ function buildOpenapiRootMetaItems(
 }
 
 /**
+ * Promote root workspace landing files when OpenAPI pages are nested beneath them.
+ *
+ * @private
+ * @param items - Existing root metadata items
+ * @param openapiEntries - All OpenAPI sidebar entries
+ * @returns Root metadata with one-segment workspace parents represented as directories
+ */
+function mergeOpenapiRootParentEntries(
+  items: readonly MetaItem[],
+  openapiEntries: readonly OpenAPISidebarEntry[]
+): readonly MetaItem[] {
+  return openapiEntries
+    .filter((entry) => !entry.rootLevel)
+    .reduce<readonly MetaItem[]>((rootItems, entry) => {
+      const segments = stripLeadingSlash(entry.prefix).split('/')
+      if (segments.length !== 2) {
+        return rootItems
+      }
+      const [parentName] = segments
+      if (parentName === undefined || parentName === '') {
+        return rootItems
+      }
+      return rootItems.map((item) => promoteOpenapiParent({ item, parentName }))
+    }, items)
+}
+
+/**
  * Merge workspace-level OpenAPI entries into their parent directory's meta.
  *
  * For each workspace-level OpenAPI entry whose prefix is nested (e.g.
@@ -141,31 +171,129 @@ function mergeOpenapiParentEntries(
     return [...directories]
   }
 
-  const dirMap = new Map<string, MetaItem[]>(
-    directories.map((dir) => [dir.dirPath, [...dir.items]])
+  const initial = Object.fromEntries(
+    directories.map((dir) => [dir.dirPath, dir.items])
+  ) as Readonly<Record<string, readonly MetaItem[]>>
+
+  const merged = workspaceEntries.reduce<Readonly<Record<string, readonly MetaItem[]>>>(
+    (directoryItems, entry) => {
+      const cleanPrefix = stripLeadingSlash(entry.prefix)
+      if (cleanPrefix === '' || !cleanPrefix.includes('/')) {
+        return directoryItems
+      }
+      const segments = cleanPrefix.split('/')
+      const childName = segments.at(-1) as string
+      const parentSegments = segments.slice(0, -1)
+      const parentDir = parentSegments.join('/')
+      const label = resolveOpenapiLabel(entry)
+      const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+      const existingParentItems = directoryItems[parentDir] ?? []
+      const parentLabel = resolveOpenapiParentLabel({
+        items: existingParentItems,
+        parentName: parentSegments.at(-1) as string,
+      })
+      const withChild = {
+        // oxlint-disable-next-line no-accumulating-spread -- bounded by OpenAPI entries
+        ...directoryItems,
+        [parentDir]: [...existingParentItems.map(relabelOpenapiOverview), dirItem],
+      }
+
+      if (parentSegments.length < 2) {
+        return withChild
+      }
+
+      const parentName = parentSegments.at(-1) as string
+      const grandparentDir = parentSegments.slice(0, -1).join('/')
+      const grandparentItems = withChild[grandparentDir] ?? []
+
+      return {
+        ...withChild,
+        [grandparentDir]: ensureOpenapiParent({
+          items: grandparentItems,
+          parentName,
+          parentLabel,
+        }),
+      }
+    },
+    initial
   )
 
-  workspaceEntries.reduce<null>((_, entry) => {
-    const cleanPrefix = stripLeadingSlash(entry.prefix)
-    if (cleanPrefix === '' || !cleanPrefix.includes('/')) {
-      return null
-    }
-    const segments = cleanPrefix.split('/')
-    const childName = segments.at(-1) as string
-    const parentDir = segments.slice(0, -1).join('/')
-    const label = resolveOpenapiLabel(entry)
-    const dirItem: MetaDirItem = { type: 'dir', name: childName, label }
+  return Object.entries(merged).map(([dirPath, items]) => ({ dirPath, items }))
+}
 
-    const existing = dirMap.get(parentDir)
-    if (existing) {
-      existing.push(dirItem)
-    } else {
-      dirMap.set(parentDir, [dirItem])
-    }
-    return null
-  }, null)
+/**
+ * Promote a workspace landing file to a directory when OpenAPI pages are nested beneath it.
+ *
+ * @private
+ * @param params - Meta item and workspace directory name
+ * @returns A directory item for the matching workspace, otherwise the original item
+ */
+function promoteOpenapiParent(params: {
+  readonly item: MetaItem
+  readonly parentName: string
+}): MetaItem {
+  const { item, parentName } = params
+  if (typeof item === 'string' || item.type !== 'file' || item.name !== parentName) {
+    return item
+  }
+  return { ...item, type: 'dir' }
+}
 
-  return [...dirMap.entries()].map(([dirPath, items]) => ({ dirPath, items }))
+/**
+ * Ensure the workspace containing nested OpenAPI pages is represented as a directory.
+ *
+ * @private
+ * @param params - Existing grandparent items and workspace metadata
+ * @returns Items containing a directory entry for the workspace
+ */
+function ensureOpenapiParent(params: {
+  readonly items: readonly MetaItem[]
+  readonly parentName: string
+  readonly parentLabel: string
+}): readonly MetaItem[] {
+  const { items, parentName, parentLabel } = params
+  const hasParent = items.some(
+    (item) => typeof item !== 'string' && 'name' in item && item.name === parentName
+  )
+  if (!hasParent) {
+    return [...items, { type: 'dir', name: parentName, label: parentLabel }]
+  }
+  return items.map((item) => promoteOpenapiParent({ item, parentName }))
+}
+
+/**
+ * Resolve the workspace label from its generated index item.
+ *
+ * @private
+ * @param params - Parent directory items and fallback directory name
+ * @returns Workspace label for the grandparent directory entry
+ */
+function resolveOpenapiParentLabel(params: {
+  readonly items: readonly MetaItem[]
+  readonly parentName: string
+}): string {
+  const { items, parentName } = params
+  const overview = items.find(
+    (item) => typeof item !== 'string' && item.type === 'file' && item.name === 'index'
+  )
+  if (overview === undefined || typeof overview === 'string' || !('label' in overview)) {
+    return parentName
+  }
+  return overview.label
+}
+
+/**
+ * Label a generated workspace index consistently inside its promoted directory.
+ *
+ * @private
+ * @param item - Parent directory metadata item
+ * @returns The item with an Overview label when it targets the workspace index
+ */
+function relabelOpenapiOverview(item: MetaItem): MetaItem {
+  if (typeof item === 'string' || item.type !== 'file' || item.name !== 'index') {
+    return item
+  }
+  return { ...item, label: 'Overview' }
 }
 
 /**

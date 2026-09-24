@@ -29,7 +29,7 @@ export function ParametersTable({ parameters }: ParametersTableProps): React.Rea
       P.when((g): g is readonly ParameterGroup[] => g.length > 0),
       (g) => (
         <div className="cp-oas-parameters">
-          <div className="cp-oas-parameters__title">Parameters</div>
+          <h2 className="cp-oas-parameters__title">Parameters</h2>
           {g.map(renderGroup)}
         </div>
       )
@@ -131,19 +131,21 @@ function renderRow(param: Record<string, unknown>): React.ReactElement {
 function renderGroup(group: ParameterGroup): React.ReactElement {
   return (
     <div key={group.label}>
-      <div className="cp-oas-parameters__group-label">{group.label}</div>
-      <table className="cp-oas-parameters__table">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Type</th>
-            <th>Required</th>
-            <th>Description</th>
-            <th>Default</th>
-          </tr>
-        </thead>
-        <tbody>{group.items.map(renderRow)}</tbody>
-      </table>
+      <h3 className="cp-oas-parameters__group-label">{group.label}</h3>
+      <div className="cp-oas-parameters__table-scroll">
+        <table className="cp-oas-parameters__table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Required</th>
+              <th>Description</th>
+              <th>Default</th>
+            </tr>
+          </thead>
+          <tbody>{group.items.map(renderRow)}</tbody>
+        </table>
+      </div>
     </div>
   )
 }
