@@ -5,8 +5,7 @@
       "entry": [
         "ciderpress.config.ts",
         "hero-background.tsx",
-        "lauf.config.ts",
-        "scripts/*.lauf.ts",
+        "scripts/*.ts",
         "vitest.workspace.ts",
       ],
       "project": ["*.{ts,tsx}", "scripts/**/*.{ts,tsx,mjs}"],

@@ -216,7 +216,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
   const userConfigAlias = resolveUserConfigAlias(paths.repoRoot)
 
   // `CIDERPRESS_BASE` env var wins over the config field so a build
-  // orchestrator (e.g. `scripts/build.lauf.ts`) can inject per-child
+  // orchestrator (e.g. `scripts/build.ts`) can inject per-child
   // mount paths without editing each example site's own config.
   const envBase = process.env.CIDERPRESS_BASE
   const resolvedBase = match([envBase, config.base])
@@ -288,7 +288,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       remarkPlugins: [remarkMathToDiv, remarkIssueLinks],
       globalComponents: [issueLinkIconPath],
       // Skip dead-link checks for `/examples/<name>/` URLs — those are
-      // sub-mounted by the `scripts/build.lauf.ts` orchestrator (copied
+      // sub-mounted by the `scripts/build.ts` orchestrator (copied
       // from each example's own dist) and aren't routes in this Rspress
       // build. Without this, the link checker fails on the auto-
       // generated `docs/examples/index.mdx` cards. Internal routes

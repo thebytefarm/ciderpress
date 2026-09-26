@@ -2,7 +2,7 @@ import { autoGenHeader } from '../lib/auto-gen-header.ts'
 import type { AggregatedEntry, AggregatedVersion } from './aggregate.ts'
 import type { BumpType } from './parse.ts'
 
-const HEADER = `${autoGenHeader({ cmd: 'lauf run changelog', style: 'html' })}
+const HEADER = `${autoGenHeader({ cmd: 'pnpm changelog:generate', style: 'html' })}
 
 # Changelog
 

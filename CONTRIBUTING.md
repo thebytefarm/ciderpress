@@ -35,7 +35,6 @@ Thanks for your interest in contributing to ciderpress! This document covers the
 | `pnpm format:fix` | Auto-fix formatting                |
 | `pnpm typecheck`  | Type check all packages            |
 | `pnpm check`      | Typecheck + lint + format          |
-| `pnpm clean`      | Clean all dist output              |
 
 ### Making Changes
 

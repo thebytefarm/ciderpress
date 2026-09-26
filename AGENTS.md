@@ -87,7 +87,7 @@
 ├── examples/             # working example sites: simple, kitchen-sink, large
 ├── extensions/           # editor/IDE integrations (vscode)
 ├── benchmarks/           # vitest benchmark suite
-├── scripts/              # one-off scripts — *.lauf.ts run via `lauf run <name>`, plus shell utilities
+├── scripts/              # repository automation and code-generation scripts run with zx
 ├── assets/               # branding (banner.svg, logo, etc.)
 ├── patches/              # pnpm patches for upstream deps
 ├── .changeset/           # changeset configs and pending changesets
@@ -104,7 +104,6 @@ Important top-level configs:
 - **`tsconfig.json`** — root TS config; packages extend this
 - **`.oxlintrc.json`** · **`.oxfmtrc.json`** — OXC lint/format rules (enforce the `<never>` list)
 - **`vitest.workspace.ts`** — vitest workspace
-- **`lauf.config.ts`** — script runner config for `scripts/*.lauf.ts`
 - **`vercel.json`** — deploy config for the docs site
 
 </structure>
@@ -140,7 +139,6 @@ pnpm format:fix                 # Auto-fix formatting
 pnpm typecheck                  # Type check all packages (via Turbo)
 pnpm check                      # Typecheck + lint + format
 pnpm build                      # Build all packages (via Turbo)
-pnpm clean                      # Clean all dist output (via Turbo)
 pnpm docs:dev --headless        # Run the dogfooded docs site without the Ink TUI (use this from a non-TTY shell / background task — plain log output, no raw-mode error)
 ```
 

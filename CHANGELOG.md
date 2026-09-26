@@ -1,4 +1,4 @@
-<!-- @auto-generated — do not edit. Regenerate with: lauf run changelog -->
+<!-- @auto-generated — do not edit. Regenerate with: pnpm changelog:generate -->
 
 # Changelog
 
