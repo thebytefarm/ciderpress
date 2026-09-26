@@ -1,0 +1,35 @@
+.changeset/sharp-snakes-punch.md
+  s_bbd3b7b2bdc6e0::t_aadca7a17b4af3 1-4
+scripts/changelog/parse.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 1-165
+scripts/changelog/semver.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 1-76
+CHANGELOG.md
+  s_bbd3b7b2bdc6e0::t_062985e0779aab 1-2
+scripts/changelog/aggregate.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 1-88
+package.json
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 28
+scripts/changelog/render.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 1-58
+scripts/build/run.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 76-78,80
+scripts/changelog.ts
+  s_bbd3b7b2bdc6e0::t_4a86878f083efe 1-39
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "351eb01ff819cae9e3dbf7d30048283b970fbb71",
+  "prompts": {},
+  "sessions": {
+    "s_bbd3b7b2bdc6e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f25b71b4affePHD5Plxs1nR3DR",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
