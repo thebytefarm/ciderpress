@@ -73,9 +73,10 @@ function runSpawn(opts: {
     .nothrow()
     .quiet()
     .then((result) => {
-      if (result.exitCode !== 0) {
-        console.error(`${opts.failContext} failed:\n${result.stdout}${result.stderr}`)
+      if (!result.ok) {
+        const output = [result.message, result.stdout, result.stderr].filter(Boolean).join('\n')
+        console.error(`${opts.failContext} failed:\n${output}`)
       }
-      return result.exitCode ?? 0
+      return result.exitCode ?? 1
     })
 }

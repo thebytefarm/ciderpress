@@ -25,6 +25,7 @@
     "docs:build": "zx scripts/build.ts",
     "docs:serve": "node packages/ciderpress/dist/cli.mjs serve",
     "docs:generate": "zx scripts/docs.ts",
+    "changelog:generate": "zx scripts/changelog.ts",
     "icons:generate": "zx scripts/icons.ts",
     "dev": "turbo run dev --filter='./packages/*' //#docs:dev:headless",
     "stories": "pnpm --filter @ciderpress/cli stories",

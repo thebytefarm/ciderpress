@@ -1,3 +1,5 @@
+<!-- @auto-generated — do not edit. Regenerate with: pnpm changelog:generate -->
+
 # Changelog
 
 All notable changes to ciderpress packages, aggregated by release version.
