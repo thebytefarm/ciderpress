@@ -28,9 +28,8 @@
  *   pnpm setup:portless --quiet   — silent on success, loud on failure.
  *                                   Wired as the `predev` lifecycle hook.
  *
- * NOTE: this script intentionally uses zx instead of laufen. Laufen is
- * being phased out across the repo — new scripts should reach for zx.
- * `zx --install` auto-installs the script's imports (massaman) at
+ * Repository scripts use zx for shell orchestration. `zx --install`
+ * auto-installs this script's imports (massaman) at
  * runtime so neither lives in examples/custom's devDeps.
  */
 

@@ -8,9 +8,9 @@ export type CommentStyle = 'html' | 'js' | 'jsx'
 
 /**
  * Render the "do not edit — regenerate with X" banner used at the top of
- * every generated file. Unified across the lauf scripts so the wording
+ * every generated file. Unified across the zx scripts so the wording
  * stays consistent and the comment-style is picked per output format.
- * @param opts.cmd - command users should run to regenerate (e.g. `lauf run docs`)
+ * @param opts.cmd - command users should run to regenerate (e.g. `pnpm docs:generate`)
  * @param opts.style - comment syntax to wrap the banner in
  * @returns the formatted header line, ready to paste at the top of a file
  */

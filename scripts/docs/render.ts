@@ -5,7 +5,7 @@ import { ICON_COLORS, ICON_SETS, MDX_IMPORT_THEME, PAGE_SPECS } from './data.ts'
 import type { Category, TechEntry } from './parse.ts'
 import { countEntries, findCategories } from './parse.ts'
 
-const HEADER = autoGenHeader({ cmd: 'lauf run docs', style: 'jsx' })
+const HEADER = autoGenHeader({ cmd: 'pnpm docs:generate', style: 'jsx' })
 
 /**
  * Render one technology-reference page (`languages.mdx`, `frameworks.mdx`,
@@ -115,7 +115,7 @@ ${codeFence({
 
 Then regenerate these docs:
 
-${codeFence({ lang: 'bash', body: 'lauf run docs' })}
+${codeFence({ lang: 'bash', body: 'pnpm docs:generate' })}
 
 Prefer \`devicon\` for new entries — it provides colored brand logos for most technologies. Fall back to \`logos\`, \`vscode-icons\`, or \`material-icon-theme\` when devicon has no match, and \`simple-icons\` as a last resort (monochrome).
 `

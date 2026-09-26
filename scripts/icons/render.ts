@@ -1,7 +1,7 @@
 import { autoGenHeader } from '../lib/auto-gen-header.ts'
 import type { GeneratedOutput } from './collect.ts'
 
-const HEADER = autoGenHeader({ cmd: 'lauf run icons', style: 'js' })
+const HEADER = autoGenHeader({ cmd: 'pnpm icons:generate', style: 'js' })
 
 /**
  * Render the collected icon prefixes and IDs into the

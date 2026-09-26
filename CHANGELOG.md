@@ -1,5 +1,3 @@
-<!-- @auto-generated — do not edit. Regenerate with: lauf run changelog -->
-
 # Changelog
 
 All notable changes to ciderpress packages, aggregated by release version.

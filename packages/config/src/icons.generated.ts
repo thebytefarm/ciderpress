@@ -1,4 +1,4 @@
-// @auto-generated — do not edit. Regenerate with: lauf run icons
+// @auto-generated — do not edit. Regenerate with: pnpm icons:generate
 
 export type IconPrefix =
   | 'catppuccin'
