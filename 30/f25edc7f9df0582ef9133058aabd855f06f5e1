@@ -1,0 +1,80 @@
+AGENTS.md
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 90
+examples/custom/scripts/setup.ts
+  s_bbd3b7b2bdc6e0::t_26c04e9e076899 31-32
+packages/ui/src/config.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 219,291
+knip.jsonc
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 8
+scripts/docs.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 16-18,21-22,26-27,29-43,45-48,50-53,55-63,65-67,69,71-72,76,78-81,83-85
+  s_bbd3b7b2bdc6e0::t_186a60631dd125 20,23-24
+  s_bbd3b7b2bdc6e0::t_e72d6151337833 5
+docs/references/technology/frameworks.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+package.json
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 25,27-28
+  s_bbd3b7b2bdc6e0::t_06dded674d03b3 59-60
+docs/references/technology/infrastructure.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+docs/references/technology/languages.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+ciderpress.config.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 384
+scripts/build.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 12-16,19-21,29-30,32-39,41-45,47-48,50-54,57-58,60-65,78-91,93-98,100-107
+  s_bbd3b7b2bdc6e0::t_186a60631dd125 18,22-27
+  s_bbd3b7b2bdc6e0::t_fa1beb8b583ad3 4,49,55-56,66-77
+scripts/icons/render.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 4
+scripts/lib/auto-gen-header.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 11,13
+scripts/docs/render.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 8,118
+docs/references/technology/overview.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8,59
+scripts/build/run.ts
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 3,67-77,79
+docs/references/icons/overview.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+docs/references/technology/databases.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+docs/references/technology/tooling.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+docs/references/technology/integrations.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+docs/references/icons/colors.mdx
+  s_bbd3b7b2bdc6e0::t_a12802f9b06027 8
+scripts/icons.ts
+  s_bbd3b7b2bdc6e0::t_e72d6151337833 5
+  s_bbd3b7b2bdc6e0::t_2b2eebd0a387b4 10-12,15-16,19-52
+  s_bbd3b7b2bdc6e0::t_186a60631dd125 14,18
+packages/config/src/icons.generated.ts
+  s_1f633a78e5284c::t_3c490351bcc208 1
+pnpm-lock.yaml
+  s_bbd3b7b2bdc6e0::t_d5ef483ee46eca 94-96,9486,12019-12020
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "30f25edc7f9df0582ef9133058aabd855f06f5e1",
+  "prompts": {},
+  "sessions": {
+    "s_1f633a78e5284c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "8fac26ad-6fee-488a-bb98-aac96aa7f459",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    },
+    "s_bbd3b7b2bdc6e0": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_f25b71b4affePHD5Plxs1nR3DR",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Zac Rosenbauer <me@zrosenbauer.com>"
+    }
+  }
+}
