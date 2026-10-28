@@ -20,24 +20,24 @@ See the [Content](/concepts/content#frontmatter-and-defaults) concept for inject
 
 ## Standard fields
 
-| Field           | Type                                      | Default | Description                                                                                                |
-| --------------- | ----------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
-| `title`         | `string`                                  | —       | Page title (used in sidebar, browser tab, SEO)                                                             |
-| `titleTemplate` | `string \| boolean`                       | —       | Title template override (`%s` is page title)                                                               |
-| `description`   | `string`                                  | —       | Meta description for SEO and card previews                                                                 |
-| `layout`        | `string`                                  | `'doc'` | Page layout mode — `'doc'` / `'page'` / `'home'` ship out of the box (see [Layout values](#layout-values)) |
-| `sidebar`       | `boolean`                                 | `true`  | Show or hide the sidebar                                                                                   |
-| `aside`         | `boolean \| 'left'`                       | `true`  | Table of contents position                                                                                 |
-| `outline`       | `false \| number \| [min, max] \| 'deep'` | —       | Outline heading depth                                                                                      |
-| `navbar`        | `boolean`                                 | `true`  | Show or hide the top navigation bar                                                                        |
-| `editLink`      | `boolean`                                 | `true`  | Show or hide the "Edit this page" link                                                                     |
-| `lastUpdated`   | `boolean`                                 | `true`  | Show or hide the last updated timestamp                                                                    |
-| `footer`        | `boolean`                                 | `true`  | Show or hide the page footer                                                                               |
-| `pageClass`     | `string`                                  | —       | Custom CSS class added to the page container                                                               |
-| `head`          | `[string, Record<string, string>][]`      | —       | Extra elements injected into `<head>` (see below)                                                          |
-| `seo`           | `PageSeoConfig`                           | —       | Canonical, crawler, Open Graph, and Twitter overrides (see below)                                          |
-| `badge`         | `string \| BadgeConfig \| array`          | —       | Ad-hoc page badge(s) shown in the sidebar and breadcrumb (see [Badges](/reference/badges))                 |
-| `status`        | `string \| string[]`                      | —       | Named status id(s) from the registry (see [Badges](/reference/badges))                                     |
+| Field           | Type                                           | Default | Description                                                                                                |
+| --------------- | ---------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------- |
+| `title`         | `string`                                       | —       | Page title (used in sidebar, browser tab, SEO)                                                             |
+| `titleTemplate` | `string \| boolean`                            | —       | Title template override (`%s` is page title)                                                               |
+| `description`   | `string`                                       | —       | Meta description for SEO and card previews                                                                 |
+| `layout`        | `string`                                       | `'doc'` | Page layout mode — `'doc'` / `'page'` / `'home'` ship out of the box (see [Layout values](#layout-values)) |
+| `sidebar`       | `boolean`                                      | `true`  | Show or hide the sidebar                                                                                   |
+| `aside`         | `boolean \| 'left'`                            | `true`  | Table of contents position                                                                                 |
+| `outline`       | `false \| number \| [min, max] \| 'deep'`      | —       | Outline heading depth                                                                                      |
+| `navbar`        | `boolean \| { width?: 'container' \| 'full' }` | `true`  | Show or hide the top navigation bar, or configure its width (see [Navbar width](#navbar-width))            |
+| `editLink`      | `boolean`                                      | `true`  | Show or hide the "Edit this page" link                                                                     |
+| `lastUpdated`   | `boolean`                                      | `true`  | Show or hide the last updated timestamp                                                                    |
+| `footer`        | `boolean`                                      | `true`  | Show or hide the page footer                                                                               |
+| `pageClass`     | `string`                                       | —       | Custom CSS class added to the page container                                                               |
+| `head`          | `[string, Record<string, string>][]`           | —       | Extra elements injected into `<head>` (see below)                                                          |
+| `seo`           | `PageSeoConfig`                                | —       | Canonical, crawler, Open Graph, and Twitter overrides (see below)                                          |
+| `badge`         | `string \| BadgeConfig \| array`               | —       | Ad-hoc page badge(s) shown in the sidebar and breadcrumb (see [Badges](/reference/badges))                 |
+| `status`        | `string \| string[]`                           | —       | Named status id(s) from the registry (see [Badges](/reference/badges))                                     |
 
 ## Layout values
 
@@ -46,6 +46,37 @@ See the [Content](/concepts/content#frontmatter-and-defaults) concept for inject
 | `'doc'`  | Standard documentation layout with sidebar and table of contents |
 | `'page'` | Full-width page with no sidebar or table of contents             |
 | `'home'` | Home page layout with hero section and feature cards             |
+
+## Navbar width
+
+Set `navbar.width` in page frontmatter independently of the page layout:
+
+```yaml
+---
+pageType: custom
+navbar:
+  width: container
+---
+```
+
+- `container` aligns the navigation with the home page frame and its theme-defined max width.
+- `full` spans the viewport like documentation navigation.
+- Omit `width` to keep existing behavior: home pages use `container`; other page types use `full`.
+
+`navbar: false` hides the navigation. `navbar: true` or an object shows it. No `enabled` property is needed.
+
+The same option works in config-side `Page.defaults` and `Workspace.defaults`:
+
+```ts
+{
+  title: 'Features',
+  path: '/features',
+  include: 'docs/features.mdx',
+  defaults: { navbar: { width: 'container' } },
+}
+```
+
+Per-file frontmatter replaces the config-default `navbar` value; it is not deep-merged. For example, `navbar: true` restores the page type's default width even when config defaults set a width. The `width` option changes only navigation width, not the page layout, sidebar, or footer.
 
 ## Outline values
 

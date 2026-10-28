@@ -279,7 +279,9 @@ const frontmatterSchema = z
     outline: z
       .union([z.literal(false), z.number(), z.tuple([z.number(), z.number()]), z.literal('deep')])
       .optional(),
-    navbar: z.boolean().optional(),
+    navbar: z
+      .union([z.boolean(), z.object({ width: z.enum(['container', 'full']).optional() }).strict()])
+      .optional(),
     editLink: z.boolean().optional(),
     lastUpdated: z.boolean().optional(),
     footer: z.boolean().optional(),

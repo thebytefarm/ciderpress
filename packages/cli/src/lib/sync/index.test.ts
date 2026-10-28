@@ -29,6 +29,7 @@ const PATHS = createPaths(path.resolve('sync-home-fixture'))
 describe('sync()', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(fs.readFile).mockResolvedValue('# Custom homepage\n')
   })
 
   it.each(['md', 'mdx'])(
@@ -73,6 +74,34 @@ describe('sync()', () => {
       expect(fs.writeFile).toHaveBeenCalledWith(
         path.resolve(PATHS.contentDir, 'guide', `index.${extension}`),
         expect.stringContaining('# Custom homepage'),
+        'utf8'
+      )
+    }
+  )
+  it.each([
+    { defaultWidth: 'full', sourceWidth: 'container' },
+    { defaultWidth: 'container', sourceWidth: 'full' },
+  ] as const)(
+    'should let source navbar.width=$sourceWidth override defaults=$defaultWidth',
+    async ({ defaultWidth, sourceWidth }) => {
+      vi.mocked(fs.readFile).mockResolvedValue(
+        `---\nnavbar:\n  width: ${sourceWidth}\n---\n# Custom homepage\n`
+      )
+      const config = homeConfig([
+        {
+          title: 'Home',
+          path: '/',
+          include: 'docs/index.mdx',
+          defaults: { navbar: { width: defaultWidth } },
+        },
+      ])
+
+      const result = await sync(config, { paths: PATHS, quiet: true })
+
+      expect(result.error).toBeUndefined()
+      expect(fs.writeFile).toHaveBeenCalledWith(
+        path.resolve(PATHS.contentDir, 'index.mdx'),
+        expect.stringContaining(`width: ${sourceWidth}`),
         'utf8'
       )
     }
