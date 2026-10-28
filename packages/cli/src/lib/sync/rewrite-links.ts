@@ -23,7 +23,7 @@ const CODE_BLOCK_RE = /```[\s\S]*?```/g
  * Regex matching markdown links: `[text](url)` or `[text](url "title")`.
  * Uses a negative lookbehind to exclude image links (prefixed with `!`).
  */
-const LINK_RE = /(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
+const LINK_RE = /(?<!!)(\[[^\]]*\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g
 
 /**
  * Regex to restore code block placeholders.
@@ -88,13 +88,16 @@ export function rewriteLinks(params: {
   const sourceDir = path.dirname(params.sourcePath)
   const outputDir = path.dirname(params.outputPath)
 
-  const rewritten = withoutCode.replace(LINK_RE, (fullMatch, url: string) => {
-    const resolved = resolveLink({ url, sourceDir, outputDir, sourceMap: params.sourceMap })
-    if (resolved === null) {
-      return fullMatch
+  const rewritten = withoutCode.replace(
+    LINK_RE,
+    (fullMatch, prefix: string, url: string, suffix: string) => {
+      const resolved = resolveLink({ url, sourceDir, outputDir, sourceMap: params.sourceMap })
+      if (resolved === null) {
+        return fullMatch
+      }
+      return `${prefix}${resolved}${suffix}`
     }
-    return fullMatch.replace(url, resolved)
-  })
+  )
 
   return rewritten.replace(PLACEHOLDER_RE, (_, idx) => codeBlocks[Number(idx)])
 }

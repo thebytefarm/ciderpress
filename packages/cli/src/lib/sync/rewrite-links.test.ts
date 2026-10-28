@@ -66,6 +66,38 @@ describe('rewriteLinks()', () => {
     expect(result).toBe('See [guide](guide.md#installation) for details.')
   })
 
+  it.each([
+    {
+      content: '[./guide.md](./guide.md)',
+      expected: '[./guide.md](guide.md)',
+    },
+    {
+      content: '| Guide | [`./guide.md`](./guide.md) |',
+      expected: '| Guide | [`./guide.md`](guide.md) |',
+    },
+    {
+      content: '[./guide.md#installation](./guide.md#installation)',
+      expected: '[./guide.md#installation](guide.md#installation)',
+    },
+    {
+      content: '[./guide.md](./guide.md "Read ./guide.md")',
+      expected: '[./guide.md](guide.md "Read ./guide.md")',
+    },
+    {
+      content: '[./intro.md](./intro.md   "Read ./intro.md")',
+      expected: '[./intro.md](../getting-started/intro.md   "Read ./intro.md")',
+    },
+  ])('should rewrite only the destination in $content', ({ content, expected }) => {
+    const result = rewriteLinks({
+      content,
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe(expected)
+  })
+
   it('should leave external https links untouched', () => {
     const content = 'Visit [example](https://example.com) for more.'
     const result = rewriteLinks({
