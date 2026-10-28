@@ -340,6 +340,39 @@ describe('rewriteLinks()', () => {
     }
   )
 
+  it.each(
+    ['md', 'mdx'].flatMap((extension) =>
+      ['\n', '\r\n'].flatMap((newline) =>
+        ['', '\uFEFF'].map((prefix) => ({ extension, newline, prefix }))
+      )
+    )
+  )(
+    'should isolate YAML scalar code ranges with $extension $newline $prefix',
+    ({ extension, newline, prefix }) => {
+      const content =
+        prefix +
+        [
+          '---',
+          'title: "The ` character"',
+          'description: "[intro](./intro.md)"',
+          'footer: "Another `"',
+          'links:',
+          '  - label: "[`Guide`](./intro.md)"',
+          '---',
+          '',
+          '[intro](./intro.md)',
+        ].join(newline)
+      const result = rewriteLinks({
+        content,
+        sourcePath: `docs/index.${extension}`,
+        outputPath: `guides/index.${extension}`,
+        sourceMap,
+      })
+
+      expect(result).toBe(content.replaceAll('(./intro.md)', '(../getting-started/intro.md)'))
+    }
+  )
+
   it('should retain CommonMark syntax for ordinary Markdown files', () => {
     const result = rewriteLinks({
       content: '<https://example.com> {literal}\n\n[intro](./intro.md)',

@@ -6,6 +6,7 @@ import { gfmFromMarkdown } from 'mdast-util-gfm'
 import { mdxFromMarkdown } from 'mdast-util-mdx'
 import { gfm } from 'micromark-extension-gfm'
 import { mdxjs } from 'micromark-extension-mdxjs'
+import { isMap, isScalar, isSeq, parseDocument } from 'yaml'
 
 import type { PageData } from './types.ts'
 
@@ -130,13 +131,41 @@ function parseSource(params: {
   return {
     type: 'root',
     children: [
-      fromMarkdown(frontmatter, {
-        extensions: [gfm()],
-        mdastExtensions: [gfmFromMarkdown()],
-      }),
+      ...parseMetadataValues({ node: parseDocument(frontmatter).contents, content: frontmatter }),
       body,
     ],
   }
+}
+
+/**
+ * Parse metadata values independently so literal delimiters cannot cross YAML fields.
+ *
+ * @private
+ * @param params - YAML node and original metadata source.
+ * @returns Markdown trees with offsets aligned to the original source, including a BOM.
+ */
+function parseMetadataValues(params: {
+  readonly node: unknown
+  readonly content: string
+}): readonly SourceNode[] {
+  const { node, content } = params
+  if (isMap(node)) {
+    return node.items.flatMap((item) => parseMetadataValues({ node: item.value, content }))
+  }
+  if (isSeq(node)) {
+    return node.items.flatMap((item) => parseMetadataValues({ node: item, content }))
+  }
+  if (isScalar(node) && typeof node.value === 'string' && node.range) {
+    const [start, end] = node.range
+    const source = content.slice(0, start).replace(/[^\r\n]/g, '\n') + content.slice(start, end)
+    return [
+      fromMarkdown(source, {
+        extensions: [gfm()],
+        mdastExtensions: [gfmFromMarkdown()],
+      }),
+    ]
+  }
+  return []
 }
 
 /**
