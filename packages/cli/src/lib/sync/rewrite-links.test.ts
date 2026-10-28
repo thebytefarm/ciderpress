@@ -235,6 +235,72 @@ describe('rewriteLinks()', () => {
     expect(result).toBe(content)
   })
 
+  it.each([
+    {
+      content: '<Tab>\n[`[guide](./guide.md)`](./intro.md)\n</Tab>',
+      expected: '<Tab>\n[`[guide](./guide.md)`](../getting-started/intro.md)\n</Tab>',
+    },
+    {
+      content: '<Tab>\n```md\n[guide](./guide.md)\n```\n[intro](./intro.md)\n</Tab>',
+      expected:
+        '<Tab>\n```md\n[guide](./guide.md)\n```\n[intro](../getting-started/intro.md)\n</Tab>',
+    },
+    {
+      content: '<Tabs>\n<Tab>\n[`[guide](./guide.md)`](./intro.md "Intro")\n</Tab>\n</Tabs>',
+      expected:
+        '<Tabs>\n<Tab>\n[`[guide](./guide.md)`](../getting-started/intro.md "Intro")\n</Tab>\n</Tabs>',
+    },
+  ])('should preserve code inside MDX component children in $content', ({ content, expected }) => {
+    const result = rewriteLinks({
+      content,
+      sourcePath: 'docs/index.mdx',
+      outputPath: 'guides/index.mdx',
+      sourceMap,
+    })
+
+    expect(result).toBe(expected)
+  })
+
+  it.each(['md', 'mdx'])('should respect GFM table cell boundaries in %s files', (extension) => {
+    const result = rewriteLinks({
+      content: '| A | B | C |\n| --- | --- | --- |\n| ` | [intro](./intro.md) | ` |',
+      sourcePath: `docs/index.${extension}`,
+      outputPath: `guides/index.${extension}`,
+      sourceMap,
+    })
+
+    expect(result).toBe(
+      '| A | B | C |\n| --- | --- | --- |\n| ` | [intro](../getting-started/intro.md) | ` |'
+    )
+  })
+
+  it.each(['md', 'mdx'])(
+    'should preserve code labels inside GFM tables in %s files',
+    (extension) => {
+      const result = rewriteLinks({
+        content: '| Link |\n| --- |\n| [`[guide](./guide.md)`](./intro.md) |',
+        sourcePath: `docs/index.${extension}`,
+        outputPath: `guides/index.${extension}`,
+        sourceMap,
+      })
+
+      expect(result).toBe(
+        '| Link |\n| --- |\n| [`[guide](./guide.md)`](../getting-started/intro.md) |'
+      )
+    }
+  )
+
+  it('should retain CommonMark syntax for ordinary Markdown files', () => {
+    const result = rewriteLinks({
+      content: '<https://example.com> {literal}\n\n[intro](./intro.md)',
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe('<https://example.com> {literal}\n\n[intro](../getting-started/intro.md)')
+  })
+
   it('should leave image links untouched', () => {
     const content = '![alt text](./guide.md)'
     const result = rewriteLinks({

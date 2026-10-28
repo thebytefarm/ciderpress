@@ -2,6 +2,10 @@ import path from 'node:path'
 
 import { match } from 'massaman/match'
 import { fromMarkdown } from 'mdast-util-from-markdown'
+import { gfmFromMarkdown } from 'mdast-util-gfm'
+import { mdxFromMarkdown } from 'mdast-util-mdx'
+import { gfm } from 'micromark-extension-gfm'
+import { mdxjs } from 'micromark-extension-mdxjs'
 
 import type { PageData } from './types.ts'
 
@@ -75,7 +79,7 @@ export function rewriteLinks(params: {
   readonly sourceMap: SourceMap
 }): string {
   const codeRanges = collectCodeRanges({
-    node: fromMarkdown(params.content),
+    node: parseSource(params),
     content: params.content,
   })
   const withoutCode = replaceRanges({ content: params.content, replacements: codeRanges })
@@ -94,6 +98,29 @@ export function rewriteLinks(params: {
   )
 
   return replaceRanges({ content: params.content, replacements })
+}
+
+/**
+ * Parse GFM for both source formats and JSX/expressions only for MDX sources.
+ *
+ * @private
+ * @param params - Source content and filename used to select the Markdown dialect.
+ * @returns Parsed source tree with original offsets.
+ */
+function parseSource(params: {
+  readonly content: string
+  readonly sourcePath: string
+}): SourceNode {
+  if (params.sourcePath.endsWith('.mdx')) {
+    return fromMarkdown(params.content, {
+      extensions: [gfm(), mdxjs()],
+      mdastExtensions: [gfmFromMarkdown(), mdxFromMarkdown()],
+    })
+  }
+  return fromMarkdown(params.content, {
+    extensions: [gfm()],
+    mdastExtensions: [gfmFromMarkdown()],
+  })
 }
 
 /**
