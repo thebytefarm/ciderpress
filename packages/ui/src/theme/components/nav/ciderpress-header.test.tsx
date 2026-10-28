@@ -3,6 +3,7 @@ import type React from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AnnouncementBar } from '../announcement/announcement-bar.tsx'
 import { CiderpressHeader } from './ciderpress-header.tsx'
 
 vi.mock('@rspress/core/runtime', async () => {
@@ -74,6 +75,26 @@ describe('CiderpressHeader — navbar width', () => {
       />
     )
 
-    expect(output).toBe('')
+    expect(output).toBe('<div class="cp-header cp-header--no-navbar"></div>')
+  })
+
+  it('should preserve announcements when the navbar is hidden', () => {
+    vi.mocked(useFrontmatter).mockReturnValue({ frontmatter: { navbar: false } })
+
+    const output = renderToStaticMarkup(
+      <CiderpressHeader
+        announcement={<AnnouncementBar persistent>New release</AnnouncementBar>}
+        navItems={[]}
+        socialLinks={[]}
+        topbarCta={undefined}
+        isHome={false}
+      />
+    )
+
+    expect(output).toContain('class="cp-header cp-header--no-navbar"')
+    expect(output).toContain('aria-label="Announcement"')
+    expect(output).toContain('New release')
+    expect(output).toContain('--cp-announcement-height: 36px')
+    expect(output).not.toContain('class="cp-header-inner"')
   })
 })

@@ -65,6 +65,12 @@ html:root {
   --rp-outline-margin-right: 0px;
 }
 
+/* Match the remaining sticky stack on both the first paint and SPA
+   navigation. The announcement keeps reporting its own height. */
+html:root:has(.cp-header--no-navbar) {
+  --cp-header-height: 0px;
+}
+
 html body {
   background: var(--cp-c-bg);
 }

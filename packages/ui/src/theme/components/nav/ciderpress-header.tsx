@@ -69,7 +69,7 @@ export interface CiderpressHeaderProps {
  * @param props - Header configuration
  * @returns Sticky header element
  */
-export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactElement | null {
+export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactElement {
   const { frontmatter } = useFrontmatter()
   const navbar = (frontmatter as Record<string, unknown>).navbar
   const isContainer = match(navbar)
@@ -78,7 +78,7 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
     .otherwise(() => props.isHome)
 
   if (navbar === false) {
-    return null
+    return <div className="cp-header cp-header--no-navbar">{props.announcement}</div>
   }
 
   // Dividers only render when they actually separate two visible
