@@ -312,6 +312,34 @@ describe('rewriteLinks()', () => {
     }
   )
 
+  it.each(['md', 'mdx'])(
+    'should preserve fenced examples in YAML metadata in %s files',
+    (extension) => {
+      const content = [
+        '---',
+        'title: "Use <Button> or {"',
+        'description: |',
+        '  [intro](./intro.md)',
+        '  ```md',
+        '  [guide](./guide.md)',
+        '  ```',
+        '---',
+        '',
+        '[intro](./intro.md)',
+      ].join('\n')
+      const result = rewriteLinks({
+        content,
+        sourcePath: `docs/index.${extension}`,
+        outputPath: `guides/index.${extension}`,
+        sourceMap,
+      })
+
+      expect(result).toBe(
+        content.replaceAll('[intro](./intro.md)', '[intro](../getting-started/intro.md)')
+      )
+    }
+  )
+
   it('should retain CommonMark syntax for ordinary Markdown files', () => {
     const result = rewriteLinks({
       content: '<https://example.com> {literal}\n\n[intro](./intro.md)',
