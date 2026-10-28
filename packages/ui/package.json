@@ -93,7 +93,7 @@
     "rspress-plugin-katex": "^1.0.1",
     "rspress-plugin-supersub": "^1.0.0",
     "typescript": "catalog:",
-    "vite": "^8.2.2",
+    "vite": "^8.2.4",
     "vitest": "catalog:"
   },
   "peerDependencies": {
