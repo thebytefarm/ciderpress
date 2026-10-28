@@ -40,6 +40,76 @@ describe('validateConfig()', () => {
   })
 })
 
+describe('validateConfig() — navbar width', () => {
+  it.each([true, false, {}])('should accept navbar=%s without a width override', (navbar) => {
+    const [error, config] = validateConfig({
+      pages: [
+        {
+          title: 'Custom page',
+          path: '/custom',
+          content: '# Custom page',
+          defaults: { navbar },
+        },
+      ],
+    })
+
+    expect(error).toBeNull()
+    expect(config).toMatchObject({ pages: [{ defaults: { navbar } }] })
+  })
+
+  it('should reject unknown navbar settings', () => {
+    const [error] = validateConfig({
+      pages: [
+        {
+          title: 'Custom page',
+          path: '/custom',
+          content: '# Custom page',
+          defaults: { navbar: { enabled: true } },
+        },
+      ],
+    })
+
+    expect(error).toMatchObject({ type: 'validation_failed' })
+  })
+
+  it.each(['container', 'full'])(
+    'should accept %s navbar width in page defaults',
+    (navbarWidth) => {
+      const [error, config] = validateConfig({
+        pages: [
+          {
+            title: 'Custom page',
+            path: '/custom',
+            content: '# Custom page',
+            defaults: { navbar: { width: navbarWidth } },
+          },
+        ],
+      })
+
+      expect(error).toBeNull()
+      expect(config).toMatchObject({ pages: [{ defaults: { navbar: { width: navbarWidth } } }] })
+    }
+  )
+
+  it.each(['auto', 'wide', true, 1200, null])(
+    'should reject invalid navbar width %s',
+    (navbarWidth) => {
+      const [error] = validateConfig({
+        pages: [
+          {
+            title: 'Custom page',
+            path: '/custom',
+            content: '# Custom page',
+            defaults: { navbar: { width: navbarWidth } },
+          },
+        ],
+      })
+
+      expect(error).toMatchObject({ type: 'validation_failed' })
+    }
+  )
+})
+
 describe('validateConfig() — SEO', () => {
   it('should accept site SEO and nested page SEO defaults', () => {
     const [error] = validateConfig({

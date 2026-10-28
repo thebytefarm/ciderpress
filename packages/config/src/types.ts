@@ -305,9 +305,18 @@ export interface Frontmatter {
    */
   readonly outline?: false | number | [number, number] | 'deep'
   /**
-   * Show the topbar on this page. Defaults to `true`.
+   * Show the topbar or configure its width independently of page layout.
+   * `false` hides it; `true` or an object shows it. Defaults to `true`.
    */
-  readonly navbar?: boolean
+  readonly navbar?:
+    | boolean
+    | {
+        /**
+         * `'container'` matches the home page frame; `'full'` spans the
+         * viewport like docs pages. Omit to use the page type's default.
+         */
+        readonly width?: 'container' | 'full'
+      }
   /**
    * Show the edit-this-page link under the article.
    */

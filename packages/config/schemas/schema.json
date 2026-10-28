@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.12/packages/config/schemas/schema.json",
+  "$id": "https://raw.githubusercontent.com/thebytefarm/ciderpress/v1.0.0-rc.13/packages/config/schemas/schema.json",
   "title": "Ciderpress Configuration",
   "description": "Configuration file for ciderpress documentation framework",
   "type": "object",
@@ -712,7 +712,24 @@
                 ]
               },
               "navbar": {
-                "type": "boolean"
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "width": {
+                        "type": "string",
+                        "enum": [
+                          "container",
+                          "full"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
               },
               "editLink": {
                 "type": "boolean"
@@ -1200,7 +1217,24 @@
                 ]
               },
               "navbar": {
-                "type": "boolean"
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "width": {
+                        "type": "string",
+                        "enum": [
+                          "container",
+                          "full"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
               },
               "editLink": {
                 "type": "boolean"
@@ -1738,7 +1772,24 @@
                       ]
                     },
                     "navbar": {
-                      "type": "boolean"
+                      "anyOf": [
+                        {
+                          "type": "boolean"
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "width": {
+                              "type": "string",
+                              "enum": [
+                                "container",
+                                "full"
+                              ]
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      ]
                     },
                     "editLink": {
                       "type": "boolean"
@@ -4368,7 +4419,24 @@
               ]
             },
             "navbar": {
-              "type": "boolean"
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "width": {
+                      "type": "string",
+                      "enum": [
+                        "container",
+                        "full"
+                      ]
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              ]
             },
             "editLink": {
               "type": "boolean"

@@ -1,4 +1,6 @@
+import { useFrontmatter } from '@rspress/core/runtime'
 import { clsx } from 'clsx'
+import { match } from 'massaman/match'
 import type React from 'react'
 
 import { RouteLink } from '../../lib/route-link.tsx'
@@ -47,7 +49,8 @@ export interface CiderpressHeaderProps {
    */
   readonly topbarCta: { readonly text: string; readonly href: string } | undefined
   /**
-   * `true` on the home page — used to suppress the sidebar toggle.
+   * `true` on the home page — selects container-width navigation when
+   * the page does not override `navbar.width`.
    */
   readonly isHome: boolean
 }
@@ -66,7 +69,18 @@ export interface CiderpressHeaderProps {
  * @param props - Header configuration
  * @returns Sticky header element
  */
-export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactElement {
+export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactElement | null {
+  const { frontmatter } = useFrontmatter()
+  const navbar = (frontmatter as Record<string, unknown>).navbar
+  const isContainer = match(navbar)
+    .with({ width: 'container' }, () => true)
+    .with({ width: 'full' }, () => false)
+    .otherwise(() => props.isHome)
+
+  if (navbar === false) {
+    return null
+  }
+
   // Dividers only render when they actually separate two visible
   // clusters — orphan dividers (nothing on the right) are visually
   // noisy. `<VariantToggle />` is hidden by CSS for single-variant
@@ -79,14 +93,11 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
   const hasCta = props.topbarCta !== undefined
   const hasTrailingCluster = __CIDERPRESS_HAS_VARIANT_TOGGLE__ || hasSocials || hasCta
 
-  // Landing / home pages live inside a constrained max-width container;
-  // doc pages stretch full-width (sidebar + article). The header mirrors
-  // the content shell so it never floats outside the page rhythm.
   return (
     <header
       className={clsx('cp-header', {
-        'cp-header--landing': props.isHome,
-        'cp-header--docs': !props.isHome,
+        'cp-header--landing': isContainer,
+        'cp-header--docs': !isContainer,
       })}
     >
       {props.announcement}
