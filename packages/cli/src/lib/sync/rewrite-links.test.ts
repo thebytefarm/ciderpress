@@ -198,6 +198,43 @@ describe('rewriteLinks()', () => {
     expect(result).toBe('\\`[guide](guide.md)\\` and `[intro](./intro.md)`')
   })
 
+  it.each([
+    'Text `\n\n[intro](./intro.md)\n\n`',
+    '`first\n\n[intro](./intro.md)\n\n`last',
+    'Text `\n# Heading\n[intro](./intro.md)\n`',
+    'Text `\n```md\n[guide](./guide.md)\n```\n[intro](./intro.md)\n`',
+  ])('should rewrite real links across Markdown block boundaries in %s', (content) => {
+    const result = rewriteLinks({
+      content,
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe(
+      content.replace('[intro](./intro.md)', '[intro](../getting-started/intro.md)')
+    )
+  })
+
+  it.each([
+    '`code\n[intro](./intro.md)\ncode`',
+    '> ```md\n> [guide](./guide.md)\n> ````',
+    '- ```md\n  [guide](./guide.md)\n  ````',
+    '~~~md\n[guide](./guide.md)\n~~~',
+    '    [guide](./guide.md)',
+    '```md\n[guide](./guide.md)',
+    '<!--CIDERPRESS_CODE_BLOCK_0-->\n\n`[guide](./guide.md)`',
+  ])('should preserve parsed code and surrounding content in %s', (content) => {
+    const result = rewriteLinks({
+      content,
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe(content)
+  })
+
   it('should leave image links untouched', () => {
     const content = '![alt text](./guide.md)'
     const result = rewriteLinks({

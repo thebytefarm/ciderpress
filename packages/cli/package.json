@@ -58,6 +58,7 @@
     "jiti": "^2.7.0",
     "liquidjs": "^10.29.0",
     "massaman": "catalog:",
+    "mdast-util-from-markdown": "^2.1.0",
     "react": "catalog:",
     "yaml": "^2.9.0",
     "zod": "catalog:"
