@@ -77,10 +77,6 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
     .with({ width: 'full' }, () => false)
     .otherwise(() => props.isHome)
 
-  if (navbar === false) {
-    return <div className="cp-header cp-header--no-navbar">{props.announcement}</div>
-  }
-
   // Dividers only render when they actually separate two visible
   // clusters — orphan dividers (nothing on the right) are visually
   // noisy. `<VariantToggle />` is hidden by CSS for single-variant
@@ -96,26 +92,28 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
   return (
     <header
       className={clsx('cp-header', {
-        'cp-header--landing': isContainer,
-        'cp-header--docs': !isContainer,
+        'cp-header--no-navbar': navbar === false,
+        'cp-header--landing': navbar !== false && isContainer,
+        'cp-header--docs': navbar !== false && !isContainer,
       })}
     >
       {props.announcement}
-      <div className="cp-header-inner">
-        {/* Left: hamburger (mobile primary-nav drawer) + logo. Sidebar
+      {navbar !== false && (
+        <div className="cp-header-inner">
+          {/* Left: hamburger (mobile primary-nav drawer) + logo. Sidebar
             collapse/expand lives in <CiderpressDocsBar />, the sticky
             sub-header rendered beneath the site nav on docs pages. */}
-        <CiderpressNavHamburger
-          navItems={props.navItems}
-          socialLinks={props.socialLinks}
-          topbarCta={props.topbarCta}
-        />
-        <RouteLink href="/" className="cp-header-logo" aria-label="Home">
-          <HeaderIcon />
-          <HeaderLogo />
-        </RouteLink>
+          <CiderpressNavHamburger
+            navItems={props.navItems}
+            socialLinks={props.socialLinks}
+            topbarCta={props.topbarCta}
+          />
+          <RouteLink href="/" className="cp-header-logo" aria-label="Home">
+            <HeaderIcon />
+            <HeaderLogo />
+          </RouteLink>
 
-        {/* Right cluster wrapper. Grows from a zero basis so its width
+          {/* Right cluster wrapper. Grows from a zero basis so its width
             equals the actual available room (not the content), which is
             the stable measurement target the React overflow logic
             inside CiderpressNavMenu needs.
@@ -124,22 +122,23 @@ export function CiderpressHeader(props: CiderpressHeaderProps): React.ReactEleme
             fills the leftover room and right-aligns items inside).
             That places search immediately before the menu items, both
             anchored to the right edge of the wrapper. */}
-        <div className="cp-header-menu-wrap">
-          <CiderpressNavSearch />
-          <NavDivider />
-          <CiderpressNavMenu items={props.navItems} />
-        </div>
-
-        {hasTrailingCluster && <NavDivider />}
-        <VariantToggle />
-        <CiderpressNavSocialLinks links={props.socialLinks} />
-        {props.topbarCta !== undefined && (
-          <>
+          <div className="cp-header-menu-wrap">
+            <CiderpressNavSearch />
             <NavDivider />
-            <TopbarCTA text={props.topbarCta.text} href={props.topbarCta.href} />
-          </>
-        )}
-      </div>
+            <CiderpressNavMenu items={props.navItems} />
+          </div>
+
+          {hasTrailingCluster && <NavDivider />}
+          <VariantToggle />
+          <CiderpressNavSocialLinks links={props.socialLinks} />
+          {props.topbarCta !== undefined && (
+            <>
+              <NavDivider />
+              <TopbarCTA text={props.topbarCta.text} href={props.topbarCta.href} />
+            </>
+          )}
+        </div>
+      )}
     </header>
   )
 }

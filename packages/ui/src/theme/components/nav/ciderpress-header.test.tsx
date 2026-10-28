@@ -1,5 +1,9 @@
+// @vitest-environment happy-dom
+
 import { useFrontmatter } from '@rspress/core/runtime'
+import { act } from 'react'
 import type React from 'react'
+import { createRoot } from 'react-dom/client'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -18,7 +22,8 @@ vi.mock('@rspress/core/runtime', async () => {
 })
 
 // The user config alias is supplied by the site's Rspress build.
-vi.mock('@ciderpress/internal/user-config', () => ({ default: {} }))
+vi.mock('@ciderpress/internal/user-config', () => ({ default: { logo: () => null } }))
+vi.mock('@iconify/react', () => ({ Icon: () => null, addCollection: vi.fn<() => void>() }))
 
 describe('CiderpressHeader — navbar width', () => {
   beforeEach(() => {
@@ -75,7 +80,7 @@ describe('CiderpressHeader — navbar width', () => {
       />
     )
 
-    expect(output).toBe('<div class="cp-header cp-header--no-navbar"></div>')
+    expect(output).toBe('<header class="cp-header cp-header--no-navbar"></header>')
   })
 
   it('should preserve announcements when the navbar is hidden', () => {
@@ -97,4 +102,56 @@ describe('CiderpressHeader — navbar width', () => {
     expect(output).toContain('--cp-announcement-height: 36px')
     expect(output).not.toContain('class="cp-header-inner"')
   })
+
+  it.each([true, false])(
+    'should retain anonymous announcement dismissal across navbar changes from visible=%s',
+    async (navbar) => {
+      const container = document.createElement('div')
+      document.body.append(container)
+      const root = createRoot(container)
+
+      try {
+        vi.mocked(useFrontmatter).mockReturnValue({ frontmatter: { navbar } })
+        await act(async () => root.render(createAnnouncementHeader()))
+        const dismiss = container.querySelector<HTMLButtonElement>(
+          '[aria-label="Dismiss announcement"]'
+        )
+        expect(dismiss).not.toBeNull()
+        if (dismiss === null) {
+          return
+        }
+        await act(async () => dismiss.click())
+        expect(container.querySelector('[aria-label="Announcement"]')).toBeNull()
+
+        vi.mocked(useFrontmatter).mockReturnValue({ frontmatter: { navbar: !navbar } })
+        await act(async () => root.render(createAnnouncementHeader()))
+        expect(container.querySelector('[aria-label="Announcement"]')).toBeNull()
+
+        vi.mocked(useFrontmatter).mockReturnValue({ frontmatter: { navbar } })
+        await act(async () => root.render(createAnnouncementHeader()))
+        expect(container.querySelector('[aria-label="Announcement"]')).toBeNull()
+      } finally {
+        await act(async () => root.unmount())
+        container.remove()
+      }
+    }
+  )
 })
+
+/**
+ * Create a header with an anonymous, dismissible announcement.
+ *
+ * @private
+ * @returns Header element for client-side reconciliation tests.
+ */
+function createAnnouncementHeader(): React.ReactElement {
+  return (
+    <CiderpressHeader
+      announcement={<AnnouncementBar>New release</AnnouncementBar>}
+      navItems={[]}
+      socialLinks={[]}
+      topbarCta={undefined}
+      isHome={false}
+    />
+  )
+}
