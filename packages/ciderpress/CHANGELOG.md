@@ -1,5 +1,13 @@
 # ciderpress
 
+## 1.0.0-rc.18
+
+### Patch Changes
+
+- 2729774: Respect custom MDX homepages instead of generating a conflicting default homepage.
+- Updated dependencies [2729774]
+  - @ciderpress/cli@1.0.0-rc.18
+
 ## 1.0.0-rc.17
 
 ### Patch Changes
