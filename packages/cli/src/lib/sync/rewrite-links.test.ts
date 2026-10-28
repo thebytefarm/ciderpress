@@ -290,6 +290,28 @@ describe('rewriteLinks()', () => {
     }
   )
 
+  it.each([
+    { prefix: '', newline: '\n', metadata: 'title: <Product>' },
+    { prefix: '', newline: '\n', metadata: 'description: "Use { for interpolation"' },
+    { prefix: '\uFEFF', newline: '\r\n', metadata: 'title: "Use <Button>"' },
+    { prefix: '', newline: '\n', metadata: 'description: "[intro](./intro.md)"' },
+  ])(
+    'should exclude YAML frontmatter from MDX parsing in $metadata',
+    ({ prefix, newline, metadata }) => {
+      const frontmatter = `${prefix}---${newline}${metadata}${newline}---${newline}`
+      const result = rewriteLinks({
+        content: `${frontmatter}<Tab>${newline}[\`[guide](./guide.md)\`](./intro.md)${newline}</Tab>`,
+        sourcePath: 'docs/index.mdx',
+        outputPath: 'guides/index.mdx',
+        sourceMap,
+      })
+
+      expect(result).toBe(
+        `${frontmatter.replace('[intro](./intro.md)', '[intro](../getting-started/intro.md)')}<Tab>${newline}[\`[guide](./guide.md)\`](../getting-started/intro.md)${newline}</Tab>`
+      )
+    }
+  )
+
   it('should retain CommonMark syntax for ordinary Markdown files', () => {
     const result = rewriteLinks({
       content: '<https://example.com> {literal}\n\n[intro](./intro.md)',

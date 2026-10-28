@@ -111,13 +111,17 @@ function parseSource(params: {
   readonly content: string
   readonly sourcePath: string
 }): SourceNode {
+  // Match the sync frontmatter parser's leading YAML block, including its optional BOM.
+  const content = params.content.replace(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?/, (metadata) =>
+    metadata.replace(/[^\r\n]/g, ' ')
+  )
   if (params.sourcePath.endsWith('.mdx')) {
-    return fromMarkdown(params.content, {
+    return fromMarkdown(content, {
       extensions: [gfm(), mdxjs()],
       mdastExtensions: [gfmFromMarkdown(), mdxFromMarkdown()],
     })
   }
-  return fromMarkdown(params.content, {
+  return fromMarkdown(content, {
     extensions: [gfm()],
     mdastExtensions: [gfmFromMarkdown()],
   })
