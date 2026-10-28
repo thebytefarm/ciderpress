@@ -174,7 +174,7 @@ export async function sync(config: CiderpressConfig, options: SyncOptions): Prom
     'utf8'
   )
 
-  const hasExplicitHome = sectionPages.some((p) => p.outputPath === 'index.md')
+  const hasExplicitHome = sectionPages.some((p) => /^index\.mdx?$/.test(p.outputPath))
   const homeResult = await match(hasExplicitHome)
     .with(true, () => Promise.resolve(null))
     .otherwise(() => generateDefaultHomePage(config, repoRoot))
