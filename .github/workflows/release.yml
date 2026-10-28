@@ -26,6 +26,9 @@ jobs:
           node-version: '24'
           cache: 'pnpm'
 
+      - name: Update npm for OIDC dist-tag support
+        run: npm install --global npm@latest
+
       - run: pnpm install
 
       - name: Generate Dependabot changeset when needed
@@ -56,11 +59,9 @@ jobs:
         if: steps.changesets.outputs.published == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           PUBLISHED: ${{ steps.changesets.outputs.published-packages }}
         run: |
           set -euo pipefail
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
           echo "$PUBLISHED" | jq -c '.[]' | while read -r pkg; do
             name=$(echo "$pkg" | jq -r '.name')
             version=$(echo "$pkg" | jq -r '.version')
