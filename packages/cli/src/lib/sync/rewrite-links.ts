@@ -15,9 +15,11 @@ const PLACEHOLDER_PREFIX = '<!--CIDERPRESS_CODE_BLOCK_'
 const PLACEHOLDER_SUFFIX = '-->'
 
 /**
- * Regex matching fenced code blocks.
+ * Regex matching code blocks, code spans, and escapes. Consuming escapes
+ * prevents escaped backticks from opening a code span.
  */
-const CODE_BLOCK_RE = /```[\s\S]*?```/g
+const CODE_RE =
+  /^ {0,3}(?<fence>`{3,})(?!`)[^\n]*\n[\s\S]*?^ {0,3}\k<fence>`*[\t ]*(?=\r?$)|\\[\s\S]|(?<!`)(?<delimiter>`+)(?!`)[\s\S]*?(?<!`)\k<delimiter>(?!`)/gm
 
 /**
  * Regex matching markdown links: `[text](url)` or `[text](url "title")`.
@@ -79,7 +81,10 @@ export function rewriteLinks(params: {
   readonly sourceMap: SourceMap
 }): string {
   const codeBlocks: string[] = []
-  const withoutCode = params.content.replace(CODE_BLOCK_RE, (block) => {
+  const withoutCode = params.content.replace(CODE_RE, (block) => {
+    if (block.startsWith('\\')) {
+      return block
+    }
     const idx = codeBlocks.length
     codeBlocks.push(block)
     return `${PLACEHOLDER_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`

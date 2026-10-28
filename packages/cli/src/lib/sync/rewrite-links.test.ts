@@ -87,6 +87,18 @@ describe('rewriteLinks()', () => {
       content: '[./intro.md](./intro.md   "Read ./intro.md")',
       expected: '[./intro.md](../getting-started/intro.md   "Read ./intro.md")',
     },
+    {
+      content: '[`[./intro.md](./intro.md)`](./intro.md)',
+      expected: '[`[./intro.md](./intro.md)`](../getting-started/intro.md)',
+    },
+    {
+      content: '[``[./intro.md](./intro.md) with `code` ``](./intro.md "Intro")',
+      expected: '[``[./intro.md](./intro.md) with `code` ``](../getting-started/intro.md "Intro")',
+    },
+    {
+      content: '[````[./intro.md](./intro.md) with ```code``` ````](./intro.md)',
+      expected: '[````[./intro.md](./intro.md) with ```code``` ````](../getting-started/intro.md)',
+    },
   ])('should rewrite only the destination in $content', ({ content, expected }) => {
     const result = rewriteLinks({
       content,
@@ -156,6 +168,34 @@ describe('rewriteLinks()', () => {
     })
 
     expect(result).toBe(content)
+  })
+
+  it.each([
+    '`[guide](./guide.md)`',
+    '``[guide](./guide.md) with `code` ``',
+    '``[guide](./guide.md) ` and `[intro](./intro.md)``',
+    '````md\n```md\n[guide](./guide.md)\n```\n````',
+    '```md\n[guide](./guide.md)\n````',
+  ])('should not rewrite links inside inline code %s', (content) => {
+    const result = rewriteLinks({
+      content,
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe(content)
+  })
+
+  it('should rewrite links between escaped backticks without changing code spans', () => {
+    const result = rewriteLinks({
+      content: '\\`[guide](./guide.md)\\` and `[intro](./intro.md)`',
+      sourcePath: 'docs/index.md',
+      outputPath: 'guides/index.md',
+      sourceMap,
+    })
+
+    expect(result).toBe('\\`[guide](guide.md)\\` and `[intro](./intro.md)`')
   })
 
   it('should leave image links untouched', () => {
