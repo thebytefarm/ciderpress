@@ -8,6 +8,7 @@ import { afterAll, beforeAll, bench, describe } from 'vitest'
 // because vitest's TS loader resolves relative paths across the monorepo.
 import { createPaths } from '../../../packages/cli/src/lib/paths.ts'
 import { sync } from '../../../packages/cli/src/lib/sync/index.ts'
+import { loadManifest } from '../../../packages/cli/src/lib/sync/manifest.ts'
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
 import { BENCH_OPTIONS, TIERS, generateFixture } from '../helpers/fixtures.ts'
 
@@ -20,25 +21,61 @@ interface PreparedFixture {
 const prepared = new Map<string, PreparedFixture>()
 
 beforeAll(async () => {
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     TIERS.map(async (tier) => {
       const fixture = generateFixture({ files: tier.files })
-      const paths = createPaths(fixture.dir)
-      const [error, config] = await loadConfig(paths.repoRoot)
-      if (error || !config) {
-        throw new Error(`Failed to load config for ${tier.name}: ${error}`)
+      try {
+        const paths = createPaths(fixture.dir)
+        const [error, config] = await loadConfig(paths.repoRoot)
+        if (error || !config) {
+          throw new Error(`Failed to load config for ${tier.name}: ${error}`)
+        }
+        const sources = (await fs.readdir(fixture.dir, { recursive: true })).filter((file) =>
+          file.endsWith('.md')
+        )
+        const firstSync = await sync(config, { paths, quiet: true })
+        const manifest = await loadManifest(paths.contentDir)
+        const sourceOutputs = Object.values((manifest ?? { files: {} }).files).filter(
+          (entry) => entry.source !== undefined
+        )
+        const writtenSources = new Set(sourceOutputs.map((entry) => entry.source))
+        if (
+          firstSync.error ||
+          sources.length !== tier.files ||
+          sourceOutputs.length !== tier.files ||
+          writtenSources.size !== tier.files ||
+          !sources.every((source) => writtenSources.has(source))
+        ) {
+          throw new Error(
+            `Incomplete fixture for ${tier.name}: expected ${tier.files} sources, found ${writtenSources.size} distinct source outputs`
+          )
+        }
+        return [tier.name, { fixture, config, paths }] as const
+      } catch (error) {
+        fixture.cleanup()
+        throw error
       }
-      return [tier.name, { fixture, config, paths }] as const
     })
   )
-  results.map(([name, entry]) => prepared.set(name, entry))
+  const failure = results.find((result) => result.status === 'rejected')
+  const ready = results.flatMap((result) => {
+    if (result.status === 'fulfilled') {
+      return [result.value]
+    }
+    return []
+  })
+  if (failure) {
+    ready.map(([, entry]) => entry.fixture.cleanup())
+    throw failure.reason
+  }
+  ready.map(([name, entry]) => prepared.set(name, entry))
 })
 
 afterAll(() => {
   prepared.forEach((p) => p.fixture.cleanup())
 })
 
-describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
+describe.each(TIERS)('sync() warm (code) — $name (~$files files)', (tier) => {
   bench(
     'sync',
     async () => {
@@ -48,6 +85,7 @@ describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
       }
       await sync(p.config, { paths: p.paths, quiet: true })
     },
-    BENCH_OPTIONS
+    { ...BENCH_OPTIONS, iterations: 10, warmupIterations: 2 }
   )
 })
+import fs from 'node:fs/promises'

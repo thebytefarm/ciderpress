@@ -79,6 +79,9 @@ export function rewriteLinks(params: {
   readonly outputPath: string
   readonly sourceMap: SourceMap
 }): string {
+  if (params.sourceMap.size === 0 || !params.content.includes('](')) {
+    return params.content
+  }
   const codeRanges = collectCodeRanges({
     node: parseSource(params),
     content: params.content,
