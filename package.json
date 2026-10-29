@@ -17,7 +17,7 @@
     "validate": "turbo run typecheck //#lint //#format //#knip --ui=stream",
     "changeset": "changeset",
     "version": "changeset version",
-    "postversion": "oxfmt --write",
+    "postversion": "oxfmt --write .changeset 'packages/*/package.json' 'packages/*/CHANGELOG.md' pnpm-lock.yaml",
     "prerelease": "turbo run build",
     "release": "changeset publish",
     "docs:dev": "node packages/ciderpress/dist/cli.mjs dev",
