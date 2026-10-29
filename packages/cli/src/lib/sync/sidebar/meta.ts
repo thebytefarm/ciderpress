@@ -500,11 +500,14 @@ function resolveDirPath(entry: ResolvedEntry): string | null {
     const pageRoute = pagePath.slice(0, -extname(pagePath).length)
     const pageDir = dirname(pagePath)
     if (pageRoute === cleaned && pageDir !== '.') {
+      const routeChild = (entry.items ?? []).some((child) =>
+        resolveContentPath(child).startsWith(`${cleaned}/`)
+      )
       const siblingChild = (entry.items ?? []).some((child) => {
         const childPath = resolveContentPath(child)
         return childPath.startsWith(`${pageDir}/`) && !childPath.startsWith(`${cleaned}/`)
       })
-      if (siblingChild) {
+      if (siblingChild && !routeChild) {
         return pageDir
       }
     }

@@ -191,6 +191,40 @@ describe('buildRootMeta()', () => {
 })
 
 describe('buildMetaDirectories()', () => {
+  it('should retain a real section directory when explicit children span directories', () => {
+    const section: ResolvedEntry = {
+      title: 'Sub',
+      link: '/section/sub',
+      page: { outputPath: 'section/sub.md', frontmatter: {} },
+      items: [
+        {
+          title: 'Deep',
+          link: '/section/sub/deep',
+          page: { outputPath: 'section/sub/deep.md', frontmatter: {} },
+        },
+        {
+          title: 'Other',
+          link: '/section/other',
+          page: { outputPath: 'section/other.md', frontmatter: {} },
+        },
+      ],
+    }
+
+    expect(
+      buildMetaDirectories([{ title: 'Section', link: '/section', items: [section] }])
+    ).toStrictEqual([
+      {
+        dirPath: 'section',
+        items: [
+          { type: 'file', name: 'other', label: 'Other' },
+          { type: 'dir', name: 'sub', label: 'Sub' },
+        ],
+      },
+      { dirPath: 'section/sub', items: [{ type: 'file', name: 'deep', label: 'Deep' }] },
+    ])
+    expect(buildRootMeta([section])).toStrictEqual([{ type: 'dir', name: 'sub', label: 'Sub' }])
+  })
+
   it('should retain a sibling landing route when children live below that route', () => {
     const section: ResolvedEntry = {
       ...makeEntryFileSection({ stem: 'overview', extension: 'md' }),
