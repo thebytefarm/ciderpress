@@ -170,7 +170,7 @@ ${sectionConfigs}
 
       Array.from({ length: dirFiles }, (_, fileIdx) => {
         const title = `${section} ${dirName} document ${fileIdx + 1}`
-        const slug = `doc-${String(fileIdx + 1).padStart(3, '0')}`
+        const slug = `${dirName}-doc-${String(fileIdx + 1).padStart(3, '0')}`
         const para1 = LOREM_PARAGRAPHS[globalIdx % LOREM_PARAGRAPHS.length]
         const para2 = LOREM_PARAGRAPHS[(globalIdx + 1) % LOREM_PARAGRAPHS.length]
         const para3 = LOREM_PARAGRAPHS[(globalIdx + 2) % LOREM_PARAGRAPHS.length]

@@ -44,6 +44,7 @@ import { remarkIssueLinks } from './plugins/issue-links/remark-issue-links.ts'
 import { remarkMathToDiv } from './plugins/katex/remark-math-to-div.ts'
 import { mermaidPlugin } from './plugins/mermaid/plugin.ts'
 import type { SeoThemeConfig } from './seo-theme-config.ts'
+import { shellIcons } from './shell-icons.ts'
 import { toPlainText } from './theme/lib/rich-text-parse.ts'
 import { resolveSeoSiteUrl } from './theme/lib/seo-url.ts'
 
@@ -353,6 +354,7 @@ export function createRspressConfig(options: CreateRspressConfigOptions): UserCo
       },
       source: {
         define: {
+          __CIDERPRESS_SHELL_ICONS__: JSON.stringify(shellIcons),
           __CIDERPRESS_GIT_BRANCH__: JSON.stringify(gitBranch),
           __CIDERPRESS_THEME_NAME__: JSON.stringify(themeName),
           __CIDERPRESS_DEFAULT_VARIANT__: JSON.stringify(variant),

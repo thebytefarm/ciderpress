@@ -44,6 +44,30 @@ describe('rewriteLinks()', () => {
     ['docs/intro.md', 'getting-started/intro.md'],
   ])
 
+  it('should preserve pages without candidate destinations', () => {
+    const content = '# Guide\r\n\r\nPlain text, `code`, and [a label].\r\n'
+    expect(
+      rewriteLinks({
+        content,
+        sourcePath: 'docs/index.md',
+        outputPath: 'guides/index.md',
+        sourceMap,
+      })
+    ).toBe(content)
+  })
+
+  it('should preserve content when there are no mapped pages', () => {
+    const content = '[intro](./intro.md "Intro")'
+    expect(
+      rewriteLinks({
+        content,
+        sourcePath: 'docs/index.md',
+        outputPath: 'guides/index.md',
+        sourceMap: new Map(),
+      })
+    ).toBe(content)
+  })
+
   it('should rewrite relative .md link to correct output path', () => {
     const result = rewriteLinks({
       content: 'See [guide](./guide.md) for details.',
