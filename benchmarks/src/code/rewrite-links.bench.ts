@@ -14,13 +14,14 @@ describe('rewriteLinks()', () => {
   SCENARIOS.map(({ name, content }) =>
     bench(
       name,
-      () =>
+      () => {
         rewriteLinks({
           content,
           sourcePath: 'docs/index.md',
           outputPath: 'guides/index.md',
           sourceMap: SOURCE_MAP,
-        }),
+        })
+      },
       { time: 500, warmupTime: 100, iterations: 20 }
     )
   )
