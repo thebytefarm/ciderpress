@@ -8,6 +8,7 @@ import { afterAll, beforeAll, bench, describe } from 'vitest'
 // because vitest's TS loader resolves relative paths across the monorepo.
 import { createPaths } from '../../../packages/cli/src/lib/paths.ts'
 import { sync } from '../../../packages/cli/src/lib/sync/index.ts'
+import { loadManifest } from '../../../packages/cli/src/lib/sync/manifest.ts'
 import type { GeneratedFixture } from '../helpers/fixtures.ts'
 import { BENCH_OPTIONS, TIERS, generateFixture } from '../helpers/fixtures.ts'
 
@@ -29,10 +30,24 @@ beforeAll(async () => {
         if (error || !config) {
           throw new Error(`Failed to load config for ${tier.name}: ${error}`)
         }
+        const sources = (await fs.readdir(fixture.dir, { recursive: true })).filter((file) =>
+          file.endsWith('.md')
+        )
         const firstSync = await sync(config, { paths, quiet: true })
-        if (firstSync.error || firstSync.pagesWritten < tier.files) {
+        const manifest = await loadManifest(paths.contentDir)
+        const sourceOutputs = Object.values((manifest ?? { files: {} }).files).filter(
+          (entry) => entry.source !== undefined
+        )
+        const writtenSources = new Set(sourceOutputs.map((entry) => entry.source))
+        if (
+          firstSync.error ||
+          sources.length !== tier.files ||
+          sourceOutputs.length !== tier.files ||
+          writtenSources.size !== tier.files ||
+          !sources.every((source) => writtenSources.has(source))
+        ) {
           throw new Error(
-            `Incomplete fixture for ${tier.name}: ${firstSync.pagesWritten} pages written`
+            `Incomplete fixture for ${tier.name}: expected ${tier.files} sources, found ${writtenSources.size} distinct source outputs`
           )
         }
         return [tier.name, { fixture, config, paths }] as const
@@ -73,3 +88,4 @@ describe.each(TIERS)('sync() warm (code) — $name (~$files files)', (tier) => {
     { ...BENCH_OPTIONS, iterations: 10, warmupIterations: 2 }
   )
 })
+import fs from 'node:fs/promises'
