@@ -3,6 +3,8 @@ import type { IconProps } from '@iconify/react'
 import type React from 'react'
 import { useEffect, useState } from 'react'
 
+declare const __CIDERPRESS_SHELL_ICONS__: Readonly<Record<string, IconProps['icon']>>
+
 /**
  * Per-collection lazy loaders keyed by Iconify prefix.
  *
@@ -60,14 +62,28 @@ const collectionCache = new Map<string, Promise<void>>()
  * @returns The Iconify icon element
  */
 export function Icon(props: IconProps): React.ReactElement {
-  const prefix = resolvePrefix(props.icon)
+  const icon = resolveShellIcon(props.icon)
+  const prefix = resolvePrefix(icon)
   const [, markRegistered] = useState(false)
 
   useEffect(() => {
     ensureCollection(prefix).then(() => markRegistered(true))
   }, [prefix])
 
-  return <IconifyIcon {...props} />
+  return <IconifyIcon {...props} icon={icon} />
+}
+
+/**
+ * Resolve fixed theme glyphs without downloading their entire collection.
+ * @private
+ * @param icon - Caller-provided icon identifier or data
+ * @returns Build-time icon data when available, otherwise the original icon
+ */
+function resolveShellIcon(icon: IconProps['icon']): IconProps['icon'] {
+  if (typeof icon !== 'string' || typeof __CIDERPRESS_SHELL_ICONS__ === 'undefined') {
+    return icon
+  }
+  return __CIDERPRESS_SHELL_ICONS__[icon] ?? icon
 }
 
 /**

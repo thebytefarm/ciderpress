@@ -5,5 +5,11 @@
   "installCommand": "pnpm install",
   "cleanUrls": true,
   "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/static/(.*)",
+      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+    }
+  ],
   "ignoreCommand": "[ \"$VERCEL_GIT_COMMIT_REF\" = \"changeset-release/main\" ]"
 }

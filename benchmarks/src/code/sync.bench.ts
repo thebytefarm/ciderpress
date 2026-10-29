@@ -28,6 +28,12 @@ beforeAll(async () => {
       if (error || !config) {
         throw new Error(`Failed to load config for ${tier.name}: ${error}`)
       }
+      const firstSync = await sync(config, { paths, quiet: true })
+      if (firstSync.error || firstSync.pagesWritten < tier.files) {
+        throw new Error(
+          `Incomplete fixture for ${tier.name}: ${firstSync.pagesWritten} pages written`
+        )
+      }
       return [tier.name, { fixture, config, paths }] as const
     })
   )
@@ -38,7 +44,7 @@ afterAll(() => {
   prepared.forEach((p) => p.fixture.cleanup())
 })
 
-describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
+describe.each(TIERS)('sync() warm (code) — $name (~$files files)', (tier) => {
   bench(
     'sync',
     async () => {
@@ -48,6 +54,6 @@ describe.each(TIERS)('sync() (code) — $name (~$files files)', (tier) => {
       }
       await sync(p.config, { paths: p.paths, quiet: true })
     },
-    BENCH_OPTIONS
+    { ...BENCH_OPTIONS, iterations: 10, warmupIterations: 2 }
   )
 })
