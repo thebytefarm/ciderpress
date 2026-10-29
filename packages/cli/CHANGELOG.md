@@ -1,5 +1,18 @@
 # @ciderpress/cli
 
+## 1.0.0-rc.19
+
+### Patch Changes
+
+- 0b29569: Allow `navbar: { width: 'container' | 'full' }` in page frontmatter or config defaults to choose home-style container navigation or full-width navigation independently of the page layout. Existing boolean navbar settings remain supported, and omitting the width preserves the page type's default.
+- 153c104: Fix recursive discovery builds when a subdirectory has a named entry file such as `overview.md`. Generate sidebar metadata for the real directory, keep the entry page visible, and preserve its existing URL.
+- 3ef54a1: Reduce downloads for built-in theme controls and speed up syncing pages without links. Custom icons continue to work unchanged.
+- 8dcefad: Fix relative Markdown link rewriting when the display text repeats the destination path or contains link-like inline code. Preserve code spans, link labels, optional titles, and formatting while rewriting only the destination.
+- Updated dependencies [0b29569]
+- Updated dependencies [3ef54a1]
+  - @ciderpress/config@1.0.0-rc.14
+  - @ciderpress/ui@1.0.0-rc.18
+
 ## 1.0.0-rc.18
 
 ### Patch Changes
