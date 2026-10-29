@@ -4,4 +4,4 @@
 'ciderpress': patch
 ---
 
-Avoid downloading the full MDI icon collection for fixed theme controls. Keep custom icon collection loading unchanged, and skip Markdown parsing when a page has no link destinations to rewrite.
+Reduce downloads for built-in theme controls and speed up syncing pages without links. Custom icons continue to work unchanged.

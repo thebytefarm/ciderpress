@@ -20,24 +20,40 @@ interface PreparedFixture {
 const prepared = new Map<string, PreparedFixture>()
 
 beforeAll(async () => {
-  const results = await Promise.all(
+  const results = await Promise.allSettled(
     TIERS.map(async (tier) => {
       const fixture = generateFixture({ files: tier.files })
-      const paths = createPaths(fixture.dir)
-      const [error, config] = await loadConfig(paths.repoRoot)
-      if (error || !config) {
-        throw new Error(`Failed to load config for ${tier.name}: ${error}`)
+      try {
+        const paths = createPaths(fixture.dir)
+        const [error, config] = await loadConfig(paths.repoRoot)
+        if (error || !config) {
+          throw new Error(`Failed to load config for ${tier.name}: ${error}`)
+        }
+        const firstSync = await sync(config, { paths, quiet: true })
+        if (firstSync.error || firstSync.pagesWritten < tier.files) {
+          throw new Error(
+            `Incomplete fixture for ${tier.name}: ${firstSync.pagesWritten} pages written`
+          )
+        }
+        return [tier.name, { fixture, config, paths }] as const
+      } catch (error) {
+        fixture.cleanup()
+        throw error
       }
-      const firstSync = await sync(config, { paths, quiet: true })
-      if (firstSync.error || firstSync.pagesWritten < tier.files) {
-        throw new Error(
-          `Incomplete fixture for ${tier.name}: ${firstSync.pagesWritten} pages written`
-        )
-      }
-      return [tier.name, { fixture, config, paths }] as const
     })
   )
-  results.map(([name, entry]) => prepared.set(name, entry))
+  const failure = results.find((result) => result.status === 'rejected')
+  const ready = results.flatMap((result) => {
+    if (result.status === 'fulfilled') {
+      return [result.value]
+    }
+    return []
+  })
+  if (failure) {
+    ready.map(([, entry]) => entry.fixture.cleanup())
+    throw failure.reason
+  }
+  ready.map(([name, entry]) => prepared.set(name, entry))
 })
 
 afterAll(() => {
