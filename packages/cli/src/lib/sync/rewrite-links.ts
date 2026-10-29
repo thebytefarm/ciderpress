@@ -1,34 +1,35 @@
 import path from 'node:path'
 
 import { match } from 'massaman/match'
+import { fromMarkdown } from 'mdast-util-from-markdown'
+import { gfmFromMarkdown } from 'mdast-util-gfm'
+import { mdxFromMarkdown } from 'mdast-util-mdx'
+import { gfm } from 'micromark-extension-gfm'
+import { mdxjs } from 'micromark-extension-mdxjs'
+import { isMap, isScalar, isSeq, parseDocument } from 'yaml'
 
 import type { PageData } from './types.ts'
-
-/**
- * Placeholder prefix used to protect code blocks from link rewriting.
- */
-const PLACEHOLDER_PREFIX = '<!--CIDERPRESS_CODE_BLOCK_'
-
-/**
- * Placeholder suffix for code block markers.
- */
-const PLACEHOLDER_SUFFIX = '-->'
-
-/**
- * Regex matching fenced code blocks.
- */
-const CODE_BLOCK_RE = /```[\s\S]*?```/g
 
 /**
  * Regex matching markdown links: `[text](url)` or `[text](url "title")`.
  * Uses a negative lookbehind to exclude image links (prefixed with `!`).
  */
-const LINK_RE = /(?<!!)\[[^\]]*\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g
+const LINK_RE = /(?<!!)(\[[^\]]*\]\()([^)\s]+)((?:\s+"[^"]*")?\))/g
 
-/**
- * Regex to restore code block placeholders.
- */
-const PLACEHOLDER_RE = /<!--CIDERPRESS_CODE_BLOCK_(\d+)-->/g
+interface SourceNode {
+  readonly type: string
+  readonly children?: readonly SourceNode[]
+  readonly position?: {
+    readonly start: { readonly offset?: number }
+    readonly end: { readonly offset?: number }
+  }
+}
+
+interface TextReplacement {
+  readonly start: number
+  readonly end: number
+  readonly value: string
+}
 
 /**
  * Mapping from repo-relative source path to content-relative output path.
@@ -78,25 +79,142 @@ export function rewriteLinks(params: {
   readonly outputPath: string
   readonly sourceMap: SourceMap
 }): string {
-  const codeBlocks: string[] = []
-  const withoutCode = params.content.replace(CODE_BLOCK_RE, (block) => {
-    const idx = codeBlocks.length
-    codeBlocks.push(block)
-    return `${PLACEHOLDER_PREFIX}${idx}${PLACEHOLDER_SUFFIX}`
+  const codeRanges = collectCodeRanges({
+    node: parseSource(params),
+    content: params.content,
   })
-
+  const withoutCode = replaceRanges({ content: params.content, replacements: codeRanges })
   const sourceDir = path.dirname(params.sourcePath)
   const outputDir = path.dirname(params.outputPath)
-
-  const rewritten = withoutCode.replace(LINK_RE, (fullMatch, url: string) => {
-    const resolved = resolveLink({ url, sourceDir, outputDir, sourceMap: params.sourceMap })
-    if (resolved === null) {
-      return fullMatch
+  const replacements = [...withoutCode.matchAll(LINK_RE)].flatMap(
+    (link): readonly TextReplacement[] => {
+      const [, prefix, url] = link
+      const resolved = resolveLink({ url, sourceDir, outputDir, sourceMap: params.sourceMap })
+      if (resolved === null) {
+        return []
+      }
+      const start = link.index + prefix.length
+      return [{ start, end: start + url.length, value: resolved }]
     }
-    return fullMatch.replace(url, resolved)
-  })
+  )
 
-  return rewritten.replace(PLACEHOLDER_RE, (_, idx) => codeBlocks[Number(idx)])
+  return replaceRanges({ content: params.content, replacements })
+}
+
+/**
+ * Parse GFM for both source formats and JSX/expressions only for MDX sources.
+ *
+ * @private
+ * @param params - Source content and filename used to select the Markdown dialect.
+ * @returns Parsed source tree with original offsets.
+ */
+function parseSource(params: {
+  readonly content: string
+  readonly sourcePath: string
+}): SourceNode {
+  // Match the sync frontmatter parser's leading YAML block, including its optional BOM.
+  const metadata = params.content.match(/^\uFEFF?---\r?\n([\s\S]*?)\r?\n---\r?\n?/)
+  const [frontmatter = ''] = metadata ?? []
+  const content = frontmatter.replace(/[^\r\n]/g, ' ') + params.content.slice(frontmatter.length)
+  const body = (() => {
+    if (params.sourcePath.endsWith('.mdx')) {
+      return fromMarkdown(content, {
+        extensions: [gfm(), mdxjs()],
+        mdastExtensions: [gfmFromMarkdown(), mdxFromMarkdown()],
+      })
+    }
+    return fromMarkdown(content, {
+      extensions: [gfm()],
+      mdastExtensions: [gfmFromMarkdown()],
+    })
+  })()
+  return {
+    type: 'root',
+    children: [
+      ...parseMetadataValues({ node: parseDocument(frontmatter).contents, content: frontmatter }),
+      body,
+    ],
+  }
+}
+
+/**
+ * Parse metadata values independently so literal delimiters cannot cross YAML fields.
+ *
+ * @private
+ * @param params - YAML node and original metadata source.
+ * @returns Markdown trees with offsets aligned to the original source, including a BOM.
+ */
+function parseMetadataValues(params: {
+  readonly node: unknown
+  readonly content: string
+}): readonly SourceNode[] {
+  const { node, content } = params
+  if (isMap(node)) {
+    return node.items.flatMap((item) => parseMetadataValues({ node: item.value, content }))
+  }
+  if (isSeq(node)) {
+    return node.items.flatMap((item) => parseMetadataValues({ node: item, content }))
+  }
+  if (isScalar(node) && typeof node.value === 'string' && node.range) {
+    const [start, end] = node.range
+    const source = content.slice(0, start).replace(/[^\r\n]/g, '\n') + content.slice(start, end)
+    return [
+      fromMarkdown(source, {
+        extensions: [gfm()],
+        mdastExtensions: [gfmFromMarkdown()],
+      }),
+    ]
+  }
+  return []
+}
+
+/**
+ * Collect code-node ranges in source order, masking each with equal-length whitespace.
+ *
+ * @private
+ * @param params - Parsed Markdown node and original source.
+ * @returns Non-overlapping replacements that hide code without shifting source offsets.
+ */
+function collectCodeRanges(params: {
+  readonly node: SourceNode
+  readonly content: string
+}): readonly TextReplacement[] {
+  const { node, content } = params
+  if (node.type === 'code' || node.type === 'inlineCode') {
+    const position = node.position
+    if (position === undefined) {
+      return []
+    }
+    const start = position.start.offset
+    const end = position.end.offset
+    if (start === undefined || end === undefined) {
+      return []
+    }
+    return [{ start, end, value: content.slice(start, end).replace(/[^\r\n]/g, ' ') }]
+  }
+  const children = node.children ?? []
+  return children.flatMap((child) => collectCodeRanges({ node: child, content }))
+}
+
+/**
+ * Apply ordered source replacements without serializing or reformatting Markdown.
+ *
+ * @private
+ * @param params - Original source and non-overlapping replacements in source order.
+ * @returns Source with only the selected ranges replaced.
+ */
+function replaceRanges(params: {
+  readonly content: string
+  readonly replacements: readonly TextReplacement[]
+}): string {
+  const result = params.replacements.reduce(
+    (acc, replacement) => ({
+      output: acc.output + params.content.slice(acc.offset, replacement.start) + replacement.value,
+      offset: replacement.end,
+    }),
+    { output: '', offset: 0 }
+  )
+  return result.output + params.content.slice(result.offset)
 }
 
 /**
