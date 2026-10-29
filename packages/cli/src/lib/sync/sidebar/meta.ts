@@ -259,7 +259,7 @@ function flattenSection(entry: ResolvedEntry, acc: FlattenResult): FlattenResult
   // Top-level sections (targetDir === '') are discovered by Rspress automatically.
   const dirPlacement: readonly MetaPlacement[] = buildDirPlacement(targetDir, entry, acc.nextOrder)
 
-  const childResult = flattenToPlacements(entry.items ?? [], acc.nextOrder + 1)
+  const childResult = flattenToPlacements(sectionChildren({ entry, dirPath }), acc.nextOrder + 1)
 
   return {
     // oxlint-disable-next-line unicorn/no-accumulating-spread -- bounded by tree depth
@@ -495,7 +495,59 @@ function resolveDirPath(entry: ResolvedEntry): string | null {
   if (cleaned === '' || cleaned === '/') {
     return null
   }
+  if (entry.page) {
+    const pagePath = entry.page.outputPath
+    const pageRoute = pagePath.slice(0, -extname(pagePath).length)
+    const pageDir = dirname(pagePath)
+    if (pageRoute === cleaned && pageDir !== '.') {
+      const siblingChild = (entry.items ?? []).some((child) => {
+        const childPath = resolveContentPath(child)
+        return childPath.startsWith(`${pageDir}/`) && !childPath.startsWith(`${cleaned}/`)
+      })
+      if (siblingChild) {
+        return pageDir
+      }
+    }
+  }
   return cleaned
+}
+
+/**
+ * Include a named landing file when its section directory differs from its route.
+ * @private
+ * @param params - Section and its resolved filesystem directory
+ * @returns Children with the landing page first, without duplicating an explicit leaf
+ */
+function sectionChildren(params: {
+  readonly entry: ResolvedEntry
+  readonly dirPath: string
+}): readonly ResolvedEntry[] {
+  const { entry, dirPath } = params
+  const children = entry.items ?? []
+  if (!entry.page || dirPath === stripLeadingSlash(entry.link ?? '')) {
+    return children
+  }
+  const pagePath = entry.page.outputPath
+  if (
+    dirname(pagePath) !== dirPath ||
+    children.some((child) => resolveContentPath(child) === pagePath)
+  ) {
+    return children
+  }
+  return [{ ...entry, items: undefined }, ...children]
+}
+
+/**
+ * Resolve an entry's filesystem path, falling back to its URL for groups without pages.
+ * @private
+ * @param entry - Resolved page or section
+ * @returns Content-relative page path or route
+ */
+function resolveContentPath(entry: ResolvedEntry): string {
+  if (entry.page) {
+    return entry.page.outputPath
+  }
+  return stripLeadingSlash(entry.link ?? '')
 }
 
 /**
@@ -594,8 +646,9 @@ function resolveFileStem(entry: ResolvedEntry): string | null {
  * @returns Directory name (last path segment) or null
  */
 function resolveDirName(entry: ResolvedEntry): string | null {
-  if (entry.link) {
-    return lastSegment(entry.link)
+  const dirPath = resolveDirPath(entry)
+  if (dirPath !== null) {
+    return lastSegment(dirPath)
   }
   return null
 }

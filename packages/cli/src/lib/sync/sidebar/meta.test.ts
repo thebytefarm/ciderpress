@@ -48,6 +48,14 @@ const referenceRoot: ResolvedEntry = {
 }
 
 describe('buildRootMeta()', () => {
+  it('should use the containing directory for a section linked to its entry file', () => {
+    const result = buildRootMeta([
+      makeEntryFileSection({ stem: 'overview', extension: 'md', prefix: 'sub' }),
+    ])
+
+    expect(result).toStrictEqual([{ type: 'dir', name: 'sub', label: 'Subdirectory' }])
+  })
+
   it('should include visible top-level sections', () => {
     const entries: readonly ResolvedEntry[] = [
       {
@@ -183,6 +191,74 @@ describe('buildRootMeta()', () => {
 })
 
 describe('buildMetaDirectories()', () => {
+  it('should retain a sibling landing route when children live below that route', () => {
+    const section: ResolvedEntry = {
+      ...makeEntryFileSection({ stem: 'overview', extension: 'md' }),
+      link: '/section/sub',
+      page: { outputPath: 'section/sub.md', frontmatter: {} },
+    }
+
+    expect(
+      buildMetaDirectories([{ title: 'Section', link: '/section', items: [section] }])
+    ).toStrictEqual([
+      {
+        dirPath: 'section',
+        items: [{ type: 'dir', name: 'sub', label: 'Subdirectory', collapsed: true }],
+      },
+      { dirPath: 'section/sub', items: [{ type: 'file', name: 'feature', label: 'Feature' }] },
+    ])
+  })
+
+  it('should preserve nested groups when a named landing page has only section children', () => {
+    const section = makeEntryFileSection({ stem: 'overview', extension: 'md' })
+    const nested = makeEntryFileSection({
+      stem: 'overview',
+      extension: 'md',
+      prefix: 'section/sub/deep',
+    })
+    const result = buildMetaDirectories([
+      { title: 'Section', link: '/section', items: [{ ...section, items: [nested] }] },
+    ])
+
+    expect(result.map((directory) => directory.dirPath)).toStrictEqual([
+      'section',
+      'section/sub',
+      'section/sub/deep',
+    ])
+    expect(result[1]).toMatchObject({
+      items: [
+        { type: 'file', name: 'overview', label: 'Subdirectory' },
+        { type: 'dir', name: 'deep', label: 'Subdirectory' },
+      ],
+    })
+  })
+
+  it.each([
+    { stem: 'overview', extension: 'md' },
+    { stem: 'overview', extension: 'mdx' },
+    { stem: 'readme', extension: 'md' },
+    { stem: 'index', extension: 'md' },
+  ])('should keep $stem.$extension in its real section directory', ({ stem, extension }) => {
+    const section = makeEntryFileSection({ stem, extension })
+    const directories = buildMetaDirectories([
+      { title: 'Section', link: '/section', items: [section] },
+    ])
+
+    expect(directories).toStrictEqual([
+      {
+        dirPath: 'section',
+        items: [{ type: 'dir', name: 'sub', label: 'Subdirectory', collapsed: true }],
+      },
+      {
+        dirPath: 'section/sub',
+        items: [
+          { type: 'file', name: stem, label: 'Subdirectory' },
+          { type: 'file', name: 'feature', label: 'Feature' },
+        ],
+      },
+    ])
+  })
+
   it('should use the section title when a leaf and section share the same name', () => {
     const directories = buildMetaDirectories([packagesRoot])
     const packagesDir = directories.find((d) => d.dirPath === 'packages')
@@ -335,6 +411,33 @@ describe('buildMetaDirectories()', () => {
     expect(names).toStrictEqual(['intro', 'faq', 'api'])
   })
 })
+
+/**
+ * Build a recursive section whose landing file sits beside its children.
+ * @private
+ * @param params - Entry filename stem and extension
+ * @returns Section with a named landing page and a sibling feature page
+ */
+function makeEntryFileSection(params: {
+  readonly stem: string
+  readonly extension: string
+  readonly prefix?: string
+}): ResolvedEntry {
+  const prefix = params.prefix ?? 'section/sub'
+  return {
+    title: 'Subdirectory',
+    link: `/${prefix}/${params.stem}`,
+    collapsible: true,
+    page: { outputPath: `${prefix}/${params.stem}.${params.extension}`, frontmatter: {} },
+    items: [
+      {
+        title: 'Feature',
+        link: `/${prefix}/feature`,
+        page: { outputPath: `${prefix}/feature.md`, frontmatter: {} },
+      },
+    ],
+  }
+}
 
 /**
  * Simulates the packages section from ciderpress.config.ts where each package
