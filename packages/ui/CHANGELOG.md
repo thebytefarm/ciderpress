@@ -1,5 +1,17 @@
 # @ciderpress/ui
 
+## 1.0.0-rc.18
+
+### Minor Changes
+
+- 0b29569: Allow `navbar: { width: 'container' | 'full' }` in page frontmatter or config defaults to choose home-style container navigation or full-width navigation independently of the page layout. Existing boolean navbar settings remain supported, and omitting the width preserves the page type's default.
+
+### Patch Changes
+
+- 3ef54a1: Reduce downloads for built-in theme controls and speed up syncing pages without links. Custom icons continue to work unchanged.
+- Updated dependencies [0b29569]
+  - @ciderpress/config@1.0.0-rc.14
+
 ## 1.0.0-rc.17
 
 ### Patch Changes

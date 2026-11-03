@@ -1,5 +1,11 @@
 # @ciderpress/config
 
+## 1.0.0-rc.14
+
+### Minor Changes
+
+- 0b29569: Allow `navbar: { width: 'container' | 'full' }` in page frontmatter or config defaults to choose home-style container navigation or full-width navigation independently of the page layout. Existing boolean navbar settings remain supported, and omitting the width preserves the page type's default.
+
 ## 1.0.0-rc.13
 
 ### Minor Changes
